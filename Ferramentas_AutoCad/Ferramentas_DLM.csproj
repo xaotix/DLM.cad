@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{76F7DEC0-9A49-4F71-9008-B3329F4BD1BD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Ferramentas_DLM</RootNamespace>
+    <AssemblyName>Ferramentas_DLM</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AcCui, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcCui.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcDbMgd, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcDbMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="acdbmgdbrep, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\acdbmgdbrep.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcDx, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcDx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcMgd, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcMr, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcMr.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcTcMgd, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcTcMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcWindows, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcWindows.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AdWindows, Version=3.2.23.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AdWindows.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Autodesk.AutoCAD.Interop, Version=18.2.0.0, Culture=neutral, PublicKeyToken=eed84259d7cbf30b, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Interop.x64.1.0.0\lib\net40\Autodesk.AutoCAD.Interop.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Autodesk.AutoCAD.Interop.Common, Version=18.2.0.0, Culture=neutral, PublicKeyToken=eed84259d7cbf30b, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD-2012.Net.Interop.x64.1.0.0\lib\net40\Autodesk.AutoCAD.Interop.Common.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Biblioteca_Daniel">
+      <HintPath>.\Biblioteca_Daniel.dll</HintPath>
+    </Reference>
+    <Reference Include="Calculos">
+      <HintPath>.\Calculos.dll</HintPath>
+    </Reference>
+    <Reference Include="Conexoes">
+      <HintPath>.\Conexoes.dll</HintPath>
+    </Reference>
+    <Reference Include="DB">
+      <HintPath>.\DB.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>.\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="MIConvexHull, Version=1.1.19.1018, Culture=neutral, PublicKeyToken=2644b6f8be52c998, processorArchitecture=MSIL">
+      <HintPath>..\packages\MIConvexHull.1.1.19.1019\lib\netstandard1.0\MIConvexHull.dll</HintPath>
+    </Reference>
+    <Reference Include="mysql.data">
+      <HintPath>.\mysql.data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySqlBackup">
+      <HintPath>.\MySqlBackup.dll</HintPath>
+    </Reference>
+    <Reference Include="NDbfReader">
+      <HintPath>.\NDbfReader.dll</HintPath>
+    </Reference>
+    <Reference Include="netDxf">
+      <HintPath>.\netDxf.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.RegularExpressions" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TecnoUtilz">
+      <HintPath>.\TecnoUtilz.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="WPFToolkit">
+      <HintPath>.\WPFToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>.\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Construtores\ClasseBase.cs" />
+    <Compile Include="OutrasClasses\Coordenada.cs" />
+    <Compile Include="Construtores\Cotagem.cs" />
+    <Compile Include="Construtores\Telhas.cs" />
+    <Compile Include="Menus\CriarCAMs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Menus\CriarCAMs.Designer.cs">
+      <DependentUpon>CriarCAMs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OutrasClasses\Extensao.cs" />
+    <Compile Include="Inicializacao_CAD.cs" />
+    <Compile Include="OutrasClasses\Logger.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Construtores\Purlin.cs" />
+    <Compile Include="OutrasClasses\Tabelas.cs" />
+    <Compile Include="Menus\Tela.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Menus\Tela.Designer.cs">
+      <DependentUpon>Tela.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Menus\TercasMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Menus\TercasMenu.Designer.cs">
+      <DependentUpon>TercasMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OutrasClasses\Utilidades.cs" />
+    <Compile Include="OutrasClasses\Vars.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Menus\CriarCAMs.resx">
+      <DependentUpon>CriarCAMs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Menus\Tela.resx">
+      <DependentUpon>Tela.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Menus\TercasMenu.resx">
+      <DependentUpon>TercasMenu.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
