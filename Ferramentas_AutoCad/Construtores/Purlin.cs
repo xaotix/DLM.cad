@@ -828,67 +828,75 @@ namespace Ferramentas_DLM
 
         public void Exportar(bool tabela = true, bool exportar = true)
         {
-            string dest = "";
-            if(exportar)
+            try
             {
-                dest = Conexoes.Utilz.SalvarArquivo("RM");
-            }
-            if(dest=="" && exportar)
-            {
-                return;
-            }
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                var sel = SelecionarObjetos(acTrans);
-                if (sel.Status == PromptStatus.OK)
+                string dest = "";
+                if (exportar)
                 {
-                    Conexoes.DBRM_Offline mm = new Conexoes.DBRM_Offline();
-                    var purlins = this.Getblocos_tercas().Select(x => GetPurlin(x));
-                    List<Conexoes.Macros.Purlin> ss = JuntarPurlinsIguais(purlins, acTrans);
-                    Point3d p = new Point3d();
-                    if(tabela)
+                    dest = Conexoes.Utilz.SalvarArquivo("RM");
+                }
+                if (dest == "" && exportar)
+                {
+                    return;
+                }
+                //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                {
+                    var sel = SelecionarObjetos(acTrans);
+                    if (sel.Status == PromptStatus.OK)
                     {
-                        bool cancelado = false;
-                        var PS = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
-                        if(!cancelado)
-                        {
-                            p = Tabelas.Purlins(ss,PS);
-                        }
-                    }
-
-                    if (MapearTirantes)
-                    {
-                        var tirantes = this.Getblocos_tirantes().Select(x => GetTirante(x));
-                        List<Conexoes.Macros.Tirante> pcs = JuntarTirantesIguais(tirantes, acTrans);
-                        if(tabela)
-                        {
-                       p = Tabelas.Tirantes(pcs, new Point3d(p.X + (119.81 * Getescala()), p.Y, p.Z));
-                        }
-                        mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
-                    }
-
-                    if (MapearCorrentes)
-                    {
-                        var correntes = this.Getblocos_correntes().Select(x => GetCorrente(x));
-                        List<Conexoes.Macros.Corrente> pcs = JuntarCorrentesIguais(correntes, acTrans);
+                        Conexoes.DBRM_Offline mm = new Conexoes.DBRM_Offline();
+                        var purlins = this.Getblocos_tercas().Select(x => GetPurlin(x));
+                        List<Conexoes.Macros.Purlin> ss = JuntarPurlinsIguais(purlins, acTrans);
+                        Point3d p = new Point3d();
                         if (tabela)
                         {
-                            p = Tabelas.Correntes(pcs, new Point3d(p.X + (86.77 * Getescala()), p.Y, p.Z));
+                            bool cancelado = false;
+                            var PS = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+                            if (!cancelado)
+                            {
+                                p = Tabelas.Purlins(ss, PS);
+                            }
                         }
-                        mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
-                    }
 
-                    mm.RM_Macros.AddRange(ss.Select(x => new Conexoes.RME_Macro(x)));
-                    if(exportar)
-                    {
-                    mm.Salvar(dest);
-                    }
+                        if (MapearTirantes)
+                        {
+                            var tirantes = this.Getblocos_tirantes().Select(x => GetTirante(x));
+                            List<Conexoes.Macros.Tirante> pcs = JuntarTirantesIguais(tirantes, acTrans);
+                            if (tabela)
+                            {
+                                p = Tabelas.Tirantes(pcs, new Point3d(p.X + (119.81 * Getescala()), p.Y, p.Z));
+                            }
+                            mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
+                        }
 
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
+                        if (MapearCorrentes)
+                        {
+                            var correntes = this.Getblocos_correntes().Select(x => GetCorrente(x));
+                            List<Conexoes.Macros.Corrente> pcs = JuntarCorrentesIguais(correntes, acTrans);
+                            if (tabela)
+                            {
+                                p = Tabelas.Correntes(pcs, new Point3d(p.X + (86.77 * Getescala()), p.Y, p.Z));
+                            }
+                            mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
+                        }
+
+                        mm.RM_Macros.AddRange(ss.Select(x => new Conexoes.RME_Macro(x)));
+                        if (exportar)
+                        {
+                            mm.Salvar(dest);
+                        }
+
+                        acTrans.Commit();
+                        acDoc.Editor.Regen();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Alerta(ex.Message + "\n" + ex.StackTrace);
+            }
+
         }
         private List<Conexoes.Macros.Purlin> JuntarPurlinsIguais(IEnumerable<Conexoes.Macros.Purlin> purlins, OpenCloseTransaction acTrans)
         {
