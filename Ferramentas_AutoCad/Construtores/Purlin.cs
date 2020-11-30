@@ -272,6 +272,86 @@ namespace Ferramentas_DLM
             }
         }
 
+        public void GetBoneco_Purlin()
+        {
+            List<double> retorno = new List<double>();
+            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var sel = SelecionarObjetos(acTrans);
+                if (sel.Status == PromptStatus.OK)
+                {
+                    foreach(var s in Getlinhas())
+                    {
+                        AddMensagem($"\nLinha: {s.StartPoint.ToString()} Comprimento: {s.Length} Angulo: {Math.Round(Conexoes.Utilz.RadianosParaGraus(s.Angle))}");
+                    }
+                    var linhas_horizon = Getlinhas_Horizontais();
+
+                    var verticais = Getlinhas_Verticais();
+
+                    AddMensagem($"\nLinhas verticais: {verticais.Count}");
+                    AddMensagem($"\nLinhas horizontais: {linhas_horizon.Count}");
+
+                    List<string> ret = new List<string>();
+                    List<string> textos = new List<string>();
+
+                    int c = 1;
+                    foreach (var lhs in linhas_horizon)
+                    {
+                        var min_x = lhs.StartPoint.X < lhs.EndPoint.X ? lhs.StartPoint.X : lhs.EndPoint.X;
+                        var max_x = lhs.StartPoint.X > lhs.EndPoint.X ? lhs.StartPoint.X : lhs.EndPoint.X;
+
+
+                        var verts = verticais.FindAll(x =>x.StartPoint.X>min_x+1 && x.EndPoint.X<max_x-1);
+                        List<Line> passa = new List<Line>();
+
+                        foreach (var v in verts)
+                        {
+                           
+                            var max_y = v.StartPoint.Y > v.EndPoint.Y ? v.StartPoint.Y : v.EndPoint.Y;
+                            var min_y = v.StartPoint.Y < v.EndPoint.Y ? v.StartPoint.Y : v.EndPoint.Y;
+                            if (max_y >= lhs.StartPoint.Y && min_y <= lhs.StartPoint.Y)
+                            {
+                                passa.Add(v);
+                            }
+                        }
+                        AddMensagem($"Linhas verticais que passam: {passa.Count}");
+
+                        double comprimento = Math.Round(Math.Abs(lhs.StartPoint.X - lhs.EndPoint.X));
+                        List<double> furos = passa.Select(x => x.StartPoint.X - min_x).ToList().OrderBy(x=>x).ToList();
+                        furos = furos.Distinct().ToList();
+                        textos.Add($"@Linha {c}");
+                        textos.Add($"Comprimento: {comprimento}");
+                        textos.Add($"Origem:{lhs.StartPoint.ToString()}");
+
+                        textos.Add($"Coordenadas:{furos.Count}");
+                        textos.Add("$Inicio");
+                        textos.AddRange(furos.Select(x => Math.Round(x).ToString()));
+                        textos.Add("$Fim");
+
+
+                        AddLeader(-45, lhs.StartPoint, "Linha:" + c, 15 * .8);
+                        c++;
+                    }
+                 
+                    var dest = Conexoes.Utilz.getPasta(acDoc.Name) + $@"\{Conexoes.Utilz.getNome(acDoc.Name)}_boneco.txt";
+                   if(textos.Count>0)
+                    {
+                        Conexoes.Utilz.GravarArquivo(dest, textos);
+                        Conexoes.Utilz.Abrir(dest);
+                    }
+                   else
+                    {
+                        AddMensagem("\nNada encontrado.");
+                    }
+
+                    c++;
+
+                }
+
+            }
+        }
+
         private int MapeiaCorrentes(int c)
         {
             foreach (var cr in this.correntes)

@@ -634,7 +634,7 @@ namespace Ferramentas_DLM
             }
             Utilidades.InserirBloco(acDoc, Vars.Pecas.SFLH, p2, 1, 0, sftlh);
             AddBlocoTexto(angulo, p2, SFLH, Getescala() * 5,"");
-            AddLeader(angulo, p2, "MANILHA\n ESTICADOR", MultiplicadorEscala * .8);
+            AddLeader(angulo, p2, "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
             int qtd_sfli = Conexoes.Utilz.Int(comp / this.DistMaxSFLI);
 

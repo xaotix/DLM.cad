@@ -246,6 +246,10 @@ namespace Ferramentas_DLM
 
 
         #region Cotas
+        public void AddLeader(double angulo, Point3d pp0, string nome, double multiplicador = 7.5)
+        {
+            AddLeader(pp0, new Coordenada(pp0).Mover(angulo + 45, this.Getescala() * multiplicador).GetPoint(), nome, 2);
+        }
         public void AddLeader(Point3d origem, Point3d pt2, string texto, double size)
         {
             // Get the current database
@@ -546,6 +550,17 @@ namespace Ferramentas_DLM
             return selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList();
         }
 
+        public List<Line> Getlinhas_Verticais()
+        {
+            return Getlinhas().FindAll(x=> Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 90 | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 270);
+        }
+        public List<Line> Getlinhas_Horizontais()
+        {
+            return Getlinhas().FindAll(x => 
+            Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 0 
+            | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 360
+            |  Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 180);
+        }
         public List<Polyline> Getpolylinhas()
         {
             return selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).ToList();

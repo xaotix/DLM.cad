@@ -260,12 +260,18 @@ namespace Ferramentas_DLM
             Utilidades.InterSectionPoint();
         }
 
-        [CommandMethod("mapeiatercas")]
-        public void mapeiatercas()
+        [CommandMethod("mapeiapurlins")]
+        public void mapeiapurlins()
         {
             CADPurlin P = new CADPurlin();
             P.MapearBlocos();
 
+        }
+        [CommandMethod("boneco")]
+        public void boneco()
+        {
+            CADPurlin P = new CADPurlin();
+            P.GetBoneco_Purlin();
         }
 
         [CommandMethod("mudaperfiltercas")]
