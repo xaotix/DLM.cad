@@ -149,6 +149,43 @@ namespace Ferramentas_DLM
             }
         }
 
+        public static List<double> GetAngulos(Polyline pl)
+        {
+            List<double> retorno = new List<double>();
+            var segs = GetSegmentos(pl, SegmentType.Line);
+
+            foreach (var s in segs)
+            {
+
+                retorno.Add(RadianosParaGraus(s.Direction.Angle, 3));
+            }
+            return retorno;
+        }
+
+        public static List<LineSegment2d> GetSegmentos(Polyline pl, SegmentType type = SegmentType.Line)
+        {
+            List<LineSegment2d> segmentos = new List<LineSegment2d>();
+            for (int i = 0; i < pl.NumberOfVertices-1; i++)
+            {
+                try
+                {
+                    var s = pl.GetLineSegment2dAt(i);
+                    if (s != null)
+                    {
+                        if (pl.GetSegmentType(i) == type)
+                        {
+                            segmentos.Add(s);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show(i  +"\n" + ex.Message + "\n" + ex.StackTrace);
+                }
+              
+            }
+            return segmentos;
+        }
 
         public static string GetLayerAtual()
         {
@@ -216,19 +253,19 @@ namespace Ferramentas_DLM
                 }
             }
         }
-        public static Conexoes.BancoTecnoMetal db
+        public static Conexoes.TecnoMetal_Banco db
         {
             get
             {
                 if(_db ==null)
                 {
-                    _db = new Conexoes.BancoTecnoMetal(@"R:\DB2011\DBPROF.dbf");
+                    _db = new Conexoes.TecnoMetal_Banco(@"R:\DB2011\DBPROF.dbf");
                 }
 
                 return _db;
             }
         }
-        private static Conexoes.BancoTecnoMetal _db { get; set; }
+        private static Conexoes.TecnoMetal_Banco _db { get; set; }
 
         public static double RadianosParaGraus(double angle, int decimais = 0)
         {
@@ -1164,20 +1201,30 @@ namespace Ferramentas_DLM
             }
             else
             {
-                var s = Conexoes.Utilz.GetArquivos(@"R:\Simbologias", Conexoes.Utilz.getNome(nome) + "*.dwg");
+                if(nome.Contains(@"\"))
+                {
+                    nome = Conexoes.Utilz.getNome(nome);
+                }
+                var s = Conexoes.Utilz.GetArquivos(@"\\10.54.0.4\BancoDeDados\Simbologias\usr", nome + "*.dwg");
+
+                if(s.Count==0)
+                {
+                    s = Conexoes.Utilz.GetArquivos(@"\\10.54.0.4\BancoDeDados\Simbologias", nome + "*.dwg");
+                }
+
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(@"R:\Blocos\SELO A2", Conexoes.Utilz.getNome(nome) + "*.dwg", SearchOption.AllDirectories);
+                    s = Conexoes.Utilz.GetArquivos(@"\\10.54.0.4\Blocos\SELO A2", nome + "*.dwg", SearchOption.AllDirectories);
                 }
                 if (s.Count == 0)
                 {
-                    return;
+                    MessageBox.Show($"Bloco não encontrado:{nome}");
                 }
                 bloco = s[0];
             }
 
-            
+            AddMensagem($"\nInserindo bloco {nome}");
             InserirBloco(acDoc, bloco,Conexoes.Utilz.getNome(bloco), origem, escala,rotacao, atributos);
         }
 
@@ -1342,7 +1389,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static void InserirPerfil(Point3d p0, string marca, double comprimento, Conexoes.Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double area = 0)
+        public static void InserirBlocoPerfil(Point3d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double area = 0)
         {
             try
             {
@@ -1385,8 +1432,13 @@ namespace Ferramentas_DLM
             }
         }
 
+        public static void InserirBlocoArremate(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, double peso = 0, double area = 0, string bloco = "")
+        {
+            InserirBlocoChapa(p0, marca, comprimento, largura, espessura, quantidade, material, tratamento, peso, area, @"\\10.54.0.4\BancoDeDados\Blocos\SELO A2\Tecnometal\Arremates\m8_lam.dwg");
 
-        public static void InserirChapa(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, double peso = 0, double area = 0)
+        }
+
+        public static void InserirBlocoChapa(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, double peso = 0, double area = 0,string bloco = "")
         {
             try
             {
@@ -1420,8 +1472,11 @@ namespace Ferramentas_DLM
                     ht.Add("SUN_LIS", area);
                 }
 
-
-                Utilidades.InserirBloco(doc, "m8_lam", p0, 10, 0, ht);
+                if(bloco =="" | bloco ==null)
+                {
+                    bloco = "m8_lam";
+                }
+                Utilidades.InserirBloco(doc, bloco, p0, 10, 0, ht);
             }
             catch (System.Exception ex)
             {
@@ -1434,7 +1489,7 @@ namespace Ferramentas_DLM
 
             if (cam.Familia == TecnoUtilz.Familia.Dobrado | cam.Familia == TecnoUtilz.Familia.Laminado | cam.Familia == TecnoUtilz.Familia.Soldado && !cam.Nome.Contains("_"))
             {
-                Perfil perfil = db.Get(cam.Descricao);
+                TecnoMetal_Perfil perfil = db.Get(cam.Descricao);
                 if(perfil!=null)
                 {
                     if(perfil.Nome == "")
@@ -1443,7 +1498,7 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-                        InserirPerfil(origem, cam.Posicao, cam.Comprimento, perfil, cam.Quantidade, cam.Material, cam.Tratamento, cam.Peso, cam.Superficie);
+                        InserirBlocoPerfil(origem, cam.Posicao, cam.Comprimento, perfil, cam.Quantidade, cam.Material, cam.Tratamento, cam.Peso, cam.Superficie);
                     }
                 }
 
@@ -1451,14 +1506,19 @@ namespace Ferramentas_DLM
             }
             else if(cam.Familia == TecnoUtilz.Familia.Chapa)
             {
-                InserirChapa(origem, cam.Nome, cam.Comprimento, cam.Largura, cam.Espessura, cam.Quantidade, cam.Marca, cam.Tratamento, cam.Peso, cam.Superficie);
+                InserirBlocoChapa(origem, cam.Nome, cam.Comprimento, cam.Largura, cam.Espessura, cam.Quantidade, cam.Marca, cam.Tratamento, cam.Peso, cam.Superficie);
             }
             else
             {
                 MessageBox.Show("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.TipoPerfil);
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pergunta"></param>
+        /// <param name="cancelado">se false: o usuário clicou</param>
+        /// <returns></returns>
         public static Point3d PedirPonto3D(string pergunta, out bool cancelado)
         {
             cancelado = false;

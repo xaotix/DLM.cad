@@ -760,7 +760,7 @@ namespace Ferramentas_DLM
 
         private RMA GetRMA(string codigo, double qtd)
         {
-            var pc = DBases.BancoRM.GetRMA(codigo);
+            var pc = DBases.GetBancoRM().GetRMA(codigo);
             if (pc == null)
             {
                 pc = new RMA();

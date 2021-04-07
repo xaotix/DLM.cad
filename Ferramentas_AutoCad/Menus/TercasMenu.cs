@@ -82,11 +82,11 @@ namespace Ferramentas_DLM
 
         private void button9_Click(object sender, EventArgs e)
         {
-            var s = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.BancoRM.Tercas(),null,"Selecione");
+            var s = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTercas(),null,"Selecione");
             if(s!=null)
             {
                 this.id_terca = s.id_db;
-                this.terca.Text = s.DESC;
+                this.terca.Text = s.TIPO;
             }
         }
 

@@ -144,6 +144,15 @@ namespace Ferramentas_DLM
 
         }
 
+        [CommandMethod("arremates")]
+        public static void arremates()
+        {
+
+            Arremate pp = new Arremate();
+            pp.Mapear();
+
+
+        }
         [CommandMethod("ccb")]
         public static void ccb()
         {
@@ -162,7 +171,6 @@ namespace Ferramentas_DLM
 
 
         }
-
         [CommandMethod("purlin")]
         public void purlin()
         {
@@ -180,12 +188,12 @@ namespace Ferramentas_DLM
             p.MapearTirantes = mm.mapeia_tirantes.Checked;
             if(mm.id_terca!=1763)
             {
-                var pc = Conexoes.DBases.BancoRM.GetRME(p.id_terca);
+                var pc = Conexoes.DBases.GetBancoRM().GetRME(p.id_terca);
                 if(pc!=null)
                 {
                     p.id_terca = mm.id_terca;
                     p.secao = pc.GetCadastroRME().SECAO.ToString();
-                    p.tipo = pc.DESC.Contains("Z") ? "Z" : "C";
+                    p.tipo = pc.TIPO.Contains("Z") ? "Z" : "C";
                     p.espessura = pc.ESP.ToString("N2").Replace(",", ".");
                 }
             }
@@ -246,20 +254,21 @@ namespace Ferramentas_DLM
             {
                 p.EdicaoCompleta();
             }
+            else if (mm.acao == "boneco")
+            {
+                p.GetBoneco_Purlin();
+            }
         }
-
         [CommandMethod("teste")]
         public void teste()
         {
             System.Windows.Forms.MessageBox.Show(Utilidades.GetEstilo("10MM").Name);
         }
-
         [CommandMethod("interseccao")]
         public void interseccao()
         {
             Utilidades.InterSectionPoint();
         }
-
         [CommandMethod("mapeiapurlins")]
         public void mapeiapurlins()
         {
@@ -273,7 +282,6 @@ namespace Ferramentas_DLM
             CADPurlin P = new CADPurlin();
             P.GetBoneco_Purlin();
         }
-
         [CommandMethod("mudaperfiltercas")]
         public void mudaperfiltercas()
         {
@@ -281,7 +289,6 @@ namespace Ferramentas_DLM
             P.SetPerfil();
 
         }
-
         [CommandMethod("criarmarcasexcel")]
         public void criarmarcasexcel()
         {
@@ -293,7 +300,6 @@ namespace Ferramentas_DLM
             mm.Show();
 
         }
-
         [CommandMethod("criarmarcas")]
         public void criarmarcas()
         {
@@ -329,8 +335,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
-
         [CommandMethod("importarRM")]
         public void importarRM()
         {
@@ -346,7 +350,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
         [CommandMethod("passarela")]
         public void passarela()
         {
@@ -389,7 +392,6 @@ namespace Ferramentas_DLM
             Telhas pp = new Telhas();
             pp.AlinharLinhaDeVida();
         }
-
         [CommandMethod("tabelatelhas")]
         public void tabelatelhas()
         {

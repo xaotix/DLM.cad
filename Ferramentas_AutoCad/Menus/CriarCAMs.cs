@@ -19,11 +19,11 @@ namespace Ferramentas_DLM
         public CriarMarcas()
         {
             InitializeComponent();
-            this.db = new Conexoes.BancoTecnoMetal(@"R:\DB2011\DBPROF.dbf");
+            this.db = new Conexoes.TecnoMetal_Banco(@"R:\DB2011\DBPROF.dbf");
 
 
         }
-        public Conexoes.BancoTecnoMetal db;
+        public Conexoes.TecnoMetal_Banco db;
         private void button1_Click(object sender, EventArgs e)
         {
             Point3d p0 = new Point3d();
@@ -64,7 +64,7 @@ namespace Ferramentas_DLM
                     }
                     if (pf.Nome != "")
                     {
-                        Utilidades.InserirPerfil(p0, marca, comprimento, pf,1,"CIVIL 350", "SEM PINTURA");
+                        Utilidades.InserirBlocoPerfil(p0, marca, comprimento, pf,1,"CIVIL 350", "SEM PINTURA");
 
                         if (c == 5)
                         {

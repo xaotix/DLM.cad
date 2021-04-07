@@ -77,17 +77,12 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Biblioteca_Daniel">
-      <HintPath>.\Biblioteca_Daniel.dll</HintPath>
-    </Reference>
-    <Reference Include="Calculos">
-      <HintPath>.\Calculos.dll</HintPath>
-    </Reference>
-    <Reference Include="Conexoes">
-      <HintPath>.\Conexoes.dll</HintPath>
+    <Reference Include="Conexoes, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\Conexoes.dll</HintPath>
     </Reference>
     <Reference Include="DB">
-      <HintPath>.\DB.dll</HintPath>
+      <HintPath>..\..\DLLS\DB.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>.\Ionic.Zip.dll</HintPath>
@@ -95,17 +90,21 @@
     <Reference Include="MIConvexHull, Version=1.1.19.1018, Culture=neutral, PublicKeyToken=2644b6f8be52c998, processorArchitecture=MSIL">
       <HintPath>..\packages\MIConvexHull.1.1.19.1019\lib\netstandard1.0\MIConvexHull.dll</HintPath>
     </Reference>
-    <Reference Include="mysql.data">
-      <HintPath>.\mysql.data.dll</HintPath>
+    <Reference Include="mysql.data, Version=6.9.10.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\mysql.data.dll</HintPath>
     </Reference>
-    <Reference Include="MySqlBackup">
-      <HintPath>.\MySqlBackup.dll</HintPath>
+    <Reference Include="MySqlBackup, Version=2.0.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\MySqlBackup.dll</HintPath>
     </Reference>
-    <Reference Include="NDbfReader">
-      <HintPath>.\NDbfReader.dll</HintPath>
+    <Reference Include="NDbfReader, Version=2.0.0.0, Culture=neutral, PublicKeyToken=421d1ecd09787b1d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\NDbfReader.dll</HintPath>
     </Reference>
-    <Reference Include="netDxf">
-      <HintPath>.\netDxf.dll</HintPath>
+    <Reference Include="netDxf, Version=2.3.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\netDxf.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -134,6 +133,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Construtores\Arremate.cs" />
     <Compile Include="Construtores\ClasseBase.cs" />
     <Compile Include="OutrasClasses\Coordenada.cs" />
     <Compile Include="Construtores\Cotagem.cs" />

@@ -337,7 +337,7 @@ namespace Ferramentas_DLM
                     var dest = Conexoes.Utilz.getPasta(acDoc.Name) + $@"\{Conexoes.Utilz.getNome(acDoc.Name)}_boneco.txt";
                    if(textos.Count>0)
                     {
-                        Conexoes.Utilz.GravarArquivo(dest, textos);
+                        Conexoes.Utilz.Arquivo.Gravar(dest, textos);
                         Conexoes.Utilz.Abrir(dest);
                     }
                    else
@@ -694,7 +694,7 @@ namespace Ferramentas_DLM
 
         public void SetPerfil()
         {
-            var perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.BancoRM.Tercas(),null,"Selecione");
+            var perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTercas(),null,"Selecione");
             if(perfil==null)
             {
                 return;
@@ -711,7 +711,7 @@ namespace Ferramentas_DLM
                         Utilidades.EditarAtributo(s, acTrans, "ID_PECA", perfil.id_db.ToString());
                         Utilidades.EditarAtributo(s, acTrans, "ESP", perfil.ESP.ToString());
                         Utilidades.EditarAtributo(s, acTrans, "SECAO", perfil.GetCadastroRME().SECAO.ToString());
-                        Utilidades.EditarAtributo(s, acTrans, "TIPO", perfil.DESC.Contains("C")?"C":"Z");
+                        Utilidades.EditarAtributo(s, acTrans, "TIPO", perfil.TIPO.Contains("C")?"C":"Z");
                     }
                     acTrans.Commit();
                     acDoc.Editor.Regen();
@@ -759,7 +759,7 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            var perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.BancoRM.Tercas(), null, "Selecione o perfil");
+            var perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTercas(), null, "Selecione o perfil");
             if (perfil == null)
             {
                 return;
@@ -767,7 +767,7 @@ namespace Ferramentas_DLM
 
             this.id_terca = perfil.id_db;
             this.secao = perfil.GetCadastroRME().SECAO.ToString();
-            this.tipo = perfil.DESC.Contains("C") ? "C" : "Z";
+            this.tipo = perfil.TIPO.Contains("C") ? "C" : "Z";
             this.espessura = perfil.ESP.ToString("N2");
 
             double comprimento = Math.Round(Math.Abs(pt1.X - pt2.X));
@@ -815,7 +815,7 @@ namespace Ferramentas_DLM
         }
         public void SetCorrente()
         {
-            var perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.BancoRM.GetRME().FindAll(x=>x.TIPO == "DLD" && !x.GetCompFixo()).ToList(), null, "Selecione");
+            var perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMEs().FindAll(x=>x.TIPO == "DLD" && x.VARIAVEL).ToList(), null, "Selecione");
             if (perfil == null)
             {
                 return;
@@ -829,7 +829,7 @@ namespace Ferramentas_DLM
 
                     foreach (var s in this.Getblocos_correntes())
                     {
-                        Utilidades.EditarAtributo(s, acTrans, "TIP", perfil.COD.ToString());
+                        Utilidades.EditarAtributo(s, acTrans, "TIP", perfil.CODIGOFIM.ToString());
 
                     }
                     acTrans.Commit();
@@ -1078,9 +1078,9 @@ namespace Ferramentas_DLM
             var CRD = atributos.Get("CRD").ToString();
 
             Conexoes.Macros.Purlin p = new Conexoes.Macros.Purlin();
-            p.SetPeca(Conexoes.DBases.BancoRM.Tercas().Find(x => x.id_db == ID_PECA));
+            p.SetPeca(Conexoes.DBases.GetBancoRM().GetTercas().Find(x => x.id_db == ID_PECA));
             p.Objeto = bloco;
-            p.Tipo_Corrente = Conexoes.Macros.Tipo_Corrente_Purlin.Manual;
+            p.Tipo_Corrente = Conexoes.Tipo_Corrente_Purlin.Manual;
             p.Rebater_Furos = REB;
             p.Corrente_SBR = SBR;
         
@@ -1093,7 +1093,7 @@ namespace Ferramentas_DLM
             {
                 p.Correntes_Direita.Add(s);
             }
-            p.Tipo_Corrente = Conexoes.Macros.Tipo_Corrente_Purlin.Manual;
+            p.Tipo_Corrente = Conexoes.Tipo_Corrente_Purlin.Manual;
 
             //FURO MANUAL
             foreach (var s in FE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
@@ -1105,8 +1105,8 @@ namespace Ferramentas_DLM
                 p.Direita.Furos_Manuais.Add(s);
             }
 
-            p.Esquerda.Tipo_Furo_FB = Conexoes.Macros.Tipo_Furo_FB.Manual;
-            p.Direita.Tipo_Furo_FB = Conexoes.Macros.Tipo_Furo_FB.Manual;
+            p.Esquerda.Tipo_Furo_FB = Conexoes.Tipo_Furo_FB.Manual;
+            p.Direita.Tipo_Furo_FB = Conexoes.Tipo_Furo_FB.Manual;
 
 
             //FLANGE BRACES
@@ -1122,13 +1122,13 @@ namespace Ferramentas_DLM
 
             if (AE>0)
             {
-                p.Esquerda.Tipo_Furo_Apoio = Conexoes.Macros.Tipo_Furo_Purlin.Espelhado;
+                p.Esquerda.Tipo_Furo_Apoio = Conexoes.Tipo_Furo_Purlin.Espelhado;
                 p.Esquerda.Furo_Apoio_Offset = AE;
             }
 
             if (AD > 0)
             {
-                p.Esquerda.Tipo_Furo_Apoio = Conexoes.Macros.Tipo_Furo_Purlin.Espelhado;
+                p.Esquerda.Tipo_Furo_Apoio = Conexoes.Tipo_Furo_Purlin.Espelhado;
                 p.Esquerda.Furo_Apoio_Offset = AD;
             }
             /*falta ajustar pra buscar pela espessura e pela secao*/
@@ -1171,7 +1171,7 @@ namespace Ferramentas_DLM
             p.Descontar = DESC;
             p.Objeto = bloco;
             p.SetFixacao(FIX);
-            var diagonal = Conexoes.DBases.BancoRM.GetRME_PC(TIP);
+            var diagonal = Conexoes.DBases.GetBancoRM().GetRME(TIP);
             if(diagonal!=null)
             {
                 p.SetDiagonal(diagonal);
