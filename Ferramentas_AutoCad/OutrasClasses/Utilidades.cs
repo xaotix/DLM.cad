@@ -151,25 +151,40 @@ namespace Ferramentas_DLM
 
         public static List<double> GetAngulos(Polyline pl)
         {
+
             List<double> retorno = new List<double>();
-            var segs = GetSegmentos(pl, SegmentType.Line);
+            var segmentos = GetSegmentos(pl, SegmentType.Line);
 
-            foreach (var s in segs)
+            if(segmentos.Count>1)
             {
-
-                retorno.Add(RadianosParaGraus(s.Direction.Angle, 3));
+                for (int i = 1; i < segmentos.Count; i++)
+                {
+                    retorno.Add(GetAntulo(segmentos[i - 1], segmentos[i], pl.Normal));
+                }
             }
+
             return retorno;
         }
-
-        public static List<LineSegment2d> GetSegmentos(Polyline pl, SegmentType type = SegmentType.Line)
+        public static double GetAntulo(LineSegment3d l1, LineSegment3d l2, Vector3d normal)
         {
-            List<LineSegment2d> segmentos = new List<LineSegment2d>();
+            Vector3d v1 = l1.EndPoint - l1.StartPoint;
+            Vector3d v2 = l2.EndPoint - l2.StartPoint;
+
+            var angulo = v1.GetAngleTo(v2, normal);
+
+            return RadianosParaGraus(angulo, 1);
+        }
+
+
+
+        public static List<LineSegment3d> GetSegmentos(Polyline pl, SegmentType type = SegmentType.Line)
+        {
+            List<LineSegment3d> segmentos = new List<LineSegment3d>();
             for (int i = 0; i < pl.NumberOfVertices-1; i++)
             {
                 try
                 {
-                    var s = pl.GetLineSegment2dAt(i);
+                    var s = pl.GetLineSegmentAt(i);
                     if (s != null)
                     {
                         if (pl.GetSegmentType(i) == type)
@@ -186,6 +201,7 @@ namespace Ferramentas_DLM
             }
             return segmentos;
         }
+
 
         public static string GetLayerAtual()
         {
@@ -1432,13 +1448,13 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static void InserirBlocoArremate(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, double peso = 0, double area = 0, string bloco = "")
+        public static void InserirBlocoArremate(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, int dobras)
         {
-            InserirBlocoChapa(p0, marca, comprimento, largura, espessura, quantidade, material, tratamento, peso, area, @"\\10.54.0.4\BancoDeDados\Blocos\SELO A2\Tecnometal\Arremates\m8_lam.dwg");
+            InserirBlocoChapa(p0, marca, comprimento, largura, espessura, quantidade, material, tratamento, 0, 0, @"\\10.54.0.4\BancoDeDados\Blocos\SELO A2\Tecnometal\Arremates\m8_lam.dwg",dobras);
 
         }
 
-        public static void InserirBlocoChapa(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, double peso = 0, double area = 0,string bloco = "")
+        public static void InserirBlocoChapa(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, double peso = 0, double area = 0,string bloco = "", int dobras = 0, double peso_especifico = 0.00000785)
         {
             try
             {
@@ -1456,7 +1472,7 @@ namespace Ferramentas_DLM
 
                 if (peso == 0)
                 {
-                    ht.Add("PUN_LIS", Math.Round(largura * comprimento * espessura * 0.00000785, 3));
+                    ht.Add("PUN_LIS", Math.Round(largura * comprimento * espessura * peso_especifico, 3));
                 }
                 else
                 {
@@ -1472,7 +1488,13 @@ namespace Ferramentas_DLM
                     ht.Add("SUN_LIS", area);
                 }
 
-                if(bloco =="" | bloco ==null)
+                if (dobras>0)
+                {
+                    ht.Add("COS_PEZ", dobras);
+
+                }
+
+                if (bloco =="" | bloco ==null)
                 {
                     bloco = "m8_lam";
                 }

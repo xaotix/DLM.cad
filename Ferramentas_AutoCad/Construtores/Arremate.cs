@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.EditorInput;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,37 +26,48 @@ namespace Ferramentas_DLM
                     if (pols.Count>0)
                     {
 
-
+                      
                         var pl = pols[0];
-                        var ang = Utilidades.GetAngulos(pl);
 
-                        var segs = Utilidades.GetSegmentos(pl);
+
+                        var angulos = Utilidades.GetAngulos(pl);
 
                        
 
-                        foreach (var s in ang)
+
+                        
+
+                        foreach (var s in angulos)
                         {
                             AddMensagem($"\nAngulo:" + s);
                         }
 
-                        var comprimento = this.PergundaDouble("Digite o comprimento", 1200);
-                        if(comprimento>0)
+
+                        double corte = Math.Round(pl.Length);
+
+
+
+                        bool status = false;
+                        Perfil_Arremate pa = Conexoes.Utilz.Propriedades(new Perfil_Arremate() { Dobras = angulos.Count },out status);
+                        if(status)
                         {
-                        var espessura = this.PergundaDouble("Digite a espessura", 1.25);
-                            if (espessura > 0)
+
+                           
+
+                            if (pa.Comprimento > 0 && pa.Espessura > 0 && pa.Marca.Replace(" ", "") != "" && pa.Quantidade>0)
                             {
-                                var nome = this.PerguntaString("Digite a Marca", new List<string>());
-
-                                if (nome.Replace(" ", "") != "")
+                                for (int i = 0; i < angulos.Count; i++)
                                 {
-                                    bool cancelado = false;
-
-                                    var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
-                                    if (!cancelado)
-                                    {
-                                        Utilidades.InserirBlocoArremate(origem, nome, comprimento, pl.Length, espessura, 1, "CIVIL 350", "SEM PINTURA", 2, 2);
-                                    }
+                                    var ang = angulos[i];
+                                    corte = corte - (2 * pa.Espessura);
                                 }
+                                bool cancelado = true;
+                                var origem = Utilidades.PedirPonto3D("Selecione o ponto de inserção do bloco.",out cancelado);
+                                if (!cancelado)
+                                {
+                                    Utilidades.InserirBlocoArremate(origem,pa.Marca, pa.Comprimento, corte, pa.Espessura, pa.Quantidade, pa.Material, pa.Esquema, angulos.Count);
+                                }
+
                             }
                         }
 
@@ -63,5 +75,28 @@ namespace Ferramentas_DLM
                 }
             }
         }
+    }
+
+    public class Perfil_Arremate
+    {
+        [ReadOnly(true)]
+        public int Dobras { get; set; } = 0;
+
+        public int Quantidade { get; set; } = 1;
+        public double Espessura { get; set; } = 1.25;
+        public double Comprimento { get; set; } = 6000;
+        public string Marca { get; set; } = "ARR-1";
+        public string Material { get; set; } = "PP ZINC";
+        public string Esquema { get; set; } = "SEM PINTURA";
+        public Opcao GerarCam { get; set; } = Opcao.Sim;
+        public Perfil_Arremate()
+        {
+
+        }
+    }
+    public enum Opcao
+    {
+        Não,
+        Sim,
     }
 }

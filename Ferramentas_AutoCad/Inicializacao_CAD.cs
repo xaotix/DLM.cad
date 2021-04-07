@@ -314,6 +314,7 @@ namespace Ferramentas_DLM
                 var x0 = p0.X;
                 var y0 = p0.Y;
                 int c = 1;
+               
                 if (!cancelado)
                 {
                     foreach (var s in arqs)
