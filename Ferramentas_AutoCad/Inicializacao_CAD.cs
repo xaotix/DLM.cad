@@ -451,16 +451,15 @@ namespace Ferramentas_DLM
         [CommandMethod("extrair")]
         public void extrair()
         {
-            string destino = Conexoes.Utilz.SalvarArquivo("dbf");
-            if(destino=="" | destino ==null)
-            {
-                return;
-            }
               
             TecnoMetal mm = new TecnoMetal();
-           mm.GerarDBF(destino);
+          var tbl = mm.GerarDBF();
 
-            Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(destino));
+           if(File.Exists(tbl.Banco))
+            {
+                Utilidades.Alerta("Arquivo gerado com sucesso!");
+                Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
+            }
         }
 
     }

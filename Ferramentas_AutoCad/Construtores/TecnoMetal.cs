@@ -13,25 +13,74 @@ namespace Ferramentas_DLM
 {
     public class TecnoMetal : ClasseBase
     {
+        private Conexoes.SubEtapaTecnoMetal _subetapa { get; set; }
+        private Conexoes.ObraTecnoMetal _obra { get; set; }
+        private Conexoes.PedidoTecnoMetal _pedido { get; set; }
+
+        public Conexoes.SubEtapaTecnoMetal GetSubEtapa()
+        {
+            if(_subetapa==null && Directory.Exists(this.Pasta))
+            {
+                _subetapa = new Conexoes.SubEtapaTecnoMetal(this.Pasta,null);
+            }
+            return _subetapa;
+        }
+        public Conexoes.ObraTecnoMetal GetObra()
+        {
+            if (_obra == null && Directory.Exists(this.Pasta))
+            {
+                _obra = GetSubEtapa().GetObra();
+            }
+            return _obra;
+        }
+        public Conexoes.PedidoTecnoMetal GetPedido()
+        {
+            if (_pedido == null && Directory.Exists(this.Pasta))
+            {
+                _pedido = GetSubEtapa().GetPedido();
+            }
+            return _pedido;
+        }
         public TecnoMetal()
         {
 
         }
-        public string GetPastaDBF()
-        {
-            var pasta = this.Pasta;
-            var dbf = Conexoes.Utilz.CriarPasta(pasta, "DBF");
-            return dbf;
-        }
+
         public DB.Tabela GerarDBF(string destino = null)
         {
-            if(destino == null)
+            if(!this.Pasta.ToUpper().EndsWith(@".TEC\"))
             {
-                destino = GetPastaDBF() + Conexoes.Utilz.getNome(this.Pasta).ToUpper().Split('.')[0] + ".DBF";
+                Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                    $"\nPasta atual: {this.Pasta}");
+                return new DB.Tabela();
             }
+
+            var etapa = this.GetSubEtapa();
+            if (destino == null | destino =="")
+            {
+                destino = etapa.PastaDBF + etapa.Nome + ".DBF";
+            }
+
+            if (!Conexoes.Utilz.Apagar(destino))
+            {
+                Alerta($"Não é possível substituir o arquivo atual: {destino}");
+                return new DB.Tabela();
+            }
+
+
+
 
             DB.Tabela ret = new DB.Tabela();
             var pcs = LerPecas();
+            if(pcs.Linhas.Count==0)
+            {
+                return new DB.Tabela();
+            }
+
+     
+
+
+
             List<string> colunas = new List<string>();
             colunas.Add("FLG_REC");
             colunas.Add("NUM_COM");
@@ -90,10 +139,11 @@ namespace Ferramentas_DLM
             {
                if(!Conexoes.Utilz.GerarDBF(ret, destino))
                 {
-                    ret.Banco = "erro ao tentar gerar a DBF";
+                    ret.Banco = "";
+                    return ret;
                 }
             }
-
+            ret.Banco = destino;
             return ret;
         }
         public DB.Linha GetLinha(BlockReference bloco, Database db, string arquivo, string nome,DateTime ultima_edicao)
@@ -102,9 +152,9 @@ namespace Ferramentas_DLM
             {
                 var att = Utilidades.GetAtributos(bloco, db);
                 att.Add("ARQUIVO", arquivo);
-                att.Add("NUM_COM", pedido);
-                att.Add("DES_COM", nome_da_obra);
-                att.Add("LOT_COM", etapa);
+                att.Add("NUM_COM", this.GetPedido().Codigo);
+                att.Add("DES_COM", this.GetObra().Nome);
+                att.Add("LOT_COM", this.GetSubEtapa().NomeEtapa);
                 att.Add("NUM_DIS", nome);
                 att.Add("FLG_DWG", nome);
                 att.Add("FLG_REC", att.Get("POS_PEZ").ToString() == "" ? "03" : "04");
@@ -122,22 +172,43 @@ namespace Ferramentas_DLM
                 return att;
             }
         }
-        public string pedido = "";
-        public string nome_da_obra = "";
-        public string etapa = "";
-        public DB.Tabela LerPecas()
-        {
 
+        public DB.Tabela LerPecas(List<string> pranchas = null, bool filtrar = true)
+        {
 
             DB.Tabela marcas = new DB.Tabela();
             DB.Tabela posicoes = new DB.Tabela();
             try
             {
-                DirectoryInfo d = new DirectoryInfo(this.Pasta);
-                FileInfo[] Files = d.GetFiles("*-FA-*.dwg");
-                Conexoes.Wait w = new Conexoes.Wait(Files.Count(), "Carregando...");
+                List<FileInfo> arquivos = new List<FileInfo>();
+               if(pranchas==null)
+                {
+                    DirectoryInfo d = new DirectoryInfo(this.Pasta);
+                    arquivos = d.GetFiles("*.dwg").ToList();
+                }
+               else
+                {
+                    arquivos = pranchas.Select(x => new FileInfo(x)).ToList();
+                }
+
+                arquivos = arquivos.FindAll(x => x.FullName.ToUpper().EndsWith(".DWG")).ToList();
+                
+                if(filtrar)
+                {
+                    var selecao = arquivos.FindAll(x => x.Name.ToUpper().Contains("-FA-"));
+                    var resto = arquivos.FindAll(x => !x.Name.ToUpper().Contains("-FA-"));
+                    arquivos = Conexoes.Utilz.SelecionarObjetos( resto, selecao, "Selecione as pranchas.");
+                }
+
+                if (arquivos.Count==0)
+                {
+                    Alerta("Operação abortada - Nada Selecionado.");
+                    return new DB.Tabela();
+                }
+
+                Conexoes.Wait w = new Conexoes.Wait(arquivos.Count(), "Carregando...");
                 w.Show();
-                foreach (FileInfo file in Files)
+                foreach (FileInfo file in arquivos)
                 {
                     w.somaProgresso(file.Name);
                     DateTime ultima_edicao = System.IO.File.GetLastWriteTime(file.FullName);
