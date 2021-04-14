@@ -1810,8 +1810,7 @@ namespace Ferramentas_DLM
                 return "Nada";
             }
             //limpa as cotas atuais
-
-            Ferramentas.LimparCotas(acTrans, selecao.Value);
+            Utilidades.LimparCotas(acTrans, selecao.Value);
 
             List<Coordenada> pp = new List<Coordenada>();
 

@@ -20,6 +20,30 @@ namespace Ferramentas_DLM
         public int id_terca { get; set; } = 1763;
         private void button1_Click(object sender, EventArgs e)
         {
+
+            if (correntes_mlstyle.Text == "" && mapeia_correntes.Checked)
+            {
+                Utilidades.Alerta("Não é possivel mapear as correntes sem definir um estilo de MLinha");
+                return;
+            }
+
+            if (tirantes_mlstyle.Text== "" &&  mapeia_tirantes.Checked)
+            {
+                Utilidades.Alerta("Não é possivel mapear os tirantes sem definir um estilo de MLinha");
+                return;
+            }
+
+            if (tercas_mlstyles.Items.Count == 0 && mapeia_tercas.Checked)
+            {
+                Utilidades.Alerta("Não é possivel mapear os tercas sem definir um estilo de MLinha");
+                return;
+            }
+            if (furos_manuais_layer.Text == "" && mapeia_furos_manuais.Checked)
+            {
+                Utilidades.Alerta("Não é possivel mapear os furos manuais sem definir uma layer padrão");
+                return;
+            }
+
             acao = "mapear";
             this.Close();
           

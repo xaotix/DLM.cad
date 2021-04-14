@@ -1,7 +1,10 @@
 ﻿using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
+using DLMCam;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,8 +32,8 @@ namespace Ferramentas_DLM
                       
                         var pl = pols[0];
 
-
-                        var angulos = Utilidades.GetAngulos(pl);
+                        List<LineSegment3d> segmentos = new List<LineSegment3d>();
+                        var angulos = Utilidades.GetAngulos(pl, out segmentos);
 
                        
 
@@ -66,6 +69,41 @@ namespace Ferramentas_DLM
                                 if (!cancelado)
                                 {
                                     Utilidades.InserirBlocoArremate(origem,pa.Marca, pa.Comprimento, corte, pa.Espessura, pa.Quantidade, pa.Material, pa.Esquema, angulos.Count);
+
+                                    if(pa.GerarCam == Opcao.Sim)
+                                    {
+                                        string destino = this.Pasta;
+                                        if(this.Pasta.EndsWith(".TEC"))
+                                        {
+                                            destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), "CAM");
+                                        }
+                                        if(Directory.Exists(destino))
+                                        {
+                                            DLMCam.Chapa pp = new DLMCam.Chapa(pa.Comprimento, corte, pa.Espessura);
+
+                                            string arquivo = destino + pa.Marca + ".CAM";
+
+                                            DLMCam.Cam pcam = new DLMCam.Cam(arquivo, pp);
+                                            double x = 0;
+
+                                            for (int i = 0; i < angulos.Count; i++)
+                                            {
+                                                var s = segmentos[i];
+                                                x = x + s.Length - pa.Espessura;   
+                                                var a = angulos[i];
+                                                pcam.Dobras.Liv1.Add(new DLMCam.Estrutura.Dobra(a,x,pcam,false));
+                                            }
+
+                                            pcam.Cabecalho.TRA_PEZ = pa.Esquema;
+                                            pcam.Cabecalho.Quantidade = pa.Quantidade;
+                                            pcam.Cabecalho.Material = pa.Material;
+                                            pcam.Cabecalho.Marca = pa.Marca;
+                                            pcam.Nota = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
+                                            pcam.GerareVisualizar();
+                                            Conexoes.Utilz.Abrir(destino);
+
+                                        }
+                                    }
                                 }
 
                             }

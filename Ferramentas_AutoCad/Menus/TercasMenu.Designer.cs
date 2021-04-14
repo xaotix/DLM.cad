@@ -34,11 +34,15 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tirantes_mlstyle = new System.Windows.Forms.TextBox();
+            this.tercas_mlstyles = new System.Windows.Forms.ListBox();
+            this.mapeia_tercas = new System.Windows.Forms.CheckBox();
+            this.mapeia_correntes = new System.Windows.Forms.CheckBox();
             this.mapeia_tirantes = new System.Windows.Forms.CheckBox();
-            this.furos_manuais_layer = new System.Windows.Forms.TextBox();
-            this.mapeia_linhas_verticais = new System.Windows.Forms.CheckBox();
+            this.mapeia_furos_manuais = new System.Windows.Forms.CheckBox();
             this.button9 = new System.Windows.Forms.Button();
+            this.correntes_mlstyle = new System.Windows.Forms.ComboBox();
+            this.furos_manuais_layer = new System.Windows.Forms.ComboBox();
+            this.tirantes_mlstyle = new System.Windows.Forms.ComboBox();
             this.ficha_de_pintura = new System.Windows.Forms.ComboBox();
             this.terca = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -51,6 +55,7 @@
             this.button13 = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.button15 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
@@ -64,7 +69,6 @@
             this.button6 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.button15 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ofsset_apoio)).BeginInit();
@@ -117,9 +121,9 @@
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(6, 6);
+            this.button1.Location = new System.Drawing.Point(19, 374);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(364, 23);
+            this.button1.Size = new System.Drawing.Size(460, 23);
             this.button1.TabIndex = 0;
             this.button1.Text = "Mapear";
             this.button1.UseVisualStyleBackColor = true;
@@ -137,16 +141,20 @@
             this.tabControl1.Location = new System.Drawing.Point(-2, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(410, 429);
+            this.tabControl1.Size = new System.Drawing.Size(506, 455);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.tirantes_mlstyle);
+            this.tabPage1.Controls.Add(this.tercas_mlstyles);
+            this.tabPage1.Controls.Add(this.mapeia_tercas);
+            this.tabPage1.Controls.Add(this.mapeia_correntes);
             this.tabPage1.Controls.Add(this.mapeia_tirantes);
-            this.tabPage1.Controls.Add(this.furos_manuais_layer);
-            this.tabPage1.Controls.Add(this.mapeia_linhas_verticais);
+            this.tabPage1.Controls.Add(this.mapeia_furos_manuais);
             this.tabPage1.Controls.Add(this.button9);
+            this.tabPage1.Controls.Add(this.correntes_mlstyle);
+            this.tabPage1.Controls.Add(this.furos_manuais_layer);
+            this.tabPage1.Controls.Add(this.tirantes_mlstyle);
             this.tabPage1.Controls.Add(this.ficha_de_pintura);
             this.tabPage1.Controls.Add(this.terca);
             this.tabPage1.Controls.Add(this.label3);
@@ -159,20 +167,44 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(402, 403);
+            this.tabPage1.Size = new System.Drawing.Size(498, 429);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Mapeamento";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // tirantes_mlstyle
+            // tercas_mlstyles
             // 
-            this.tirantes_mlstyle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tercas_mlstyles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tirantes_mlstyle.Location = new System.Drawing.Point(208, 166);
-            this.tirantes_mlstyle.Name = "tirantes_mlstyle";
-            this.tirantes_mlstyle.Size = new System.Drawing.Size(162, 20);
-            this.tirantes_mlstyle.TabIndex = 8;
-            this.tirantes_mlstyle.Text = "10MM";
+            this.tercas_mlstyles.FormattingEnabled = true;
+            this.tercas_mlstyles.Location = new System.Drawing.Point(230, 226);
+            this.tercas_mlstyles.Name = "tercas_mlstyles";
+            this.tercas_mlstyles.Size = new System.Drawing.Size(258, 82);
+            this.tercas_mlstyles.TabIndex = 9;
+            // 
+            // mapeia_tercas
+            // 
+            this.mapeia_tercas.AutoSize = true;
+            this.mapeia_tercas.Checked = true;
+            this.mapeia_tercas.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mapeia_tercas.Location = new System.Drawing.Point(19, 226);
+            this.mapeia_tercas.Name = "mapeia_tercas";
+            this.mapeia_tercas.Size = new System.Drawing.Size(150, 17);
+            this.mapeia_tercas.TabIndex = 7;
+            this.mapeia_tercas.Text = "Mapear Terças. MLStyles:";
+            this.mapeia_tercas.UseVisualStyleBackColor = true;
+            // 
+            // mapeia_correntes
+            // 
+            this.mapeia_correntes.AutoSize = true;
+            this.mapeia_correntes.Checked = true;
+            this.mapeia_correntes.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mapeia_correntes.Location = new System.Drawing.Point(19, 198);
+            this.mapeia_correntes.Name = "mapeia_correntes";
+            this.mapeia_correntes.Size = new System.Drawing.Size(157, 17);
+            this.mapeia_correntes.TabIndex = 7;
+            this.mapeia_correntes.Text = "Mapear Correntes. MLStyle:";
+            this.mapeia_correntes.UseVisualStyleBackColor = true;
             // 
             // mapeia_tirantes
             // 
@@ -186,32 +218,22 @@
             this.mapeia_tirantes.Text = "Mapear Tirantes. MLStyle:";
             this.mapeia_tirantes.UseVisualStyleBackColor = true;
             // 
-            // furos_manuais_layer
+            // mapeia_furos_manuais
             // 
-            this.furos_manuais_layer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.furos_manuais_layer.Location = new System.Drawing.Point(208, 140);
-            this.furos_manuais_layer.Name = "furos_manuais_layer";
-            this.furos_manuais_layer.Size = new System.Drawing.Size(162, 20);
-            this.furos_manuais_layer.TabIndex = 8;
-            this.furos_manuais_layer.Text = "FUROS_MANUAIS";
-            // 
-            // mapeia_linhas_verticais
-            // 
-            this.mapeia_linhas_verticais.AutoSize = true;
-            this.mapeia_linhas_verticais.Checked = true;
-            this.mapeia_linhas_verticais.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.mapeia_linhas_verticais.Location = new System.Drawing.Point(19, 143);
-            this.mapeia_linhas_verticais.Name = "mapeia_linhas_verticais";
-            this.mapeia_linhas_verticais.Size = new System.Drawing.Size(183, 17);
-            this.mapeia_linhas_verticais.TabIndex = 7;
-            this.mapeia_linhas_verticais.Text = "Mapear furações manuais. Layer:";
-            this.mapeia_linhas_verticais.UseVisualStyleBackColor = true;
+            this.mapeia_furos_manuais.AutoSize = true;
+            this.mapeia_furos_manuais.Checked = true;
+            this.mapeia_furos_manuais.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mapeia_furos_manuais.Location = new System.Drawing.Point(19, 143);
+            this.mapeia_furos_manuais.Name = "mapeia_furos_manuais";
+            this.mapeia_furos_manuais.Size = new System.Drawing.Size(183, 17);
+            this.mapeia_furos_manuais.TabIndex = 7;
+            this.mapeia_furos_manuais.Text = "Mapear furações manuais. Layer:";
+            this.mapeia_furos_manuais.UseVisualStyleBackColor = true;
             // 
             // button9
             // 
             this.button9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button9.Location = new System.Drawing.Point(337, 112);
+            this.button9.Location = new System.Drawing.Point(455, 112);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(33, 23);
             this.button9.TabIndex = 6;
@@ -219,10 +241,45 @@
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
+            // correntes_mlstyle
+            // 
+            this.correntes_mlstyle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.correntes_mlstyle.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.correntes_mlstyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.correntes_mlstyle.Location = new System.Drawing.Point(230, 196);
+            this.correntes_mlstyle.Name = "correntes_mlstyle";
+            this.correntes_mlstyle.Size = new System.Drawing.Size(258, 21);
+            this.correntes_mlstyle.TabIndex = 5;
+            // 
+            // furos_manuais_layer
+            // 
+            this.furos_manuais_layer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.furos_manuais_layer.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.furos_manuais_layer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.furos_manuais_layer.Location = new System.Drawing.Point(230, 142);
+            this.furos_manuais_layer.Name = "furos_manuais_layer";
+            this.furos_manuais_layer.Size = new System.Drawing.Size(258, 21);
+            this.furos_manuais_layer.TabIndex = 5;
+            // 
+            // tirantes_mlstyle
+            // 
+            this.tirantes_mlstyle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tirantes_mlstyle.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.tirantes_mlstyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.tirantes_mlstyle.Location = new System.Drawing.Point(230, 169);
+            this.tirantes_mlstyle.Name = "tirantes_mlstyle";
+            this.tirantes_mlstyle.Size = new System.Drawing.Size(258, 21);
+            this.tirantes_mlstyle.TabIndex = 5;
+            // 
             // ficha_de_pintura
             // 
             this.ficha_de_pintura.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ficha_de_pintura.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.ficha_de_pintura.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ficha_de_pintura.FormattingEnabled = true;
             this.ficha_de_pintura.Items.AddRange(new object[] {
             "SEM PINTURA",
@@ -235,11 +292,10 @@
             "FICHA 07",
             "FICHA 08",
             "FICHA 09"});
-            this.ficha_de_pintura.Location = new System.Drawing.Point(120, 88);
+            this.ficha_de_pintura.Location = new System.Drawing.Point(230, 88);
             this.ficha_de_pintura.Name = "ficha_de_pintura";
-            this.ficha_de_pintura.Size = new System.Drawing.Size(250, 21);
+            this.ficha_de_pintura.Size = new System.Drawing.Size(258, 21);
             this.ficha_de_pintura.TabIndex = 5;
-            this.ficha_de_pintura.Text = "SEM PINTURA";
             // 
             // terca
             // 
@@ -290,29 +346,44 @@
             // 
             this.ofsset_apoio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ofsset_apoio.Location = new System.Drawing.Point(120, 61);
+            this.ofsset_apoio.Location = new System.Drawing.Point(142, 61);
             this.ofsset_apoio.Maximum = new decimal(new int[] {
             500,
             0,
             0,
             0});
+            this.ofsset_apoio.Minimum = new decimal(new int[] {
+            11,
+            0,
+            0,
+            0});
             this.ofsset_apoio.Name = "ofsset_apoio";
-            this.ofsset_apoio.Size = new System.Drawing.Size(250, 20);
+            this.ofsset_apoio.Size = new System.Drawing.Size(346, 20);
             this.ofsset_apoio.TabIndex = 3;
             this.ofsset_apoio.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ofsset_apoio.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            0});
             // 
             // transpasse_padrao
             // 
             this.transpasse_padrao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.transpasse_padrao.Location = new System.Drawing.Point(120, 35);
+            this.transpasse_padrao.Location = new System.Drawing.Point(142, 35);
             this.transpasse_padrao.Maximum = new decimal(new int[] {
             35000,
             0,
             0,
             0});
+            this.transpasse_padrao.Minimum = new decimal(new int[] {
+            35000,
+            0,
+            0,
+            -2147483648});
             this.transpasse_padrao.Name = "transpasse_padrao";
-            this.transpasse_padrao.Size = new System.Drawing.Size(250, 20);
+            this.transpasse_padrao.Size = new System.Drawing.Size(346, 20);
             this.transpasse_padrao.TabIndex = 3;
             this.transpasse_padrao.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.transpasse_padrao.Value = new decimal(new int[] {
@@ -328,7 +399,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(402, 403);
+            this.tabPage2.Size = new System.Drawing.Size(498, 429);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Edição";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -376,6 +447,18 @@
             this.tabPage5.Text = "Purlins";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // button15
+            // 
+            this.button15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button15.Location = new System.Drawing.Point(6, 180);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(373, 23);
+            this.button15.TabIndex = 3;
+            this.button15.Text = "Edição Completa";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
+            // 
             // button14
             // 
             this.button14.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -420,7 +503,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(385, 191);
+            this.tabPage6.Size = new System.Drawing.Size(385, 228);
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "Correntes";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -466,7 +549,7 @@
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(385, 191);
+            this.tabPage7.Size = new System.Drawing.Size(385, 228);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "Tirantes";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -478,7 +561,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(402, 403);
+            this.tabPage3.Size = new System.Drawing.Size(498, 429);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Extração";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -513,35 +596,26 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(402, 403);
+            this.tabPage4.Size = new System.Drawing.Size(498, 429);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Opções Avançadas";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // propertyGrid1
             // 
+            this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyGrid1.Location = new System.Drawing.Point(6, 6);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(364, 279);
+            this.propertyGrid1.Size = new System.Drawing.Size(484, 417);
             this.propertyGrid1.TabIndex = 0;
-            // 
-            // button15
-            // 
-            this.button15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button15.Location = new System.Drawing.Point(6, 180);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(373, 23);
-            this.button15.TabIndex = 3;
-            this.button15.Text = "Edição Completa";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
             // 
             // TercasMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(408, 437);
+            this.ClientSize = new System.Drawing.Size(504, 463);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "TercasMenu";
@@ -585,9 +659,7 @@
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Label terca;
         private System.Windows.Forms.Label label3;
-        public System.Windows.Forms.CheckBox mapeia_linhas_verticais;
-        public System.Windows.Forms.TextBox furos_manuais_layer;
-        public System.Windows.Forms.TextBox tirantes_mlstyle;
+        public System.Windows.Forms.CheckBox mapeia_furos_manuais;
         public System.Windows.Forms.CheckBox mapeia_tirantes;
         private System.Windows.Forms.TabPage tabPage4;
         public System.Windows.Forms.PropertyGrid propertyGrid1;
@@ -601,5 +673,11 @@
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Button button14;
         private System.Windows.Forms.Button button15;
+        public System.Windows.Forms.ComboBox tirantes_mlstyle;
+        public System.Windows.Forms.ComboBox correntes_mlstyle;
+        public System.Windows.Forms.ListBox tercas_mlstyles;
+        public System.Windows.Forms.CheckBox mapeia_correntes;
+        public System.Windows.Forms.CheckBox mapeia_tercas;
+        public System.Windows.Forms.ComboBox furos_manuais_layer;
     }
 }

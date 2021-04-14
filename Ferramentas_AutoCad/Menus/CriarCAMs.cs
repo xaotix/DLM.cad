@@ -19,7 +19,7 @@ namespace Ferramentas_DLM
         public CriarMarcas()
         {
             InitializeComponent();
-            this.db = new Conexoes.TecnoMetal_Banco(@"R:\DB2011\DBPROF.dbf");
+            this.db = new Conexoes.TecnoMetal_Banco(Constantes.RaizArquivos + @"\DB2011\DBPROF.dbf");
 
 
         }

@@ -54,7 +54,7 @@ namespace Ferramentas_DLM
 
         public List<BlockReference> Getpassarelas()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Vars.Pecas.PASSARELA));
+            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.BlocoPeca_PASSARELA));
         }
 
         public List<Entity> Getcotaslinhadevida()
@@ -124,7 +124,7 @@ namespace Ferramentas_DLM
 
         public List<BlockReference> Getsflhs()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Vars.Pecas.SFLH));
+            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.BlocoPeca_SFLH));
         }
         public List<BlockReference> GetLinhasDeVida()
         {
@@ -135,7 +135,7 @@ namespace Ferramentas_DLM
         }
         public List<BlockReference> Getsflis()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Vars.Pecas.SFLI));
+            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.BlocoPeca_SFLI));
         }
 
         public void AlinharLinhaDeVida()
@@ -348,7 +348,7 @@ namespace Ferramentas_DLM
                             {
                                 Hashtable t = new Hashtable();
                                 t.Add("SAP", this.Codigo_Passarela);
-                                Utilidades.InserirBloco(acDoc, Vars.Pecas.PASSARELA, p1, 1, 0, t);
+                                Utilidades.InserirBloco(acDoc, Constantes.BlocoPeca_PASSARELA, p1, 1, 0, t);
                                 if(angulo==90 | angulo == 270)
                                 {
                                     mov = vert;
@@ -627,12 +627,12 @@ namespace Ferramentas_DLM
             if (sequencia == 0)
             {
      
-                Utilidades.InserirBloco(acDoc, Vars.Pecas.SFLH, p1, 1, 0, sftlh);
+                Utilidades.InserirBloco(acDoc, Constantes.BlocoPeca_SFLH, p1, 1, 0, sftlh);
                 AddBlocoTexto(angulo, p1, SFLH, Getescala() * 5, "");
                 AddLeader(angulo, p1, "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
 
             }
-            Utilidades.InserirBloco(acDoc, Vars.Pecas.SFLH, p2, 1, 0, sftlh);
+            Utilidades.InserirBloco(acDoc, Constantes.BlocoPeca_SFLH, p2, 1, 0, sftlh);
             AddBlocoTexto(angulo, p2, SFLH, Getescala() * 5,"");
             AddLeader(angulo, p2, "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
@@ -644,7 +644,7 @@ namespace Ferramentas_DLM
                 Point3d pp0 = new Coordenada(p1).Mover(angulo, espacos).GetPoint();
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
-                    Utilidades.InserirBloco(acDoc, Vars.Pecas.SFLI, pp0, 1, 0, sftli);
+                    Utilidades.InserirBloco(acDoc, Constantes.BlocoPeca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, Getescala() * 5,"");
                     cotas.Add(pp0);
@@ -669,7 +669,7 @@ namespace Ferramentas_DLM
                 //move pro lado quando é vertical
                 p1 = new Coordenada(pp0).Mover(angulo + 90, (Getescala() * 16)/2).GetPoint();
             }
-            Utilidades.InserirBloco(acDoc, Vars.Texto, p1, Getescala(), 0, ss );
+            Utilidades.InserirBloco(acDoc, Constantes.Texto, p1, Getescala(), 0, ss );
 
         }
 

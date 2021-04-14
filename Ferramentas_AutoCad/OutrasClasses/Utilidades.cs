@@ -10,8 +10,10 @@ using Ferramentas_DLM.Classes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +23,118 @@ namespace Ferramentas_DLM
 {
     public class Utilidades
     {
+        public static void LimparCotas(OpenCloseTransaction acTrans, SelectionSet acSSet)
+        {
+            if (acTrans == null | acSSet == null)
+            {
+                return;
+            }
+            // Step through the objects in the selection set
+            foreach (SelectedObject acSSObj in acSSet)
+            {
+                //System.Windows.Forms.MessageBox.Show(acSSObj.ToString());
+                // Check to make sure a valid SelectedObject object was returned
+                if (acSSObj != null)
+                {
+                    // Open the selected object for write
+                    Entity acEnt = acTrans.GetObject(acSSObj.ObjectId,
+                                                        OpenMode.ForWrite) as Entity;
+
+                    if (acEnt != null)
+                    {
+                        if (acEnt is AlignedDimension)
+                        {
+                            var s = acEnt as AlignedDimension;
+                            s.Erase(true);
+                        }
+                        else if (acEnt is OrdinateDimension)
+                        {
+                            var s = acEnt as OrdinateDimension;
+                            s.Erase(true);
+                        }
+                        else if (acEnt is RadialDimension)
+                        {
+                            var s = acEnt as RadialDimension;
+                            s.Erase(true);
+                        }
+                        else if (acEnt is RotatedDimension)
+                        {
+                            var s = acEnt as RotatedDimension;
+                            s.Erase(true);
+                        }
+                        //else if (acEnt is Leader)
+                        //{
+                        //    var s = acEnt as Leader;
+                        //    s.Erase(true);
+                        //}
+                        else if (acEnt is MLeader)
+                        {
+                            var s = acEnt as MLeader;
+                            s.Erase(true);
+                        }
+                        else if (acEnt is MText)
+                        {
+                            var s = acEnt as MText;
+                            s.Erase(true);
+                        }
+
+                        else if (acEnt is Dimension)
+                        {
+                            var s = acEnt as Dimension;
+                            s.Erase(true);
+                        }
+                    }
+                }
+            }
+        }
+        public static string[] listarcomandos(Assembly asm, bool markedOnly)
+        {
+            StringCollection sc = new StringCollection();
+            object[] objs = asm.GetCustomAttributes(typeof(CommandClassAttribute), true);
+            Type[] tps;
+            int numTypes = objs.Length;
+            if (numTypes > 0)
+            {
+                tps = new Type[numTypes];
+                for (int i = 0; i < numTypes; i++)
+                {
+                    CommandClassAttribute cca =
+                      objs[i] as CommandClassAttribute;
+                    if (cca != null)
+                    {
+                        tps[i] = cca.Type;
+                    }
+                }
+            }
+            else
+            {
+                // If we're only looking for specifically
+                // marked CommandClasses, then use an
+                // empty list
+                if (markedOnly)
+                    tps = new Type[0];
+                else
+                    tps = asm.GetExportedTypes();
+            }
+
+            foreach (Type tp in tps)
+            {
+                MethodInfo[] meths = tp.GetMethods();
+                foreach (MethodInfo meth in meths)
+                {
+                    objs =
+                      meth.GetCustomAttributes(typeof(CommandMethodAttribute), true);
+                    foreach (object obj in objs)
+                    {
+                        CommandMethodAttribute attb = (CommandMethodAttribute)obj;
+                        sc.Add(attb.GlobalName);
+                    }
+                }
+            }
+            string[] ret = new string[sc.Count];
+            sc.CopyTo(ret, 0);
+            return ret;
+        }
         public static void InterSectionPoint()
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
@@ -149,35 +263,67 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static List<double> GetAngulos(Polyline pl)
+        public static List<double> GetAngulos(Polyline pl, out List<LineSegment3d> segmentos3d)
         {
 
             List<double> retorno = new List<double>();
-            var segmentos = GetSegmentos(pl, SegmentType.Line);
+            segmentos3d = GetSegmentos3D(pl);
 
-            if(segmentos.Count>1)
+            if(segmentos3d.Count>1)
             {
-                for (int i = 1; i < segmentos.Count; i++)
+         
+                for (int i = 1; i < segmentos3d.Count; i++)
                 {
-                    retorno.Add(GetAntulo(segmentos[i - 1], segmentos[i], pl.Normal));
+                    retorno.Add(GetAngulo(segmentos3d[i],segmentos3d[i - 1],pl.Normal));
                 }
             }
 
+
+
             return retorno;
         }
-        public static double GetAntulo(LineSegment3d l1, LineSegment3d l2, Vector3d normal)
+        public static double GetAngulo(LineSegment3d l1, LineSegment3d l2, Vector3d normal)
         {
             Vector3d v1 = l1.EndPoint - l1.StartPoint;
             Vector3d v2 = l2.EndPoint - l2.StartPoint;
 
-            var angulo = v1.GetAngleTo(v2, normal);
+         
+          
+            var rad_angulo = v1.GetAngleTo(v2, normal);
 
-            return RadianosParaGraus(angulo, 1);
+            if(rad_angulo>Math.PI)
+            {
+                rad_angulo = (rad_angulo - Math.PI * 2.0);
+            }
+
+           
+
+            var angulo = RadianosParaGraus(rad_angulo, 0);
+            angulo = 180 + angulo;
+            return angulo;
         }
 
+        public static List<BlockReference> GetBlocos(List<BlockReference> blocos, List<string> nomes)
+        {
+            List<BlockReference> marcas = new List<BlockReference>();
 
+            foreach (var b in blocos)
+            {
+                var nome = b.Name.ToUpper();
+                foreach (var s in nomes)
+                {
+                    if (nome == s)
+                    {
+                        marcas.Add(b);
+                        break;
+                    }
+                }
+            }
 
-        public static List<LineSegment3d> GetSegmentos(Polyline pl, SegmentType type = SegmentType.Line)
+            return marcas;
+        }
+
+        public static List<LineSegment3d> GetSegmentos3D(Polyline pl, SegmentType type = SegmentType.Line)
         {
             List<LineSegment3d> segmentos = new List<LineSegment3d>();
             for (int i = 0; i < pl.NumberOfVertices-1; i++)
@@ -201,7 +347,30 @@ namespace Ferramentas_DLM
             }
             return segmentos;
         }
+        public static List<LineSegment2d> GetSegmentos(Polyline pl, SegmentType type = SegmentType.Line)
+        {
+            List<LineSegment2d> segmentos = new List<LineSegment2d>();
+            for (int i = 0; i < pl.NumberOfVertices - 1; i++)
+            {
+                try
+                {
+                    var s = pl.GetLineSegment2dAt(i);
+                    if (s != null)
+                    {
+                        if (pl.GetSegmentType(i) == type)
+                        {
+                            segmentos.Add(s);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show(i + "\n" + ex.Message + "\n" + ex.StackTrace);
+                }
 
+            }
+            return segmentos;
+        }
 
         public static string GetLayerAtual()
         {
@@ -285,6 +454,7 @@ namespace Ferramentas_DLM
 
         public static double RadianosParaGraus(double angle, int decimais = 0)
         {
+            
             return Math.Round(angle * (180.0 / Math.PI), decimais);
         }
         public static void GetCoordenadas(Mline s, out Point3d p1, out Point3d p2)
@@ -426,9 +596,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
-
-
         public static void GetCoordenadas(Entity s, out Point3d p1, out Point3d p2, out double angulo, out double comprimento, out Point3d centro)
         {
             p1 = new Point3d();
@@ -466,7 +633,6 @@ namespace Ferramentas_DLM
 
 
         }
-
         public static void SetLayer(string layer, bool on =true ,bool criar_senao_existe = false)
         {
             // Get the current document and database
@@ -527,7 +693,6 @@ namespace Ferramentas_DLM
                 acTrans.Commit();
             }
         }
-
         private void ChangeLayer(string sLayerName)
         {
             Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -576,7 +741,6 @@ namespace Ferramentas_DLM
                 ed.WriteMessage("\ncurrent layer: {0}", (string)Autodesk.AutoCAD.ApplicationServices.Application.GetSystemVariable("clayer"));
             }
         }
-
         public static void SetLayerEBloquear(bool bloquear, string exceto = "", bool bloquear_exceto = false)
         {
             Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -656,7 +820,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
         public static List<Xline> XLinesHorizontais(List<Xline> LS, double comp_min = 0)
         {
             List<Xline> retorno = new List<Xline>();
@@ -675,12 +838,10 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
         public static double Angulo(Xline s)
         {
             return Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(0, 0, 0), new Calculos.Ponto3D(s.UnitDir.X, s.UnitDir.Y, 0)));
         }
-
         public static List<Polyline> PolylinesVerticais(List<Polyline> LS, double comp_min = 100)
         {
             List<Polyline> retorno = new List<Polyline>();
@@ -700,7 +861,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
         public static List<RotatedDimension> CotasVerticais(List<Entity> LS, double comp_min = 100)
         {
             List<RotatedDimension> retorno = new List<RotatedDimension>();
@@ -720,7 +880,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
         public static void GetBordas(List<Entity> entities, out Point3d se, out Point3d sd, out Point3d ie, out Point3d id)
         {
             se = new Point3d();
@@ -737,7 +896,6 @@ namespace Ferramentas_DLM
                 id = new Point3d(pts.Max(x => x.X), pts.Min(x => x.Y), 0);
             }
         }
-
         public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d ponto, double tolerancia)
         {
             return blocos.FindAll(x => new Coordenada(x.Position).Distancia(ponto) <= tolerancia);
@@ -793,7 +951,6 @@ namespace Ferramentas_DLM
                 }
             }
         }
-
         public static void ResetAttributes(BlockReference br, List<AttributeDefinition> attDefs)
         {
             Autodesk.AutoCAD.DatabaseServices.TransactionManager tm = br.Database.TransactionManager;
@@ -819,7 +976,6 @@ namespace Ferramentas_DLM
                 tm.AddNewlyCreatedDBObject(attRef, true);
             }
         }
-
         public static Xline GetXlineMaisProxima(Entity objeto, List<Xline> xlines, double tolerancia)
         {
             Xline retorno = new Xline();
@@ -963,7 +1119,6 @@ namespace Ferramentas_DLM
 
             return retorno;
         }
-
         public static List<Point3d> GetCoordenadas(Entity objeto)
         {
             List<Point3d> retorno = new List<Point3d>();
@@ -1003,7 +1158,6 @@ namespace Ferramentas_DLM
 
             return retorno;
         }
-
         public static List<RotatedDimension> CotasHorizontais(List<Entity> LS, double comp_min = 100)
         {
             List<RotatedDimension> retorno = new List<RotatedDimension>();
@@ -1023,8 +1177,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
-
         public static List<Polyline> PolylinesHorizontais(List<Polyline> LS, double comp_min = 100)
         {
             List<Polyline> retorno = new List<Polyline>();
@@ -1073,7 +1225,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-        
         public static double NormalizarAngulo(double angulo)
         {
             if (angulo < 0)
@@ -1111,7 +1262,6 @@ namespace Ferramentas_DLM
             return 0;
 
         }
-
         public static List<Line> LinhasVerticais(List<Line> LS, double comp_min = 100)
         {
             List<Line> retorno = new List<Line>();
@@ -1178,12 +1328,13 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
-        public static DB.Linha GetAtributos(BlockReference bloco)
+        public static DB.Linha GetAtributos(BlockReference bloco, Database acCurDb =null)
         {
             DB.Linha retorno = new DB.Linha();
-            Database acCurDb;
-            acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
+            if(acCurDb==null)
+            {
+                acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
+            }
 
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
             {
@@ -1195,6 +1346,7 @@ namespace Ferramentas_DLM
                     retorno.Add(acAttRef.Tag, acAttRef.TextString);
                 }
             }
+            retorno.Tabela = bloco.Name;
             return retorno;
         }
         public static DB.Valor GetAtributo(BlockReference bloco, string atributo)
@@ -1210,10 +1362,10 @@ namespace Ferramentas_DLM
         public static void InserirBloco(Document acDoc,  string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
         {
             List<string> bibliotecas = new List<string>();
-            string bloco = "";
+            string endereco = "";
             if(File.Exists(nome))
             {
-                bloco = nome;
+                endereco = nome;
             }
             else
             {
@@ -1221,189 +1373,210 @@ namespace Ferramentas_DLM
                 {
                     nome = Conexoes.Utilz.getNome(nome);
                 }
-                var s = Conexoes.Utilz.GetArquivos(@"\\10.54.0.4\BancoDeDados\Simbologias\usr", nome + "*.dwg");
+                var s = Conexoes.Utilz.GetArquivos(Constantes.RaizArquivos + @"Simbologias\usr", nome + "*.dwg");
 
                 if(s.Count==0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(@"\\10.54.0.4\BancoDeDados\Simbologias", nome + "*.dwg");
+                    s = Conexoes.Utilz.GetArquivos(Constantes.RaizArquivos + @"Simbologias", nome + "*.dwg"); ;
                 }
 
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(@"\\10.54.0.4\Blocos\SELO A2", nome + "*.dwg", SearchOption.AllDirectories);
+                    s = Conexoes.Utilz.GetArquivos( Constantes.RaizArquivos + @"Blocos\SELO A2", nome + "*.dwg", SearchOption.AllDirectories);
                 }
                 if (s.Count == 0)
                 {
                     MessageBox.Show($"Bloco não encontrado:{nome}");
+                    return;
                 }
-                bloco = s[0];
+                else
+                {
+                    endereco = s[0];
+
+                }
+            }
+
+            if(!File.Exists(endereco))
+            {
+                Alerta($"Bloco não encontrado\n! {endereco}");
+                return;
             }
 
             AddMensagem($"\nInserindo bloco {nome}");
-            InserirBloco(acDoc, bloco,Conexoes.Utilz.getNome(bloco), origem, escala,rotacao, atributos);
-        }
-
-        public static void InserirBloco(Document doc, string endereco, string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
-        {
-            Database curdb = doc.Database;
-            Editor ed = doc.Editor;
-            DocumentLock loc = doc.LockDocument();
-            using (loc)
+            try
             {
-                ObjectId blkid = ObjectId.Null;
-                Database db = new Database(false, true);
-                using (db)
-                {
-                    
-                    using (Transaction tr = doc.TransactionManager.StartTransaction())
-                    {
-                        BlockTable bt = (BlockTable)tr.GetObject(curdb.BlockTableId, OpenMode.ForRead);
-                        if (bt.Has(nome))
-                        {
-                            using (DocumentLock acLckDoc = doc.LockDocument())
-                            {
-                                //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
+                string nomeBloco = Conexoes.Utilz.getNome(endereco);
 
-                                blkid = bt[nome];
-                                BlockReference bref = new BlockReference(origem, blkid);
-                                BlockTableRecord btr2 = (BlockTableRecord)tr.GetObject(curdb.CurrentSpaceId, OpenMode.ForWrite);
-                                using (BlockTableRecord bdef =
-                                           (BlockTableRecord)tr.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
+                Database curdb = acDoc.Database;
+                Editor ed = acDoc.Editor;
+                DocumentLock loc = acDoc.LockDocument();
+                using (loc)
+                {
+                    ObjectId blkid = ObjectId.Null;
+                    Database db = new Database(false, true);
+                    using (db)
+                    {
+
+                        using (Transaction tr = acDoc.TransactionManager.StartTransaction())
+                        {
+                            BlockTable bt = (BlockTable)tr.GetObject(curdb.BlockTableId, OpenMode.ForRead);
+                            if (bt.Has(nomeBloco))
+                            {
+                                using (DocumentLock acLckDoc = acDoc.LockDocument())
                                 {
-                                    bref.ScaleFactors = new Scale3d(escala,escala,escala);
-                                    bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
-                                    bref.TransformBy(ed.CurrentUserCoordinateSystem);
-                                    bref.RecordGraphicsModified(true);
-                                    if (bdef.Annotative == AnnotativeStates.True)
+                                    //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
+
+                                    blkid = bt[nomeBloco];
+                                    BlockReference bref = new BlockReference(origem, blkid);
+                                    BlockTableRecord btr2 = (BlockTableRecord)tr.GetObject(curdb.CurrentSpaceId, OpenMode.ForWrite);
+                                    using (BlockTableRecord bdef =
+                                               (BlockTableRecord)tr.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
                                     {
-                                        ObjectContextCollection contextCollection = curdb.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
-                                        Autodesk.AutoCAD.Internal.ObjectContexts.AddContext(bref, contextCollection.GetContext("1:1"));
+                                        bref.ScaleFactors = new Scale3d(escala, escala, escala);
+                                        bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
+                                        bref.TransformBy(ed.CurrentUserCoordinateSystem);
+                                        bref.RecordGraphicsModified(true);
+                                        if (bdef.Annotative == AnnotativeStates.True)
+                                        {
+                                            ObjectContextCollection contextCollection = curdb.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
+                                            Autodesk.AutoCAD.Internal.ObjectContexts.AddContext(bref, contextCollection.GetContext("1:1"));
+                                        }
+                                        btr2.AppendEntity(bref);
+                                        tr.AddNewlyCreatedDBObject(bref, true);
+
+                                        foreach (ObjectId eid in bdef)
+                                        {
+                                            DBObject obj = (DBObject)tr.GetObject(eid, OpenMode.ForRead);
+                                            if (obj is AttributeDefinition)
+                                            {
+                                                AttributeDefinition atdef = (AttributeDefinition)obj;
+                                                AttributeReference atref = new AttributeReference();
+                                                if (atdef != null)
+                                                {
+                                                    atref = new AttributeReference();
+                                                    atref.SetAttributeFromBlock(atdef, bref.BlockTransform);
+                                                    //atref.Position = atdef.Position + bref.Position.GetAsVector();
+                                                    atref.Position = atdef.Position.TransformBy(bref.BlockTransform);
+                                                    if (atributos.ContainsKey(atdef.Tag.ToUpper()))
+                                                    {
+                                                        atref.TextString = atributos[atdef.Tag.ToUpper()].ToString();
+                                                    }
+                                                }
+                                                bref.AttributeCollection.AppendAttribute(atref);
+                                                tr.AddNewlyCreatedDBObject(atref, true);
+                                            }
+                                        }
+                                        bref.DowngradeOpen();
                                     }
-                                    btr2.AppendEntity(bref);
+
+                                    tr.TransactionManager.QueueForGraphicsFlush();
+                                    acDoc.TransactionManager.FlushGraphics();
+                                    tr.Commit();
+                                    //doc.Editor.Regen();
+                                    return;
+                                }
+                            }
+
+
+
+                            bt.UpgradeOpen();
+
+                            //se nao tem, ai ele vai tentar abrir e inserir
+                            db.ReadDwgFile(endereco, System.IO.FileShare.Read, true, "");
+                            blkid = curdb.Insert(endereco, db, true);
+
+                            BlockTableRecord btrec = (BlockTableRecord)blkid.GetObject(OpenMode.ForRead);
+                            btrec.UpgradeOpen();
+                            btrec.Name = nomeBloco;
+                            btrec.DowngradeOpen();
+
+
+
+                            BlockTableRecord btr = (BlockTableRecord)curdb.CurrentSpaceId.GetObject(OpenMode.ForWrite);
+                            using (btr)
+                            {
+                                using (BlockReference bref = new BlockReference(origem, blkid))
+                                {
+                                    Matrix3d mat = Matrix3d.Identity;
+                                    bref.TransformBy(mat);
+                                    bref.ScaleFactors = new Scale3d(escala, escala, escala);
+                                    bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
+                                    bref.Position = origem;
+                                    btr.AppendEntity(bref);
                                     tr.AddNewlyCreatedDBObject(bref, true);
 
-                                    foreach (ObjectId eid in bdef)
+                                    using (BlockTableRecord btAttRec = (BlockTableRecord)bref.BlockTableRecord.GetObject(OpenMode.ForRead))
                                     {
-                                        DBObject obj = (DBObject)tr.GetObject(eid, OpenMode.ForRead);
-                                        if (obj is AttributeDefinition)
+                                        Autodesk.AutoCAD.DatabaseServices.AttributeCollection atcoll = bref.AttributeCollection;
+
+                                        foreach (ObjectId subid in btAttRec)
                                         {
-                                            AttributeDefinition atdef = (AttributeDefinition)obj;
-                                            AttributeReference atref = new AttributeReference();
-                                            if (atdef != null)
+                                            Entity ent = (Entity)subid.GetObject(OpenMode.ForRead);
+                                            AttributeDefinition attDef = ent as AttributeDefinition;
+
+                                            if (attDef != null)
                                             {
-                                                atref = new AttributeReference();
-                                                atref.SetAttributeFromBlock(atdef, bref.BlockTransform);
-                                               //atref.Position = atdef.Position + bref.Position.GetAsVector();
-                                                atref.Position = atdef.Position.TransformBy(bref.BlockTransform);
-                                                if (atributos.ContainsKey(atdef.Tag.ToUpper()))
+                                                // ed.WriteMessage("\nValue: " + attDef.TextString);
+                                                AttributeReference attRef = new AttributeReference();
+                                                attRef.SetPropertiesFrom(attDef);
+                                                attRef.Visible = attDef.Visible;
+                                                attRef.SetAttributeFromBlock(attDef, bref.BlockTransform);
+                                                attRef.HorizontalMode = attDef.HorizontalMode;
+                                                attRef.VerticalMode = attDef.VerticalMode;
+                                                attRef.Rotation = attDef.Rotation;
+                                                attRef.TextStyleId = attDef.TextStyleId;
+
+                                                attRef.Position = attDef.Position.TransformBy(bref.BlockTransform);
+
+
+                                                //attRef.Position = attDef.Position + origem.GetAsVector();
+                                                attRef.Tag = attDef.Tag;
+                                                attRef.FieldLength = attDef.FieldLength;
+                                                attRef.TextString = attDef.TextString;
+
+                                                attRef.AdjustAlignment(curdb);//?
+
+                                                if (atributos.ContainsKey(attRef.Tag.ToUpper()))
                                                 {
-                                                    atref.TextString = atributos[atdef.Tag.ToUpper()].ToString();
+                                                    attRef.TextString = atributos[attRef.Tag.ToUpper()].ToString();
                                                 }
+
+                                                atcoll.AppendAttribute(attRef);
+
+                                                tr.AddNewlyCreatedDBObject(attRef, true);
                                             }
-                                            bref.AttributeCollection.AppendAttribute(atref);
-                                            tr.AddNewlyCreatedDBObject(atref, true);
+
                                         }
+
                                     }
+
                                     bref.DowngradeOpen();
                                 }
-
-                                tr.TransactionManager.QueueForGraphicsFlush();
-                                doc.TransactionManager.FlushGraphics();
-                                tr.Commit();
-                                //doc.Editor.Regen();
-                                return;
                             }
+
+                            btrec.DowngradeOpen();
+
+                            bt.DowngradeOpen();
+
+                            ed.Regen();
+
+                            tr.Commit();
                         }
-
-
-
-                        bt.UpgradeOpen();
-
-                        //se nao tem, ai ele vai tentar abrir e inserir
-                        db.ReadDwgFile(endereco, System.IO.FileShare.Read, true, "");
-                        blkid = curdb.Insert(endereco, db, true);
-
-                        BlockTableRecord btrec = (BlockTableRecord)blkid.GetObject(OpenMode.ForRead);
-                        btrec.UpgradeOpen();
-                        btrec.Name = nome;
-                        btrec.DowngradeOpen();
-
-
-
-                        BlockTableRecord btr = (BlockTableRecord)curdb.CurrentSpaceId.GetObject(OpenMode.ForWrite);
-                        using (btr)
-                        {
-                            using (BlockReference bref = new BlockReference(origem, blkid))
-                            {
-                                Matrix3d mat = Matrix3d.Identity;
-                                bref.TransformBy(mat);
-                                bref.ScaleFactors = new Scale3d(escala,escala, escala);
-                                bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
-                                bref.Position = origem;
-                                btr.AppendEntity(bref);
-                                tr.AddNewlyCreatedDBObject(bref, true);
-
-                                using (BlockTableRecord btAttRec = (BlockTableRecord)bref.BlockTableRecord.GetObject(OpenMode.ForRead))
-                                {
-                                    Autodesk.AutoCAD.DatabaseServices.AttributeCollection atcoll = bref.AttributeCollection;
-
-                                    foreach (ObjectId subid in btAttRec)
-                                    {
-                                        Entity ent = (Entity)subid.GetObject(OpenMode.ForRead);
-                                        AttributeDefinition attDef = ent as AttributeDefinition;
-
-                                        if (attDef != null)
-                                        {
-                                            // ed.WriteMessage("\nValue: " + attDef.TextString);
-                                            AttributeReference attRef = new AttributeReference();
-                                            attRef.SetPropertiesFrom(attDef);
-                                            attRef.Visible = attDef.Visible;
-                                            attRef.SetAttributeFromBlock(attDef, bref.BlockTransform);
-                                            attRef.HorizontalMode = attDef.HorizontalMode;
-                                            attRef.VerticalMode = attDef.VerticalMode;
-                                            attRef.Rotation = attDef.Rotation;
-                                            attRef.TextStyleId = attDef.TextStyleId;
-
-                                            attRef.Position = attDef.Position.TransformBy(bref.BlockTransform);
-
-
-                                            //attRef.Position = attDef.Position + origem.GetAsVector();
-                                            attRef.Tag = attDef.Tag;
-                                            attRef.FieldLength = attDef.FieldLength;
-                                            attRef.TextString = attDef.TextString;
-
-                                            attRef.AdjustAlignment(curdb);//?
-
-                                            if (atributos.ContainsKey(attRef.Tag.ToUpper()))
-                                            {
-                                                attRef.TextString = atributos[attRef.Tag.ToUpper()].ToString();
-                                            }
-
-                                            atcoll.AppendAttribute(attRef);
-
-                                            tr.AddNewlyCreatedDBObject(attRef, true);
-                                        }
-
-                                    }
-
-                                }
-
-                                bref.DowngradeOpen();
-                            }
-                        }
-
-                        btrec.DowngradeOpen();
-
-                        bt.DowngradeOpen();
-
-                        ed.Regen();
-
-                        tr.Commit();
                     }
                 }
             }
+            catch (System.Exception ex)
+            {
+                Alerta($"Algo de errado aconteceu ao tentar inserir o bloco {endereco}\n\n" +
+                    $"{ex.Message}\n" +
+                    $"{ex.StackTrace}");
+                return;
+            }
+
         }
+
+
 
         public static void InserirBlocoPerfil(Point3d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double area = 0)
         {
@@ -1411,8 +1584,6 @@ namespace Ferramentas_DLM
             {
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Hashtable ht = new Hashtable();
-                //Pairs of tag-value:
-
                 ht.Add("MAR_PEZ", marca);
                 ht.Add("NOM_PRO", perfil.Nome);
                 ht.Add("QTA_PEZ", quantidade);
@@ -1439,7 +1610,7 @@ namespace Ferramentas_DLM
                 ht.Add("ING_PEZ", perfil.H + "*" + perfil.ABA_1 + "*" + comprimento);
                 ht.Add("DIM_PRO", perfil.DIM_PRO);
 
-                Utilidades.InserirBloco(doc, "m8_pro", p0, 10, 0, ht);
+                Utilidades.InserirBloco(doc, Constantes.BlocoMarcaPerfil, p0, 10, 0, ht);
             }
             catch (System.Exception ex)
             {
@@ -1450,7 +1621,7 @@ namespace Ferramentas_DLM
 
         public static void InserirBlocoArremate(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, int dobras)
         {
-            InserirBlocoChapa(p0, marca, comprimento, largura, espessura, quantidade, material, tratamento, 0, 0, @"\\10.54.0.4\BancoDeDados\Blocos\SELO A2\Tecnometal\Arremates\m8_lam.dwg",dobras);
+            InserirBlocoChapa(p0, marca, comprimento, largura, espessura, quantidade, material, tratamento, 0, 0, Constantes.BlocoMarcaArremate,dobras);
 
         }
 
@@ -1496,7 +1667,7 @@ namespace Ferramentas_DLM
 
                 if (bloco =="" | bloco ==null)
                 {
-                    bloco = "m8_lam";
+                    bloco = Constantes.BlocoMarcaChapa;
                 }
                 Utilidades.InserirBloco(doc, bloco, p0, 10, 0, ht);
             }
@@ -1506,10 +1677,10 @@ namespace Ferramentas_DLM
             }
             
         }
-        public static void InserirMarcaSimplesCam(TecnoUtilz.ReadCam cam, Point3d origem)
+        public static void InserirMarcaSimplesCam(DLMCam.ReadCam cam, Point3d origem)
         {
 
-            if (cam.Familia == TecnoUtilz.Familia.Dobrado | cam.Familia == TecnoUtilz.Familia.Laminado | cam.Familia == TecnoUtilz.Familia.Soldado && !cam.Nome.Contains("_"))
+            if (cam.Familia == DLMCam.Familia.Dobrado | cam.Familia == DLMCam.Familia.Laminado | cam.Familia == DLMCam.Familia.Soldado && !cam.Nome.Contains("_"))
             {
                 TecnoMetal_Perfil perfil = db.Get(cam.Descricao);
                 if(perfil!=null)
@@ -1526,7 +1697,7 @@ namespace Ferramentas_DLM
 
 
             }
-            else if(cam.Familia == TecnoUtilz.Familia.Chapa)
+            else if(cam.Familia == DLMCam.Familia.Chapa)
             {
                 InserirBlocoChapa(origem, cam.Nome, cam.Comprimento, cam.Largura, cam.Espessura, cam.Quantidade, cam.Marca, cam.Tratamento, cam.Peso, cam.Superficie);
             }

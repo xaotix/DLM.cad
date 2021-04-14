@@ -1,15 +1,18 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.Internal.PropertyInspector;
+using Autodesk.AutoCAD.Runtime;
 using Ferramentas_DLM.Classes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +23,207 @@ namespace Ferramentas_DLM
     [Serializable]
     public class ClasseBase
     {
+       [Category("Configuração")]
+       [DisplayName("Layer Blocos")]
+        public string LayerBlocos { get; set; } = "BLOCOS";
+
+        [Category("Configuração")]
+        [DisplayName("Pasta Arquivo")]
+        public string Pasta
+        {
+            get
+            {
+                var pasta = Conexoes.Utilz.getPasta(this.acDoc.Name).ToUpper();
+
+                if (!Directory.Exists(pasta))
+                {
+                    pasta = Conexoes.Utilz.RaizAppData();
+                }
+                return pasta;
+            }
+        }
+
+        public List<string> GetMLStyles()
+        {
+            List<string> estilos = new List<string>();
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                DBDictionary acLyrTbl;
+                acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId,
+                                             OpenMode.ForRead) as DBDictionary;
+
+                foreach (var acObjId in acLyrTbl)
+                {
+                    MlineStyle acLyrTblRec;
+                    acLyrTblRec = acTrans.GetObject(acObjId.Value,
+                                                    OpenMode.ForRead) as MlineStyle;
+
+                    estilos.Add(acLyrTblRec.Name);
+                }
+
+            }
+            return estilos;
+        }
+        public List<string> GetLayers()
+        {
+            List<string> lstlay = new List<string>();
+
+            LayerTableRecord layer;
+            using (Transaction tr = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                LayerTable lt = tr.GetObject(this.acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
+                foreach (ObjectId layerId in lt)
+                {
+                    layer = tr.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
+                    lstlay.Add(layer.Name);
+                }
+
+            }
+            return lstlay;
+        }
+        public void SetUCSParaWorld()
+        {
+            acDoc.Editor.CurrentUserCoordinateSystem = Matrix3d.Identity;
+            acDoc.Editor.Regen();
+        }
+        public void GetInfos()
+        {
+            string msg = "";
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+            var selecao = ed.GetEntity("\nSelecione: ");
+            if (selecao.Status != PromptStatus.OK)
+                return;
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                Entity obj = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
+
+                msg = string.Format("Propriedades de {0}:\n", selecao.GetType().Name);
+
+
+
+                msg += "\n\nPropriedades custom\n\n";
+
+                msg += RetornaCustomProperties(obj.ObjectId, ed);
+
+                var props = GetOPMProperties(obj.ObjectId);
+
+                foreach (var pair in props)
+                {
+                    msg += string.Format("\t{0} = {1}\n", pair.Key, pair.Value);
+
+                    if (Marshal.IsComObject(pair.Value))
+                        Marshal.ReleaseComObject(pair.Value);
+                }
+
+
+                msg += "\n\nPropriedades padrao\n\n";
+                PropertyInfo[] piArr = obj.GetType().GetProperties();
+                foreach (PropertyInfo pi in piArr)
+                {
+                    object value = null;
+                    try
+                    {
+                        value = pi.GetValue(obj, null);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        //if (ex.InnerException is Autodesk.AutoCAD.Runtime.Exception &&
+                        //    (ex.InnerException as Autodesk.AutoCAD.Runtime.Exception).ErrorStatus == Autodesk.AutoCAD.Runtime.ErrorStatus.NotApplicable)
+                        //    continue;
+                        //else
+                        //    throw;
+                        msg += string.Format("\t{0}: {1}\n", pi.Name, "Erro ao tentar ler: " + ex.Message);
+                    }
+
+                    msg += string.Format("\t{0}: {1}\n", pi.Name, value);
+                }
+
+
+
+                //AddMensagem("\n" + msg);
+            }
+
+
+
+            Conexoes.Utilz.JanelaTexto(msg, "Propriedades");
+        }
+
+        private string RetornaCustomProperties(ObjectId id, Editor ed)
+        {
+            string msg = "";
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+
+            using (var tr = id.Database.TransactionManager.StartTransaction())
+            {
+                var dbObj = tr.GetObject(id, OpenMode.ForRead);
+                var types = new List<Type>();
+                types.Add(dbObj.GetType());
+                while (true)
+                {
+                    var type = types[0].BaseType;
+                    types.Insert(0, type);
+                    if (type == typeof(RXObject))
+                        break;
+                }
+                foreach (Type t in types)
+                {
+                   msg += ($"\n\n - {t.Name} -");
+                    foreach (var prop in t.GetProperties(flags))
+                    {
+                        msg += "\n" + prop.Name;
+                        try
+                        {
+                            msg += " = " + (prop.GetValue(dbObj, null));
+                        }
+                        catch (System.Exception e)
+                        {
+                            msg += (e.Message);
+                        }
+                    }
+                }
+                tr.Commit();
+            }
+
+            return msg;
+        }
+        public static IDictionary<string, object> GetOPMProperties(ObjectId id)
+        {
+            Dictionary<string, object> map = new Dictionary<string, object>();
+            IntPtr pUnk = ObjectPropertyManagerPropertyUtility.GetIUnknownFromObjectId(id);
+            if (pUnk != IntPtr.Zero)
+            {
+                using (CollectionVector properties = ObjectPropertyManagerProperties.GetProperties(id, false, false))
+                {
+                    int cnt = properties.Count();
+                    if (cnt != 0)
+                    {
+                        using (CategoryCollectable category = properties.Item(0) as CategoryCollectable)
+                        {
+                            CollectionVector props = category.Properties;
+                            int propCount = props.Count();
+                            for (int j = 0; j < propCount; j++)
+                            {
+                                using (PropertyCollectable prop = props.Item(j) as PropertyCollectable)
+                                {
+                                    if (prop == null)
+                                        continue;
+                                    object value = null;
+                                    if (prop.GetValue(pUnk, ref value) && value != null)
+                                    {
+                                        if (!map.ContainsKey(prop.Name))
+                                            map[prop.Name] = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Marshal.Release(pUnk);
+            }
+            return map;
+        }
+
 
         #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
         //isso daqui está aqui só por causa do Leader.
@@ -40,6 +244,7 @@ namespace Ferramentas_DLM
         }
         #endregion
         [XmlIgnore]
+        [Browsable(false)]
         public Document acDoc
         {
             get
@@ -48,6 +253,7 @@ namespace Ferramentas_DLM
             }
         }
         [XmlIgnore]
+        [Browsable(false)]
         public Database acCurDb
         {
             get
@@ -604,7 +810,7 @@ namespace Ferramentas_DLM
 
         public List<BlockReference> Getblocostexto()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Vars.Texto));
+            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Texto));
         }
 
         #endregion
@@ -753,9 +959,7 @@ namespace Ferramentas_DLM
                     {
                         if (acSSObj != null)
                         {
-                            Entity acEnt = acTrans.GetObject(acSSObj.ObjectId,
-
-                                                                (selecionar_tudo? OpenMode.ForRead: OpenMode.ForWrite)) as Entity;
+                            Entity acEnt = acTrans.GetObject(acSSObj.ObjectId, (selecionar_tudo? OpenMode.ForRead: OpenMode.ForWrite)) as Entity;
 
                             if (acEnt != null)
                             {
@@ -793,7 +997,7 @@ namespace Ferramentas_DLM
 
         public ClasseBase()
         {
-
+            SetUCSParaWorld();
         }
     }
 }

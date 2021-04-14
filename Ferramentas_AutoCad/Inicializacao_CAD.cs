@@ -7,6 +7,7 @@ using MIConvexHull;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,7 +19,23 @@ namespace Ferramentas_DLM
 {
     public class Ferramentas
     {
-        public static Cotagem pp = new Cotagem();
+        public static Monitoramento monitoramento { get; set; }
+        public static Cotagem Cotas { get; set; } = new Cotagem();
+
+        [CommandMethod("listarcomandos")]
+        public static void listarcomandos()
+        {
+            DocumentCollection dm = Application.DocumentManager;
+            Editor ed = dm.MdiActiveDocument.Editor;
+            Assembly asm = Assembly.GetExecutingAssembly();
+            string[] cmds = Utilidades.listarcomandos(asm, false);
+            foreach (string cmd in cmds)
+            {
+                ed.WriteMessage(cmd + "\n");
+            }
+        }
+
+
         [CommandMethod("lcotas")]
         public static void LimparCotas()
         {
@@ -36,7 +53,7 @@ namespace Ferramentas_DLM
                 if (acSSPrompt.Status == PromptStatus.OK)
                 {
                     SelectionSet acSSet = acSSPrompt.Value;
-                    LimparCotas(acTrans, acSSet);
+                    Utilidades.LimparCotas(acTrans, acSSet);
 
 
                     // Save the new object to the database
@@ -47,90 +64,27 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static void LimparCotas(OpenCloseTransaction acTrans, SelectionSet acSSet)
-        {
-            if (acTrans == null | acSSet == null)
-            {
-                return;
-            }
-            // Step through the objects in the selection set
-            foreach (SelectedObject acSSObj in acSSet)
-            {
-                //System.Windows.Forms.MessageBox.Show(acSSObj.ToString());
-                // Check to make sure a valid SelectedObject object was returned
-                if (acSSObj != null)
-                {
-                    // Open the selected object for write
-                    Entity acEnt = acTrans.GetObject(acSSObj.ObjectId,
-                                                        OpenMode.ForWrite) as Entity;
 
-                    if (acEnt != null)
-                    {
-                        if (acEnt is AlignedDimension)
-                        {
-                            var s = acEnt as AlignedDimension;
-                            s.Erase(true);
-                        }
-                        else if (acEnt is OrdinateDimension)
-                        {
-                            var s = acEnt as OrdinateDimension;
-                            s.Erase(true);
-                        }
-                        else if (acEnt is RadialDimension)
-                        {
-                            var s = acEnt as RadialDimension;
-                            s.Erase(true);
-                        }
-                        else if (acEnt is RotatedDimension)
-                        {
-                            var s = acEnt as RotatedDimension;
-                            s.Erase(true);
-                        }
-                        //else if (acEnt is Leader)
-                        //{
-                        //    var s = acEnt as Leader;
-                        //    s.Erase(true);
-                        //}
-                        else if (acEnt is MLeader)
-                        {
-                            var s = acEnt as MLeader;
-                            s.Erase(true);
-                        }
-                        else if (acEnt is MText)
-                        {
-                            var s = acEnt as MText;
-                            s.Erase(true);
-                        }
-
-                        else if (acEnt is Dimension)
-                        {
-                            var s = acEnt as Dimension;
-                            s.Erase(true);
-                        }
-                    }
-                }
-            }
-        }
 
         [CommandMethod("cotar")]
         public static void Cotar()
         {
-            pp = new Cotagem();
-            pp.Cotar();
+            Cotas = new Cotagem();
+            Cotas.Cotar();
 
         }
         [CommandMethod("cconfigurar")]
         public static void configurar()
         {
 
-            pp.Configurar();
+            Cotas.Configurar();
         }
         [CommandMethod("contornar")]
         public static void contornar()
         {
 
 
-            pp.Contornar();
+            Cotas.Contornar();
 
 
         }
@@ -138,8 +92,8 @@ namespace Ferramentas_DLM
         public static void cco()
         {
 
-            pp.ConfigurarContorno();
-            pp.Contornar();
+            Cotas.ConfigurarContorno();
+            Cotas.Contornar();
 
 
         }
@@ -158,7 +112,7 @@ namespace Ferramentas_DLM
         {
 
 
-            pp.Contornar(false);
+            Cotas.Contornar(false);
 
 
         }
@@ -167,7 +121,7 @@ namespace Ferramentas_DLM
         {
 
 
-            pp.ContornarConvexo();
+            Cotas.ContornarConvexo();
 
 
         }
@@ -176,20 +130,49 @@ namespace Ferramentas_DLM
         {
             CADPurlin p = new CADPurlin();
 
+            var estilos = p.GetMLStyles();
+            var layers = p.GetLayers();
             TercasMenu mm = new TercasMenu();
+            mm.tirantes_mlstyle.Items.AddRange(estilos.ToArray());
+            mm.correntes_mlstyle.Items.AddRange(estilos.ToArray());
+            mm.furos_manuais_layer.Items.AddRange(layers.ToArray());
+            if (estilos.Find(x => x == p.CorrenteMLStyle) != null)
+            {
+                mm.correntes_mlstyle.Text = p.CorrenteMLStyle;
+            }
+            if (estilos.Find(x => x == p.TirantesMLStyle) != null)
+            {
+                mm.tirantes_mlstyle.Text = p.TirantesMLStyle;
+            }
+
+            if (layers.Find(x => x == p.MapeiaFurosManuaisLayer) != null)
+            {
+                mm.furos_manuais_layer.Text = p.MapeiaFurosManuaisLayer;
+            }
+
+            mm.tercas_mlstyles.Items.AddRange(p.TercasMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
+
             mm.propertyGrid1.SelectedObject = p;
             mm.ShowDialog();
+
             p.TranspassePadrao = (double)mm.transpasse_padrao.Value;
             p.OffsetApoio = (double)mm.ofsset_apoio.Value;
             p.FichaDePintura = mm.ficha_de_pintura.Text;
-            p.MapeiaFurosManuais = mm.mapeia_linhas_verticais.Checked;
+            p.MapeiaFurosManuais = mm.mapeia_furos_manuais.Checked;
             p.MapeiaFurosManuaisLayer = mm.furos_manuais_layer.Text;
             p.TirantesMLStyle = mm.tirantes_mlstyle.Text;
             p.MapearTirantes = mm.mapeia_tirantes.Checked;
-            if(mm.id_terca!=1763)
+
+            p.CorrenteMLStyle = mm.correntes_mlstyle.Text;
+            p.MapearCorrentes = mm.mapeia_correntes.Checked;
+            p.MapearTercas = mm.mapeia_tercas.Checked;
+            p.TercasMLStyles = mm.tercas_mlstyles.Items.Cast<string>().ToList();
+
+
+            if (mm.id_terca != 1763)
             {
                 var pc = Conexoes.DBases.GetBancoRM().GetRME(p.id_terca);
-                if(pc!=null)
+                if (pc != null)
                 {
                     p.id_terca = mm.id_terca;
                     p.secao = pc.GetCadastroRME().SECAO.ToString();
@@ -197,16 +180,16 @@ namespace Ferramentas_DLM
                     p.espessura = pc.ESP.ToString("N2").Replace(",", ".");
                 }
             }
-            
+
             if (mm.acao == "perfil")
             {
                 p.SetPerfil();
             }
-            else if(mm.acao == "mapear")
+            else if (mm.acao == "mapear")
             {
-                p.MapearBlocos();
+                p.Mapear();
             }
-            else if(mm.acao == "transpasse")
+            else if (mm.acao == "transpasse")
             {
                 p.SetTranspasse();
             }
@@ -250,7 +233,7 @@ namespace Ferramentas_DLM
             {
                 p.PurlinManual();
             }
-            else if(mm.acao == "purlin_edicao_completa")
+            else if (mm.acao == "purlin_edicao_completa")
             {
                 p.EdicaoCompleta();
             }
@@ -258,11 +241,6 @@ namespace Ferramentas_DLM
             {
                 p.GetBoneco_Purlin();
             }
-        }
-        [CommandMethod("teste")]
-        public void teste()
-        {
-            System.Windows.Forms.MessageBox.Show(Utilidades.GetEstilo("10MM").Name);
         }
         [CommandMethod("interseccao")]
         public void interseccao()
@@ -273,7 +251,7 @@ namespace Ferramentas_DLM
         public void mapeiapurlins()
         {
             CADPurlin P = new CADPurlin();
-            P.MapearBlocos();
+            P.Mapear();
 
         }
         [CommandMethod("boneco")]
@@ -305,8 +283,8 @@ namespace Ferramentas_DLM
         {
 
             var arqs = Conexoes.Utilz.AbrirArquivos("Selecione os arquivos", new List<string> { "CAM" });
-            pp = new Cotagem();
-            var offset = pp.Getescala() * 70;
+            Cotas = new Cotagem();
+            var offset = Cotas.Getescala() * 70;
             if (arqs.Count > 0)
             {
                 bool cancelado = false;
@@ -314,13 +292,13 @@ namespace Ferramentas_DLM
                 var x0 = p0.X;
                 var y0 = p0.Y;
                 int c = 1;
-               
+
                 if (!cancelado)
                 {
                     foreach (var s in arqs)
                     {
 
-                        TecnoUtilz.ReadCam cam = new TecnoUtilz.ReadCam(s);
+                        DLMCam.ReadCam cam = new DLMCam.ReadCam(s);
                         Utilidades.InserirMarcaSimplesCam(cam, p0);
 
                         p0 = new Point3d(p0.X + offset, p0.Y, p0.Z);
@@ -398,6 +376,91 @@ namespace Ferramentas_DLM
         {
             Telhas pp = new Telhas();
             pp.InserirTabela();
+        }
+
+        [CommandMethod("testectv")]
+        public void testectv()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.GetInfos();
+        }
+
+        [CommandMethod("monitorar")]
+        public void monitorar()
+        {
+            monitoramento = new Monitoramento();
+
+        }
+
+        [CommandMethod("salvarlog")]
+        public void salvarlog()
+        {
+            if (monitoramento != null)
+            {
+                monitoramento.SalvarLog();
+            }
+        }
+        [CommandMethod("teste")]
+        public void teste()
+        {
+         
+            //estava tentando sem sucesso pegar as informações sobre os elementos do tecnometal
+
+
+            Editor ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
+            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Database acCurDb = acDoc.Database;
+
+            var selecao = ed.GetEntity("\nSelect object: ");
+            if (selecao.Status != PromptStatus.OK)
+                return;
+
+
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                Entity acEnt = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
+
+
+
+
+
+                //ResultBuffer args = new ResultBuffer(
+                //    new TypedValue((int)LispDataType.ListBegin),
+                //    new TypedValue((int)LispDataType.ObjectId, Autodesk.AutoCAD.Internal.Utils.EntLast()),
+                //    new TypedValue((int)LispDataType.Text, "profiledata"),
+                //    new TypedValue((int)LispDataType.Text, "mar_pez"),
+                //    new TypedValue((int)LispDataType.Text, "sssdaas"),
+                //    new TypedValue((int)LispDataType.ListEnd)
+                //    );
+
+                //LispExtensions.SetLispSym("tec_stsetvar3d", args);
+            }
+            var st = ed.Command("TEC_STGETVAR3D", selecao.ObjectId, "profiledata", "mar_pez", "asdadads");
+
+
+
+
+
+            //TEC_STGETVAR3D
+            //var s = ed.Command("tec_stsetvar3d", selecao.ObjectId, "profiledata", "mar_pez", "asdadads");
+
+
+        }
+
+        [CommandMethod("extrair")]
+        public void extrair()
+        {
+            string destino = Conexoes.Utilz.SalvarArquivo("dbf");
+            if(destino=="" | destino ==null)
+            {
+                return;
+            }
+              
+            TecnoMetal mm = new TecnoMetal();
+           mm.GerarDBF(destino);
+
+            Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(destino));
         }
 
     }

@@ -49,8 +49,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
-
         public static Point3d Purlins(List<Conexoes.Macros.Purlin> purlins, Point3d p0)
         {
             double x0 = 0;
@@ -65,7 +63,7 @@ namespace Ferramentas_DLM
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE TERÇAS");
-                    Utilidades.InserirBloco(doc, Vars.Tercas_Titulo, p0, escala, 0, ht);
+                    Utilidades.InserirBloco(doc, Constantes.Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                     foreach (var p in purlins)
                     {
@@ -76,7 +74,7 @@ namespace Ferramentas_DLM
                         hp.Add("COMP", p.Comprimento.ToString().PadLeft(5,'0'));
                         hp.Add("ESP", p.Espessura.ToString("N2").PadLeft(5, '0'));
                         hp.Add("VP;RM;TM", "RME");
-                        Utilidades.InserirBloco(doc, Vars.Tercas, p0, escala, 0, hp);
+                        Utilidades.InserirBloco(doc, Constantes.Indicacao_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                     }
                 
@@ -84,7 +82,6 @@ namespace Ferramentas_DLM
             return new Point3d(x0, y0, 0);
 
         }
-
         public static Point3d Tirantes(List<Conexoes.Macros.Tirante> trs, Point3d p0, double mover_direita = 0)
         {
             double x0 = 0;
@@ -103,7 +100,7 @@ namespace Ferramentas_DLM
                 y0 = p0.Y;
                 Hashtable ht = new Hashtable();
                 ht.Add("TITULO", "LISTA DE TIRANTES");
-                Utilidades.InserirBloco(doc, Vars.Tirantes_Titulo, p0, escala, 0, ht);
+                Utilidades.InserirBloco(doc, Constantes.Tirantes_Titulo, p0, escala, 0, ht);
                 p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                 foreach (var p in trs)
                 {
@@ -112,14 +109,13 @@ namespace Ferramentas_DLM
                     hp.Add("PEÇA", p.Marca);
                     hp.Add("QUANT.", p.Qtd.ToString().PadLeft(3, '0'));
                     hp.Add("COMP", p.Comprimento.ToString().PadLeft(5, '0'));
-                    Utilidades.InserirBloco(doc, Vars.Tirantes, p0, escala, 0, hp);
+                    Utilidades.InserirBloco(doc, Constantes.Tirantes, p0, escala, 0, hp);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                 }
             }
             return new Point3d(x0, y0, 0);
 
         }
-
         public static Point3d Correntes(List<Conexoes.Macros.Corrente> trs, Point3d p0, double mover_direita = 0)
         {
             double x0 = 0;
@@ -138,7 +134,7 @@ namespace Ferramentas_DLM
                 y0 = p0.Y;
                 Hashtable ht = new Hashtable();
                 ht.Add("TITULO", "LISTA DE TIRANTES");
-                Utilidades.InserirBloco(doc, Vars.Correntes_Titulo, p0, escala, 0, ht);
+                Utilidades.InserirBloco(doc, Constantes.Correntes_Titulo, p0, escala, 0, ht);
                 p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                 foreach (var p in trs)
                 {
@@ -147,7 +143,7 @@ namespace Ferramentas_DLM
                     hp.Add("PERFIL", p.Marca);
                     hp.Add("XXX", p.Qtd.ToString().PadLeft(3,'0'));
                     hp.Add("VÃO", p.Vao.ToString());
-                    Utilidades.InserirBloco(doc, Vars.Correntes, p0, escala, 0, hp);
+                    Utilidades.InserirBloco(doc, Constantes.Correntes, p0, escala, 0, hp);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                 }
             }
@@ -175,7 +171,7 @@ namespace Ferramentas_DLM
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Utilidades.InserirBloco(doc, Vars.Tercas_Titulo, p0, escala, 0, ht);
+                    Utilidades.InserirBloco(doc, Constantes.Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                     int seq = 1;
                     foreach (var p in RMES)
@@ -187,7 +183,7 @@ namespace Ferramentas_DLM
                         hp.Add("COMP", p.COMP.ToString().PadLeft(5, '0'));
                         hp.Add("ESP", p.ESP.ToString("N2").PadLeft(5, '0'));
                         hp.Add("VP;RM;TM", "RM");
-                        Utilidades.InserirBloco(doc, Vars.Tercas, p0, escala, 0, hp);
+                        Utilidades.InserirBloco(doc, Constantes.Indicacao_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
                     }
@@ -217,7 +213,7 @@ namespace Ferramentas_DLM
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Utilidades.InserirBloco(doc, Vars.Almox_Titulo, p0, escala, 0, ht);
+                    Utilidades.InserirBloco(doc, Constantes.Almox_Titulo, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                     int seq = 1;
                     foreach (var p in RMAS)
@@ -228,7 +224,7 @@ namespace Ferramentas_DLM
                         hp.Add("UNID", p.UNIDADE);
                         hp.Add("SAP", p.SAP);
 
-                        Utilidades.InserirBloco(doc, Vars.Almox, p0, escala, 0, hp);
+                        Utilidades.InserirBloco(doc, Constantes.Almox, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
                     }

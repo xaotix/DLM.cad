@@ -18,6 +18,11 @@ namespace Ferramentas_DLM
     public class CADPurlin :ClasseBase
     {
         #region Opções para configuração
+        [Category("Correntes")]
+        [DisplayName("Tolerância Passe")]
+        public double ToleranciaPasse { get; set; } = 2;
+
+        [Category("Purlin")]
         [DisplayName("Rebater Furos")]
         public bool RebaterFuros { get; set; } = true;
         [Category("Purlin")]
@@ -95,6 +100,10 @@ namespace Ferramentas_DLM
         [Category("Correntes")]
         [DisplayName("MLStyle")]
         public string CorrenteMLStyle { get; set; } = "L32X32X3MM";
+
+        [Category("Purlin")]
+        [DisplayName("MLStyle")]
+        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360" };
         [Category("Tirantes")]
         [DisplayName("Mapear")]
         public bool MapearTirantes { get; set; } = true;
@@ -172,25 +181,56 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
-        private List<CTerca> purlins { get; set; } = new List<CTerca>();
+        private List<CTerca> _purlins { get; set; }
+        private List<CTerca> Getpurlins()
+        {
+            if(_purlins==null)
+            {
+                _purlins = new List<CTerca>();
+                var lista = Utilidades.MlinesHorizontais(this.Getmultilines(), this.PurlinCompMin);
+
+
+                List<MlineStyle> estilos = new List<MlineStyle>();
+                foreach (var s in this.TercasMLStyles)
+                {
+                    var st = Utilidades.GetEstilo(s);
+                    estilos.Add(st);
+                }
+
+                foreach (var l in lista)
+                {
+                    if (estilos.Find(x => x.ObjectId == l.Style) != null)
+                    {
+                        _purlins.Add(new CTerca(l));
+                    }
+                }
+
+            }
+
+            return _purlins;
+
+        }
+
+
+
         private List<Mline> mlines_verticais { get; set; } = new List<Mline>();
         private List<CCorrente> correntes { get; set; } = new List<CCorrente>();
 
-        public void MapearBlocos()
+        public void Mapear()
         {
             //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
-                if(sel.Status== PromptStatus.OK)
+                if (sel.Status == PromptStatus.OK)
                 {
-                    
+
                     List<BlockReference> blocos = new List<BlockReference>();
-                    if(MapearTercas)
+                    if (MapearTercas)
                     {
-                    blocos.AddRange(this.Getblocos_tercas());
+                        blocos.AddRange(this.Getblocos_tercas());
                     }
-                    if(MapearTirantes)
+                    if (MapearTirantes)
                     {
                         blocos.AddRange(this.Getblocos_tirantes());
                     }
@@ -200,24 +240,29 @@ namespace Ferramentas_DLM
                         blocos.AddRange(this.Getblocos_correntes());
                     }
 
-                    foreach (var b in  blocos)
+                    foreach (var b in blocos)
                     {
                         b.Erase(true);
                     }
                     acTrans.Commit();
                     acDoc.Editor.Regen();
-                    this.purlins = Utilidades.MlinesHorizontais(this.Getmultilines(), 100).Select(x=> new CTerca(x)).ToList();
 
-                    this.purlins = this.purlins.OrderBy(x => x.maxy).ToList();
+
+
+
 
                     this.mlines_verticais = Utilidades.MlinesVerticais(this.Getmultilines(), 100);
 
-                    this.correntes = this.LinhasCorrentes().OrderBy(x=>x.minx).ToList();
-                   
+                    this.correntes = this.LinhasCorrentes().OrderBy(x => x.minx).ToList();
+
                     int c = 0;
 
-                    if(MapearTercas)
+
+                    Utilidades.SetLayer(LayerBlocos, true, true);
+
+                    if (MapearTercas)
                     {
+
                         for (int i = 1; i < Getlinhas_eixo().Count; i++)
                         {
                             AddBarra();
@@ -234,21 +279,21 @@ namespace Ferramentas_DLM
                         }
 
 
-                        foreach (var s in this.purlins.FindAll(x => !x.Mapeado && x.comprimento >= this.PurlinCompMin))
+                        foreach (var s in this.Getpurlins().FindAll(x => !x.Mapeado && x.comprimento >= this.PurlinCompMin))
                         {
                             //adiciona as purlins pequenas fora do vão.
                             //essa parte precisa emplementar melhor para mapear furos manuais e correntes.
                             c = AddPurlin(c, Math.Round(s.comprimento), 0, 0, s.centro.GetPoint(), new List<double>(), new List<double>(), new List<double>(), new List<double>());
                         }
                     }
-                    
 
-                    if(MapearTirantes)
+
+                    if (MapearTirantes)
                     {
                         c = MapeiaTirantes(c);
                     }
 
-                    if(MapearCorrentes)
+                    if (MapearCorrentes)
                     {
                         c = MapeiaCorrentes(c);
                     }
@@ -262,11 +307,10 @@ namespace Ferramentas_DLM
                     AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
                     AddBarra();
                     AddMensagem("\n" + this.LinhasTirantes().Count + " Tirantes");
-                    AddMensagem("\n" + this.purlins.Count.ToString() + " Purlins");
+                    AddMensagem("\n" + this.Getpurlins().Count.ToString() + " Purlins");
                     AddMensagem("\n" + this.correntes.Count.ToString() + " Correntes");
                     AddBarra();
-                    Utilidades.SetLayer("Defpoints", false);
-                acTrans.Commit();
+                    acTrans.Commit();
                 }
 
             }
@@ -385,7 +429,7 @@ namespace Ferramentas_DLM
         public List<CTerca> GetPurlinsPassando(CCorrente corrente)
         {
             return this
-                .purlins
+                .Getpurlins()
                 .FindAll(x => 
                 x.centro.Y >= corrente.miny-5 
                 && 
@@ -422,7 +466,7 @@ namespace Ferramentas_DLM
             if (VAO >= this.VaoMinimo && VAO<=this.VaoMaximo)
             {
 
-                var purlins = Utilidades.MlinesPassando(e0, e1, this.purlins);
+                var purlins = Utilidades.MlinesPassando(e0, e1, this.Getpurlins());
                 var correntes = Utilidades.MlinesPassando(e0, e1, this.correntes,true,true);
                 AddMensagem("\n" + correntes.Count + " correntes encontradas");
                 var centroxx = e0.X + (VAO / 2);
@@ -504,7 +548,7 @@ namespace Ferramentas_DLM
 
 
                         //se está passando pela terça
-                        if (crp0.Y + 2 >= centro.Y && crp1.Y - 2 <= centro.Y)
+                        if (crp0.Y + ToleranciaPasse >= centro.Y && crp1.Y - ToleranciaPasse <= centro.Y)
                         {
                             if ((crp0.X < centroxx | crp1.X < centroxx))
                             {
@@ -540,7 +584,7 @@ namespace Ferramentas_DLM
 
 
                             //se está passando pela terça
-                            if (crp0.Y + 2 >= centro.Y && crp1.Y - 2 <= centro.Y)
+                            if (crp0.Y + 5 >= centro.Y && crp1.Y - 5 <= centro.Y)
                             {
                                 if ((crp0.X < centroxx | crp1.X < centroxx))
                                 {
@@ -642,7 +686,7 @@ namespace Ferramentas_DLM
             //verifica se a purlin é maior que 150
             if (comp_sem_transpasse > 150)
             {
-                Utilidades.InserirBloco(acDoc, Vars.Tercas_Indicacao, origembloco, this.Getescala(), 0, ht);
+                Utilidades.InserirBloco(acDoc, Constantes.Tercas_Indicacao, origembloco, this.Getescala(), 0, ht);
                 c++;
             }
 
@@ -662,7 +706,7 @@ namespace Ferramentas_DLM
             ht.Add("SFTA", sfta.ToString());
             ht.Add("SFTB", sftb.ToString());
 
-            Utilidades.InserirBloco(acDoc, Vars.Tirantes_Indicacao, origembloco, this.Getescala(), 0, ht);
+            Utilidades.InserirBloco(acDoc, Constantes.Tirantes_Indicacao, origembloco, this.Getescala(), 0, ht);
             c++;
 
             return c;
@@ -682,7 +726,7 @@ namespace Ferramentas_DLM
 
          
 
-            Utilidades.InserirBloco(acDoc, Vars.Correntes_Indicacao, origembloco, this.Getescala(), 0, ht);
+            Utilidades.InserirBloco(acDoc, Constantes.Correntes_Indicacao, origembloco, this.Getescala(), 0, ht);
             c++;
 
             return c;
