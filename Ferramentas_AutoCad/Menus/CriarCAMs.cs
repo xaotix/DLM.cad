@@ -87,13 +87,13 @@ namespace Ferramentas_DLM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message + "\n\n" + ex.StackTrace);
+                    Utilidades.Alerta(ex.Message + "\n\n" + ex.StackTrace);
                 }
                 c++;
 
             }
 
-            System.Windows.Forms.MessageBox.Show("Finalizado.");
+            Utilidades.Alerta("Finalizado.","", MessageBoxIcon.Exclamation);
         }
 
         

@@ -135,6 +135,7 @@
     <Compile Include="Construtores\ClasseBase.cs" />
     <Compile Include="Construtores\Monitoramento.cs" />
     <Compile Include="Construtores\TecnoMetal.cs" />
+    <Compile Include="OutrasClasses\Angulo.cs" />
     <Compile Include="OutrasClasses\Coordenada.cs" />
     <Compile Include="Construtores\Cotagem.cs" />
     <Compile Include="Construtores\Telhas.cs" />

@@ -609,13 +609,13 @@ namespace Ferramentas_DLM
             {
                 return s.FindAll(x =>
                 (
-                Utilidades.RadianosParaGraus(x.Rotation) >= -8
+                Angulo.RadianosParaGraus(x.Rotation) >= -8
                 &&
-                Utilidades.RadianosParaGraus(x.Rotation) <= 8
+                Angulo.RadianosParaGraus(x.Rotation) <= 8
                 ) | (
-                Utilidades.RadianosParaGraus(x.Rotation) >= 172
+                Angulo.RadianosParaGraus(x.Rotation) >= 172
                 &&
-                Utilidades.RadianosParaGraus(x.Rotation) <= 188
+                Angulo.RadianosParaGraus(x.Rotation) <= 188
                 )
 
                 ).Select(x => x.Position).Select(x => new Point3d(Math.Round(x.X, 2), Math.Round(x.Y, 2), 0)).ToList();
@@ -633,8 +633,8 @@ namespace Ferramentas_DLM
             try
             {
                 return s.FindAll(x =>
-                Utilidades.RadianosParaGraus(x.Rotation) == 90 |
-                Utilidades.RadianosParaGraus(x.Rotation) == 270
+                Angulo.RadianosParaGraus(x.Rotation) == 90 |
+                Angulo.RadianosParaGraus(x.Rotation) == 270
 
                 ).Select(x => x.Position).Select(x => new Point3d(Math.Round(x.X,2), Math.Round(x.Y,2), 0)).ToList();
 
@@ -1928,7 +1928,7 @@ namespace Ferramentas_DLM
                 catch (System.Exception ex)
                 {
 
-                    System.Windows.Forms.MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                    Alerta(ex.Message + "\n" + ex.StackTrace);
                 }
                 
             }

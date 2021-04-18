@@ -23,6 +23,110 @@ namespace Ferramentas_DLM
     [Serializable]
     public class ClasseBase
     {
+        public void SetLts(int valor = 10)
+        {
+            var st = editor.Command("LTSCALE", valor,"");
+        }
+        [XmlIgnore]
+        [Browsable(false)]
+        public DocumentCollection documentManager
+        {
+            get
+            {
+                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
+            }
+        }
+        #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
+        //isso daqui está aqui só por causa do Leader.
+        [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UAE?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@@Z")]
+        private static extern ErrorStatus attachAnnotation32(IntPtr thisPtr, ref ObjectId annoId);
+        [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UEAA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@@Z")]
+        private static extern ErrorStatus attachAnnotation64(IntPtr thisPtr, ref ObjectId annoId);
+        private static ErrorStatus attachAnnotation(IntPtr thisPtr, ref ObjectId annoId)
+
+        {
+
+            if (Marshal.SizeOf(IntPtr.Zero) > 4)
+
+                return attachAnnotation64(thisPtr, ref annoId);
+
+            return attachAnnotation32(thisPtr, ref annoId);
+
+        }
+        #endregion
+        [XmlIgnore]
+        [Browsable(false)]
+        public Document acDoc
+        {
+            get
+            {
+                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            }
+        }
+
+        [XmlIgnore]
+        [Browsable(false)]
+        public Editor editor
+        {
+            get
+            {
+                return acDoc.Editor;
+            }
+        }
+
+        [XmlIgnore]
+        [Browsable(false)]
+        public Database acCurDb
+        {
+            get
+            {
+                return acDoc.Database;
+            }
+        }
+
+
+
+        [XmlIgnore]
+        [Browsable(false)]
+        public dynamic acadApp
+        {
+            get
+            {
+                dynamic acadApp = Autodesk.AutoCAD.ApplicationServices.Application.AcadApplication;
+                return acadApp;
+            }
+        }
+
+
+
+
+        public List<string> SelecionarDWGs()
+        {
+            var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg");
+
+            var selecao = arqs.FindAll(x => Conexoes.Utilz.getNome(x).ToUpper().Contains("-FA-"));
+            var resto = arqs.FindAll(x => !Conexoes.Utilz.getNome(x).ToUpper().Contains("-FA-"));
+            var arquivos = Conexoes.Utilz.SelecionarObjetos(resto, selecao, "Selecione as pranchas.");
+
+            return arquivos;
+        }
+        public void IrLayout()
+        {
+            var lista = Utilidades.ListarLayouts();
+            if(lista.Count>0)
+            {
+                using (acDoc.LockDocument())
+                    LayoutManager.Current.CurrentLayout = lista[0];
+            }
+        }
+        public void IrModel()
+        {
+            LayoutManager.Current.CurrentLayout = "Model";
+        }
+        public void ZoomExtend()
+        {
+            acadApp.ZoomExtents();
+        }
        [Category("Configuração")]
        [DisplayName("Layer Blocos")]
         public string LayerBlocos { get; set; } = "BLOCOS";
@@ -42,6 +146,22 @@ namespace Ferramentas_DLM
                 return pasta;
             }
         }
+
+        public string Nome
+        {
+            get
+            {
+                return Conexoes.Utilz.getNome(this.acDoc.Name).ToUpper().Replace(".DWG","");
+            }
+        }
+        public string Arquivo
+        {
+            get
+            {
+                return this.acDoc.Name;
+            }
+        }
+
 
         public List<string> GetMLStyles()
         {
@@ -225,46 +345,11 @@ namespace Ferramentas_DLM
         }
 
 
-        #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
-        //isso daqui está aqui só por causa do Leader.
-        [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UAE?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@@Z")]
-        private static extern ErrorStatus attachAnnotation32(IntPtr thisPtr, ref ObjectId annoId);
-        [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UEAA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@@Z")]
-        private static extern ErrorStatus attachAnnotation64(IntPtr thisPtr, ref ObjectId annoId);
-        private static ErrorStatus attachAnnotation(IntPtr thisPtr, ref ObjectId annoId)
 
+
+        public void Alerta(string mensagem, System.Windows.Forms.MessageBoxIcon icone = System.Windows.Forms.MessageBoxIcon.Error)
         {
-
-            if (Marshal.SizeOf(IntPtr.Zero) > 4)
-
-                return attachAnnotation64(thisPtr, ref annoId);
-
-            return attachAnnotation32(thisPtr, ref annoId);
-
-        }
-        #endregion
-        [XmlIgnore]
-        [Browsable(false)]
-        public Document acDoc
-        {
-            get
-            {
-                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            }
-        }
-        [XmlIgnore]
-        [Browsable(false)]
-        public Database acCurDb
-        {
-            get
-            {
-                return acDoc.Database;
-            }
-        }
-
-        public void Alerta(string mensagem)
-        {
-            System.Windows.Forms.MessageBox.Show(mensagem);
+            Utilidades.Alerta(mensagem,"Atenção!", icone);
         }
         public void Comando(params object[] comando)
         {
@@ -869,7 +954,6 @@ namespace Ferramentas_DLM
             // Step through the objects in the selection set
             foreach (SelectedObject acSSObj in acSSet)
             {
-                //System.Windows.Forms.MessageBox.Show(acSSObj.ToString());
                 // Check to make sure a valid SelectedObject object was returned
                 if (acSSObj != null)
                 {
@@ -990,14 +1074,19 @@ namespace Ferramentas_DLM
                 return p;
         }
 
-        public double Angulo(Point3d p1, Point3d p2)
-        {
-            return new Coordenada(p1).Angulo(p2);
-        }
+
 
         public ClasseBase()
         {
             SetUCSParaWorld();
+        }
+
+        public void AbrePasta()
+        {
+            if(Directory.Exists(this.Pasta))
+            {
+                Conexoes.Utilz.Abrir(this.Pasta);
+            }
         }
     }
 }

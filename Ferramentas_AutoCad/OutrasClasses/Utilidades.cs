@@ -21,8 +21,35 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace Ferramentas_DLM
 {
-    public class Utilidades
+    public class Utilidades 
     {
+        public static List<string> ListarLayouts()
+        {
+            List<string> retorno = new List<string>();
+            // Get the current document and database
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+            Database acCurDb = acDoc.Database;
+
+            // Get the layout dictionary of the current database
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                DBDictionary lays =
+                    acTrans.GetObject(acCurDb.LayoutDictionaryId,
+                        OpenMode.ForRead) as DBDictionary;
+
+                acDoc.Editor.WriteMessage("\nLayouts:");
+
+                // Step through and list each named layout and Model
+                foreach (DBDictionaryEntry item in lays)
+                {
+                    retorno.Add(item.Key);
+                }
+
+                // Abort the changes to the database
+                acTrans.Abort();
+            }
+            return retorno;
+        }
         public static void LimparCotas(OpenCloseTransaction acTrans, SelectionSet acSSet)
         {
             if (acTrans == null | acSSet == null)
@@ -263,47 +290,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static List<double> GetAngulos(Polyline pl, out List<LineSegment3d> segmentos3d)
-        {
-
-            List<double> retorno = new List<double>();
-            segmentos3d = GetSegmentos3D(pl);
-
-            if(segmentos3d.Count>1)
-            {
-         
-                for (int i = 1; i < segmentos3d.Count; i++)
-                {
-                    retorno.Add(GetAngulo(segmentos3d[i],segmentos3d[i - 1],pl.Normal));
-                }
-            }
-
-
-
-            return retorno;
-        }
-        public static double GetAngulo(LineSegment3d l1, LineSegment3d l2, Vector3d normal)
-        {
-            Vector3d v1 = l1.EndPoint - l1.StartPoint;
-            Vector3d v2 = l2.EndPoint - l2.StartPoint;
-
-         
-          
-            var rad_angulo = v1.GetAngleTo(v2, normal);
-
-            if(rad_angulo>Math.PI)
-            {
-                rad_angulo = (rad_angulo - Math.PI * 2.0);
-            }
-
-           
-
-            var angulo = RadianosParaGraus(rad_angulo, 0);
-            angulo = 180 + angulo;
-            return angulo;
-        }
-
-        public static List<BlockReference> GetBlocos(List<BlockReference> blocos, List<string> nomes)
+        public static List<BlockReference> Filtrar(List<BlockReference> blocos, List<string> nomes, bool exato = true)
         {
             List<BlockReference> marcas = new List<BlockReference>();
 
@@ -312,10 +299,21 @@ namespace Ferramentas_DLM
                 var nome = b.Name.ToUpper();
                 foreach (var s in nomes)
                 {
-                    if (nome == s)
+                    if(exato)
                     {
-                        marcas.Add(b);
-                        break;
+                        if (nome.ToUpper() == s.ToUpper())
+                        {
+                            marcas.Add(b);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (nome.ToUpper().Contains(s.ToUpper()))
+                        {
+                            marcas.Add(b);
+                            break;
+                        }
                     }
                 }
             }
@@ -341,7 +339,7 @@ namespace Ferramentas_DLM
                 }
                 catch (System.Exception ex)
                 {
-                    MessageBox.Show(i  +"\n" + ex.Message + "\n" + ex.StackTrace);
+                    Alerta(i  +"\n" + ex.Message + "\n" + ex.StackTrace);
                 }
               
             }
@@ -365,7 +363,7 @@ namespace Ferramentas_DLM
                 }
                 catch (System.Exception ex)
                 {
-                    MessageBox.Show(i + "\n" + ex.Message + "\n" + ex.StackTrace);
+                    Alerta(i + "\n" + ex.Message + "\n" + ex.StackTrace);
                 }
 
             }
@@ -410,7 +408,7 @@ namespace Ferramentas_DLM
             return null;
            
         }
-        public static void EditarAtributo(BlockReference myBlockRef, Transaction tr, string tag, string valor)
+        public static void SetAtributo(BlockReference myBlockRef, Transaction tr, string tag, string valor)
         {
             AttributeCollection attCol = myBlockRef.AttributeCollection;
             foreach (ObjectId attId in attCol)
@@ -424,7 +422,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static void EditarAtributos(BlockReference myBlockRef, Transaction tr, Hashtable t)
+        public static void SetAtributo(BlockReference myBlockRef, Transaction tr, Hashtable t)
         {
             AttributeCollection attCol = myBlockRef.AttributeCollection;
             foreach (ObjectId attId in attCol)
@@ -452,11 +450,6 @@ namespace Ferramentas_DLM
         }
         private static Conexoes.TecnoMetal_Banco _db { get; set; }
 
-        public static double RadianosParaGraus(double angle, int decimais = 0)
-        {
-            
-            return Math.Round(angle * (180.0 / Math.PI), decimais);
-        }
         public static void GetCoordenadas(Mline s, out Point3d p1, out Point3d p2)
         {
             List<Point3d> lista = new List<Point3d>();
@@ -693,7 +686,7 @@ namespace Ferramentas_DLM
                 acTrans.Commit();
             }
         }
-        private void ChangeLayer(string sLayerName)
+        private static void ChangeLayer(string sLayerName)
         {
             Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
             Database acCurDb = HostApplicationServices.WorkingDatabase;
@@ -825,7 +818,7 @@ namespace Ferramentas_DLM
             List<Xline> retorno = new List<Xline>();
             foreach (var s in LS)
             {
-                double angulo = Angulo(s);
+                double angulo = Angulo.Get(s);
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -838,10 +831,7 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-        public static double Angulo(Xline s)
-        {
-            return Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(0, 0, 0), new Calculos.Ponto3D(s.UnitDir.X, s.UnitDir.Y, 0)));
-        }
+
         public static List<Polyline> PolylinesVerticais(List<Polyline> LS, double comp_min = 100)
         {
             List<Polyline> retorno = new List<Polyline>();
@@ -961,7 +951,7 @@ namespace Ferramentas_DLM
                 {
                     AttributeReference attRef = (AttributeReference)tm.GetObject(id, OpenMode.ForWrite);
                     attValues.Add(attRef.Tag, attRef.TextString);
-                    attRef.Erase();
+                    attRef.Erase(true);
                 }
             }
             foreach (AttributeDefinition attDef in attDefs)
@@ -990,7 +980,7 @@ namespace Ferramentas_DLM
                 foreach(var p in xlines)
                 {
                     var p1 = new Coordenada(coords.First());
-                    var ang = Angulo(p);
+                    var ang = Angulo.Get(p);
                     var p2 = p1.Mover(ang + 90, 10000);
 
                     var a1 = new Coordenada(p.BasePoint);
@@ -1090,8 +1080,8 @@ namespace Ferramentas_DLM
                 var max = new Coordenada(new Point3d(coords.Max(x => x.X), coords.Max(x => x.Y), 0));
                 foreach(var p in xlines)
                 {
-                    double angulo = Angulo(p);
-                    var norm = NormalizarAngulo(angulo);
+                    double angulo = Angulo.Get(p);
+                    var norm = Angulo.Normalizar(angulo);
                     double dist1=0, dist2=0; 
                     if (norm == 0 | norm == 180)
                     {
@@ -1225,43 +1215,7 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-        public static double NormalizarAngulo(double angulo)
-        {
-            if (angulo < 0)
-            {
-                angulo = 360 + angulo;
-            }
-            if (angulo>=0 &&  angulo<45)
-            {
-                return 0;
-            }
-            else if(angulo>=45 && angulo<=90)
-            {
-                return 90;
-            }
-            else if (angulo > 90 && angulo < 135)
-            {
-                return 90;
-            }
-            else if (angulo >= 135 && angulo <= 180)
-            {
-                return 180;
-            }
-            else if (angulo > 180 && angulo <225)
-            {
-                return 180;
-            }
-            else if (angulo >= 225 && angulo < 270)
-            {
-                return 270;
-            }
-            else if(angulo>=270)
-            {
-                return 0;
-            }
-            return 0;
 
-        }
         public static List<Line> LinhasVerticais(List<Line> LS, double comp_min = 100)
         {
             List<Line> retorno = new List<Line>();
@@ -1328,6 +1282,47 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
+
+
+        public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
+        {
+            List<Point3d> pts = new List<Point3d>();
+            BlockTableRecord blkObj = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
+            foreach (ObjectId id in blkObj)
+            {
+
+                var obj = tr.GetObject(id, OpenMode.ForRead);
+                if (obj is Line)
+                {
+                    var tt = obj as Line;
+                    Point3d p1 = tt.StartPoint.TransformBy(s.BlockTransform);
+                    Point3d p2 = tt.EndPoint.TransformBy(s.BlockTransform);
+                    pts.Add(p1);
+                    pts.Add(p2);
+                }
+                else if (obj is Polyline)
+                {
+                    var tt = obj as Polyline;
+                    int vn = tt.NumberOfVertices;
+                    for (int i = 0; i < vn; i++)
+
+                    {
+
+                        // Could also get the 3D point here
+
+                        Point3d pt = tt.GetPoint3dAt(i).TransformBy(s.BlockTransform);
+
+                        pts.Add(pt);
+
+                    }
+
+
+
+                }
+            }
+            return pts;
+        }
+
         public static DB.Linha GetAtributos(BlockReference bloco, Database acCurDb =null)
         {
             DB.Linha retorno = new DB.Linha();
@@ -1354,14 +1349,13 @@ namespace Ferramentas_DLM
             var s = GetAtributos(bloco);
             return s.Get(atributo);
         }
-        public static void Alerta(string mensagem)
+        public static void Alerta(string mensagem, string titulo = "Atenção!", System.Windows.Forms.MessageBoxIcon Icone = System.Windows.Forms.MessageBoxIcon.Error)
         {
-            System.Windows.Forms.MessageBox.Show(mensagem);
+            System.Windows.Forms.MessageBox.Show(mensagem,titulo, System.Windows.Forms.MessageBoxButtons.OK, Icone);
         }
 
         public static void InserirBloco(Document acDoc,  string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
         {
-            List<string> bibliotecas = new List<string>();
             string endereco = "";
             if(File.Exists(nome))
             {
@@ -1387,7 +1381,7 @@ namespace Ferramentas_DLM
                 }
                 if (s.Count == 0)
                 {
-                    MessageBox.Show($"Bloco não encontrado:{nome}");
+                    Alerta($"Bloco não encontrado:{nome}","Operação abortada");
                     return;
                 }
                 else
@@ -1403,7 +1397,7 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            AddMensagem($"\nInserindo bloco {nome}");
+            
             try
             {
                 string nomeBloco = Conexoes.Utilz.getNome(endereco);
@@ -1575,9 +1569,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
-
-
         public static void InserirBlocoPerfil(Point3d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double area = 0)
         {
             try
@@ -1610,21 +1601,19 @@ namespace Ferramentas_DLM
                 ht.Add("ING_PEZ", perfil.H + "*" + perfil.ABA_1 + "*" + comprimento);
                 ht.Add("DIM_PRO", perfil.DIM_PRO);
 
-                Utilidades.InserirBloco(doc, Constantes.BlocoMarcaPerfil, p0, 10, 0, ht);
+                Utilidades.InserirBloco(doc, Constantes.Marca_Perfil, p0, 10, 0, ht);
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                Alerta(ex.Message + "\n" + ex.StackTrace);
 
             }
         }
-
         public static void InserirBlocoArremate(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, int dobras)
         {
-            InserirBlocoChapa(p0, marca, comprimento, largura, espessura, quantidade, material, tratamento, 0, 0, Constantes.BlocoMarcaArremate,dobras);
+            InserirBlocoChapa(p0, marca, comprimento, largura, espessura, quantidade, material, tratamento, 0, 0, Constantes.Marca_Arremate,dobras);
 
         }
-
         public static void InserirBlocoChapa(Point3d p0, string marca, double comprimento, double largura, double espessura, int quantidade, string material, string tratamento, double peso = 0, double area = 0,string bloco = "", int dobras = 0, double peso_especifico = 0.00000785)
         {
             try
@@ -1667,13 +1656,13 @@ namespace Ferramentas_DLM
 
                 if (bloco =="" | bloco ==null)
                 {
-                    bloco = Constantes.BlocoMarcaChapa;
+                    bloco = Constantes.Marca_Chapa;
                 }
                 Utilidades.InserirBloco(doc, bloco, p0, 10, 0, ht);
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                Alerta(ex.Message + "\n" + ex.StackTrace);
             }
             
         }
@@ -1687,7 +1676,7 @@ namespace Ferramentas_DLM
                 {
                     if(perfil.Nome == "")
                     {
-                        MessageBox.Show("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.TipoPerfil + "\nCadastre o perfil no tecnometal e tente novamente.");
+                        Alerta("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.TipoPerfil + "\nCadastre o perfil no tecnometal e tente novamente.");
                     }
                     else
                     {
@@ -1703,7 +1692,7 @@ namespace Ferramentas_DLM
             }
             else
             {
-                MessageBox.Show("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.TipoPerfil);
+                Alerta("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.TipoPerfil);
             }
         }
         /// <summary>

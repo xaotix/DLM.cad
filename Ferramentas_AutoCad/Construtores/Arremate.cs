@@ -33,7 +33,7 @@ namespace Ferramentas_DLM
                         var pl = pols[0];
 
                         List<LineSegment3d> segmentos = new List<LineSegment3d>();
-                        var angulos = Utilidades.GetAngulos(pl, out segmentos);
+                        var angulos = Angulo.GetAngulos(pl, out segmentos);
 
                        
 

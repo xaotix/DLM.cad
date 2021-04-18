@@ -13,11 +13,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-[assembly: CommandClass(typeof(Ferramentas_DLM.Ferramentas))]
+[assembly: CommandClass(typeof(Ferramentas_DLM.Comandos))]
 
 namespace Ferramentas_DLM
 {
-    public class Ferramentas
+    public class Comandos
     {
         public static Monitoramento monitoramento { get; set; }
         public static Cotagem Cotas { get; set; } = new Cotagem();
@@ -400,6 +400,13 @@ namespace Ferramentas_DLM
                 monitoramento.SalvarLog();
             }
         }
+        [CommandMethod("setarLTS")]
+        public void setarLTS()
+        {
+
+            ClasseBase b = new ClasseBase();
+            b.SetLts();
+        }
         [CommandMethod("teste")]
         public void teste()
         {
@@ -461,6 +468,44 @@ namespace Ferramentas_DLM
                 Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
             }
         }
+        [CommandMethod("abrepasta")]
+        public void abrepasta()
+        {
+            ClasseBase pp = new ClasseBase();
+            pp.AbrePasta();
+        }
 
+        [CommandMethod("tabelatecnometal")]
+        public void tabelatecnometal()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.InserirTabela();
+        }
+        [CommandMethod("tabelatecnometalauto")]
+        public void tabelatecnometalauto()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.InserirTabelaAuto();
+        }
+
+        [CommandMethod("selopreenche")]
+        public void selopreenche()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.PreencheSelo();
+        }
+        [CommandMethod("selolimpar")]
+        public void selolimpar()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.PreencheSelo(true);
+        }
+
+        [CommandMethod("rodarmacros")]
+        public void rodarmacros()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.RodarMacros();
+        }
     }
 }
