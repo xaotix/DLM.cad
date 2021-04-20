@@ -16,8 +16,30 @@ namespace Ferramentas_DLM
 {
     public class TecnoMetal : ClasseBase
     {
-        public void Extrair3D()
+        /*
+         Section 'PROFILEDATA' contain:
+                    MAT_PRO = MATERIAL
+                    TRA_PEZ = FICHA DE PINTURA
+                    NOT_PEZ
+                    TINSPROF
+                    POS_PEZ = POSICAO
+                    MAR_PEZ = MARCA
+                    DES_PEZ = MERCADORIA
+                    REV_DIS
+                    COS_PEZ
+                    TIP_PEZ
+                    SBA_PEZ
+                    POS_REV
+                    MAR_REV
+         */
+        public void SetVar3D(Entity selecao, string secao = "PROFILEDATA", string propriedade = "DES_PEZ", string valor = "VIGA SOLDADA")
         {
+            if (!E_Tecnometal3D()) { return; }
+            editor.Command("tec_stsetvar3d", selecao.ObjectId,secao,propriedade, valor);
+        }
+        public void GerarDBF3D()
+        {
+            if (!E_Tecnometal3D()) { return; }
             var st = editor.Command("TEC_ST3D2DBF", this.Nome, "t","N","N");
         }
         public void RodarMacros(List<string> Arquivos = null, bool tabela = true, bool preenche_selo = true, bool extrair = true, bool lts = true)
@@ -74,8 +96,6 @@ namespace Ferramentas_DLM
                             SetLts();
                         }
 
-
-
                         if (preenche_selo)
                         {
                             PreencheSelo();
@@ -117,6 +137,24 @@ namespace Ferramentas_DLM
                 _pedido = GetSubEtapa().GetPedido();
             }
             return _pedido;
+        }
+
+        public bool E_Tecnometal3D(bool mensagem = true)
+        {
+            if (!this.Pasta.ToUpper().EndsWith(@".S&G\"))
+            {
+                if (mensagem)
+                {
+                    Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.S&G)" +
+                   $"\nPasta atual: {this.Pasta}");
+                }
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         public bool E_Tecnometal(bool mensagem = true)
         {
@@ -718,7 +756,7 @@ namespace Ferramentas_DLM
                     foreach (var pos in posicoes_tbl)
                     {
                         var lfim = pos[0].Clonar();
-                        lfim.Set("QTA_PEZ", pos.Sum(x => x.Get("QTA_PEZ").Int));
+                        lfim.Set("QTA_PEZ", pos.Sum(x => x.Get("QTA_PEZ").Double()));
                         l_marcas.Add(lfim);
                     }
                 }

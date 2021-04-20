@@ -42,7 +42,7 @@ namespace Ferramentas_DLM
         public static string Peca_SFLI { get; set; } = RaizPcs + @"SFLI.dwg";
 
         public static List<string> BlocosTecnoMetalMarcas { get; set; } = new List<string>() { "M8_COM", "M8_ELE", "M8_ELU", "M8_LAM", "M8_PRO" };
-        public static List<string> BlocosTecnoMetalPosicoes { get; set; } = new List<string>() { "P8_ELE", "P8_ELU", "P8_LAM", "P8_PRO", "P8_RIP" };
+        public static List<string> BlocosTecnoMetalPosicoes { get; set; } = new List<string>() { "P8_ELE","P8_ELE_M", "P8_ELU","P8_ELU_M", "P8_LAM","P8_LAM_M", "P8_PRO", "P8_PRO_M", "P8_RIP" };
 
     }
 }

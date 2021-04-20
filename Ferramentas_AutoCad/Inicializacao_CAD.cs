@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
+using Ferramentas_DLM.Lisp;
 using MIConvexHull;
 using System;
 using System.Collections;
@@ -28,10 +29,12 @@ namespace Ferramentas_DLM
             DocumentCollection dm = Application.DocumentManager;
             Editor ed = dm.MdiActiveDocument.Editor;
             Assembly asm = Assembly.GetExecutingAssembly();
-            string[] cmds = Utilidades.listarcomandos(asm, false);
-            foreach (string cmd in cmds)
+            List<string> comandos = Utilidades.listarcomandos(asm, false).ToList().OrderBy(x=>x).ToList();
+
+            ed.WriteMessage("=== Lista de comandos ===\n");
+            foreach (var s in comandos)
             {
-                ed.WriteMessage(cmd + "\n");
+                ed.WriteMessage($"---> {s.ToUpper()}\n");
             }
         }
 
@@ -407,56 +410,10 @@ namespace Ferramentas_DLM
             ClasseBase b = new ClasseBase();
             b.SetLts();
         }
-        [CommandMethod("teste")]
-        public void teste()
-        {
-         
-            //estava tentando sem sucesso pegar as informações sobre os elementos do tecnometal
 
 
-            Editor ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
-
-            var selecao = ed.GetEntity("\nSelect object: ");
-            if (selecao.Status != PromptStatus.OK)
-                return;
-
-
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                Entity acEnt = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
-
-
-
-
-
-                //ResultBuffer args = new ResultBuffer(
-                //    new TypedValue((int)LispDataType.ListBegin),
-                //    new TypedValue((int)LispDataType.ObjectId, Autodesk.AutoCAD.Internal.Utils.EntLast()),
-                //    new TypedValue((int)LispDataType.Text, "profiledata"),
-                //    new TypedValue((int)LispDataType.Text, "mar_pez"),
-                //    new TypedValue((int)LispDataType.Text, "sssdaas"),
-                //    new TypedValue((int)LispDataType.ListEnd)
-                //    );
-
-                //LispExtensions.SetLispSym("tec_stsetvar3d", args);
-            }
-            var st = ed.Command("TEC_STGETVAR3D", selecao.ObjectId, "profiledata", "mar_pez", "asdadads");
-
-
-
-
-
-            //TEC_STGETVAR3D
-            //var s = ed.Command("tec_stsetvar3d", selecao.ObjectId, "profiledata", "mar_pez", "asdadads");
-
-
-        }
-
-        [CommandMethod("extrair")]
-        public void extrair()
+        [CommandMethod("gerardbf")]
+        public void gerardbf()
         {
               
             TecnoMetal mm = new TecnoMetal();
@@ -507,5 +464,141 @@ namespace Ferramentas_DLM
             TecnoMetal pp = new TecnoMetal();
             pp.RodarMacros();
         }
+        [CommandMethod("gerardbf3d")]
+        public void gerardbf3d()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.GerarDBF3D();
+        }
+
+
+
+
+        //ABANDONEI, SEM SUCCESSO TENTANDO PEGAR AS MARCAS NO 3D.
+
+        //[CommandMethod("testelisp")]
+        //public void testelisp()
+        //{
+        //    Document doc = Application.DocumentManager.MdiActiveDocument;
+        //    Editor ed = doc.Editor;
+
+       
+        //    // create a result buffer containing a LISP list
+        //    ResultBuffer input = new ResultBuffer(
+        //        new TypedValue(System.Convert.ToInt32(LispDataType.ListBegin)), 
+        //        new TypedValue(System.Convert.ToInt32(LispDataType.Int16), 12), 
+        //        new TypedValue(System.Convert.ToInt32(LispDataType.Text), "toto"), 
+        //        new TypedValue(System.Convert.ToInt32(LispDataType.T_atom)), 
+        //        new TypedValue(System.Convert.ToInt32(LispDataType.ListEnd))
+        //        );
+
+        //    // bind the list to a 'lst1' LISP variable
+        //    LispExtensions.SetLispSym("lst1", input);
+
+        //    // call the 'foo' Lisp function which binds the reversed list to 'lst2'
+        //    // (defun foo () (setq lst2 (reverse lst1))) (vl-acad-defun 'foo)
+        //    LispExtensions.InvokeLisp(new ResultBuffer(new TypedValue(System.Convert.ToInt32(LispDataType.Text), "foo")));
+
+        //    // get the 'lst2' variable value
+        //    ResultBuffer output = LispExtensions.GetLispSym("vl-acad-defun");
+
+        //    // print the value to the commande line
+        //    foreach (TypedValue tv in output)
+        //        ed.WriteMessage("Type: {0} Value: {1}", tv.TypeCode, tv.Value);
+        //}
+
+        //[CommandMethod("testemarcas")]
+        //public void testemarcas()
+        //{
+
+        //    //estava tentando sem sucesso pegar as informações sobre os elementos do tecnometal
+
+
+        //    Editor ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
+        //    Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+        //    Database acCurDb = acDoc.Database;
+
+        //    var selecao = ed.GetEntity("\nSelect object: ");
+        //    if (selecao.Status != PromptStatus.OK)
+        //        return;
+
+
+
+        //    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+        //    {
+        //        Entity acEnt = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
+
+
+
+
+
+               
+        //    }
+
+        //    var ss = SelectionSet.FromObjectIds(new ObjectId[] { selecao.ObjectId });
+        //    //////// //var st = ed.Command( "tec_stsetvar3d", ss, "PROFILEDATA", "MAR_PEZ", "asdadads");
+
+
+        //    //ResultBuffer input = new ResultBuffer(
+        //    //    new TypedValue((int)LispDataType.ListBegin),
+        //    //    new TypedValue((int)LispDataType.Text, "C:tec_stGetvar3d"),
+        //    //    new TypedValue((int)LispDataType.ObjectId, selecao.ObjectId),
+        //    //    new TypedValue((int)LispDataType.Text, "profiledata"),
+        //    //    new TypedValue((int)LispDataType.Text, "mar_pez"),
+        //    //    new TypedValue((int)LispDataType.Text, ""),
+        //    //    new TypedValue((int)LispDataType.ListEnd)
+        //    //    );
+
+        //    //LispExtensions.SetLispSym("lst1", input);
+
+
+        //    //////// //' call the 'foo' Lisp function which binds the reversed list to 'lst2'
+        //    //////// //' (defun foo () (setq lst2 (reverse lst1))) (vl-acad-defun 'foo)
+        //    LispExtensions.InvokeLisp(new ResultBuffer(new TypedValue((int)(LispDataType.Text), "lst1")));
+        //    ////////var et = LispExtensions.GetLispSym("lst2");
+
+
+        //    var st2 = ed.Command("c:TM4D_MARKOFF", "_ALL", "");
+        //    var st3 = ed.Command("c:TM4D_MARKON", ss, "");
+
+        //    ResultBuffer output = LispExtensions.GetLispSym("MAR_PEZ");
+
+        //    //TEC_STGETVAR3D
+        //    //var s = ed.Command("tec_stsetvar3d", selecao.ObjectId, "profiledata", "mar_pez", "asdadads");
+        //    //Tec_StResetIndexRecords
+
+        //}
+
+        //[LispFunction("DisplayFullName")]
+        //public static void DisplayFullName(ResultBuffer rbArgs)
+        //{
+        //    if (rbArgs != null)
+        //    {
+        //        string strVal1 = "";
+        //        string strVal2 = "";
+
+        //        int nCnt = 0;
+        //        foreach (TypedValue rb in rbArgs)
+        //        {
+        //            if (rb.TypeCode == (int)Autodesk.AutoCAD.Runtime.LispDataType.Text)
+        //            {
+        //                switch (nCnt)
+        //                {
+        //                    case 0:
+        //                        strVal1 = rb.Value.ToString();
+        //                        break;
+        //                    case 1:
+        //                        strVal2 = rb.Value.ToString();
+        //                        break;
+        //                }
+
+        //                nCnt = nCnt + 1;
+        //            }
+        //        }
+
+        //        Application.DocumentManager.MdiActiveDocument.Editor.
+        //           WriteMessage("\nName: " + strVal1 + " " + strVal2);
+        //    }
+        //}
     }
 }

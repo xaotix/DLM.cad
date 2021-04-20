@@ -654,10 +654,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        private void AddLeader(double angulo, Point3d pp0, string nome, double multiplicador = 7.5)
-        {
-            AddLeader(pp0, new Coordenada(pp0).Mover(angulo + 45, this.Getescala() * multiplicador).GetPoint(), nome, 2);
-        }
+
         private void AddBlocoTexto(double angulo, Point3d pp0, string nome, double offset, string sap)
         {
             var p1 = new Coordenada(pp0).Mover(angulo + 90, offset).GetPoint();

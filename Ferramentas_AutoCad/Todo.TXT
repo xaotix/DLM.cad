@@ -1,0 +1,3 @@
+﻿criar logicas para inserir marcas e posicoes no 2D
+desenvolver ferramenta para criar object grouping
+fazer testes com dbf com quantidades quebradas

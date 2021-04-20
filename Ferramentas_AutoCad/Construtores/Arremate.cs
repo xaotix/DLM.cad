@@ -99,7 +99,7 @@ namespace Ferramentas_DLM
                                             pcam.Cabecalho.Material = pa.Material;
                                             pcam.Cabecalho.Marca = pa.Marca;
                                             pcam.Nota = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
-                                            pcam.GerareVisualizar();
+                                            pcam.Gerar();
                                             Conexoes.Utilz.Abrir(destino);
 
                                         }
