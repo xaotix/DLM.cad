@@ -103,35 +103,12 @@ namespace Ferramentas_DLM
                 | x.Name.ToUpper() == "MA"
                 );
         }
-        public List<BlockReference> GetBlocos_Marcas()
+        public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
             return Getblocos().FindAll(x =>
-                 x.Name.ToUpper() == "P8_COM" |
-                 x.Name.ToUpper() == "P8_ELU" |
-                 x.Name.ToUpper() == "P8_LAM" |
-                 x.Name.ToUpper() == "P8_POS" |
-                 x.Name.ToUpper() == "P8_PRO" |
-                 x.Name.ToUpper() == "P8_RIP" |
-
-                 x.Name.ToUpper() == "M8_COM" |
-                 x.Name.ToUpper() == "M8_LAM" |
-                 x.Name.ToUpper() == "M8_POS" |
-                 x.Name.ToUpper() == "M8_PRO" |
-                 x.Name.ToUpper() == "M8_RIP" |
-
-                 x.Name.ToUpper() == "TP_COM" |
-                 x.Name.ToUpper() == "TP_LAM" |
-                 x.Name.ToUpper() == "TP_POS" |
-                 x.Name.ToUpper() == "TP_PRO" |
-                 x.Name.ToUpper() == "TP_RIP" |
-
-                 x.Name.ToUpper() == "TM_COM" |
-                 x.Name.ToUpper() == "TM_LAM" |
-                 x.Name.ToUpper() == "TM_POS" |
-                 x.Name.ToUpper() == "TM_PRO" |
-                 x.Name.ToUpper() == "TM_RIP"
-
-                );
+                 Constantes.BlocosTecnoMetalMarcas.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null |
+                 Constantes.BlocosTecnoMetalPosicoes.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null 
+                                    );
         }
         public List<BlockReference> GetFuros_corte()
         {
@@ -1800,7 +1777,7 @@ namespace Ferramentas_DLM
 
           if(marcas_ajusta_escala)
             {
-                UpdateEscala(this.GetBlocos_Marcas());
+                UpdateEscala(this.GetBlocos_Marcas_Posicoes());
             }
 
 
@@ -1861,7 +1838,7 @@ namespace Ferramentas_DLM
                 foreach (var s in this.GetFurosPorDiam())
                 {
                     //AddLinha(s.Origem(), s.Fim(), "DASHDOT", System.Drawing.Color.Yellow);
-                    AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1/2).GetPoint(), s.Nome, size);
+                    Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1/2).GetPoint(), s.Nome, size);
                     //AddBarra();
                     //AddMensagem("\n" + s.Origem());
                     //foreach (var t in s.Furos)
@@ -1935,10 +1912,6 @@ namespace Ferramentas_DLM
         }
     }
 
-    public enum Tipo_Calculo_Contorno
-    {
-        Maximo,
-        Bordas
-    }
+
 
 }

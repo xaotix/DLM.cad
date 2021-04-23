@@ -1,3 +1,9 @@
 ﻿criar logicas para inserir marcas e posicoes no 2D
+criar logicas para verificar as peças antes de gerar DBF / tabelas
+criar logicas para verificar blocos não compativeis (parafuso, elemento, etc...)
 desenvolver ferramenta para criar object grouping
 fazer testes com dbf com quantidades quebradas
+fazer um esquema pra extrair uma tabela de vistas de montagem
+descobrir pra que servem os campos da DBF que deixo setado em branco, talvez utilizar pra gravar algo.
+Atualizar quantidades de CAM ao gerar DBF
+

@@ -374,7 +374,7 @@ namespace Ferramentas_DLM
                         textos.Add("$Fim");
 
 
-                        AddLeader(-45, lhs.StartPoint, "Linha:" + c, 15 * .8);
+                        Utilidades.AddLeader(-45, lhs.StartPoint,this.Getescala(), "Linha:" + c, 15 * .8);
                         c++;
                     }
                  
@@ -686,7 +686,7 @@ namespace Ferramentas_DLM
             //verifica se a purlin é maior que 150
             if (comp_sem_transpasse > 150)
             {
-                Utilidades.InserirBloco(acDoc, Constantes.Incicacao_Tercas, origembloco, this.Getescala(), 0, ht);
+                Blocos.Inserir(acDoc, Constantes.Incicacao_Tercas, origembloco, this.Getescala(), 0, ht);
                 c++;
             }
 
@@ -706,7 +706,7 @@ namespace Ferramentas_DLM
             ht.Add("SFTA", sfta.ToString());
             ht.Add("SFTB", sftb.ToString());
 
-            Utilidades.InserirBloco(acDoc, Constantes.Indicacao_Tirantes, origembloco, this.Getescala(), 0, ht);
+            Blocos.Inserir(acDoc, Constantes.Indicacao_Tirantes, origembloco, this.Getescala(), 0, ht);
             c++;
 
             return c;
@@ -724,9 +724,9 @@ namespace Ferramentas_DLM
             ht.Add("COMP", Comp.ToString());
             ht.Add("FIX", fix);
 
-         
 
-            Utilidades.InserirBloco(acDoc, Constantes.Indicacao_Correntes, origembloco, this.Getescala(), 0, ht);
+
+            Blocos.Inserir(acDoc, Constantes.Indicacao_Correntes, origembloco, this.Getescala(), 0, ht);
             c++;
 
             return c;
@@ -758,7 +758,7 @@ namespace Ferramentas_DLM
                         tt.Add("SECAO", perfil.GetCadastroRME().SECAO.ToString());
                         tt.Add("TIPO", perfil.TIPO.Contains("C")?"C":"Z");
 
-                        Utilidades.SetAtributo(s, acTrans, tt);
+                        Atributos.Set(s, acTrans, tt);
                     }
                     acTrans.Commit();
                     acDoc.Editor.Regen();
@@ -784,7 +784,7 @@ namespace Ferramentas_DLM
                             foreach(var p in st)
                             {
                                 var ll = p.Objeto as BlockReference;
-                                Utilidades.SetAtributo(ll, acTrans, GetHashtable(p));
+                                Atributos.Set(ll, acTrans, GetHashtable(p));
                             }
                         }
                     }
@@ -876,7 +876,7 @@ namespace Ferramentas_DLM
 
                     foreach (var s in this.Getblocos_correntes())
                     {
-                        Utilidades.SetAtributo(s, acTrans, "TIP", perfil.CODIGOFIM.ToString());
+                        Atributos.Set(s, acTrans, "TIP", perfil.CODIGOFIM.ToString());
 
                     }
                     acTrans.Commit();
@@ -901,7 +901,7 @@ namespace Ferramentas_DLM
 
                     foreach (var s in this.Getblocos_correntes())
                     {
-                        Utilidades.SetAtributo(s, acTrans, "DESC", valor.ToString());
+                        Atributos.Set(s, acTrans, "DESC", valor.ToString());
 
                     }
                     acTrans.Commit();
@@ -925,7 +925,7 @@ namespace Ferramentas_DLM
 
                     foreach (var s in this.Getblocos_correntes())
                     {
-                        Utilidades.SetAtributo(s, acTrans, "FIX", valor.ToString());
+                        Atributos.Set(s, acTrans, "FIX", valor.ToString());
 
                     }
                     acTrans.Commit();
@@ -1038,7 +1038,7 @@ namespace Ferramentas_DLM
                 nova.Sequencia = c;
                 foreach (var s in pps.Select(x=>x.Objeto as BlockReference))
                 {
-                    Utilidades.SetAtributo(s, acTrans, "N", c.ToString().PadLeft(3, '0'));
+                    Atributos.Set(s, acTrans, "N", c.ToString().PadLeft(3, '0'));
                 }
                 ss.Add(nova);
                 c++;
@@ -1064,7 +1064,7 @@ namespace Ferramentas_DLM
                
                 foreach (var s in pps.Select(x => x.Objeto as BlockReference))
                 {
-                    Utilidades.SetAtributo(s, acTrans, "Nº", c.ToString().PadLeft(2, '0'));
+                    Atributos.Set(s, acTrans, "Nº", c.ToString().PadLeft(2, '0'));
                 }
                 ss.Add(nova);
                 c++;
@@ -1089,7 +1089,7 @@ namespace Ferramentas_DLM
 
                 foreach (var s in pps.Select(x => x.Objeto as BlockReference))
                 {
-                    Utilidades.SetAtributo(s, acTrans, "Nº", Conexoes.Utilz.getLetra(c));
+                    Atributos.Set(s, acTrans, "Nº", Conexoes.Utilz.getLetra(c));
                 }
                 ss.Add(nova);
                 c++;
@@ -1099,7 +1099,7 @@ namespace Ferramentas_DLM
         }
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
-            var atributos = Utilidades.GetAtributos(bloco);
+            var atributos = Atributos.GetLinha(bloco);
             var N = atributos.Get("N").ToString();
             var ESP = atributos.Get("ESP").Double();
             var SECAO = atributos.Get("SECAO").Double();
@@ -1186,7 +1186,7 @@ namespace Ferramentas_DLM
         }
         public Conexoes.Macros.Tirante GetTirante(BlockReference bloco)
         {
-            var atributos = Utilidades.GetAtributos(bloco);
+            var atributos = Atributos.GetLinha(bloco);
             var SFTA = atributos.Get("SFTA").ToString();
             var SFTB = atributos.Get("SFTB").ToString();
             var TIP = atributos.Get("TIP").ToString();
@@ -1206,7 +1206,7 @@ namespace Ferramentas_DLM
         }
         public Conexoes.Macros.Corrente GetCorrente(BlockReference bloco)
         {
-            var atributos = Utilidades.GetAtributos(bloco);
+            var atributos = Atributos.GetLinha(bloco);
 
             var TIP = atributos.Get("TIP").ToString();
             var DESC = atributos.Get("DESC").Double();
@@ -1241,7 +1241,7 @@ namespace Ferramentas_DLM
 
                     foreach (var s in this.Getblocos_tercas())
                     {
-                        Utilidades.SetAtributo(s, acTrans, "PINTURA", valor);
+                        Atributos.Set(s, acTrans, "PINTURA", valor);
                     }
                     acTrans.Commit();
                     acDoc.Editor.Regen();
@@ -1269,12 +1269,12 @@ namespace Ferramentas_DLM
                     {
                         if(trs == "Esquerda" | trs == "Ambos")
                         {
-                            Utilidades.SetAtributo(s, acTrans, "TRE", valor.ToString());
+                            Atributos.Set(s, acTrans, "TRE", valor.ToString());
                         }
 
                         if (trs == "Direita" | trs == "Ambos")
                         {
-                            Utilidades.SetAtributo(s, acTrans, "TRD", valor.ToString());
+                            Atributos.Set(s, acTrans, "TRD", valor.ToString());
                         }
                     }
                     acTrans.Commit();
@@ -1315,32 +1315,32 @@ namespace Ferramentas_DLM
                         {
                             if(trs == "Ambos")
                             {
-                                Utilidades.SetAtributo(s, acTrans, "AD", "0");
-                                Utilidades.SetAtributo(s, acTrans, "AE", "0");
+                                Atributos.Set(s, acTrans, "AD", "0");
+                                Atributos.Set(s, acTrans, "AE", "0");
                             }
                             else if(trs == "Esquerda")
                             {
-                                Utilidades.SetAtributo(s, acTrans, "AE", "0");
+                                Atributos.Set(s, acTrans, "AE", "0");
                             }
                             else if(trs =="Direita")
                             {
-                                Utilidades.SetAtributo(s, acTrans, "AD", "0");
+                                Atributos.Set(s, acTrans, "AD", "0");
                             }
                         }
                         else if (tip == "Offset")
                         {
                             if (trs == "Ambos")
                             {
-                                Utilidades.SetAtributo(s, acTrans, "AD", valor.ToString());
-                                Utilidades.SetAtributo(s, acTrans, "AE", "0");
+                                Atributos.Set(s, acTrans, "AD", valor.ToString());
+                                Atributos.Set(s, acTrans, "AE", "0");
                             }
                             else if (trs == "Esquerda")
                             {
-                                Utilidades.SetAtributo(s, acTrans, "AE", valor.ToString());
+                                Atributos.Set(s, acTrans, "AE", valor.ToString());
                             }
                             else if (trs == "Direita")
                             {
-                                Utilidades.SetAtributo(s, acTrans, "AD", valor.ToString());
+                                Atributos.Set(s, acTrans, "AD", valor.ToString());
                             }
                         }
                     }

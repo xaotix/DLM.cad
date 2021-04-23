@@ -348,7 +348,7 @@ namespace Ferramentas_DLM
                             {
                                 Hashtable t = new Hashtable();
                                 t.Add("SAP", this.Codigo_Passarela);
-                                Utilidades.InserirBloco(acDoc, Constantes.Peca_PASSARELA, p1, 1, 0, t);
+                                Blocos.Inserir(acDoc, Constantes.Peca_PASSARELA, p1, 1, 0, t);
                                 if(angulo==90 | angulo == 270)
                                 {
                                     mov = vert;
@@ -627,14 +627,14 @@ namespace Ferramentas_DLM
             if (sequencia == 0)
             {
      
-                Utilidades.InserirBloco(acDoc, Constantes.Peca_SFLH, p1, 1, 0, sftlh);
+                Blocos.Inserir(acDoc, Constantes.Peca_SFLH, p1, 1, 0, sftlh);
                 AddBlocoTexto(angulo, p1, SFLH, Getescala() * 5, "");
-                AddLeader(angulo, p1, "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
+                Utilidades.AddLeader(angulo, p1,this.Getescala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
 
             }
-            Utilidades.InserirBloco(acDoc, Constantes.Peca_SFLH, p2, 1, 0, sftlh);
+            Blocos.Inserir(acDoc, Constantes.Peca_SFLH, p2, 1, 0, sftlh);
             AddBlocoTexto(angulo, p2, SFLH, Getescala() * 5,"");
-            AddLeader(angulo, p2, "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
+            Utilidades.AddLeader(angulo, p2, this.Getescala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
             int qtd_sfli = Conexoes.Utilz.Int(comp / this.DistMaxSFLI);
 
@@ -644,7 +644,7 @@ namespace Ferramentas_DLM
                 Point3d pp0 = new Coordenada(p1).Mover(angulo, espacos).GetPoint();
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
-                    Utilidades.InserirBloco(acDoc, Constantes.Peca_SFLI, pp0, 1, 0, sftli);
+                    Blocos.Inserir(acDoc, Constantes.Peca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, Getescala() * 5,"");
                     cotas.Add(pp0);
@@ -653,8 +653,6 @@ namespace Ferramentas_DLM
                 }
             }
         }
-
-
         private void AddBlocoTexto(double angulo, Point3d pp0, string nome, double offset, string sap)
         {
             var p1 = new Coordenada(pp0).Mover(angulo + 90, offset).GetPoint();
@@ -666,10 +664,9 @@ namespace Ferramentas_DLM
                 //move pro lado quando é vertical
                 p1 = new Coordenada(pp0).Mover(angulo + 90, (Getescala() * 16)/2).GetPoint();
             }
-            Utilidades.InserirBloco(acDoc, Constantes.Texto, p1, Getescala(), 0, ss );
+            Blocos.Inserir(acDoc, Constantes.Texto, p1, Getescala(), 0, ss );
 
         }
-
         private void Ajustar(ref double angulo, ref double comp, Point3d p1, ref Point3d p2)
         {
             if (angulo < 0)
@@ -696,7 +693,6 @@ namespace Ferramentas_DLM
             }
             AddMensagem("\nComprimento:" + comp );
         }
-
         public List<RMA> GetRMAsBlocos()
         {
             List<RMA> retorno = new List<RMA>();
@@ -710,14 +706,14 @@ namespace Ferramentas_DLM
             .Select(x => x.First()).ToList();
             var atributos = blocos
             
-            .Select(x => Utilidades.GetAtributo(x, "SAP").ToString()).Distinct().ToList();
+            .Select(x => Atributos.Get(x, "SAP").ToString()).Distinct().ToList();
 
             atributos = atributos.Distinct().ToList();
             if (blocos.Count>0)
             {
               foreach(var codigo in atributos)
                 {
-                    var pass = blocos.FindAll(x => Utilidades.GetAtributo(x, "SAP").ToString() == codigo).ToList();
+                    var pass = blocos.FindAll(x => Atributos.Get(x, "SAP").ToString() == codigo).ToList();
                     retorno.Add(GetRMA(codigo, (double)pass.Count));
                     AddMensagem("\n " + codigo + " - " +  pass.Count + " x");
                 }
@@ -754,7 +750,6 @@ namespace Ferramentas_DLM
 
             return retorno;
         }
-
         private RMA GetRMA(string codigo, double qtd)
         {
             var pc = DBases.GetBancoRM().GetRMA(codigo);
@@ -780,8 +775,6 @@ namespace Ferramentas_DLM
             AddMensagem("\n" + codigo + " - " + pc.DESC + " Qtd>" + qtd);
             return pc;
         }
-
-
         public Telhas()
         {
 

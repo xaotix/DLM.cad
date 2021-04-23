@@ -23,9 +23,39 @@ namespace Ferramentas_DLM
     [Serializable]
     public class ClasseBase
     {
-        public void SetLts(int valor = 10)
+        public bool E_Tecnometal3D(bool mensagem = true)
         {
-            var st = editor.Command("LTSCALE", valor,"");
+            if (!this.Pasta.ToUpper().EndsWith(@".S&G\"))
+            {
+                if (mensagem)
+                {
+                    Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.S&G)" +
+                   $"\nPasta atual: {this.Pasta}");
+                }
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public bool E_Tecnometal(bool mensagem = true)
+        {
+            if (!this.Pasta.ToUpper().EndsWith(@".TEC\"))
+            {
+                if (mensagem)
+                {
+                    Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                   $"\nPasta atual: {this.Pasta}");
+                }
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         [XmlIgnore]
         [Browsable(false)]
@@ -36,24 +66,7 @@ namespace Ferramentas_DLM
                 return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
             }
         }
-        #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
-        //isso daqui está aqui só por causa do Leader.
-        [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UAE?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@@Z")]
-        private static extern ErrorStatus attachAnnotation32(IntPtr thisPtr, ref ObjectId annoId);
-        [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UEAA?AW4ErrorStatus@Acad@@AEBVAcDbObjectId@@@Z")]
-        private static extern ErrorStatus attachAnnotation64(IntPtr thisPtr, ref ObjectId annoId);
-        private static ErrorStatus attachAnnotation(IntPtr thisPtr, ref ObjectId annoId)
-
-        {
-
-            if (Marshal.SizeOf(IntPtr.Zero) > 4)
-
-                return attachAnnotation64(thisPtr, ref annoId);
-
-            return attachAnnotation32(thisPtr, ref annoId);
-
-        }
-        #endregion
+        
         [XmlIgnore]
         [Browsable(false)]
         public Document acDoc
@@ -537,88 +550,7 @@ namespace Ferramentas_DLM
 
 
         #region Cotas
-        public void AddLeader(double angulo, Point3d pp0, string nome, double multiplicador = 7.5)
-        {
-            AddLeader(pp0, new Coordenada(pp0).Mover(angulo + 45, this.Getescala() * multiplicador).GetPoint(), nome, 2);
-        }
-        public void AddLeader(Point3d origem, Point3d pt2, string texto, double size)
-        {
-            // Get the current database
-            Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
 
-            // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
-            {
-                // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
-
-                // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
-
-                // Create the leader with annotation
-                using (Leader acLdr = new Leader())
-                {
-                    acLdr.AppendVertex(origem);
-                    acLdr.AppendVertex(pt2);
-                    acLdr.HasArrowHead = true;
-
-
-                    acLdr.TextStyleId = acCurDb.Textstyle;
-
-                    // Add the new object to Model space and the transaction
-                    var id = acBlkTblRec.AppendEntity(acLdr);
-                    acTrans.AddNewlyCreatedDBObject(acLdr, true);
-
-                    // Attach the annotation after the leader object is added
-                    using (MText acMText = new MText())
-                    {
-                        acMText.Contents = texto;
-                        acMText.Location = acLdr.EndPoint;
-                        acMText.TextStyleId = acCurDb.Textstyle;
-                        double tam = Getescala() * size;
-
-                        if (tam > 0)
-                        {
-                            acMText.TextHeight = tam;
-                        }
-
-                        acMText.Color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Cyan);
-                        acMText.UseBackgroundColor = false;
-                        acMText.BackgroundFill = true;
-                        acMText.BackgroundFillColor = Color.FromColorIndex(ColorMethod.ByAci, 1);
-                        if (Math.Cos(acLdr.GetFirstDerivative(acLdr.EndParam).AngleOnPlane(new Plane())) >= 0.0)
-                            acMText.Attachment = AttachmentPoint.MiddleLeft;
-                        else
-                            acMText.Attachment = AttachmentPoint.MiddleRight;
-                        // Add the new object to Model space and the transaction
-                        var textId = acBlkTblRec.AppendEntity(acMText);
-                        acTrans.AddNewlyCreatedDBObject(acMText, true);
-
-
-                        //essa função nao está funcionando no CAD 2012
-                        //acLdr.UpgradeOpen();
-                        //acLdr.Annotation = id;
-                        //acLdr.EvaluateLeader();
-
-                        //alternativa
-                        ErrorStatus es = attachAnnotation(acLdr.UnmanagedObject, ref textId);
-                        acLdr.EvaluateLeader();
-                      
-                    }
-                }
-                // Create the MText annotation
-
-
-                // Commit the changes and dispose of the transaction
-                acTrans.Commit();
-            }
-
-        }
         public RotatedDimension AddCotaVertical(Coordenada inicio, Coordenada fim, string texto, Point3d posicao, bool dimtix =false, double tam = 0, bool juntar_cotas =false, bool ultima_cota =false)
         {
             RotatedDimension acRotDim;
@@ -914,19 +846,18 @@ namespace Ferramentas_DLM
         {
             bloco.Erase(true);
             ClonarBloco(bloco, posicao);
-
         }
 
         public void ClonarBloco(BlockReference bloco, Point3d posicao)
         {
-            var atributos = Utilidades.GetAtributos(bloco);
+            var atributos = Atributos.GetLinha(bloco);
 
             Hashtable pp = new Hashtable();
             foreach (var cel in atributos.Celulas)
             {
                 pp.Add(cel.Coluna, cel.Valor);
             }
-            Utilidades.InserirBloco(acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, pp);
+            Blocos.Inserir(acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, pp);
         }
 
         public void AddBarra()
@@ -1087,6 +1018,11 @@ namespace Ferramentas_DLM
             {
                 Conexoes.Utilz.Abrir(this.Pasta);
             }
+        }
+
+        public void SetLts(int valor = 10)
+        {
+            var st = editor.Command("LTSCALE", valor, "");
         }
     }
 }

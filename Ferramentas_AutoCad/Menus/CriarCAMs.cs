@@ -64,7 +64,7 @@ namespace Ferramentas_DLM
                     }
                     if (pf.Nome != "")
                     {
-                        Utilidades.InserirBlocoPerfil(p0, marca, comprimento, pf,1,"CIVIL 350", "SEM PINTURA");
+                        Blocos.MarcaPerfil(p0, marca, comprimento, pf,1,"CIVIL 350", "SEM PINTURA");
 
                         if (c == 5)
                         {

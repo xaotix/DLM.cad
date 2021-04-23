@@ -32,15 +32,15 @@ namespace Ferramentas_DLM
                     POS_REV
                     MAR_REV
          */
-        public void SetVar3D(Entity selecao, string secao = "PROFILEDATA", string propriedade = "DES_PEZ", string valor = "VIGA SOLDADA")
+        public void SetVar3D(Entity selecao, string secao, string propriedade, string valor)
         {
             if (!E_Tecnometal3D()) { return; }
-            editor.Command("tec_stsetvar3d", selecao.ObjectId,secao,propriedade, valor);
+            editor.Command("tec_stsetvar3d", selecao.ObjectId, secao, propriedade, valor);
         }
         public void GerarDBF3D()
         {
             if (!E_Tecnometal3D()) { return; }
-            var st = editor.Command("TEC_ST3D2DBF", this.Nome, "t","N","N");
+            var st = editor.Command("TEC_ST3D2DBF", this.Nome, "t", "N", "N");
         }
         public void RodarMacros(List<string> Arquivos = null, bool tabela = true, bool preenche_selo = true, bool extrair = true, bool lts = true)
         {
@@ -56,11 +56,11 @@ namespace Ferramentas_DLM
             }
 
 
-            if(extrair)
+            if (extrair)
             {
-              var s =  GerarDBF(null, Arquivos);
+                var s = GerarDBF(null, Arquivos);
 
-                if(!File.Exists(s.Banco))
+                if (!File.Exists(s.Banco))
                 {
                     return;
                 }
@@ -72,7 +72,7 @@ namespace Ferramentas_DLM
 
             foreach (string drawing in Arquivos)
             {
-                
+
                 if (drawing.ToUpper() == this.Arquivo.ToUpper())
                 {
                     if (tabela)
@@ -83,7 +83,7 @@ namespace Ferramentas_DLM
                 else
                 {
                     Document docToWorkOn = documentManager.Open(drawing, false);
-                  
+
                     using (docToWorkOn.LockDocument())
                     {
                         if (tabela)
@@ -91,7 +91,7 @@ namespace Ferramentas_DLM
                             InserirTabelaAuto();
                         }
 
-                       if(lts)
+                        if (lts)
                         {
                             SetLts();
                         }
@@ -110,15 +110,54 @@ namespace Ferramentas_DLM
             Alerta("Finalizado", MessageBoxIcon.Information);
         }
 
+        public List<MarcaTecnoMetal> GetMarcas()
+        {
+            List<MarcaTecnoMetal> Retorno = new List<MarcaTecnoMetal>();
+
+            List<MarcaTecnoMetal> mm = new List<MarcaTecnoMetal>();
+
+            var pcs = GetPecas(false);
+            foreach(var pc in pcs.Linhas)
+            {
+                mm.Add(new MarcaTecnoMetal(pc));
+            }
+
+            var ms = mm.Select(x => x.Marca).Distinct().ToList();
+
+            foreach(var m in ms)
+            {
+                var iguais = mm.FindAll(x => x.Marca == m);
+
+                var marcas = iguais.FindAll(x => x.Posicao == "");
+                var posicoes = iguais.FindAll(x => x.Posicao != "");
+
+                if(marcas.Count==1)
+                {
+                    var marca = marcas[0];
+                    marca.Posicoes.AddRange(posicoes);
+                    Retorno.Add(marca);
+                }
+                else
+                {
+                    Alerta($"{m} há mais de uma marca com o mesmo nome no desenho.");
+                    return new List<MarcaTecnoMetal>();
+                }
+
+            }
+
+
+            return Retorno;
+
+        }
 
         private Conexoes.SubEtapaTecnoMetal _subetapa { get; set; }
         private Conexoes.ObraTecnoMetal _obra { get; set; }
         private Conexoes.PedidoTecnoMetal _pedido { get; set; }
         public Conexoes.SubEtapaTecnoMetal GetSubEtapa()
         {
-            if(_subetapa==null && Directory.Exists(this.Pasta))
+            if (_subetapa == null && Directory.Exists(this.Pasta))
             {
-                _subetapa = new Conexoes.SubEtapaTecnoMetal(this.Pasta,null);
+                _subetapa = new Conexoes.SubEtapaTecnoMetal(this.Pasta, null);
             }
             return _subetapa;
         }
@@ -139,51 +178,18 @@ namespace Ferramentas_DLM
             return _pedido;
         }
 
-        public bool E_Tecnometal3D(bool mensagem = true)
-        {
-            if (!this.Pasta.ToUpper().EndsWith(@".S&G\"))
-            {
-                if (mensagem)
-                {
-                    Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.S&G)" +
-                   $"\nPasta atual: {this.Pasta}");
-                }
 
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        public bool E_Tecnometal(bool mensagem = true)
-        {
-            if (!this.Pasta.ToUpper().EndsWith(@".TEC\"))
-            {
-                if(mensagem)
-                {
-                    Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
-                   $"\nPasta atual: {this.Pasta}");
-                }
-               
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
         public void InserirTabela()
         {
-            if (!E_Tecnometal()) { return; }
+            //if (!E_Tecnometal()) { return; }
 
             bool cancelado = false;
             var pt = Utilidades.PedirPonto3D("Clique na origem", out cancelado);
-            if(!cancelado)
+            if (!cancelado)
             {
-                var pcs = GetPecasPranchaAberta();
+                var pcs = GetPecas();
 
-                if(pcs.Linhas.Count>0)
+                if (pcs.Linhas.Count > 0)
                 {
                     Tabelas.TecnoMetal(pcs.Linhas, pt);
                 }
@@ -192,7 +198,7 @@ namespace Ferramentas_DLM
         }
         public void InserirTabelaAuto()
         {
-            if (!E_Tecnometal()) { return; }
+            //if (!E_Tecnometal()) { return; }
             IrLayout();
             ZoomExtend();
 
@@ -265,7 +271,7 @@ namespace Ferramentas_DLM
                     break;
                 }
 
-                if(apagar.Count>0)
+                if (apagar.Count > 0)
                 {
                     foreach (var s in apagar)
                     {
@@ -276,20 +282,21 @@ namespace Ferramentas_DLM
                 }
             }
 
-            if(gerar_tabela)
+            if (gerar_tabela)
             {
-                var pcs = GetPecasPranchaAberta();
+                var pcs = GetPecas();
 
                 if (pcs.Linhas.Count > 0)
                 {
-                    Tabelas.TecnoMetal(pcs.Linhas, pt, - 186.47);
+                    Tabelas.TecnoMetal(pcs.Linhas, pt, -186.47);
                 }
             }
 
 
 
         }
-        public List<DB.Linha> GetMarcas(Database db, Transaction tr)
+
+        public List<DB.Linha> GetMarcasLinhas(Database db, Transaction tr)
         {
             var btl = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForWrite);
             BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
@@ -304,7 +311,7 @@ namespace Ferramentas_DLM
                     blocos.Add(s);
                 }
             }
-            List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos,Constantes.BlocosTecnoMetalMarcas, false);
+            List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas, false);
             List<DB.Linha> retorno = new List<DB.Linha>();
 
             retorno.AddRange(tabela_tecno.Select(x => GetLinha(x, db, this.Arquivo, this.Nome, DateTime.Now)));
@@ -320,8 +327,6 @@ namespace Ferramentas_DLM
             ZoomExtend();
 
             var db = this.acCurDb;
-
-
 
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
@@ -344,15 +349,15 @@ namespace Ferramentas_DLM
                 List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false);
                 List<BlockReference> selo = Utilidades.Filtrar(blocos, new List<string> { "SELO" }, false);
 
-                var marcas = GetMarcas(db, tr);
+                var marcas = GetMarcasLinhas(db, tr);
 
-                var nomes_PECAS = marcas.Select(x => x.Get("MAR_PEZ").valor).Distinct().ToList();
+                var nomes_PECAS = marcas.Select(x => x.Get(Constantes.ATT_MAR).valor).Distinct().ToList();
 
                 foreach (var s in selo)
                 {
                     Hashtable att = new Hashtable();
 
-                    if(limpar)
+                    if (limpar)
                     {
                         att.Add("TIPO_DE_PROJETO", "");
                         att.Add("TITULO_DA_PRANCHA", "");
@@ -388,8 +393,8 @@ namespace Ferramentas_DLM
                         att.Add("RESPONSAVEL_TECNICO", this.GetSubEtapa().Calculista);
                         att.Add("CREA", this.GetSubEtapa().CalculistaCREA);
                     }
-                   
-                    Utilidades.SetAtributo(s, tr, att);
+
+                    Atributos.Set(s, tr, att);
 
                 }
 
@@ -402,33 +407,45 @@ namespace Ferramentas_DLM
 
 
         }
-        public DB.Linha GetLinha(BlockReference bloco, Database db, string arquivo, string nome,DateTime ultima_edicao)
+        public DB.Linha GetLinha(BlockReference bloco, Database db, string arquivo, string nome, DateTime ultima_edicao)
         {
             try
             {
-                var att = Utilidades.GetAtributos(bloco, db);
-                att.Add("ARQUIVO", arquivo);
-                att.Add("NUM_COM", this.GetPedido().Codigo);
-                att.Add("DES_COM", this.GetObra().Nome);
-                att.Add("LOT_COM", this.GetSubEtapa().NomeEtapa);
-                att.Add("NUM_DIS", nome);
-                att.Add("FLG_DWG", nome);
-                att.Add("FLG_REC", att.Get("POS_PEZ").ToString() == "" ? "03" : "04");
-                att.Add("DAT_DIS", ultima_edicao.ToShortDateString());
+                var att = Atributos.GetLinha(bloco, db);
+                att.Add(Constantes.ATT_ARQ, arquivo);
+                if (this.E_Tecnometal(false))
+                {
+                    try
+                    {
+                        att.Add(Constantes.ATT_PED, this.GetPedido().Codigo);
+                        att.Add(Constantes.ATT_OBR, this.GetObra().Nome);
+                        att.Add(Constantes.ATT_ETP, this.GetSubEtapa().NomeEtapa);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+
+                att.Add(Constantes.ATT_NUM, nome);
+                att.Add(Constantes.ATT_DWG, nome);
+                att.Add(Constantes.ATT_REC, att.Get(Constantes.ATT_POS).ToString() == "" ? Constantes.ATT_REC_MARCA : Constantes.ATT_REC_POSICAO);
+                att.Add(Constantes.ATT_DAT, ultima_edicao.ToShortDateString());
+                att.Add(Constantes.ATT_BLK, bloco.Name.ToUpper());
 
                 return att;
             }
             catch (Exception ex)
             {
                 DB.Linha att = new DB.Linha();
-                att.Add("BLOCO", nome);
+                att.Add(Constantes.ATT_BLK, bloco.Name.ToUpper());
+                att.Add(Constantes.ATT_DWG, nome);
                 att.Add("ERRO", ex.Message);
-                att.Add("ARQUIVO", arquivo);
+                att.Add(Constantes.ATT_ARQ, arquivo);
 
                 return att;
             }
         }
-        public DB.Tabela GetPecasPranchaAberta(bool converter_padrao_dbf = true)
+        public DB.Tabela GetPecas(bool converter_padrao_dbf = true)
         {
             var db = this.acCurDb;
             DB.Tabela marcas = new DB.Tabela();
@@ -458,7 +475,7 @@ namespace Ferramentas_DLM
 
                 foreach (var m in ms)
                 {
-                    marcas.Linhas.Add(GetLinha(m, db,this.Arquivo,this.Nome, ultima_edicao));
+                    marcas.Linhas.Add(GetLinha(m, db, this.Arquivo, this.Nome, ultima_edicao));
                 }
 
                 foreach (var m in pos)
@@ -479,7 +496,7 @@ namespace Ferramentas_DLM
                 return lista;
             }
         }
-        public DB.Tabela GetPecas(List<string> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
+        public DB.Tabela GetPecasPranchas(List<string> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
         {
 
             DB.Tabela marcas = new DB.Tabela();
@@ -490,9 +507,9 @@ namespace Ferramentas_DLM
                 if (pranchas == null)
                 {
                     pranchas = this.SelecionarDWGs();
-                    if(pranchas.Count>0)
+                    if (pranchas.Count > 0)
                     {
-                        arquivos = pranchas.Select(x => new FileInfo(x)).ToList(); 
+                        arquivos = pranchas.Select(x => new FileInfo(x)).ToList();
                     }
                 }
                 else
@@ -501,7 +518,7 @@ namespace Ferramentas_DLM
                     arquivos = pranchas.Select(x => new FileInfo(x)).ToList();
                 }
 
-              
+
 
                 if (arquivos.Count == 0)
                 {
@@ -572,9 +589,9 @@ namespace Ferramentas_DLM
             catch (System.Exception ex)
             {
             }
-          
 
-            if(converter_padrao_dbf)
+
+            if (converter_padrao_dbf)
             {
                 return GetPadraoDBF(marcas, posicoes);
             }
@@ -583,11 +600,11 @@ namespace Ferramentas_DLM
                 var lista = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
                 return lista;
             }
-            
+
         }
         public DB.Tabela GerarDBF(string destino = null, List<string> pranchas = null)
         {
-            if(!this.Pasta.ToUpper().EndsWith(@".TEC\"))
+            if (!this.Pasta.ToUpper().EndsWith(@".TEC\"))
             {
                 Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {this.Pasta}");
@@ -600,7 +617,7 @@ namespace Ferramentas_DLM
             setar_nome:
                 var nome_dbf = Conexoes.Utilz.RemoverCaracteresEspeciais(Conexoes.Utilz.Prompt("Digine o nome do arquivo", "", etapa.Nome, false, "", false, 16)).ToUpper();
 
-                if (!nome_dbf.Contains("ETAPA_") | nome_dbf.Length < 7 | nome_dbf.Length>16)
+                if (!nome_dbf.Contains("ETAPA_") | nome_dbf.Length < 7 | nome_dbf.Length > 16)
                 {
                     if (Conexoes.Utilz.Pergunta("Nome da DBF deve conter 'ETAPA_'" +
                         "\n Mínimo 7 caracteres." +
@@ -626,15 +643,15 @@ namespace Ferramentas_DLM
 
 
 
-            var lista_pecas = GetPecas(pranchas);
-            if(lista_pecas.Linhas.Count==0)
+            var lista_pecas = GetPecasPranchas(pranchas);
+            if (lista_pecas.Linhas.Count == 0)
             {
                 return new DB.Tabela();
             }
 
-            if (destino!="" && destino!=null && lista_pecas.Linhas.Count>0)
+            if (destino != "" && destino != null && lista_pecas.Linhas.Count > 0)
             {
-               if(!Conexoes.Utilz.GerarDBF(lista_pecas, destino))
+                if (!Conexoes.Utilz.GerarDBF(lista_pecas, destino))
                 {
                     lista_pecas.Banco = "";
                     return lista_pecas;
@@ -647,50 +664,56 @@ namespace Ferramentas_DLM
         {
             var lista = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
             List<string> colunas = new List<string>();
-            colunas.Add("FLG_REC");
-            colunas.Add("NUM_COM");
-            colunas.Add("DES_COM");
-            colunas.Add("LOT_COM");
+            colunas.Add(Constantes.ATT_REC);
+            colunas.Add(Constantes.ATT_PED);
+            colunas.Add(Constantes.ATT_OBR);
+            colunas.Add(Constantes.ATT_ETP);
             colunas.Add("DLO_COM");
-            colunas.Add("CLI_COM");
+            colunas.Add(Constantes.ATT_CLI);
             colunas.Add("IND_COM");
             colunas.Add("DT1_COM");
             colunas.Add("DT2_COM");
-            colunas.Add("NUM_DIS");
+            colunas.Add(Constantes.ATT_NUM);
             colunas.Add("DES_DIS");
             colunas.Add("NOM_DIS");
             colunas.Add("REV_DIS");
-            colunas.Add("DAT_DIS");
-            colunas.Add("TRA_PEZ");
+            colunas.Add(Constantes.ATT_DAT);
+            colunas.Add(Constantes.ATT_FIC);
             colunas.Add("SBA_PEZ");
-            colunas.Add("TIP_PEZ");
-            colunas.Add("MAR_PEZ");
+            colunas.Add(Constantes.ATT_TPC);
+            colunas.Add(Constantes.ATT_MAR);
             colunas.Add("MBU_PEZ");
-            colunas.Add("DES_PEZ");
-            colunas.Add("POS_PEZ");
-            colunas.Add("NOT_PEZ");
-            colunas.Add("ING_PEZ");
-            colunas.Add("QTA_PEZ");
+            colunas.Add(Constantes.ATT_MER);
+            colunas.Add(Constantes.ATT_POS);
+            colunas.Add(Constantes.ATT_NOT);
+            colunas.Add(Constantes.ATT_VOL);
+            colunas.Add(Constantes.ATT_QTD);
             colunas.Add("QT1_PEZ");
-            colunas.Add("MCL_PEZ");
-            colunas.Add("COD_PEZ");
-            colunas.Add("COS_PEZ");
-            colunas.Add("NOM_PRO");
-            colunas.Add("LUN_PRO");
-            colunas.Add("LAR_PRO");
-            colunas.Add("SPE_PRO");
-            colunas.Add("MAT_PRO");
+            colunas.Add(Constantes.ATT_CIC);
+            colunas.Add(Constantes.ATT_SAP);
+            colunas.Add(Constantes.ATT_CCC);
+            colunas.Add(Constantes.ATT_PER);
+            colunas.Add(Constantes.ATT_CMP);
+            colunas.Add(Constantes.ATT_LRG);
+            colunas.Add(Constantes.ATT_ESP);
+            colunas.Add(Constantes.ATT_MAT);
             colunas.Add("TIP_BUL");
             colunas.Add("DIA_BUL");
             colunas.Add("LUN_BUL");
             colunas.Add("PRB_BUL");
-            colunas.Add("PUN_LIS");
-            colunas.Add("SUN_LIS");
-            colunas.Add("PRE_LIS");
-            colunas.Add("FLG_DWG");
+            colunas.Add(Constantes.ATT_PES);
+            colunas.Add(Constantes.ATT_SUP);
+            colunas.Add(Constantes.ATT_PRE);
+            colunas.Add(Constantes.ATT_DWG);
+
+
+            //propriedades que não vão para a DBF
+            colunas.Add(Constantes.ATT_ARQ);
+            colunas.Add(Constantes.ATT_BLK);
+
 
             DB.Tabela tab_pecas = new DB.Tabela();
-            var grp_blocos = lista.Linhas.GroupBy(x => x.Get("MAR_PEZ").ToString()).ToList().ToList();
+            var grp_blocos = lista.Linhas.GroupBy(x => x.Get(Constantes.ATT_MAR).ToString()).ToList().ToList();
             foreach (var s in lista.Linhas)
             {
                 DB.Linha l = new DB.Linha();
@@ -705,7 +728,7 @@ namespace Ferramentas_DLM
             tab_pecas.Linhas = tab_pecas.Linhas.OrderBy(x => x.Descricao).ToList();
 
             List<DB.Linha> l_marcas = new List<DB.Linha>();
-            var agrupado = tab_pecas.Linhas.GroupBy(x => x.Get("MAR_PEZ").ToString()).Select(x => x.ToList()).ToList();
+            var agrupado = tab_pecas.Linhas.GroupBy(x => x.Get(Constantes.ATT_MAR).ToString()).Select(x => x.ToList()).ToList();
 
 
             foreach (var m in agrupado)
@@ -717,46 +740,50 @@ namespace Ferramentas_DLM
                     var p_simples = m[0].Clonar();
                     var m_simples = m[0].Clonar();
 
-                    m_simples.Set("FLG_REC", "03");
-                    m_simples.Set("POS_PEZ", "");
-                    p_simples.Set("QTA_PEZ", 1);
-                    m_simples.Set("COD_PEZ", "");
-                    m_simples.Set("NOM_PRO", "");
-                    m_simples.Set("LUN_PRO", "");
-                    m_simples.Set("LAR_PRO", "");
-                    m_simples.Set("SPE_PRO", "");
-                    m_simples.Set("MAT_PRO", "");
-                    m_simples.Set("MAT_PRO", "");
-                    m_simples.Set("PUN_LIS", "");
-                    m_simples.Set("SUN_LIS", "");
-                    m_simples.Set("PRE_LIS", "");
+                    m_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_MARCA);
+                    m_simples.Set(Constantes.ATT_POS, "");
+                    m_simples.Set(Constantes.ATT_SAP, "");
+                    m_simples.Set(Constantes.ATT_PER, "");
+                    m_simples.Set(Constantes.ATT_CMP, "");
+                    m_simples.Set(Constantes.ATT_LRG, "");
+                    m_simples.Set(Constantes.ATT_ESP, "");
+                    m_simples.Set(Constantes.ATT_MAT, "");
+                    m_simples.Set(Constantes.ATT_MAT, "");
+                    m_simples.Set(Constantes.ATT_PES, "");
+                    m_simples.Set(Constantes.ATT_SUP, "");
+                    m_simples.Set(Constantes.ATT_PRE, "");
+                    
+                    p_simples.Set(Constantes.ATT_QTD, 1);
+                    p_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_POSICAO);
+                    p_simples.Set(Constantes.ATT_POS, p_simples.Get(Constantes.ATT_MAR).valor);
+                    p_simples.Set(Constantes.ATT_BLK, "DUMMY");
 
-                    p_simples.Set("FLG_REC", "04");
-                    p_simples.Set("POS_PEZ", p_simples.Get("MAR_PEZ").valor);
                     l_marcas.Add(m_simples);
                     l_marcas.Add(p_simples);
+
 
                 }
                 else
                 {
                     //junta posições iguais
-                    var marca = m.FindAll(x => x.Get("POS_PEZ").valor == "");
+                    var marca = m.FindAll(x => x.Get(Constantes.ATT_POS).valor == "");
                     if (marca.Count > 1)
                     {
                         Alerta($"Abortado:" +
-                            $"\n{marca[0].Get("MAR_PEZ")}" +
-                            $"\nMarca se encontra em mais de uma prancha." +
+                            $"\n{marca[0].Get(Constantes.ATT_MAR)}" +
+                            $"\nMarca duplicada ou se encontra em mais de uma prancha." +
+                            $"\nOcorrências: {marca.Count}\n" +
                             $"\nPranchas: \n" +
-                            $"{string.Join("\n", marca.Select(x => x.Get("FLG_DWG")))}");
+                            $"{string.Join("\n", marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}");
                         return new DB.Tabela();
                     }
 
-                    var posicoes_tbl = m.FindAll(x => x.Get("POS_PEZ").valor != "").GroupBy(x => x.Get("POS_PEZ").valor).Select(X => X.ToList());
+                    var posicoes_tbl = m.FindAll(x => x.Get(Constantes.ATT_POS).valor != "").GroupBy(x => x.Get(Constantes.ATT_POS).valor).Select(X => X.ToList());
                     l_marcas.AddRange(marca);
                     foreach (var pos in posicoes_tbl)
                     {
                         var lfim = pos[0].Clonar();
-                        lfim.Set("QTA_PEZ", pos.Sum(x => x.Get("QTA_PEZ").Double()));
+                        lfim.Set(Constantes.ATT_QTD, pos.Sum(x => x.Get(Constantes.ATT_QTD).Double()));
                         l_marcas.Add(lfim);
                     }
                 }
@@ -764,7 +791,7 @@ namespace Ferramentas_DLM
             }
             foreach (var l in l_marcas)
             {
-                l.Descricao = l.Get("MAR_PEZ") + " - P = " + l.Get("POS_PEZ");
+                l.Descricao = l.Get(Constantes.ATT_MAR) + " - P = " + l.Get(Constantes.ATT_POS);
             }
 
             //ordena as peças, colocando as marcas antes das posições
@@ -775,6 +802,403 @@ namespace Ferramentas_DLM
 
             return lista_convertida;
         }
+
+
+
+        private string PromptMarca(string prefix = "ARR-")
+        {
+            var marcas = this.GetMarcas();
+            var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count +1;
+            retentar:
+            var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", "Nome da marca", prefix + nnn.ToString().PadLeft(2,'0'), false, "", false, 12).ToUpper().Replace(" ","");
+
+            if(m.Length==0)
+            {
+                if (Conexoes.Utilz.Pergunta("Nome não pode ser em branco. \nTentar Novamente?"))
+                {
+                    goto retentar;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            var iguais = marcas.FindAll(x => x.Marca == m);
+            if (iguais.Count>0)
+            {
+                if (Conexoes.Utilz.Pergunta($"[{m}]Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?"))
+                {
+                    goto retentar;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            if(Conexoes.Utilz.CaracteresEspeciais(m))
+            {
+                if (Conexoes.Utilz.Pergunta($"[{m}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?"))
+                {
+                    goto retentar;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            return m;
+        }
+        private  string PromptFicha()
+        {
+            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", "SEM PINTURA", true, "FICHA", false, 20);
+        }
+        public  string PromptMaterial()
+        {
+            var mat = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetMateriais(), null, "Selecione");
+            return mat;
+        }
+        public string PromptMercadoria()
+        {
+            var mat = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetMercadorias(), null, "Selecione");
+            return mat;
+        }
+
+        public void InserirArremate(string marca = "", string posicao = "")
+        {
+
+            if (marca == "")
+            {
+                marca = PromptMarca("ARR-");
+            }
+            if (marca == null | marca == "") { return; }
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var sel = SelecionarObjetos(acTrans);
+                if (sel.Status == PromptStatus.OK)
+                {
+                    var pols = this.Getpolylinhas();
+                    if (pols.Count > 0)
+                    {
+
+                        bool status = false;
+
+                        var pl = pols[0];
+
+                        if (pl.Closed)
+                        {
+                            Alerta("Polyline inválida. Somente polylines abertas representando o corte da chapa.");
+                            return;
+                        }
+
+
+                        double comprimento = Utilidades.PedirDistancia("Defina o comprimento", out status);
+
+                        if (status)
+                        {
+                            return;
+                        }
+
+
+                        List<LineSegment3d> segmentos = new List<LineSegment3d>();
+                        var angulos = Angulo.GetAngulos(pl, out segmentos);
+
+                        foreach (var s in angulos)
+                        {
+                            AddMensagem($"\nAngulo:" + s);
+                        }
+
+
+                        double corte = Math.Round(pl.Length);
+                        var chapas = Conexoes.DBases.GetChapas();
+
+
+                        var espessura = Conexoes.Utilz.SelecionarObjeto(chapas, null, "Selecione uma espessura");
+                        if (espessura == null)
+                        {
+                            return;
+                        }
+                        string ficha = "SEM PINTURA";
+                        Conexoes.Bobina bobina = Conexoes.DBases.GetBobinaDummy();
+                        bool chapa_fina = espessura.GetChapa_Fina();
+                        if (chapa_fina)
+                        {
+                            var bobinas = Conexoes.DBases.GetBancoRM().GetBobinas();
+                            bobina = Conexoes.Utilz.SelecionarObjeto(bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte), null, "Selecione uma espessura");
+                        }
+                        else
+                        {
+                            bobina.Espessura = espessura.valor;
+                            bobina.Material = "CIVIL 350";
+                            ficha = PromptFicha();
+                        }
+
+                        if (bobina == null)
+                        {
+                            return;
+                        }
+
+                        Chapa_Dobrada pa = Conexoes.Utilz.Propriedades(new Chapa_Dobrada(bobina, corte, comprimento, angulos) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, DescontarDobras = !chapa_fina, Ficha = ficha }, out status);
+                        if (status)
+                        {
+                            if (pa.Comprimento > 0 && pa.Espessura > 0 && pa.Marca.Replace(" ", "") != "" && pa.Quantidade > 0)
+                            {
+                                bool cancelado = true;
+                                var origem = Utilidades.PedirPonto3D("Selecione o ponto de inserção do bloco.", out cancelado);
+                                if (!cancelado)
+                                {
+                                    if (chapa_fina)
+                                    {
+                                        Blocos.MarcaChapa(origem, pa, Tipo_Perfil.Arremate, this.Getescala(), posicao);
+                                    }
+                                    else
+                                    {
+                                        Blocos.MarcaChapa(origem, pa, Tipo_Perfil.Chapa, this.Getescala(), posicao);
+                                    }
+
+                                    if (pa.GerarCam == Opcao.Sim)
+                                    {
+                                        string destino = this.Pasta;
+                                        if (this.Pasta.EndsWith(".TEC"))
+                                        {
+                                            destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), "CAM");
+                                        }
+                                        if (Directory.Exists(destino))
+                                        {
+                                            DLMCam.Chapa pp = new DLMCam.Chapa(pa.Comprimento, pa.Largura, pa.Espessura);
+
+                                            string arquivo = destino + pa.Marca + ".CAM";
+
+                                            DLMCam.Cam pcam = new DLMCam.Cam(arquivo, pp);
+                                            double x = 0;
+
+                                            for (int i = 0; i < angulos.Count; i++)
+                                            {
+                                                var s = segmentos[i];
+                                                x = x + s.Length - (chapa_fina ? 0 : pa.Espessura);
+                                                var a = angulos[i];
+                                                pcam.Dobras.Liv1.Add(new DLMCam.Estrutura.Dobra(a, x, pcam, false));
+                                            }
+
+                                            pcam.Cabecalho.TRA_PEZ = pa.Ficha;
+                                            pcam.Cabecalho.Quantidade = pa.Quantidade;
+                                            pcam.Cabecalho.Material = pa.Material;
+                                            pcam.Cabecalho.Marca = pa.Marca;
+                                            pcam.Nota = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
+                                            pcam.Gerar();
+                                            Conexoes.Utilz.Abrir(destino);
+
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        public void InserirChapa(string marca = "", string posicao = "")
+        {
+            if (marca == "")
+            {
+                marca = PromptMarca("CH-");
+            }
+            if (marca == null | marca == "") { return; }
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                bool status = false;
+                double comprimento = Utilidades.PedirDistancia("Defina o comprimento:", out status);
+                if (!status)
+                {
+                    double largura = Utilidades.PedirDistancia("Defina a largura:", out status);
+                    if (!status)
+                    {
+                        var chapas = Conexoes.DBases.GetChapas();
+                        var espessura = Conexoes.Utilz.SelecionarObjeto(chapas, null, "Selecione a espessura");
+                        string ficha = "SEM PINTURA";
+                        if (espessura != null)
+                        {
+                            Conexoes.Bobina bobina = Conexoes.DBases.GetBobinaDummy();
+                            bool chapa_fina = espessura.GetChapa_Fina();
+                            if (chapa_fina)
+                            {
+                                var bobinas = Conexoes.DBases.GetBancoRM().GetBobinas();
+                                bobina = Conexoes.Utilz.SelecionarObjeto(bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte), null, "Selecione uma espessura");
+                            }
+                            else
+                            {
+                                bobina.Espessura = espessura.valor;
+                                bobina.Material = "CIVIL 350";
+                                ficha = PromptFicha();
+                              
+                            }
+
+                            if (bobina != null)
+                            {
+
+                                Chapa_Dobrada pa = Conexoes.Utilz.Propriedades(new Chapa_Dobrada(bobina, comprimento, largura) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, Ficha = ficha }, out status);
+                                if (status)
+                                {
+                                    var origem = Utilidades.PedirPonto3D("Selecione a origem", out status);
+                                    if (!status)
+                                    {
+                                        if (chapa_fina)
+                                        {
+                                            Blocos.MarcaChapa(origem, pa, Tipo_Perfil.Arremate, this.Getescala(), posicao);
+                                        }
+                                        else
+                                        {
+                                            Blocos.MarcaChapa(origem, pa, Tipo_Perfil.Chapa, this.Getescala(), posicao);
+                                        }
+
+                                        if (pa.GerarCam == Opcao.Sim)
+                                        {
+                                            string destino = this.Pasta;
+                                            if (this.Pasta.EndsWith(".TEC"))
+                                            {
+                                                destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), "CAM");
+                                            }
+                                            if (Directory.Exists(destino))
+                                            {
+                                                DLMCam.Chapa pp = new DLMCam.Chapa(pa.Comprimento, pa.Largura, pa.Espessura);
+
+                                                string arquivo = destino + pa.Marca + ".CAM";
+
+                                                DLMCam.Cam pcam = new DLMCam.Cam(arquivo, pp);
+
+                                                pcam.Cabecalho.TRA_PEZ = pa.Ficha;
+                                                pcam.Cabecalho.Quantidade = pa.Quantidade;
+                                                pcam.Cabecalho.Material = pa.Material;
+                                                pcam.Cabecalho.Marca = pa.Marca;
+                                                pcam.Gerar();
+                                                Conexoes.Utilz.Abrir(destino);
+
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+
+            }
+        }
+        public void InserirElementoUnitario(string marca = "", string posicao = "")
+        {
+            if (marca == "")
+            {
+                marca = PromptMarca("CH-");
+            }
+            if (marca == null | marca == "") { return; }
+            Conexoes.RMA peca = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione uma peça");
+
+            if (peca != null)
+            {
+                bool status = false;
+            denovo:
+                double qtd = Conexoes.Utilz.Prompt(peca.Multiplo, out status);
+                if (!status)
+                {
+                    return;
+                }
+                if (qtd <= 0 | !peca.MultiploOk(qtd))
+                {
+                    if (Conexoes.Utilz.Pergunta($"Valor setado [{qtd} é inválido. Precisa ser maior que zero e múltiplo de {peca.Multiplo}\nTentar novamente?"))
+                    {
+                        goto denovo;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+                var origem = Utilidades.PedirPonto3D("Selecione a origem", out status);
+
+                if (status)
+                {
+                    return;
+                }
+
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                {
+
+                    Blocos.MarcaElemUnitario(origem, peca, qtd, marca, this.Getescala(), posicao);
+
+                }
+            }
+        }
+        public void InserirElementoM2(string marca = "", string posicao = "")
+        {
+
+            if (marca == "")
+            {
+                marca = PromptMarca("ARR-");
+            }
+            if (marca == null | marca == "") { return; }
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var sel = SelecionarObjetos(acTrans);
+                if (sel.Status == PromptStatus.OK)
+                {
+                    var pols = this.Getpolylinhas();
+                    if (pols.Count > 0)
+                    {
+
+
+                        var pl = pols[0];
+
+                        if (!pl.Closed)
+                        {
+                            Alerta("Polyline inválida. Somente polylines fechadas representando o contorno da chapa.");
+                            return;
+                        }
+
+                        double comprimento = 0;
+                        double largura = 0;
+                        double area = 0;
+                        double perimetro = 0;
+                        Utilidades.GetInfo(pl, out comprimento, out largura, out area, out perimetro);
+
+                        comprimento = Math.Round(comprimento, 4);
+                        largura = Math.Round(largura, 4);
+
+                        bool status = true;
+                        string material = "CIVIL 350";
+
+
+                        if (comprimento > 0 && largura > 0)
+                        {
+
+                            double quantidade = Conexoes.Utilz.Prompt(1, out status, 0);
+
+                            if (quantidade > 0)
+                            {
+                                var perfil = Conexoes.Utilz.SelecionarObjeto(Utilidades.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
+                                if (perfil != null)
+                                {
+                                    var ficha = PromptFicha();
+
+                                    var ponto = Utilidades.PedirPonto3D("Selecione a origem do bloco", out status);
+                                    if (!status)
+                                    {
+                                        Blocos.MarcaElemM2(ponto, perfil, marca, quantidade, comprimento, largura, area,perimetro, ficha,material, this.Getescala(), posicao);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public TecnoMetal()
         {
 
