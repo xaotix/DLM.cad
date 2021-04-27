@@ -136,6 +136,7 @@
     <Compile Include="Extensoes\Lisp.cs" />
     <Compile Include="Funcoes\Angulo.cs" />
     <Compile Include="Funcoes\Blocos.cs" />
+    <Compile Include="OutrasClasses\ConfiguracaoMacro.cs" />
     <Compile Include="OutrasClasses\Coordenada.cs" />
     <Compile Include="Construtores\Cotagem.cs" />
     <Compile Include="Construtores\Telhas.cs" />

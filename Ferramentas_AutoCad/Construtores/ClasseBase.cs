@@ -23,6 +23,18 @@ namespace Ferramentas_DLM
     [Serializable]
     public class ClasseBase
     {
+        public  void SetViewport(bool block = true, string layer = "MV")
+        {
+
+            IrLayout();
+            Utilidades.CriarLayer(layer, System.Drawing.Color.Gray, false);
+            var view = Utilidades.GetViewports(layer);
+            this.editor.Command("mview", "lock", block ? "ON" : "OFF", "all", "");
+            this.editor.Command("layer", block ? "off":"on", layer, "");
+            this.editor.Command("pspace", "");
+            this.editor.Command("zoom", "e","");
+
+        }
         public bool E_Tecnometal3D(bool mensagem = true)
         {
             if (!this.Pasta.ToUpper().EndsWith(@".S&G\"))
@@ -125,12 +137,13 @@ namespace Ferramentas_DLM
         }
         public void IrLayout()
         {
-            var lista = Utilidades.ListarLayouts();
+            var lista = Utilidades.ListarLayouts().Select(x=>x.LayoutName).ToList();
             if(lista.Count>0)
             {
                 using (acDoc.LockDocument())
                     LayoutManager.Current.CurrentLayout = lista[0];
             }
+         
         }
         public void IrModel()
         {

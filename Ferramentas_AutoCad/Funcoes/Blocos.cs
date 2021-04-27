@@ -292,7 +292,7 @@ namespace Ferramentas_DLM
 
             }
         }
-        public static void MarcaChapa(Point3d p0, Chapa_Dobrada pf, Tipo_Perfil tipo, double escala, string posicao ="")
+        public static void MarcaChapa(Point3d p0, Chapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao ="")
         {
             try
             {
@@ -322,7 +322,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_GEO, 0);
 
 
-                if (tipo == Tipo_Perfil.Arremate)
+                if (tipo == Tipo_Bloco.Arremate)
                 {
                     if(posicao!="")
                     {
@@ -333,7 +333,7 @@ namespace Ferramentas_DLM
                         bloco = Constantes.Marca_Arremate;
                     }
                 }
-                else if (tipo == Tipo_Perfil.Chapa)
+                else if (tipo == Tipo_Bloco.Chapa)
                 {
                     if (posicao != "")
                     {
@@ -344,7 +344,7 @@ namespace Ferramentas_DLM
                         bloco = Constantes.Marca_Chapa;
                     }
                 }
-                else if (tipo ==  Tipo_Perfil.Elemento_M2)
+                else if (tipo ==  Tipo_Bloco.Elemento_M2)
                 {
                     if (posicao != "")
                     {
@@ -495,7 +495,7 @@ namespace Ferramentas_DLM
             }
             else if (cam.Familia == DLMCam.Familia.Chapa)
             {
-                MarcaChapa(origem, new Chapa_Dobrada(cam), Tipo_Perfil.Chapa, escala);
+                MarcaChapa(origem, new Chapa_Dobrada(cam), Tipo_Bloco.Chapa, escala);
             }
             else
             {

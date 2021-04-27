@@ -25,6 +25,9 @@ namespace Ferramentas_DLM
 {
     public static class Utilidades 
     {
+
+
+
         #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
         //isso daqui está aqui só por causa do Leader.
         [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UAE?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@@Z")]
@@ -120,9 +123,9 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static List<string> ListarLayouts()
+        public static List<Layout> ListarLayouts()
         {
-            List<string> retorno = new List<string>();
+            List<Layout> retorno = new List<Layout>();
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
 
@@ -130,16 +133,76 @@ namespace Ferramentas_DLM
             {
                 DBDictionary lays =
                     acTrans.GetObject(acCurDb.LayoutDictionaryId,
-                        OpenMode.ForRead) as DBDictionary;
+                        OpenMode.ForWrite) as DBDictionary;
 
                 foreach (DBDictionaryEntry item in lays)
                 {
-                    retorno.Add(item.Key);
+                    Layout acLyrTblRec;
+                    acLyrTblRec = acTrans.GetObject(item.Value,
+                                                    OpenMode.ForWrite) as Layout;
+
+                    if(acLyrTblRec!=null)
+                    {
+                    retorno.Add(acLyrTblRec);
+
+
+                        var views = acLyrTblRec.GetViewports();
+                        foreach (ObjectId view in views)
+                        {
+                            Viewport vp = acTrans.GetObject(view,OpenMode.ForWrite) as Viewport;
+                        }
+
+                    }
                 }
                 acTrans.Abort();
             }
             return retorno;
         }
+        public static List<Viewport> GetViewports(string layer = "")
+        {
+            List<Viewport> retorno = new List<Viewport>();
+            Document acDoc = Application.DocumentManager.MdiActiveDocument;
+            Database acCurDb = acDoc.Database;
+
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                DBDictionary lays =
+                    acTrans.GetObject(acCurDb.LayoutDictionaryId,
+                        OpenMode.ForWrite) as DBDictionary;
+
+                foreach (DBDictionaryEntry item in lays)
+                {
+                    Layout acLyrTblRec;
+                    acLyrTblRec = acTrans.GetObject(item.Value,
+                                                    OpenMode.ForWrite) as Layout;
+
+                    if (acLyrTblRec != null)
+                    {
+                        //retorno.Add(acLyrTblRec);
+
+
+                        var views = acLyrTblRec.GetViewports();
+                        foreach (ObjectId view in views)
+                        {
+                            Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
+                            if(vp!=null)
+                            {
+                                retorno.Add(vp);
+                                if(layer!="")
+                                {
+                                    vp.Layer = layer;
+                                }
+                            }
+                        }
+
+                    }
+                }
+                acTrans.Commit();
+            }
+            return retorno;
+        }
+
+
         public static void LimparCotas(OpenCloseTransaction acTrans, SelectionSet acSSet)
         {
             if (acTrans == null | acSSet == null)

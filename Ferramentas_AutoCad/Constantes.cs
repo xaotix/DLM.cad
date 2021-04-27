@@ -26,7 +26,7 @@ namespace Ferramentas_DLM
         Ponto,
     }
 
-    public enum Tipo_Perfil
+    public enum Tipo_Bloco
     {
         Chapa,
         Perfil,
@@ -99,6 +99,17 @@ namespace Ferramentas_DLM
 
         public static List<string> BlocosTecnoMetalMarcas { get; set; } = new List<string>() { BL_M_Composta, BL_M_ELEM2, BL_M_ELUNIT, BL_M_CH, BL_M_PERF, BL_M_ARR };
         public static List<string> BlocosTecnoMetalPosicoes { get; set; } = new List<string>() { BL_P_PERF, BL_P_CH, BL_P_ELEM2, BL_P_ELUNIT};
+
+        public static List<string> BlocosTecnoMetal
+        {
+            get
+            {
+                List<string> retorno = new List<string>();
+                retorno.AddRange(BlocosTecnoMetalMarcas);
+                retorno.AddRange(BlocosTecnoMetalPosicoes);
+                return retorno;
+            }
+        }
 
         public static string Marca_Composta { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_M_Composta}.dwg";
         public static string Marca_Perfil { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_M_PERF}.dwg";

@@ -360,10 +360,7 @@ namespace Ferramentas_DLM
             if (File.Exists(arquivo))
             {
                 Conexoes.DBRM_Offline pp = new Conexoes.DBRM_Offline();
-
                 var s = pp.Ler(arquivo);
-
-
                 Tabelas.DBRM(s);
             }
 
@@ -380,7 +377,10 @@ namespace Ferramentas_DLM
         public void tabelatecnometalauto()
         {
             TecnoMetal pp = new TecnoMetal();
-            pp.InserirTabelaAuto();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            pp.InserirTabelaAuto(ref erros);
+
+            Conexoes.Utilz.ShowReports(erros);
         }
 
         
@@ -419,13 +419,16 @@ namespace Ferramentas_DLM
         {
 
             TecnoMetal mm = new TecnoMetal();
-            var tbl = mm.GerarDBF();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            var tbl = mm.GerarDBF(ref erros,Conexoes.Utilz.Pergunta("Atualizar CAMs?\nAo ativar essa opção também será verificado CAM x Projeto"));
 
-            if (File.Exists(tbl.Banco))
+            if (File.Exists(tbl.Banco) && erros.Count==0)
             {
-                Utilidades.Alerta("Arquivo gerado com sucesso!");
+                Utilidades.Alerta("Arquivo gerado com sucesso!\nCAMs Atualizados!");
                 Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
             }
+
+            Conexoes.Utilz.ShowReports(erros);
         }
 
 
@@ -508,6 +511,19 @@ namespace Ferramentas_DLM
         }
 
 
+        [CommandMethod("bloqueiamviews")]
+        public void bloqueiamviews()
+        {
+            ClasseBase b = new ClasseBase();
+            b.SetViewport(true);
+        }
+
+        [CommandMethod("desbloqueiamviews")]
+        public void desbloqueiamviews()
+        {
+            ClasseBase b = new ClasseBase();
+            b.SetViewport(false);
+        }
 
 
 
@@ -519,11 +535,33 @@ namespace Ferramentas_DLM
         }
 
 
+        [CommandMethod("mercadorias")]
+        public void mercadorias()
+        {
+            TecnoMetal p = new TecnoMetal();
+            p.Mercadorias();
+        }
+        [CommandMethod("materiais")]
+        public void materiais()
+        {
+            TecnoMetal p = new TecnoMetal();
+            p.Materiais();
+        }
+        [CommandMethod("tratamentos")]
+        public void tratamentos()
+        {
+            TecnoMetal p = new TecnoMetal();
+            p.Tratamentos();
+        }
+
+
 
         [CommandMethod("testeinterseccao")]
         public void testeinterseccao()
         {
             Utilidades.InterSectionPoint();
         }
+
+
     }
 }
