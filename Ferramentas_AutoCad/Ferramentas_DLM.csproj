@@ -12,12 +12,13 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files\Autodesk\AutoCAD 2012 - English\</OutputPath>
+    <OutputPath>C:\Medabil\Ferramentas_DLM\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -77,6 +78,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
+    <Reference Include="DataGridExtensions, Version=2.5.1.0, Culture=neutral, PublicKeyToken=43de855f87de903a, processorArchitecture=MSIL">
+      <HintPath>..\packages\DataGridExtensions.2.5.1\lib\net45\DataGridExtensions.dll</HintPath>
+    </Reference>
     <Reference Include="DB, Version=3.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\DB.dll</HintPath>
@@ -86,10 +90,13 @@
       <HintPath>..\..\DLLS\DLMCam.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
-      <HintPath>.\Ionic.Zip.dll</HintPath>
+      <HintPath>..\..\DLLS\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="MIConvexHull, Version=1.1.19.1018, Culture=neutral, PublicKeyToken=2644b6f8be52c998, processorArchitecture=MSIL">
       <HintPath>..\packages\MIConvexHull.1.1.19.1019\lib\netstandard1.0\MIConvexHull.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.31\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
     <Reference Include="mysql.data, Version=6.9.10.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -109,6 +116,7 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -116,12 +124,26 @@
     <Reference Include="System.Web.RegularExpressions" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TomsToolbox.Essentials, Version=2.3.2.0, Culture=neutral, PublicKeyToken=60b39f873a8e3fc2, processorArchitecture=MSIL">
+      <HintPath>..\packages\TomsToolbox.Essentials.2.3.2\lib\net45\TomsToolbox.Essentials.dll</HintPath>
+    </Reference>
+    <Reference Include="TomsToolbox.ObservableCollections, Version=2.3.2.0, Culture=neutral, PublicKeyToken=60b39f873a8e3fc2, processorArchitecture=MSIL">
+      <HintPath>..\packages\TomsToolbox.ObservableCollections.2.3.2\lib\net45\TomsToolbox.ObservableCollections.dll</HintPath>
+    </Reference>
+    <Reference Include="TomsToolbox.Wpf, Version=2.3.2.0, Culture=neutral, PublicKeyToken=60b39f873a8e3fc2, processorArchitecture=MSIL">
+      <HintPath>..\packages\TomsToolbox.Wpf.2.3.2\lib\net45\TomsToolbox.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="Xceed.Wpf.Toolkit">
@@ -129,6 +151,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Menus\MenuMarcas.xaml.cs">
+      <DependentUpon>MenuMarcas.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OutrasClasses\Chapa_Dobrada.cs" />
     <Compile Include="Construtores\ClasseBase.cs" />
     <Compile Include="Construtores\Monitoramento.cs" />
@@ -197,9 +222,18 @@
   <ItemGroup>
     <None Include="Todo.TXT" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Include="Menus\MenuMarcas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>start xcopy /y /r  "C:\Medabil\Ferramentas_DLM\*.*" "C:\Program Files\Autodesk\AutoCAD 2012 - English\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

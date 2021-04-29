@@ -17,8 +17,10 @@ namespace Ferramentas_DLM
         [ReadOnly(true)]
         [Display(Order = 5, Name = "Esp.", GroupName = "Geometria")]
         public double Espessura { get; set; } = 1.25;
+
         [Display(Order = 5, Name = "Dobras", GroupName = "Geometria")]
         public int Dobras { get; set; } = 0;
+
         [ReadOnly(true)]
         [Display(Order = 5, Name = "Larg.", GroupName = "Geometria")]
         public double Largura
@@ -43,9 +45,11 @@ namespace Ferramentas_DLM
                 }
             }
         }
+
         [ReadOnly(true)]
         [Display(Order = 5, Name = "Peso Esp.", GroupName = "Geometria")]
         public double Peso_Especifico { get; set; } = 7.85;
+
         [Display(Order = 5, Name = "Peso Unit.", GroupName = "Geometria")]
         public double Peso_Unitario
         {
@@ -58,6 +62,7 @@ namespace Ferramentas_DLM
                 return Math.Round(this.Comprimento * this.Largura * this.Espessura * this.Peso_Especifico /1000/1000,3);
             }
         }
+
         [Display(Order = 5, Name = "Superfície", GroupName = "Geometria")]
         public double Superficie
         {
@@ -91,17 +96,20 @@ namespace Ferramentas_DLM
         [Display(Order = 5, Name = "Descontar Dobras", GroupName = "Geometria")]
         public bool DescontarDobras { get; set; } = false;
 
-
-
         [Display(Order = -1, Name = "Qtd", GroupName = "Peça")]
         public int Quantidade { get; set; } = 1;
+
         [Display(Order = -1, Name = "Descrição", GroupName = "Peça")]
         public string Descricao { get; set; } = "";
+
         [Display(Order = -1, Name = "Mercadoria", GroupName = "Peça")]
+        [ReadOnly(true)]
         public string Mercadoria { get; set; } = "ARREMATE";
+
         [Display(Order =-1, Name ="Marca",GroupName ="Peça")]
         [ReadOnly(true)]
         public string Marca { get; set; } = "ARR-1";
+
         [Display(Order = -1, Name = "Gerar CAM", GroupName = "Peça")]
         public Opcao GerarCam { get; set; } = Opcao.Sim;
 
@@ -110,14 +118,19 @@ namespace Ferramentas_DLM
         [Display(Order = 10, Name = "Material", GroupName = "Bobina")]
         [ReadOnly(true)]
         public string Material { get; set; } = "PP ZINC";
+
+
         [Display(Order = 10, Name = "Ficha", GroupName = "Bobina")]
         public string Ficha { get; set; } = "SEM PINTURA";
+
         [Display(Order = 10, Name = "Cor", GroupName = "Bobina")]
         [ReadOnly(true)]
         public string Cor_1 { get; set; } = "";
+
         [Display(Order = 10, Name = "Cor", GroupName = "Bobina")]
         [ReadOnly(true)]
         public string Cor_2 { get; set; } = "";
+
         [Display(Order = 10, Name = "SAP", GroupName = "Bobina")]
         [ReadOnly(true)]
         public string SAP { get; set; } = "";
@@ -136,6 +149,10 @@ namespace Ferramentas_DLM
 
             this.Descricao = Descricao;
             
+        }
+        public void SetSuperficie(double valor)
+        {
+            this._Superficie = valor;
         }
         public Chapa_Dobrada(Conexoes.Bobina bobina, double comprimento, double largura)
         {

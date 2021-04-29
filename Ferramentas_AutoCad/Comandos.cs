@@ -534,6 +534,14 @@ namespace Ferramentas_DLM
             pp.GetMarcas();
         }
 
+        [CommandMethod("marcar")]
+        public void marcar()
+        {
+            TecnoMetal pp = new TecnoMetal();
+            pp.Marcar();
+        }
+
+
 
         [CommandMethod("mercadorias")]
         public void mercadorias()
@@ -553,6 +561,14 @@ namespace Ferramentas_DLM
             TecnoMetal p = new TecnoMetal();
             p.Tratamentos();
         }
+
+
+        ////[CommandMethod("3dmercadorias")]
+        ////public void mercadorias3d()
+        ////{
+        ////    TecnoMetal p = new TecnoMetal();
+        ////    p.Mercadorias3d();
+        ////}
 
 
 

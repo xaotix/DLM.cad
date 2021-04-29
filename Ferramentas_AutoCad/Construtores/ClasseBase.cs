@@ -28,6 +28,7 @@ namespace Ferramentas_DLM
 
             IrLayout();
             Utilidades.CriarLayer(layer, System.Drawing.Color.Gray, false);
+            Utilidades.SetLayer("0");
             var view = Utilidades.GetViewports(layer);
             this.editor.Command("mview", "lock", block ? "ON" : "OFF", "all", "");
             this.editor.Command("layer", block ? "off":"on", layer, "");
@@ -141,7 +142,9 @@ namespace Ferramentas_DLM
             if(lista.Count>0)
             {
                 using (acDoc.LockDocument())
+                {
                     LayoutManager.Current.CurrentLayout = lista[0];
+                }
             }
          
         }
@@ -192,7 +195,7 @@ namespace Ferramentas_DLM
         public List<string> GetMLStyles()
         {
             List<string> estilos = new List<string>();
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 DBDictionary acLyrTbl;
                 acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId,
@@ -300,7 +303,7 @@ namespace Ferramentas_DLM
             string msg = "";
             var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
-            using (var tr = id.Database.TransactionManager.StartTransaction())
+            using (var tr = id.Database.TransactionManager.StartOpenCloseTransaction())
             {
                 var dbObj = tr.GetObject(id, OpenMode.ForRead);
                 var types = new List<Type>();
@@ -467,7 +470,7 @@ namespace Ferramentas_DLM
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl;
@@ -520,7 +523,7 @@ namespace Ferramentas_DLM
 
 
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Linetype table for read
                 LinetypeTable acLineTypTbl;
@@ -571,7 +574,7 @@ namespace Ferramentas_DLM
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl;
@@ -634,7 +637,7 @@ namespace Ferramentas_DLM
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl;
@@ -700,7 +703,7 @@ namespace Ferramentas_DLM
 
 
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl;
@@ -1003,11 +1006,60 @@ namespace Ferramentas_DLM
                 }
 
             }
-            var tps = selecoes.GroupBy(x => x.GetType().ToString()).Select(x => x.First()).ToList();
+            //var tps = selecoes.GroupBy(x => x.GetType().ToString()).Select(x => x.First()).ToList();
 
-            AddMensagem("\nTipos de objetos selecionados:\n" + string.Join("\n", tps));
+            //AddMensagem("\nTipos de objetos selecionados:\n" + string.Join("\n", tps));
             return acSSPrompt;
         }
+
+
+        public PromptSelectionResult SelecionarObjetos()
+        {
+
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                PromptSelectionResult acSSPrompt;
+                acSSPrompt = acDoc.Editor.GetSelection();
+
+
+
+                if (acSSPrompt.Status == PromptStatus.OK)
+                {
+                    SelectionSet acSSet = acSSPrompt.Value;
+                    selecoes.Clear();
+                    // Step through the objects in the selection set
+                    foreach (SelectedObject acSSObj in acSSet)
+                    {
+                        try
+                        {
+                            if (acSSObj != null)
+                            {
+                                Entity acEnt = acTrans.GetObject(acSSObj.ObjectId, OpenMode.ForRead) as Entity;
+
+                                if (acEnt != null)
+                                {
+                                    selecoes.Add(acEnt);
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Alerta($"{ex.Message}\n{ex.StackTrace}");
+                        }
+
+                    }
+
+                }
+                //var tps = selecoes.GroupBy(x => x.GetType().ToString()).Select(x => x.First()).ToList();
+
+                //AddMensagem("\nTipos de objetos selecionados:\n" + string.Join("\n", tps));
+                return acSSPrompt;
+            }
+
+            return null;
+        }
+
         public ClasseBase SelecionarTudo()
         {
             ClasseBase p = new ClasseBase();

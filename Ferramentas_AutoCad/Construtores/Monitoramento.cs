@@ -66,7 +66,7 @@ namespace Ferramentas_DLM
             Database db = doc.Database;
             Editor ed = doc.Editor;
             DBObject dbObj = e.DBObject;
-            using (Transaction tr = db.TransactionManager.StartTransaction())
+            using (Transaction tr = db.TransactionManager.StartOpenCloseTransaction())
             {
                 Object pOwner = tr.GetObject(dbObj.OwnerId, OpenMode.ForRead);
 

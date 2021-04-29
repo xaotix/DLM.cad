@@ -130,7 +130,7 @@ namespace Ferramentas_DLM
         public List<CCorrente> LinhasCorrentes()
         {
             List<CCorrente> retorno = new List<CCorrente>();
-            using (Transaction trAdding = this.acCurDb.TransactionManager.StartTransaction())
+            using (Transaction trAdding = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 BlockTable btTable = (BlockTable)trAdding.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
@@ -162,7 +162,7 @@ namespace Ferramentas_DLM
         public List<CTirante> LinhasTirantes()
         {
             List<CTirante> retorno = new List<CTirante>();
-            using (Transaction trAdding = this.acCurDb.TransactionManager.StartTransaction())
+            using (Transaction trAdding = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 BlockTable btTable = (BlockTable)trAdding.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);

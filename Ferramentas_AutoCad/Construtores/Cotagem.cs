@@ -731,7 +731,7 @@ namespace Ferramentas_DLM
         public bool juntar_cotas { get; set; } = true;
         [Category("Marcas e Posições")]
         [DisplayName("Ajustar Escala")]
-        public bool marcas_ajusta_escala { get; set; } = true;
+        public bool marcas_ajusta_escala { get; set; } = false;
         [Category("Cotas")]
         [DisplayName("Estilo")]
         public string estilo_padrao { get; set; } = "ROMANS";
@@ -1454,7 +1454,7 @@ namespace Ferramentas_DLM
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            using (Transaction Tx = db.TransactionManager.StartTransaction())
+            using (Transaction Tx = db.TransactionManager.StartOpenCloseTransaction())
             {
                 BlockTable table = Tx.GetObject(
                     db.BlockTableId,
@@ -1680,7 +1680,7 @@ namespace Ferramentas_DLM
         {
             TextStyleTableRecord ret = null;
             Database database = HostApplicationServices.WorkingDatabase;
-            using (Transaction transaction = database.TransactionManager.StartTransaction())
+            using (Transaction transaction = database.TransactionManager.StartOpenCloseTransaction())
             {
                 SymbolTable symTable = (SymbolTable)transaction.GetObject(database.TextStyleTableId, OpenMode.ForRead);
                 foreach (ObjectId id in symTable)
@@ -1837,21 +1837,8 @@ namespace Ferramentas_DLM
             {
                 foreach (var s in this.GetFurosPorDiam())
                 {
-                    //AddLinha(s.Origem(), s.Fim(), "DASHDOT", System.Drawing.Color.Yellow);
-                    Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1/2).GetPoint(), s.Nome, size);
-                    //AddBarra();
-                    //AddMensagem("\n" + s.Origem());
-                    //foreach (var t in s.Furos)
-                    //{
-                    //    AddMensagem("\nBloco: " +t.bloco.Name);
-                    //    AddMensagem("\nDiam: " +t.GetNome());
-                    //    AddMensagem("\nAtributos:");
-                    //    foreach (var at in t.atributos)
-                    //    {
-                    //        AddMensagem("\n" + at[0] + " - " + at[1]);
-                    //    }
-                    //}
-                    //AddBarra();
+                    Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1/2).GetPoint(), s.Nome, size * this.Getescala());
+
                 }
             }
 

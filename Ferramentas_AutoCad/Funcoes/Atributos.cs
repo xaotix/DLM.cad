@@ -82,7 +82,7 @@ namespace Ferramentas_DLM
             Database acCurDb;
             acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var attCol = bloco.AttributeCollection;
                 foreach (ObjectId objID in attCol)
@@ -129,7 +129,7 @@ namespace Ferramentas_DLM
                 acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
             }
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var attCol = bloco.AttributeCollection;
                 foreach (ObjectId objID in attCol)

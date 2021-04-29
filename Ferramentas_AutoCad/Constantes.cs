@@ -46,7 +46,8 @@ namespace Ferramentas_DLM
 
     internal static class Constantes
     {
-       
+ 
+        public static MenuMarcas menu_marcas { get; set; }
         public static string RaizArquivos { get; set; } = @"\\10.54.0.4\BancoDeDados\";
         public static string RaizBlocosA2 { get; set; } = RaizArquivos + @"Blocos\SELO A2\";
         public static string RaizPcs { get; set; } = RaizArquivos + @"Blocos\SELO A2\Listagem\Peças Mapeáveis\";
@@ -99,6 +100,8 @@ namespace Ferramentas_DLM
 
         public static List<string> BlocosTecnoMetalMarcas { get; set; } = new List<string>() { BL_M_Composta, BL_M_ELEM2, BL_M_ELUNIT, BL_M_CH, BL_M_PERF, BL_M_ARR };
         public static List<string> BlocosTecnoMetalPosicoes { get; set; } = new List<string>() { BL_P_PERF, BL_P_CH, BL_P_ELEM2, BL_P_ELUNIT};
+
+
 
         public static List<string> BlocosTecnoMetal
         {

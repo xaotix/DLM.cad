@@ -45,16 +45,26 @@ namespace Ferramentas_DLM
         #endregion
         public static Point3d AddLeader(double angulo, Point3d pp0, double escala, string nome = "", double multiplicador = 7.5)
         {
-            var pt2 = new Coordenada(pp0).Mover(angulo + 45, escala * multiplicador).GetPoint();
-            AddLeader(pp0, pt2, nome, 2 *escala);
-            return pt2;
+            try
+            {
+                var pt2 = new Coordenada(pp0).Mover(angulo + 45, escala * multiplicador).GetPoint();
+                AddLeader(pp0, pt2, nome, 2 * escala);
+
+                return pt2;
+            }
+            catch (System.Exception ex)
+            {
+
+                Alerta($"{ex.Message}\n{ex.StackTrace}");
+            }
+            return pp0;
         }
         public static void AddLeader(Point3d origem, Point3d pt2, string texto, double escala)
         {
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 BlockTable acBlkTbl;
                 acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
@@ -112,8 +122,16 @@ namespace Ferramentas_DLM
                             //acLdr.EvaluateLeader();
 
                             //alternativa
-                            Autodesk.AutoCAD.Runtime.ErrorStatus es = attachAnnotation(acLdr.UnmanagedObject, ref textId);
-                            acLdr.EvaluateLeader();
+                            try
+                            {
+                                Autodesk.AutoCAD.Runtime.ErrorStatus es = attachAnnotation(acLdr.UnmanagedObject, ref textId);
+                                acLdr.EvaluateLeader();
+                            }
+                            catch (System.Exception)
+                            {
+
+                            }
+      
 
                         }
                     }
@@ -129,7 +147,7 @@ namespace Ferramentas_DLM
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 DBDictionary lays =
                     acTrans.GetObject(acCurDb.LayoutDictionaryId,
@@ -164,7 +182,7 @@ namespace Ferramentas_DLM
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 DBDictionary lays =
                     acTrans.GetObject(acCurDb.LayoutDictionaryId,
@@ -322,7 +340,7 @@ namespace Ferramentas_DLM
             Entity ent = null;
             PromptEntityOptions peo = null;
             PromptEntityResult per = null;
-            using (Transaction tx = db.TransactionManager.StartTransaction())
+            using (Transaction tx = db.TransactionManager.StartOpenCloseTransaction())
             {
                 //Select first polyline
                 peo = new PromptEntityOptions("Seleciona a Xline:");
@@ -459,7 +477,7 @@ namespace Ferramentas_DLM
             try
             {
                 using (Transaction Tx =
-               db.TransactionManager.StartTransaction())
+               db.TransactionManager.StartOpenCloseTransaction())
                 {
                     DBDictionary mlineDic =
                         (DBDictionary)Tx.GetObject(db.MLStyleDictionaryId,
@@ -712,7 +730,7 @@ namespace Ferramentas_DLM
         {
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 LayerTable acLyrTbl;
                 acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
@@ -736,7 +754,7 @@ namespace Ferramentas_DLM
         {
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 LayerTable acLyrTbl;
                 acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
@@ -767,7 +785,7 @@ namespace Ferramentas_DLM
             Database acCurDb = acDoc.Database;
 
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Layer table for read
                 LayerTable acLyrTbl;
@@ -827,7 +845,7 @@ namespace Ferramentas_DLM
             Database db = doc.Database;
             Editor ed = doc.Editor;
             Transaction tr =
-              db.TransactionManager.StartTransaction();
+              db.TransactionManager.StartOpenCloseTransaction();
             using (tr)
             {
                 // Get the layer table from the drawing

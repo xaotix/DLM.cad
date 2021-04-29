@@ -87,10 +87,76 @@ namespace Ferramentas_DLM
 
                 Database curdb = acDoc.Database;
                 Editor ed = acDoc.Editor;
-                DocumentLock loc = acDoc.LockDocument();
-                using (loc)
+
+
+                ObjectId blkid = ObjectId.Null;
+                using (Transaction tr = acDoc.TransactionManager.StartTransaction())
                 {
-                    ObjectId blkid = ObjectId.Null;
+                    BlockTable bt = (BlockTable)tr.GetObject(curdb.BlockTableId, OpenMode.ForRead);
+                    if (bt.Has(nomeBloco))
+                    {
+                        using (DocumentLock acLckDoc = acDoc.LockDocument())
+                        {
+                            //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
+
+                            blkid = bt[nomeBloco];
+                            BlockReference bref = new BlockReference(origem, blkid);
+                            BlockTableRecord btr2 = (BlockTableRecord)tr.GetObject(curdb.CurrentSpaceId, OpenMode.ForWrite);
+                            using (BlockTableRecord bdef =
+                                       (BlockTableRecord)tr.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
+                            {
+                                bref.ScaleFactors = new Scale3d(escala, escala, escala);
+                                bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
+                                bref.TransformBy(ed.CurrentUserCoordinateSystem);
+                                bref.RecordGraphicsModified(true);
+                                if (bdef.Annotative == AnnotativeStates.True)
+                                {
+                                    ObjectContextCollection contextCollection = curdb.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
+                                    Autodesk.AutoCAD.Internal.ObjectContexts.AddContext(bref, contextCollection.GetContext("1:1"));
+                                }
+                                btr2.AppendEntity(bref);
+                                tr.AddNewlyCreatedDBObject(bref, true);
+
+                                foreach (ObjectId eid in bdef)
+                                {
+                                    DBObject obj = (DBObject)tr.GetObject(eid, OpenMode.ForRead);
+                                    if (obj is AttributeDefinition)
+                                    {
+                                        AttributeDefinition atdef = (AttributeDefinition)obj;
+                                        AttributeReference atref = new AttributeReference();
+                                        if (atdef != null)
+                                        {
+                                            atref = new AttributeReference();
+                                            atref.SetAttributeFromBlock(atdef, bref.BlockTransform);
+                                            //atref.Position = atdef.Position + bref.Position.GetAsVector();
+                                            atref.Position = atdef.Position.TransformBy(bref.BlockTransform);
+                                            if (atributos.ContainsKey(atdef.Tag.ToUpper()))
+                                            {
+                                                atref.TextString = atributos[atdef.Tag.ToUpper()].ToString();
+                                            }
+                                        }
+                                        bref.AttributeCollection.AppendAttribute(atref);
+                                        tr.AddNewlyCreatedDBObject(atref, true);
+                                    }
+                                }
+                                bref.DowngradeOpen();
+                            }
+
+                            tr.TransactionManager.QueueForGraphicsFlush();
+                            acDoc.TransactionManager.FlushGraphics();
+                            tr.Commit();
+                            //doc.Editor.Regen();
+
+                            return;
+                        }
+                    }
+                }
+
+
+
+                using (DocumentLock loc = acDoc.LockDocument())
+                {
+
                     Database db = new Database(false, true);
                     using (db)
                     {
@@ -98,65 +164,6 @@ namespace Ferramentas_DLM
                         using (Transaction tr = acDoc.TransactionManager.StartTransaction())
                         {
                             BlockTable bt = (BlockTable)tr.GetObject(curdb.BlockTableId, OpenMode.ForRead);
-                            if (bt.Has(nomeBloco))
-                            {
-                                using (DocumentLock acLckDoc = acDoc.LockDocument())
-                                {
-                                    //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
-
-                                    blkid = bt[nomeBloco];
-                                    BlockReference bref = new BlockReference(origem, blkid);
-                                    BlockTableRecord btr2 = (BlockTableRecord)tr.GetObject(curdb.CurrentSpaceId, OpenMode.ForWrite);
-                                    using (BlockTableRecord bdef =
-                                               (BlockTableRecord)tr.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
-                                    {
-                                        bref.ScaleFactors = new Scale3d(escala, escala, escala);
-                                        bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
-                                        bref.TransformBy(ed.CurrentUserCoordinateSystem);
-                                        bref.RecordGraphicsModified(true);
-                                        if (bdef.Annotative == AnnotativeStates.True)
-                                        {
-                                            ObjectContextCollection contextCollection = curdb.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
-                                            Autodesk.AutoCAD.Internal.ObjectContexts.AddContext(bref, contextCollection.GetContext("1:1"));
-                                        }
-                                        btr2.AppendEntity(bref);
-                                        tr.AddNewlyCreatedDBObject(bref, true);
-
-                                        foreach (ObjectId eid in bdef)
-                                        {
-                                            DBObject obj = (DBObject)tr.GetObject(eid, OpenMode.ForRead);
-                                            if (obj is AttributeDefinition)
-                                            {
-                                                AttributeDefinition atdef = (AttributeDefinition)obj;
-                                                AttributeReference atref = new AttributeReference();
-                                                if (atdef != null)
-                                                {
-                                                    atref = new AttributeReference();
-                                                    atref.SetAttributeFromBlock(atdef, bref.BlockTransform);
-                                                    //atref.Position = atdef.Position + bref.Position.GetAsVector();
-                                                    atref.Position = atdef.Position.TransformBy(bref.BlockTransform);
-                                                    if (atributos.ContainsKey(atdef.Tag.ToUpper()))
-                                                    {
-                                                        atref.TextString = atributos[atdef.Tag.ToUpper()].ToString();
-                                                    }
-                                                }
-                                                bref.AttributeCollection.AppendAttribute(atref);
-                                                tr.AddNewlyCreatedDBObject(atref, true);
-                                            }
-                                        }
-                                        bref.DowngradeOpen();
-                                    }
-
-                                    tr.TransactionManager.QueueForGraphicsFlush();
-                                    acDoc.TransactionManager.FlushGraphics();
-                                    tr.Commit();
-                                    //doc.Editor.Regen();
-                                    return;
-                                }
-                            }
-
-
-
                             bt.UpgradeOpen();
 
                             //se nao tem, ai ele vai tentar abrir e inserir
@@ -252,13 +259,15 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void MarcaPerfil(Point3d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double area = 0, double escala = 10)
+        public static void MarcaPerfil(Point3d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
         {
             try
             {
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Hashtable ht = new Hashtable();
                 ht.Add(Constantes.ATT_MAR, marca);
+                ht.Add(Constantes.ATT_MER, mercadoria);
+                ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, perfil.Nome);
                 ht.Add(Constantes.ATT_QTD, quantidade);
                 ht.Add(Constantes.ATT_CMP, comprimento);
@@ -273,18 +282,32 @@ namespace Ferramentas_DLM
                     ht.Add(Constantes.ATT_PES, peso);
                 }
 
-                if (peso == 0)
+                if (superficie == 0)
                 {
                     ht.Add(Constantes.ATT_SUP, perfil.SUPERFICIE * comprimento / 1000);
                 }
                 else
                 {
-                    ht.Add(Constantes.ATT_SUP, area);
+                    ht.Add(Constantes.ATT_SUP, superficie);
                 }
                 ht.Add(Constantes.ATT_VOL, perfil.H + "*" + perfil.ABA_1 + "*" + comprimento);
                 ht.Add(Constantes.ATT_GEO, perfil.DIM_PRO);
 
+                if (posicao != "")
+                {
+                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12);
+                }
+
+
+                if (posicao=="")
+                {
                 Inserir(doc, Constantes.Marca_Perfil, p0, escala, 0, ht);
+                }
+                else
+                {
+                    Inserir(doc, Constantes.Posicao_Perfil, p0, escala, 0, ht);
+
+                }
             }
             catch (System.Exception ex)
             {
@@ -377,7 +400,7 @@ namespace Ferramentas_DLM
 
         }
 
-        public static void MarcaElemM2(Point3d p0,Conexoes.TecnoMetal_Perfil pf,  string marca, double quantidade,double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "")
+        public static void MarcaElemM2(Point3d p0,Conexoes.TecnoMetal_Perfil pf,  string marca, double quantidade,double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "",string mercadoria = "")
         {
             try
             {
@@ -388,6 +411,7 @@ namespace Ferramentas_DLM
                 double superficie = area * 2 / 1000 / 100;
                 //Pairs of tag-value:
                 ht.Add(Constantes.ATT_MAR, marca);
+                ht.Add(Constantes.ATT_MER, mercadoria);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, pf.Nome);
                 ht.Add(Constantes.ATT_QTD, quantidade);
@@ -427,7 +451,7 @@ namespace Ferramentas_DLM
         }
 
 
-        public static void MarcaElemUnitario(Point3d p0, RMA pf, double quantidade, string marca, double escala, string posicao = "")
+        public static void MarcaElemUnitario(Point3d p0, RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -436,13 +460,13 @@ namespace Ferramentas_DLM
                 Hashtable ht = new Hashtable();
                 //Pairs of tag-value:
                 ht.Add(Constantes.ATT_MAR, marca);
+                ht.Add(Constantes.ATT_MER, mercadoria);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, pf.DESC);
                 ht.Add(Constantes.ATT_QTD, quantidade);
                 ht.Add(Constantes.ATT_MAT, pf.NORMA);
                 ht.Add(Constantes.ATT_FIC, pf.TRATAMENTO);
                 ht.Add(Constantes.ATT_PES, pf.PESO);
-                ht.Add(Constantes.ATT_MER, "ALMOX");
 
 
                 ht.Add(Constantes.ATT_SAP, pf.SAP);
