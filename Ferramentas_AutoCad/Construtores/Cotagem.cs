@@ -20,7 +20,27 @@ namespace Ferramentas_DLM
     [Serializable]
     public class Cotagem :ClasseBase
     {
+        public void LimparCotas()
+        {
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                editor.WriteMessage("Selecione os objetos");
+                PromptSelectionOptions sel = new PromptSelectionOptions();
 
+                PromptSelectionResult acSSPrompt = acDoc.Editor.GetSelection();
+                if (acSSPrompt.Status == PromptStatus.OK)
+                {
+                    SelectionSet acSSet = acSSPrompt.Value;
+                    Utilidades.LimparCotas(acTrans, acSSet);
+
+
+                    // Save the new object to the database
+                    acTrans.Commit();
+                    acDoc.Editor.Regen();
+                    acDoc.Editor.WriteMessage("Finalizado.");
+                }
+            }
+        }
         public Cotagem Ler(string Arquivo)
         {
             try
@@ -1035,7 +1055,7 @@ namespace Ferramentas_DLM
 
         public void Contornar(bool calculo = true)
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 SelecionarObjetos(acTrans);
 
@@ -1059,7 +1079,7 @@ namespace Ferramentas_DLM
         }
         public void ContornarConvexo()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 SelecionarObjetos(acTrans);
 
@@ -1450,33 +1470,22 @@ namespace Ferramentas_DLM
 
         public void AddMLeader(Point3d origem, Point3d pt2, string texto)
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+          
 
-            using (Transaction Tx = db.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                BlockTable table = Tx.GetObject(
-                    db.BlockTableId,
-                    OpenMode.ForRead)
-                        as BlockTable;
-
-
-
-                BlockTableRecord model = Tx.GetObject(
-                    table[BlockTableRecord.ModelSpace],
-                    OpenMode.ForWrite)
-                        as BlockTableRecord;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord model = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
 
 
 
                 MLeader leader = new MLeader();
                 //leader.SetDatabaseDefaults();
                 leader.ContentType = ContentType.MTextContent;
-                leader.MLeaderStyle = acCurDb.MLeaderstyle;
+                leader.MLeaderStyle = base.acCurDb.MLeaderstyle;
 
                 MText mText = new MText();
-                mText.TextStyleId = acCurDb.Textstyle;
+                mText.TextStyleId = base.acCurDb.Textstyle;
                 //mText.SetDatabaseDefaults();
 
                 //mText.Width = 100;
@@ -1496,9 +1505,9 @@ namespace Ferramentas_DLM
                 leader.AddFirstVertex(idx, origem);
 
                 model.AppendEntity(leader);
-                Tx.AddNewlyCreatedDBObject(leader, true);
+                acTrans.AddNewlyCreatedDBObject(leader, true);
 
-                Tx.Commit();
+                acTrans.Commit();
 
             }
         }
@@ -1679,13 +1688,13 @@ namespace Ferramentas_DLM
         public TextStyleTableRecord GetStyle(string nome)
         {
             TextStyleTableRecord ret = null;
-            Database database = HostApplicationServices.WorkingDatabase;
-            using (Transaction transaction = database.TransactionManager.StartOpenCloseTransaction())
+            Database acCurDb = HostApplicationServices.WorkingDatabase;
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                SymbolTable symTable = (SymbolTable)transaction.GetObject(database.TextStyleTableId, OpenMode.ForRead);
+                SymbolTable symTable = (SymbolTable)acTrans.GetObject(acCurDb.TextStyleTableId, OpenMode.ForRead);
                 foreach (ObjectId id in symTable)
                 {
-                    TextStyleTableRecord symbol = (TextStyleTableRecord)transaction.GetObject(id, OpenMode.ForRead);
+                    TextStyleTableRecord symbol = (TextStyleTableRecord)acTrans.GetObject(id, OpenMode.ForRead);
 
                   if(symbol.Name.ToUpper() == nome)
                     {
@@ -1694,7 +1703,7 @@ namespace Ferramentas_DLM
                     
                 }
 
-                transaction.Commit();
+                acTrans.Commit();
             }
             return ret;
         }
@@ -1714,19 +1723,15 @@ namespace Ferramentas_DLM
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for read
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForRead) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead) as BlockTableRecord;
 
 
 
-                DimStyleTableRecord acDimStyleTbl = acTrans.GetObject(acCurDb.Dimstyle,
-                                                      OpenMode.ForWrite) as DimStyleTableRecord;
+                DimStyleTableRecord acDimStyleTbl = acTrans.GetObject(acCurDb.Dimstyle, OpenMode.ForWrite) as DimStyleTableRecord;
                 if(acDimStyleTbl!=null) 
                 {
                     acDimStyleTbl.Dimtix = valor;
@@ -1854,7 +1859,7 @@ namespace Ferramentas_DLM
 
             //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
             retentar:
               var st =   OpcoesComMenu();

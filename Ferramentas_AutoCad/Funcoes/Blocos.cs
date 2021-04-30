@@ -85,41 +85,40 @@ namespace Ferramentas_DLM
             {
                 string nomeBloco = Conexoes.Utilz.getNome(endereco);
 
-                Database curdb = acDoc.Database;
-                Editor ed = acDoc.Editor;
+                Database acCurDb = acDoc.Database;
+                Editor editor = acDoc.Editor;
 
 
                 ObjectId blkid = ObjectId.Null;
-                using (Transaction tr = acDoc.TransactionManager.StartTransaction())
+                using (var acTrans = acDoc.TransactionManager.StartTransaction())
                 {
-                    BlockTable bt = (BlockTable)tr.GetObject(curdb.BlockTableId, OpenMode.ForRead);
-                    if (bt.Has(nomeBloco))
+                    BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    if (acBlkTbl.Has(nomeBloco))
                     {
                         using (DocumentLock acLckDoc = acDoc.LockDocument())
                         {
                             //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
 
-                            blkid = bt[nomeBloco];
+                            blkid = acBlkTbl[nomeBloco];
                             BlockReference bref = new BlockReference(origem, blkid);
-                            BlockTableRecord btr2 = (BlockTableRecord)tr.GetObject(curdb.CurrentSpaceId, OpenMode.ForWrite);
-                            using (BlockTableRecord bdef =
-                                       (BlockTableRecord)tr.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
+                            BlockTableRecord btr2 = (BlockTableRecord)acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite);
+                            using (BlockTableRecord bdef = (BlockTableRecord)acTrans.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
                             {
                                 bref.ScaleFactors = new Scale3d(escala, escala, escala);
                                 bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
-                                bref.TransformBy(ed.CurrentUserCoordinateSystem);
+                                bref.TransformBy(editor.CurrentUserCoordinateSystem);
                                 bref.RecordGraphicsModified(true);
                                 if (bdef.Annotative == AnnotativeStates.True)
                                 {
-                                    ObjectContextCollection contextCollection = curdb.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
+                                    ObjectContextCollection contextCollection = acCurDb.ObjectContextManager.GetContextCollection("ACDB_ANNOTATIONSCALES");
                                     Autodesk.AutoCAD.Internal.ObjectContexts.AddContext(bref, contextCollection.GetContext("1:1"));
                                 }
                                 btr2.AppendEntity(bref);
-                                tr.AddNewlyCreatedDBObject(bref, true);
+                                acTrans.AddNewlyCreatedDBObject(bref, true);
 
                                 foreach (ObjectId eid in bdef)
                                 {
-                                    DBObject obj = (DBObject)tr.GetObject(eid, OpenMode.ForRead);
+                                    DBObject obj = (DBObject)acTrans.GetObject(eid, OpenMode.ForRead);
                                     if (obj is AttributeDefinition)
                                     {
                                         AttributeDefinition atdef = (AttributeDefinition)obj;
@@ -136,15 +135,15 @@ namespace Ferramentas_DLM
                                             }
                                         }
                                         bref.AttributeCollection.AppendAttribute(atref);
-                                        tr.AddNewlyCreatedDBObject(atref, true);
+                                        acTrans.AddNewlyCreatedDBObject(atref, true);
                                     }
                                 }
                                 bref.DowngradeOpen();
                             }
 
-                            tr.TransactionManager.QueueForGraphicsFlush();
+                            acTrans.TransactionManager.QueueForGraphicsFlush();
                             acDoc.TransactionManager.FlushGraphics();
-                            tr.Commit();
+                            acTrans.Commit();
                             //doc.Editor.Regen();
 
                             return;
@@ -152,23 +151,19 @@ namespace Ferramentas_DLM
                     }
                 }
 
-
-
                 using (DocumentLock loc = acDoc.LockDocument())
                 {
 
-                    Database db = new Database(false, true);
-                    using (db)
+                    using (Database AcTmpDB = new Database(false, true))
                     {
-
-                        using (Transaction tr = acDoc.TransactionManager.StartTransaction())
+                        using (var acTrans = acDoc.TransactionManager.StartTransaction())
                         {
-                            BlockTable bt = (BlockTable)tr.GetObject(curdb.BlockTableId, OpenMode.ForRead);
-                            bt.UpgradeOpen();
+                            BlockTable acBlkTbl = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+                            acBlkTbl.UpgradeOpen();
 
                             //se nao tem, ai ele vai tentar abrir e inserir
-                            db.ReadDwgFile(endereco, System.IO.FileShare.Read, true, "");
-                            blkid = curdb.Insert(endereco, db, true);
+                            AcTmpDB.ReadDwgFile(endereco, System.IO.FileShare.Read, true, "");
+                            blkid = acCurDb.Insert(endereco, AcTmpDB, true);
 
                             BlockTableRecord btrec = (BlockTableRecord)blkid.GetObject(OpenMode.ForRead);
                             btrec.UpgradeOpen();
@@ -177,7 +172,7 @@ namespace Ferramentas_DLM
 
 
 
-                            BlockTableRecord btr = (BlockTableRecord)curdb.CurrentSpaceId.GetObject(OpenMode.ForWrite);
+                            BlockTableRecord btr = (BlockTableRecord)acCurDb.CurrentSpaceId.GetObject(OpenMode.ForWrite);
                             using (btr)
                             {
                                 using (BlockReference bref = new BlockReference(origem, blkid))
@@ -188,7 +183,7 @@ namespace Ferramentas_DLM
                                     bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
                                     bref.Position = origem;
                                     btr.AppendEntity(bref);
-                                    tr.AddNewlyCreatedDBObject(bref, true);
+                                    acTrans.AddNewlyCreatedDBObject(bref, true);
 
                                     using (BlockTableRecord btAttRec = (BlockTableRecord)bref.BlockTableRecord.GetObject(OpenMode.ForRead))
                                     {
@@ -219,7 +214,7 @@ namespace Ferramentas_DLM
                                                 attRef.FieldLength = attDef.FieldLength;
                                                 attRef.TextString = attDef.TextString;
 
-                                                attRef.AdjustAlignment(curdb);//?
+                                                attRef.AdjustAlignment(acCurDb);//?
 
                                                 if (atributos.ContainsKey(attRef.Tag.ToUpper()))
                                                 {
@@ -228,7 +223,7 @@ namespace Ferramentas_DLM
 
                                                 atcoll.AppendAttribute(attRef);
 
-                                                tr.AddNewlyCreatedDBObject(attRef, true);
+                                                acTrans.AddNewlyCreatedDBObject(attRef, true);
                                             }
 
                                         }
@@ -241,11 +236,11 @@ namespace Ferramentas_DLM
 
                             btrec.DowngradeOpen();
 
-                            bt.DowngradeOpen();
+                            acBlkTbl.DowngradeOpen();
 
-                            ed.Regen();
+                            editor.Regen();
 
-                            tr.Commit();
+                            acTrans.Commit();
                         }
                     }
                 }
@@ -269,13 +264,13 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_MER, mercadoria);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, perfil.Nome);
-                ht.Add(Constantes.ATT_QTD, quantidade);
-                ht.Add(Constantes.ATT_CMP, comprimento);
+                ht.Add(Constantes.ATT_QTD, quantidade.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_CMP, comprimento.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_MAT, material);
                 ht.Add(Constantes.ATT_FIC, tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(Constantes.ATT_PES, perfil.PESO * comprimento / 1000);
+                    ht.Add(Constantes.ATT_PES, Math.Round(perfil.PESO * comprimento / 1000,4).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -284,11 +279,11 @@ namespace Ferramentas_DLM
 
                 if (superficie == 0)
                 {
-                    ht.Add(Constantes.ATT_SUP, perfil.SUPERFICIE * comprimento / 1000);
+                    ht.Add(Constantes.ATT_SUP, Math.Round(perfil.SUPERFICIE * comprimento / 1000/1000/100,4).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
-                    ht.Add(Constantes.ATT_SUP, superficie);
+                    ht.Add(Constantes.ATT_SUP, superficie.ToString("N4").Replace(",", ""));
                 }
                 ht.Add(Constantes.ATT_VOL, perfil.H + "*" + perfil.ABA_1 + "*" + comprimento);
                 ht.Add(Constantes.ATT_GEO, perfil.DIM_PRO);
@@ -326,14 +321,14 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_MAR, pf.Marca);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, pf.Descricao);
-                ht.Add(Constantes.ATT_QTD, pf.Quantidade);
-                ht.Add(Constantes.ATT_CMP, pf.Comprimento);
-                ht.Add(Constantes.ATT_LRG, pf.Largura);
-                ht.Add(Constantes.ATT_ESP, pf.Espessura);
+                ht.Add(Constantes.ATT_QTD, pf.Quantidade.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_CMP, pf.Comprimento.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_LRG, pf.Largura.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_ESP, pf.Espessura.ToString("N2").Replace(",", ""));
                 ht.Add(Constantes.ATT_MAT, pf.Material);
                 ht.Add(Constantes.ATT_FIC, pf.Ficha);
-                ht.Add(Constantes.ATT_PES, pf.Peso_Unitario);
-                ht.Add(Constantes.ATT_SUP, pf.Superficie);
+                ht.Add(Constantes.ATT_PES, pf.Peso_Unitario.ToString("N4").Replace(",", ""));
+                ht.Add(Constantes.ATT_SUP, pf.Superficie.ToString("N4").Replace(",", ""));
                 ht.Add(Constantes.ATT_MER, pf.Mercadoria);
                 ht.Add(Constantes.ATT_CCC, pf.Dobras);
                 ht.Add(Constantes.ATT_VOL, pf.Volume);
@@ -414,9 +409,9 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_MER, mercadoria);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, pf.Nome);
-                ht.Add(Constantes.ATT_QTD, quantidade);
-                ht.Add(Constantes.ATT_CMP, comp);
-                ht.Add(Constantes.ATT_LRG, larg);
+                ht.Add(Constantes.ATT_QTD, quantidade.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_CMP, comp.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_LRG, larg.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_FIC, ficha);
                 ht.Add(Constantes.ATT_PES, Math.Round(pf.PESO * area /1000/1000/100,3));
                 ht.Add(Constantes.ATT_SUP, Math.Round((area*2 + perimetro*2)/1000/1000,3));
@@ -463,7 +458,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_MER, mercadoria);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, pf.DESC);
-                ht.Add(Constantes.ATT_QTD, quantidade);
+                ht.Add(Constantes.ATT_QTD, quantidade.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_MAT, pf.NORMA);
                 ht.Add(Constantes.ATT_FIC, pf.TRATAMENTO);
                 ht.Add(Constantes.ATT_PES, pf.PESO);

@@ -27,43 +27,22 @@ namespace Ferramentas_DLM
         public static void listarcomandos()
         {
             DocumentCollection dm = Application.DocumentManager;
-            Editor ed = dm.MdiActiveDocument.Editor;
+            Editor editor = dm.MdiActiveDocument.Editor;
             Assembly asm = Assembly.GetExecutingAssembly();
             List<string> comandos = Utilidades.listarcomandos(asm, false).ToList().OrderBy(x=>x).ToList();
 
-            ed.WriteMessage("=== Lista de comandos ===\n");
+            editor.WriteMessage("=== Lista de comandos ===\n");
             foreach (var s in comandos)
             {
-                ed.WriteMessage($"---> {s.ToUpper()}\n");
+                editor.WriteMessage($"---> {s.ToUpper()}\n");
             }
         }
 
         [CommandMethod("lcotas")]
         public static void LimparCotas()
         {
-            Editor ed = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
-
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                ed.WriteMessage("Selecione os objetos");
-                PromptSelectionOptions sel = new PromptSelectionOptions();
-
-                PromptSelectionResult acSSPrompt = acDoc.Editor.GetSelection();
-                if (acSSPrompt.Status == PromptStatus.OK)
-                {
-                    SelectionSet acSSet = acSSPrompt.Value;
-                    Utilidades.LimparCotas(acTrans, acSSet);
-
-
-                    // Save the new object to the database
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
-                    acDoc.Editor.WriteMessage("Finalizado.");
-                }
-            }
+            Cotagem pp = new Cotagem();
+            pp.LimparCotas();
         }
         [CommandMethod("cotar")]
         public static void Cotar()

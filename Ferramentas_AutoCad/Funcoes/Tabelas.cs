@@ -276,8 +276,8 @@ namespace Ferramentas_DLM
                     total_peso = Math.Round(total_peso/1000, decimais);
                     total_superficie = Math.Round(total_superficie, decimais);
 
-                    ht.Add("PESO_TOTAL", total_peso.ToString(dec_str) + " ton");
-                    ht.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1") + " m²");
+                    ht.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
+                    ht.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
                     Blocos.Inserir(doc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (fator_escala * 20.4), p0.Z);
                     int seq = 1;
@@ -294,21 +294,22 @@ namespace Ferramentas_DLM
                                 if (descricao == "")
                                 {
                                     descricao =
-                                        "Ch. " + pos.Get(Constantes.ATT_ESP).Double().ToString("N2") +
-                                        " x " + pos.Get(Constantes.ATT_LRG).Double().ToString("N1") +
-                                        " x " + pos.Get(Constantes.ATT_CMP).Double().ToString("N1");
+                                        "Ch. " + pos.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
+                                        " x " + pos.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "") +
+                                        " x " + pos.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "");
                                 }
                             }
 
+                            var tipo = pos.Get(Constantes.ATT_REC).ToString();
                             
                             Hashtable hp = new Hashtable();
-                            hp.Add("MARCA", pos.Get(Constantes.ATT_MAR));
+                            hp.Add("MARCA", tipo == Constantes.ATT_REC_MARCA?pos.Get(Constantes.ATT_MAR): pos.Get(Constantes.ATT_POS));
                             hp.Add("QTD", pos.Get(Constantes.ATT_QTD));
                             hp.Add("DESC", descricao );
                             hp.Add("MATERIAL", pos.Get(Constantes.ATT_MAT));
                             hp.Add("SAP", pos.Get(Constantes.ATT_SAP));
-                            hp.Add("PESO_UNIT", Math.Round(pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str));
-                            hp.Add("PESO_TOT", Math.Round(pos.Get(Constantes.ATT_PES).Double() /1000 * pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str));
+                            hp.Add("PESO_UNIT", Math.Round(pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
+                            hp.Add("PESO_TOT", Math.Round(pos.Get(Constantes.ATT_PES).Double() /1000 * pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str).Replace(",", ""));
                             hp.Add("FICHA", pos.Get(Constantes.ATT_FIC));
 
                             Blocos.Inserir(doc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);

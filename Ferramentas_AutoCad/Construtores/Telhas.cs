@@ -73,7 +73,7 @@ namespace Ferramentas_DLM
         }
         public void ApagarLinhaDeVida()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 SelecionarObjetos(acTrans);
                 foreach(var p in this.Getsflhs())
@@ -106,7 +106,7 @@ namespace Ferramentas_DLM
         }
         public void ApagarPassarelas()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 SelecionarObjetos(acTrans);
                 foreach (var p in this.Getpassarelas())
@@ -140,7 +140,7 @@ namespace Ferramentas_DLM
 
         public void AlinharLinhaDeVida()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 SelecionarObjetos(acTrans);
                
@@ -265,7 +265,7 @@ namespace Ferramentas_DLM
         public void InserirPassarela(bool selecionar = false)
         {
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 //var selecao = SelecionarObjetos(acTrans);
@@ -411,7 +411,7 @@ namespace Ferramentas_DLM
         public void InserirLinhaDeVida(bool selecionar = false)
         {
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var layer_atual = Utilidades.GetLayerAtual();
 
@@ -603,7 +603,7 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DBRM_Offline pp = new DBRM_Offline();

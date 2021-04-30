@@ -25,9 +25,6 @@ namespace Ferramentas_DLM
 {
     public static class Utilidades 
     {
-
-
-
         #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
         //isso daqui está aqui só por causa do Leader.
         [DllImport("acdb18.dll", CallingConvention = CallingConvention.ThisCall, CharSet = CharSet.Unicode, EntryPoint = "?attachAnnotation@AcDbLeader@@UAE?AW4ErrorStatus@Acad@@ABVAcDbObjectId@@@Z")]
@@ -64,15 +61,14 @@ namespace Ferramentas_DLM
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (DocumentLock docLock = acDoc.LockDocument())
             {
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
 
                 // Create the leader with annotation
                 using (Leader acLdr = new Leader())
@@ -139,7 +135,7 @@ namespace Ferramentas_DLM
                 }
                 acTrans.Commit();
             }
-
+            }
         }
         public static List<Layout> ListarLayouts()
         {
@@ -147,17 +143,14 @@ namespace Ferramentas_DLM
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                DBDictionary lays =
-                    acTrans.GetObject(acCurDb.LayoutDictionaryId,
-                        OpenMode.ForWrite) as DBDictionary;
+                DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId,OpenMode.ForWrite) as DBDictionary;
 
                 foreach (DBDictionaryEntry item in lays)
                 {
                     Layout acLyrTblRec;
-                    acLyrTblRec = acTrans.GetObject(item.Value,
-                                                    OpenMode.ForWrite) as Layout;
+                    acLyrTblRec = acTrans.GetObject(item.Value,OpenMode.ForWrite) as Layout;
 
                     if(acLyrTblRec!=null)
                     {
@@ -182,17 +175,14 @@ namespace Ferramentas_DLM
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                DBDictionary lays =
-                    acTrans.GetObject(acCurDb.LayoutDictionaryId,
-                        OpenMode.ForWrite) as DBDictionary;
+                DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId,OpenMode.ForWrite) as DBDictionary;
 
                 foreach (DBDictionaryEntry item in lays)
                 {
                     Layout acLyrTblRec;
-                    acLyrTblRec = acTrans.GetObject(item.Value,
-                                                    OpenMode.ForWrite) as Layout;
+                    acLyrTblRec = acTrans.GetObject(item.Value,OpenMode.ForWrite) as Layout;
 
                     if (acLyrTblRec != null)
                     {
@@ -219,8 +209,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-
-
         public static void LimparCotas(OpenCloseTransaction acTrans, SelectionSet acSSet)
         {
             if (acTrans == null | acSSet == null)
@@ -235,8 +223,7 @@ namespace Ferramentas_DLM
                 if (acSSObj != null)
                 {
                     // Open the selected object for write
-                    Entity acEnt = acTrans.GetObject(acSSObj.ObjectId,
-                                                        OpenMode.ForWrite) as Entity;
+                    Entity acEnt = acTrans.GetObject(acSSObj.ObjectId,OpenMode.ForWrite) as Entity;
 
                     if (acEnt != null)
                     {
@@ -333,36 +320,36 @@ namespace Ferramentas_DLM
         public static void InterSectionPoint()
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+            Database acCurDb = doc.Database;
+            Editor editor = doc.Editor;
             Xline pl1 = null;
             Entity pl2 = null;
             Entity ent = null;
             PromptEntityOptions peo = null;
             PromptEntityResult per = null;
-            using (Transaction tx = db.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 //Select first polyline
                 peo = new PromptEntityOptions("Seleciona a Xline:");
-                per = ed.GetEntity(peo);
+                per = editor.GetEntity(peo);
                 if (per.Status != PromptStatus.OK)
                 {
                     return;
                 }
                 //Get the polyline entity
-                ent = (Entity)tx.GetObject(per.ObjectId, OpenMode.ForRead);
+                ent = (Entity)acTrans.GetObject(per.ObjectId, OpenMode.ForRead);
                 if (ent is Xline)
                 {
                     pl1 = ent as Xline;
                 }
                 //Select 2nd polyline
                 peo = new PromptEntityOptions("\n Selecione o objeto:");
-                per = ed.GetEntity(peo);
+                per = editor.GetEntity(peo);
                 if (per.Status != PromptStatus.OK)
                 {
                     return;
                 }
-                ent = (Entity)tx.GetObject(per.ObjectId, OpenMode.ForRead);
+                ent = (Entity)acTrans.GetObject(per.ObjectId, OpenMode.ForRead);
                 pl2 = ent;
                 //if (ent is Xline)
                 //{
@@ -379,11 +366,10 @@ namespace Ferramentas_DLM
                     Application.ShowAlertDialog("\n Intersection Point: " + "\nX = " + pt.X + "\nY = " + pt.Y + "\nZ = " + pt.Z);
                 }
 
-                tx.Commit();
+                acTrans.Commit();
             }
 
         }
-
         public static List<BlockReference> Filtrar(List<BlockReference> blocos, List<string> nomes, bool exato = true)
         {
             List<BlockReference> marcas = new List<BlockReference>();
@@ -414,7 +400,6 @@ namespace Ferramentas_DLM
 
             return marcas;
         }
-
         public static List<LineSegment3d> GetSegmentos3D(Polyline pl, SegmentType type = SegmentType.Line)
         {
             List<LineSegment3d> segmentos = new List<LineSegment3d>();
@@ -463,8 +448,6 @@ namespace Ferramentas_DLM
             }
             return segmentos;
         }
-
-
         public static void SetOrtho(bool valor)
         {
             Application.DocumentManager.MdiActiveDocument.Database.Orthomode = valor;
@@ -473,21 +456,18 @@ namespace Ferramentas_DLM
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Editor editor = doc.Editor;
-            Database db = doc.Database;
+            Database acCurDb = doc.Database;
             try
             {
-                using (Transaction Tx =
-               db.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
                     DBDictionary mlineDic =
-                        (DBDictionary)Tx.GetObject(db.MLStyleDictionaryId,
-                                                          OpenMode.ForRead);
+                        (DBDictionary)acTrans.GetObject(acCurDb.MLStyleDictionaryId,OpenMode.ForRead);
 
-                    MlineStyle acLyrTblRec = Tx.GetObject(mlineDic.GetAt(nome),
-                                                                  OpenMode.ForWrite) as MlineStyle;
+                    MlineStyle acLyrTblRec = acTrans.GetObject(mlineDic.GetAt(nome),OpenMode.ForWrite) as MlineStyle;
 
 
-                    Tx.Commit();
+                    acTrans.Commit();
                     return acLyrTblRec;
                 }
             }
@@ -542,13 +522,12 @@ namespace Ferramentas_DLM
         {
             if (_db == null)
             {
-                _db = new Conexoes.TecnoMetal_Banco(Constantes.DB_TecnoMetal);
+                _db = new Conexoes.TecnoMetal_Banco(Constantes.DBPROF);
             }
 
             return _db;
         }
         private static Conexoes.TecnoMetal_Banco _db { get; set; }
-
         public static void GetCoordenadas(Mline s, out Point3d p1, out Point3d p2)
         {
             List<Point3d> lista = new List<Point3d>();
@@ -577,12 +556,10 @@ namespace Ferramentas_DLM
                 p2 = lista[0];
             }
         }
-
         public static List<CTerca> MlinesPassando(Point3d de, Point3d ate, List<CTerca> LS, bool somente_dentro = false, bool dentro_do_eixo = false)
         {
             return MlinesPassando(de, ate, LS.Select(x => x as CCorrente).ToList(), somente_dentro, dentro_do_eixo).Select(x => x as CTerca).ToList();
         }
-
         public static List<CCorrente> MlinesPassando(Point3d de, Point3d ate, List<CCorrente> LS, bool somente_dentro = false, bool dentro_do_eixo = false)
         {
             List<CCorrente> retorno = new List<CCorrente>();
@@ -725,52 +702,53 @@ namespace Ferramentas_DLM
 
 
         }
-        
-        public static void LigarLayer(string layer)
+        public static void LigarLayers(List<string> layers)
         {
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 LayerTable acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
-                                                OpenMode.ForRead) as LayerTable;
+                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead) as LayerTable;
 
                
-
-                if (acLyrTbl.Has(layer))
+                foreach(var layer in layers)
                 {
-                    LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer],
-                                                   OpenMode.ForWrite) as LayerTableRecord;
+                    if (acLyrTbl.Has(layer))
+                    {
+                        LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
 
-                    acLyrTblRec.IsOff = false;
-                    acLyrTblRec.IsFrozen = false;
+                        acLyrTblRec.IsOff = false;
+                        acLyrTblRec.IsFrozen = false;
+                        acLyrTblRec.IsHidden = false;
+                        acLyrTblRec.IsLocked = false;
+                    }
                 }
+
 
                 acTrans.Commit();
             }
         }
-        public static void DesligarLayer(string layer, bool congelar = true)
+        public static void DesligarLayers(List<string> layers, bool congelar = true)
         {
             Document acDoc = Application.DocumentManager.MdiActiveDocument;
             Database acCurDb = acDoc.Database;
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 LayerTable acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
-                                                OpenMode.ForRead) as LayerTable;
+                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead) as LayerTable;
 
-
-                if (acLyrTbl.Has(layer))
+                foreach(var layer in layers)
                 {
-                    LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer],
-                                                   OpenMode.ForWrite) as LayerTableRecord;
+                    if (acLyrTbl.Has(layer))
+                    {
+                        LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
 
-                    // Turn the layer off
-                    acLyrTblRec.IsOff = true;
-                    acLyrTblRec.IsFrozen = congelar;
+                        // Turn the layer off
+                        acLyrTblRec.IsOff = true;
+                        acLyrTblRec.IsFrozen = congelar;
+                    }
                 }
-
                 acTrans.Commit();
             }
         }
@@ -785,12 +763,11 @@ namespace Ferramentas_DLM
             Database acCurDb = acDoc.Database;
 
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Layer table for read
                 LayerTable acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
-                                                OpenMode.ForRead) as LayerTable;
+                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead) as LayerTable;
 
 
                 if (acLyrTbl.Has(layer) == false && criar_senao_existe)
@@ -814,22 +791,18 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer],
-                                                    OpenMode.ForWrite) as LayerTableRecord;
+                    LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer],OpenMode.ForWrite) as LayerTableRecord;
 
                     // Turn the layer off
                     acLyrTblRec.IsOff = !on;
                 }
 
                 // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
 
                 acCurDb.Clayer = acLyrTbl[layer];
                 // Save the changes and dispose of the transaction
@@ -842,18 +815,12 @@ namespace Ferramentas_DLM
         {
             Document doc =
               Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
-            Transaction tr =
-              db.TransactionManager.StartOpenCloseTransaction();
-            using (tr)
+            Database acCurDb = doc.Database;
+            Editor editor = doc.Editor;
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Get the layer table from the drawing
-                LayerTable lt =
-                  (LayerTable)tr.GetObject(
-                    db.LayerTableId,
-                    OpenMode.ForRead
-                  );
+                LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead);
 
                 try
                 {
@@ -865,7 +832,7 @@ namespace Ferramentas_DLM
                     // Only set the layer name if it isn't in use
                     if (lt.Has(nome))
                     {
-                        ed.WriteMessage(
+                        editor.WriteMessage(
                           "\nA Já existe uma layer com esse nome: " + nome
 
                         );
@@ -882,7 +849,7 @@ namespace Ferramentas_DLM
                 {
                     // An exception has been thrown, indicating the
                     // name is invalid
-                    ed.WriteMessage(
+                    editor.WriteMessage(
                       "\nNome inválido de layer: " + nome
                     );
                     return;
@@ -896,13 +863,13 @@ namespace Ferramentas_DLM
                 // Add the new layer to the layer table
                 lt.UpgradeOpen();
                 ObjectId ltId = lt.Add(ltr);
-                tr.AddNewlyCreatedDBObject(ltr, true);
+                acTrans.AddNewlyCreatedDBObject(ltr, true);
                 // Set the layer to be current for this drawing
-                db.Clayer = ltId;
+                acCurDb.Clayer = ltId;
                 // Commit the transaction
-                tr.Commit();
+                acTrans.Commit();
                 // Report what we've done
-                ed.WriteMessage(
+                editor.WriteMessage(
                   "\nLayer Criada \"{0}\" ",
                   nome
                 );

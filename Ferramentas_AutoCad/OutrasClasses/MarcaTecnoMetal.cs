@@ -11,7 +11,7 @@ namespace Ferramentas_DLM
     {
         public override string ToString()
         {
-            return $"[{Marca}{(Tipo_Marca == Tipo_Marca.Posicao? $" - P = {Posicao}": $" - {Mercadoria}")} ] - QTD.: {Quantidade}";
+            return $"[{Marca}{(Tipo_Marca == Tipo_Marca.Posicao? $" - P = {Posicao}": $" - {Tipo_Bloco}")} ] - QTD.: {Quantidade}";
         }
         public Tipo_Bloco Tipo_Bloco
         {

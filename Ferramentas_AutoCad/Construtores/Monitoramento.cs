@@ -60,20 +60,7 @@ namespace Ferramentas_DLM
                 Conexoes.Utilz.Abrir(destino);
             }
         }
-        static void Database_ObjectAppended(object sender, ObjectEventArgs e)
-        {
-            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
-            DBObject dbObj = e.DBObject;
-            using (Transaction tr = db.TransactionManager.StartOpenCloseTransaction())
-            {
-                Object pOwner = tr.GetObject(dbObj.OwnerId, OpenMode.ForRead);
 
-                Application.ShowAlertDialog(string.Format("Nome do Objeto: {0}, ID: {1}", e.DBObject.GetType().ToString(), dbObj.OwnerId.ToString()));
-                tr.Commit();
-            }
-        }
 
         public Monitoramento()
         {

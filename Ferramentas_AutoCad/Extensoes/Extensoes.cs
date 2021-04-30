@@ -14,13 +14,13 @@ namespace Autodesk.AutoCAD.EditorInput
         static MethodInfo runCommand = typeof(Editor).GetMethod(
            "RunCommand", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
-        public static PromptStatus Command(this Editor ed, params object[] args)
+        public static PromptStatus Command(this Editor editor, params object[] args)
         {
             if (Application.DocumentManager.IsApplicationContext)
                 throw new InvalidOperationException("Invalid execution context for Command()");
-            if (ed.Document != Application.DocumentManager.MdiActiveDocument)
+            if (editor.Document != Application.DocumentManager.MdiActiveDocument)
                 throw new InvalidOperationException("Document is not active");
-            return (PromptStatus)runCommand.Invoke(ed, new object[] { args });
+            return (PromptStatus)runCommand.Invoke(editor, new object[] { args });
         }
     }
 }

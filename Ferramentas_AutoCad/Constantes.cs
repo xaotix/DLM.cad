@@ -43,35 +43,43 @@ namespace Ferramentas_DLM
         Posicao,
         _ = -1
     }
+    public enum Tipo_Chapa
+    {
+        Fina,
+        Grossa,
+        Tudo,
+    }
+
 
     internal static class Constantes
     {
  
+
         public static MenuMarcas menu_marcas { get; set; }
         public static string RaizArquivos { get; set; } = @"\\10.54.0.4\BancoDeDados\";
-        public static string RaizBlocosA2 { get; set; } = RaizArquivos + @"Blocos\SELO A2\";
-        public static string RaizPcs { get; set; } = RaizArquivos + @"Blocos\SELO A2\Listagem\Peças Mapeáveis\";
+        public static string RaizA2Blocos { get; set; } = RaizArquivos + @"Blocos\SELO A2\";
+        public static string RaizPcsBlocos { get; set; } = RaizArquivos + @"Blocos\SELO A2\Listagem\Peças Mapeáveis\";
         public static string RaizTecnoMetalBlocos { get; set; } = RaizArquivos + @"Simbologias\usr\";
-        public static string DB_TecnoMetal { get; set; } = RaizArquivos + @"\DB2011\DBPROF.dbf";
+        public static string DBPROF { get; set; } = RaizArquivos + @"\DB2011\DBPROF.dbf";
 
-        public static string Tabela_Correntes_Titulo { get; set; } = RaizBlocosA2 + @"Listagem\CORRENTES_TITULO.dwg";
-        public static string Tabela_Correntes { get; set; } = RaizBlocosA2 + @"Listagem\CORRENTES.dwg";
-        public static string Tabela_Tercas_Titulo { get; set; } = RaizBlocosA2 + @"Listagem\TERCAS_TITULO.dwg";
-        public static string Tabela_Almox_Titulo { get; set; } = RaizBlocosA2 + @"Listagem\ALMOX_TITULO.dwg";
-        public static string Tabela_Almox { get; set; } = RaizBlocosA2 + @"Listagem\ALMOX.dwg";
-        public static string Tabela_Tirantes_Titulo { get; set; } = RaizBlocosA2 + @"Listagem\TIRANTES_TITULO.dwg";
-        public static string Tabela_Tirantes { get; set; } = RaizBlocosA2 + @"Listagem\TIRANTES.dwg";
-        public static string Tabela_Tercas { get; set; } = RaizBlocosA2 + @"Listagem\TERCAS.dwg";
-        public static string Tabela_TecnoMetal { get; set; } = RaizBlocosA2 + @"Listagem\TECNOMETAL_TAB_LIN.dwg";
-        public static string Tabela_TecnoMetal_Titulo { get; set; } = RaizBlocosA2 + @"Listagem\TECNOMETAL_TAB_CAB.dwg";
-        public static string Tabela_TecnoMetal_Vazia { get; set; } = RaizBlocosA2 + @"Listagem\TECNOMETAL_TAB_LIN_VAZIA.dwg";
+        public static string Tabela_Correntes_Titulo { get; set; } = RaizA2Blocos + @"Listagem\CORRENTES_TITULO.dwg";
+        public static string Tabela_Correntes { get; set; } = RaizA2Blocos + @"Listagem\CORRENTES.dwg";
+        public static string Tabela_Tercas_Titulo { get; set; } = RaizA2Blocos + @"Listagem\TERCAS_TITULO.dwg";
+        public static string Tabela_Almox_Titulo { get; set; } = RaizA2Blocos + @"Listagem\ALMOX_TITULO.dwg";
+        public static string Tabela_Almox { get; set; } = RaizA2Blocos + @"Listagem\ALMOX.dwg";
+        public static string Tabela_Tirantes_Titulo { get; set; } = RaizA2Blocos + @"Listagem\TIRANTES_TITULO.dwg";
+        public static string Tabela_Tirantes { get; set; } = RaizA2Blocos + @"Listagem\TIRANTES.dwg";
+        public static string Tabela_Tercas { get; set; } = RaizA2Blocos + @"Listagem\TERCAS.dwg";
+        public static string Tabela_TecnoMetal { get; set; } = RaizA2Blocos + @"Listagem\TECNOMETAL_TAB_LIN.dwg";
+        public static string Tabela_TecnoMetal_Titulo { get; set; } = RaizA2Blocos + @"Listagem\TECNOMETAL_TAB_CAB.dwg";
+        public static string Tabela_TecnoMetal_Vazia { get; set; } = RaizA2Blocos + @"Listagem\TECNOMETAL_TAB_LIN_VAZIA.dwg";
 
 
-        public static string Incicacao_Tercas { get; set; } = RaizBlocosA2 + @"Listagem\TERCA_INDICACAO.dwg";
-        public static string Indicacao_Tirantes { get; set; } = RaizBlocosA2 + @"Listagem\TIRANTE_INDICACAO.dwg";
-        public static string Indicacao_Correntes { get; set; } = RaizBlocosA2 + @"Listagem\CORRENTE_INDICACAO.dwg";
+        public static string Incicacao_Tercas { get; set; } = RaizA2Blocos + @"Listagem\TERCA_INDICACAO.dwg";
+        public static string Indicacao_Tirantes { get; set; } = RaizA2Blocos + @"Listagem\TIRANTE_INDICACAO.dwg";
+        public static string Indicacao_Correntes { get; set; } = RaizA2Blocos + @"Listagem\CORRENTE_INDICACAO.dwg";
 
-        public static string Texto { get; set; } = RaizBlocosA2 + @"Listagem\TEXTO.dwg";
+        public static string Texto { get; set; } = RaizA2Blocos + @"Listagem\TEXTO.dwg";
 
 
         public static string BL_M_Composta { get; set; } = "M8_COM";
@@ -98,10 +106,51 @@ namespace Ferramentas_DLM
         public static string BL_Posicao_Elemento { get; set; } = "VIT_4";
         public static string BL_Marca_Repetida { get; set; } = "R8_COM";
 
-        public static List<string> BlocosTecnoMetalMarcas { get; set; } = new List<string>() { BL_M_Composta, BL_M_ELEM2, BL_M_ELUNIT, BL_M_CH, BL_M_PERF, BL_M_ARR };
-        public static List<string> BlocosTecnoMetalPosicoes { get; set; } = new List<string>() { BL_P_PERF, BL_P_CH, BL_P_ELEM2, BL_P_ELUNIT};
+        public static List<string> BlocosTecnoMetalMarcas
+        {
+            get
+            {
+                return new List<string>() { 
+                    BL_M_Composta, 
+                    BL_M_ELEM2, 
+                    BL_M_ELUNIT, 
+                    BL_M_CH, 
+                    BL_M_PERF, 
+                    BL_M_ARR
+                };
+            }
+        }
+        public static List<string> BlocosTecnoMetalPosicoes
+        {
+            get
+            {
+                return new List<string>() { 
+                    BL_P_PERF, 
+                    BL_P_CH, 
+                    BL_P_ELEM2, 
+                    BL_P_ELUNIT 
+                };
+            }
+        }
 
-
+        public static List<string> LayersMarcasDesligar
+        {
+            get
+            {
+                return new List<string>() { 
+                    "POS_NOT", 
+                    "POS_MAT", 
+                    "POS_LIN", 
+                    "POS_DES", 
+                    "MARK_SBX", 
+                    "MARK_SBA", 
+                    "MARK_MAT", 
+                    "MARK_DES", 
+                    "MARK_CIR", 
+                    "MARK_BOX" 
+                };
+            }
+        }
 
         public static List<string> BlocosTecnoMetal
         {
@@ -114,23 +163,23 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static string Marca_Composta { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_M_Composta}.dwg";
-        public static string Marca_Perfil { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_M_PERF}.dwg";
-        public static string Marca_Chapa { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_M_CH}.dwg";
-        public static string Marca_Arremate { get; set; } = RaizArquivos + $@"{RaizTecnoMetalBlocos }\{BL_M_ARR}.dwg";
-        public static string Marca_Elemento_M2 { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_M_ELEM2}.dwg";
-        public static string Marca_Elemento_Unitario { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_M_ELUNIT}.dwg";
+        public static string Marca_Composta { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_M_Composta}.dwg";
+        public static string Marca_Perfil { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_M_PERF}.dwg";
+        public static string Marca_Chapa { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_M_CH}.dwg";
+        public static string Marca_Arremate { get; set; } = RaizArquivos + $@"{RaizTecnoMetalBlocos }{BL_M_ARR}.dwg";
+        public static string Marca_Elemento_M2 { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_M_ELEM2}.dwg";
+        public static string Marca_Elemento_Unitario { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_M_ELUNIT}.dwg";
 
-        public static string Posicao_Perfil { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_P_PERF}.dwg";
-        public static string Posicao_Chapa { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_P_CH}.dwg";
-        public static string Posicao_Elemento_M2 { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_P_ELEM2}.dwg";
-        public static string Posicao_Elemento_Unitario { get; set; } = $@"{RaizTecnoMetalBlocos }\{BL_P_ELUNIT}.dwg";
+        public static string Posicao_Perfil { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_P_PERF}.dwg";
+        public static string Posicao_Chapa { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_P_CH}.dwg";
+        public static string Posicao_Elemento_M2 { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_P_ELEM2}.dwg";
+        public static string Posicao_Elemento_Unitario { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_P_ELUNIT}.dwg";
 
-        public static string Peca_ESTICADOR { get; set; } = RaizPcs + @"ESTICADOR.dwg";
-        public static string Peca_MANILHA { get; set; } = RaizPcs + @"MANILHA.dwg";
-        public static string Peca_PASSARELA { get; set; } = RaizPcs + @"PASSARELA.dwg";
-        public static string Peca_SFLH { get; set; } = RaizPcs + @"SFLH.dwg";
-        public static string Peca_SFLI { get; set; } = RaizPcs + @"SFLI.dwg";
+        public static string Peca_ESTICADOR { get; set; } = RaizPcsBlocos + @"ESTICADOR.dwg";
+        public static string Peca_MANILHA { get; set; } = RaizPcsBlocos + @"MANILHA.dwg";
+        public static string Peca_PASSARELA { get; set; } = RaizPcsBlocos + @"PASSARELA.dwg";
+        public static string Peca_SFLH { get; set; } = RaizPcsBlocos + @"SFLH.dwg";
+        public static string Peca_SFLI { get; set; } = RaizPcsBlocos + @"SFLI.dwg";
 
 
 

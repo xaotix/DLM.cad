@@ -1,0 +1,27 @@
+        //tá dando fatal error
+        //public void Mercadorias3d()
+        //{
+        //    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+        //    {
+        //        var selecao = SelecionarObjetos(acTrans);
+        //        var marcas = this.selecoes;
+
+        //        if (marcas.Count > 0)
+        //        {
+        //            var mercadoria = PromptMercadoria();
+        //            if (mercadoria != null && mercadoria != "")
+        //            {
+
+        //                foreach (var bloco in marcas)
+        //                {
+        //                    if (bloco.GetType().ToString() == "Autodesk.AutoCAD.DatabaseServices.ImpEntity")
+        //                    {
+        //                        this.SetVar3D(bloco, "PROFILEDATA", Constantes.ATT_MER, mercadoria);
+        //                        Alerta("Veio até aqui");
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        acTrans.Commit();
+        //    }
+        //}

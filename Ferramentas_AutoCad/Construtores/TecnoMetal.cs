@@ -7,10 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Ferramentas_DLM
@@ -164,8 +160,11 @@ namespace Ferramentas_DLM
             Alerta("Finalizado", MessageBoxIcon.Information);
         }
 
+        
+
         public List<MarcaTecnoMetal> GetMarcas(DB.Tabela pcs = null)
         {
+            
             List<MarcaTecnoMetal> Retorno = new List<MarcaTecnoMetal>();
 
             List<MarcaTecnoMetal> mm = new List<MarcaTecnoMetal>();
@@ -262,7 +261,6 @@ namespace Ferramentas_DLM
 
         public void InserirTabela()
         {
-            //if (!E_Tecnometal()) { return; }
 
             bool cancelado = false;
             var pt = Utilidades.PedirPonto3D("Clique na origem", out cancelado);
@@ -280,30 +278,27 @@ namespace Ferramentas_DLM
         }
         public void InserirTabelaAuto(ref List<Conexoes.Report> erros)
         {
-            //if (!E_Tecnometal()) { return; }
             IrLayout();
             ZoomExtend();
 
-            var db = this.acCurDb;
             DB.Tabela marcas = new DB.Tabela();
             DB.Tabela posicoes = new DB.Tabela();
 
             Point3d pt = new Point3d();
             bool gerar_tabela = false;
-            using (Transaction tr = db.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
-                var btl = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForWrite);
-                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
-                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
+                BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<BlockReference> blocos = new List<BlockReference>();
                 List<Line> linhas = new List<Line>();
                 List<Entity> apagar = new List<Entity>();
                 List<Autodesk.AutoCAD.DatabaseServices.DBText> textos = new List<Autodesk.AutoCAD.DatabaseServices.DBText>();
                 foreach (ObjectId objId in btr)
                 {
-                    Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForWrite);
+                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForWrite);
                     if (ent is BlockReference)
                     {
                         var s = ent as BlockReference;
@@ -347,7 +342,7 @@ namespace Ferramentas_DLM
 
                 foreach (var s in selo)
                 {
-                    var pts = Utilidades.GetContorno(s, tr);
+                    var pts = Utilidades.GetContorno(s, acTrans);
                     pt = new Point3d(pts.Max(x => x.X) - 7.01, pts.Max(x => x.Y) - 7.01, 0);
                     gerar_tabela = true;
                     break;
@@ -359,7 +354,7 @@ namespace Ferramentas_DLM
                     {
                         s.Erase(true);
                     }
-                    tr.Commit();
+                    acTrans.Commit();
                     acDoc.Editor.Regen();
                 }
             }
@@ -380,15 +375,14 @@ namespace Ferramentas_DLM
      
         }
 
-        public List<DB.Linha> GetMarcasLinhas(Database db, Transaction tr)
+        public List<DB.Linha> GetMarcasLinhas(Database acCurDb, Transaction acTrans)
         {
-            var btl = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForWrite);
-            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
-            BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
+            BlockTable acBlkTbl = acTrans.GetObject(base.acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
+            BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
             List<BlockReference> blocos = new List<BlockReference>();
             foreach (ObjectId objId in btr)
             {
-                Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForWrite);
+                Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForWrite);
                 if (ent is BlockReference)
                 {
                     var s = ent as BlockReference;
@@ -398,7 +392,7 @@ namespace Ferramentas_DLM
             List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas, false);
             List<DB.Linha> retorno = new List<DB.Linha>();
 
-            retorno.AddRange(tabela_tecno.Select(x => GetLinha(x, db, this.Arquivo, this.Nome, DateTime.Now)));
+            retorno.AddRange(tabela_tecno.Select(x => GetLinha(x, acCurDb, this.Arquivo, this.Nome, DateTime.Now)));
 
             return retorno;
 
@@ -410,19 +404,17 @@ namespace Ferramentas_DLM
             IrLayout();
             ZoomExtend();
 
-            var db = this.acCurDb;
-
-            using (Transaction tr = db.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
-                var btl = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForWrite);
-                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
-                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
+               
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
+                BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<BlockReference> blocos = new List<BlockReference>();
                 foreach (ObjectId objId in btr)
                 {
-                    Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForWrite);
+                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForWrite);
                     if (ent is BlockReference)
                     {
                         var s = ent as BlockReference;
@@ -433,7 +425,7 @@ namespace Ferramentas_DLM
                 List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false);
                 List<BlockReference> selo = Utilidades.Filtrar(blocos, new List<string> { "SELO" }, false);
 
-                var marcas = GetMarcasLinhas(db, tr);
+                var marcas = GetMarcasLinhas(this.acCurDb, acTrans);
 
                 var nomes_PECAS = marcas.Select(x => x.Get(Constantes.ATT_MAR).valor).Distinct().ToList();
 
@@ -478,24 +470,24 @@ namespace Ferramentas_DLM
                         att.Add("CREA", this.GetSubEtapa().CalculistaCREA);
                     }
 
-                    Atributos.Set(s, tr, att);
+                    Atributos.Set(s, acTrans, att);
 
                 }
 
                 if (selo.Count > 0)
                 {
-                    tr.Commit();
+                    acTrans.Commit();
                     acDoc.Editor.Regen();
                 }
             }
 
 
         }
-        public DB.Linha GetLinha(BlockReference bloco, Database db, string arquivo, string nome, DateTime ultima_edicao)
+        public DB.Linha GetLinha(BlockReference bloco, Database acCurDb, string arquivo, string nome, DateTime ultima_edicao)
         {
             try
             {
-                var att = Atributos.GetLinha(bloco, db);
+                var att = Atributos.GetLinha(bloco, acCurDb);
                 att.Add(Constantes.ATT_ARQ, arquivo);
                 if (this.E_Tecnometal(false))
                 {
@@ -531,20 +523,18 @@ namespace Ferramentas_DLM
         }
         public DB.Tabela GetPecas(ref List<Conexoes.Report> erros, bool converter_padrao_dbf = true)
         {
-            var db = this.acCurDb;
             DB.Tabela marcas = new DB.Tabela();
             DB.Tabela posicoes = new DB.Tabela();
-            using (Transaction tr = db.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
-                var btl = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
-                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
                 List<BlockReference> blocos = new List<BlockReference>();
-                foreach (ObjectId objId in btr)
+                foreach (ObjectId objId in acBlkTblRec)
                 {
-                    Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForRead);
+                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
                     if (ent is BlockReference)
                     {
                         var s = ent as BlockReference;
@@ -559,12 +549,12 @@ namespace Ferramentas_DLM
 
                 foreach (var m in ms)
                 {
-                    marcas.Linhas.Add(GetLinha(m, db, this.Arquivo, this.Nome, ultima_edicao));
+                    marcas.Linhas.Add(GetLinha(m, this.acCurDb, this.Arquivo, this.Nome, ultima_edicao));
                 }
 
                 foreach (var m in pos)
                 {
-                    posicoes.Linhas.Add(GetLinha(m, db, this.Arquivo, this.Nome, ultima_edicao));
+                    posicoes.Linhas.Add(GetLinha(m, this.acCurDb, this.Arquivo, this.Nome, ultima_edicao));
                 }
 
             }
@@ -621,19 +611,18 @@ namespace Ferramentas_DLM
                     string arquivo = file.FullName;
                     try
                     {
-                        using (Database db = new Database(false, true))
+                        using (Database acTmpDb = new Database(false, true))
                         {
-                            db.ReadDwgFile(arquivo, FileOpenMode.OpenForReadAndAllShare, false, null);
-                            using (Transaction tr = db.TransactionManager.StartOpenCloseTransaction())
+                            acTmpDb.ReadDwgFile(arquivo, FileOpenMode.OpenForReadAndAllShare, false, null);
+                            using (var acTrans = acTmpDb.TransactionManager.StartOpenCloseTransaction())
                             {
 
-                                var btl = (BlockTable)db.BlockTableId.GetObject(OpenMode.ForRead);
-                                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                                BlockTable acBlkTbl = acTrans.GetObject(acTmpDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                                BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
                                 List<BlockReference> blocos = new List<BlockReference>();
                                 foreach (ObjectId objId in btr)
                                 {
-                                    Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForRead);
+                                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
                                     if (ent is BlockReference)
                                     {
                                         var s = ent as BlockReference;
@@ -648,16 +637,16 @@ namespace Ferramentas_DLM
 
                                 foreach (var m in ms)
                                 {
-                                    marcas.Linhas.Add(GetLinha(m, db, arquivo, nome_arq, ultima_edicao));
+                                    marcas.Linhas.Add(GetLinha(m, acTmpDb, arquivo, nome_arq, ultima_edicao));
                                 }
 
                                 foreach (var m in pos)
                                 {
-                                    posicoes.Linhas.Add(GetLinha(m, db, arquivo, nome_arq, ultima_edicao));
+                                    posicoes.Linhas.Add(GetLinha(m, acTmpDb, arquivo, nome_arq, ultima_edicao));
                                 }
 
                             }
-                            db.CloseInput(true);
+                            acTmpDb.CloseInput(true);
                         }
                     }
                     catch (Exception ex)
@@ -693,6 +682,7 @@ namespace Ferramentas_DLM
             {
                 erros.Add(new Conexoes.Report($"Divergência de {tipo_erro}",
                     $"Pos: {pos.Key}\n: " +
+                    $"Tipo Bloco: {pos.ToList()[0].Tipo_Bloco}\n: " +
                     $"{string.Join("\n", divergencias.Select(x => $"{string.Join("\n", x.Select(y => y.Prancha + " Valor: " + x.Key))}"))}"
                     , Conexoes.TipoReport.Crítico));
             }
@@ -1053,62 +1043,77 @@ namespace Ferramentas_DLM
         }
 
 
-        public string PromptMarca(string prefix = "ARR-")
-        {
-            var marcas = this.GetMarcas();
-            var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count +1;
-            retentar:
-            var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", "Nome da marca", prefix + nnn.ToString().PadLeft(2,'0'), false, "", false, 12).ToUpper().Replace(" ","");
 
-            if(m.Length==0)
-            {
-                if (Conexoes.Utilz.Pergunta("Nome não pode ser em branco. \nTentar Novamente?"))
-                {
-                    goto retentar;
-                }
-                else
-                {
-                    return "";
-                }
-            }
-            var iguais = marcas.FindAll(x => x.Marca == m);
-            if (iguais.Count>0)
-            {
-                if (Conexoes.Utilz.Pergunta($"[{m}]Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?"))
-                {
-                    goto retentar;
-                }
-                else
-                {
-                    return "";
-                }
-            }
-            if(Conexoes.Utilz.CaracteresEspeciais(m))
-            {
-                if (Conexoes.Utilz.Pergunta($"[{m}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?"))
-                {
-                    goto retentar;
-                }
-                else
-                {
-                    return "";
-                }
-            }
-            return m;
-        }
-        public  string PromptFicha()
+        private string material_sel { get; set; }
+        private string mercadoria_sel { get; set; }
+        private Conexoes.Chapa chapa_sel { get; set; }
+        private Conexoes.Bobina bobina_sel { get; set; }
+        private List<Conexoes.Bobina> _bobinas { get; set; }
+        private List<Conexoes.Chapa> _chapas { get; set; }
+
+        public Conexoes.Bobina PromptBobina(Conexoes.Chapa espessura = null)
         {
-            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", "SEM PINTURA", true, "FICHA", false, 20);
+            if (_bobinas == null)
+            {
+                _bobinas = Conexoes.DBases.GetBancoRM().GetBobinas();
+            }
+            List<Conexoes.Bobina> bobinas = new List<Conexoes.Bobina>();
+            bobinas.AddRange(_bobinas);
+            if (espessura != null)
+            {
+                bobinas = bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte);
+            }
+            var sel = Conexoes.Utilz.SelecionarObjeto(bobinas, null, "Selecione uma bobina");
+            if (sel != null)
+            {
+                bobina_sel = sel;
+            }
+
+            return sel;
         }
-        public  string PromptMaterial()
+        public Conexoes.Chapa PromptChapa(Tipo_Chapa tipo)
         {
-            var mat = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetMateriais(), null, "Selecione");
-            return mat;
+            if(_chapas==null)
+            {
+                _chapas = Conexoes.DBases.GetChapas();
+            }
+
+            List<Conexoes.Chapa> chapas = new List<Conexoes.Chapa>();
+            chapas.AddRange(this._chapas);
+            if (tipo == Tipo_Chapa.Fina)
+            {
+                chapas = chapas.FindAll(x => x.GetChapa_Fina());
+            }
+            else if (tipo ==  Tipo_Chapa.Grossa)
+            {
+                chapas = chapas.FindAll(x => !x.GetChapa_Fina());
+            }
+
+            var sel = Conexoes.Utilz.SelecionaCombo(_chapas, chapa_sel, "Selecione uma espessura");
+
+            if(sel!=null)
+            {
+                chapa_sel = sel;
+            }
+            return sel;
+        }
+        public string PromptMaterial()
+        {
+            string sel = Conexoes.Utilz.SelecionaCombo(Conexoes.DBases.GetBancoRM().GetMateriais(), material_sel, "Selecione o Material");
+            if(sel!=null)
+            {
+            material_sel = sel;
+            }
+            return sel;
         }
         public string PromptMercadoria()
         {
-            var mat = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetMercadorias(), null, "Selecione");
-            return mat;
+            var sel = Conexoes.Utilz.SelecionaCombo(Conexoes.DBases.GetBancoRM().GetMercadorias(), mercadoria_sel, "Selecione a Mercadoria");
+            if (sel != null)
+            {
+                mercadoria_sel = sel;
+            }
+            return sel;
         }
         public void PromptGeometria(out double comprimento, out double largura, out double area, out double perimetro)
         {
@@ -1155,7 +1160,53 @@ namespace Ferramentas_DLM
             }
 
         }
+        public  string PromptFicha()
+        {
+            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", "SEM PINTURA", true, "FICHA", false, 20);
+        }
+        public string PromptMarca(string prefix = "ARR-")
+        {
+            var marcas = this.GetMarcas();
+            var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count +1;
+            retentar:
+            var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", "Nome da marca", prefix + nnn.ToString().PadLeft(2,'0'), false, "", false, 12).ToUpper().Replace(" ","");
 
+            if(m.Length==0)
+            {
+                if (Conexoes.Utilz.Pergunta("Nome não pode ser em branco. \nTentar Novamente?"))
+                {
+                    goto retentar;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            var iguais = marcas.FindAll(x => x.Marca == m);
+            if (iguais.Count>0)
+            {
+                if (Conexoes.Utilz.Pergunta($"[{m}]Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?"))
+                {
+                    goto retentar;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            if(Conexoes.Utilz.CaracteresEspeciais(m))
+            {
+                if (Conexoes.Utilz.Pergunta($"[{m}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?"))
+                {
+                    goto retentar;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            return m;
+        }
 
 
 
@@ -1211,9 +1262,9 @@ namespace Ferramentas_DLM
 
                 if (bobina == null)
                 {
-                    var chapas = Conexoes.DBases.GetChapas();
+                   
                     bobina = Conexoes.DBases.GetBobinaDummy();
-                    var espessura = Conexoes.Utilz.SelecionarObjeto(chapas, null, "Selecione uma espessura");
+                    var espessura = PromptChapa(Tipo_Chapa.Fina);
                     if (espessura == null)
                     {
                         return;
@@ -1221,8 +1272,8 @@ namespace Ferramentas_DLM
                     chapa_fina = espessura.GetChapa_Fina();
                     if (chapa_fina)
                     {
-                        var bobinas = Conexoes.DBases.GetBancoRM().GetBobinas();
-                        bobina = Conexoes.Utilz.SelecionarObjeto(bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte), null, "Selecione uma espessura");
+
+                        bobina = PromptBobina(espessura);
                     }
                     else
                     {
@@ -1335,8 +1386,7 @@ namespace Ferramentas_DLM
                 bool status = false;
                 if (espessura == null)
                 {
-                    var chapas = Conexoes.DBases.GetChapas();
-                    espessura = Conexoes.Utilz.SelecionarObjeto(chapas, null, "Selecione a espessura");
+                    espessura = PromptChapa(Tipo_Chapa.Tudo);
                 }
                 if (espessura != null)
                 {
@@ -1344,8 +1394,8 @@ namespace Ferramentas_DLM
                     bool chapa_fina = espessura.GetChapa_Fina();
                     if (chapa_fina)
                     {
-                        var bobinas = Conexoes.DBases.GetBancoRM().GetBobinas();
-                        bobina = Conexoes.Utilz.SelecionarObjeto(bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte), null, "Selecione uma espessura");
+
+                        bobina = PromptBobina(espessura);
                         ficha = "SEM PINTURA";
                     }
                     else
@@ -1381,7 +1431,7 @@ namespace Ferramentas_DLM
                         {
                             material = bobina.Material;
                         }
-                        Chapa_Dobrada pa = new Chapa_Dobrada(bobina, largura, comprimento, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade };
+                        Chapa_Dobrada pa = new Chapa_Dobrada(bobina, largura, comprimento, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade, Mercadoria = mercadoria };
                         pa.SetSuperficie(Math.Round(area * 2 + perimetro * espessura.valor / 1000 / 1000 / 1000));
 
                         var origem = Utilidades.PedirPonto3D("Selecione a origem", out status);
@@ -1431,7 +1481,7 @@ namespace Ferramentas_DLM
         {
             if (marca == "")
             {
-                marca = PromptMarca("CH-");
+                marca = PromptMarca("PC-");
             }
             if (marca == null | marca == "") { return; }
             
@@ -1482,7 +1532,7 @@ namespace Ferramentas_DLM
                     return;
                 }
 
-                Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, this.Getescala(), posicao);
+                Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, this.Getescala(), posicao,mercadoria);
             }
         }
         public void InserirElementoM2(string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_Perfil perfil = null, string mercadoria = null)
@@ -1490,7 +1540,7 @@ namespace Ferramentas_DLM
 
             if (marca == "")
             {
-                marca = PromptMarca("ARR-");
+                marca = PromptMarca("PC-");
             }
             if (marca == null | marca == "") { return; }
 
@@ -1549,7 +1599,7 @@ namespace Ferramentas_DLM
 
                             if (!status)
                             {
-                                Blocos.MarcaElemM2(ponto, perfil, marca, quantidade, comprimento, largura, area, perimetro, ficha, material, this.Getescala(), posicao);
+                                Blocos.MarcaElemM2(ponto, perfil, marca, quantidade, comprimento, largura, area, perimetro, ficha, material, this.Getescala(), posicao,mercadoria);
                             }
                         }
                     }
@@ -1562,11 +1612,11 @@ namespace Ferramentas_DLM
 
             if (marca == "")
             {
-                marca = PromptMarca("ARR-");
+                marca = PromptMarca("PF-");
             }
             if (marca == null | marca == "") { return; }
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 bool status;
                 double comprimento = Utilidades.PedirDistancia("Defina o comprimento", out status);
@@ -1680,7 +1730,7 @@ namespace Ferramentas_DLM
 
         public void Mercadorias()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos(acTrans);
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
@@ -1700,37 +1750,11 @@ namespace Ferramentas_DLM
         }
 
 
-        //tá dando fatal error
-        //public void Mercadorias3d()
-        //{
-        //    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-        //    {
-        //        var selecao = SelecionarObjetos(acTrans);
-        //        var marcas = this.selecoes;
 
-        //        if (marcas.Count > 0)
-        //        {
-        //            var mercadoria = PromptMercadoria();
-        //            if (mercadoria != null && mercadoria != "")
-        //            {
-
-        //                foreach (var bloco in marcas)
-        //                {
-        //                    if (bloco.GetType().ToString() == "Autodesk.AutoCAD.DatabaseServices.ImpEntity")
-        //                    {
-        //                        this.SetVar3D(bloco, "PROFILEDATA", Constantes.ATT_MER, mercadoria);
-        //                        Alerta("Veio até aqui");
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        acTrans.Commit();
-        //    }
-        //}
 
         public void Materiais()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos(acTrans);
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
@@ -1751,7 +1775,7 @@ namespace Ferramentas_DLM
 
         public void Tratamentos()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
 

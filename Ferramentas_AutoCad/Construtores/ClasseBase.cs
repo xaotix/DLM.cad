@@ -195,17 +195,15 @@ namespace Ferramentas_DLM
         public List<string> GetMLStyles()
         {
             List<string> estilos = new List<string>();
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 DBDictionary acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId,
-                                             OpenMode.ForRead) as DBDictionary;
+                acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId,OpenMode.ForRead) as DBDictionary;
 
                 foreach (var acObjId in acLyrTbl)
                 {
                     MlineStyle acLyrTblRec;
-                    acLyrTblRec = acTrans.GetObject(acObjId.Value,
-                                                    OpenMode.ForRead) as MlineStyle;
+                    acLyrTblRec = acTrans.GetObject(acObjId.Value, OpenMode.ForRead) as MlineStyle;
 
                     estilos.Add(acLyrTblRec.Name);
                 }
@@ -218,12 +216,12 @@ namespace Ferramentas_DLM
             List<string> lstlay = new List<string>();
 
             LayerTableRecord layer;
-            using (Transaction tr = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                LayerTable lt = tr.GetObject(this.acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
+                LayerTable lt = acTrans.GetObject(this.acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
                 foreach (ObjectId layerId in lt)
                 {
-                    layer = tr.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
+                    layer = acTrans.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
                     lstlay.Add(layer.Name);
                 }
 
@@ -239,11 +237,11 @@ namespace Ferramentas_DLM
         {
             string msg = "";
             Document doc = Application.DocumentManager.MdiActiveDocument;
-            Editor ed = doc.Editor;
-            var selecao = ed.GetEntity("\nSelecione: ");
+            Editor editor = doc.Editor;
+            var selecao = editor.GetEntity("\nSelecione: ");
             if (selecao.Status != PromptStatus.OK)
                 return;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 Entity obj = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
 
@@ -253,7 +251,7 @@ namespace Ferramentas_DLM
 
                 msg += "\n\nPropriedades custom\n\n";
 
-                msg += RetornaCustomProperties(obj.ObjectId, ed);
+                msg += RetornaCustomProperties(obj.ObjectId, editor);
 
                 var props = GetOPMProperties(obj.ObjectId);
 
@@ -303,9 +301,9 @@ namespace Ferramentas_DLM
             string msg = "";
             var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
-            using (var tr = id.Database.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = id.Database.TransactionManager.StartOpenCloseTransaction())
             {
-                var dbObj = tr.GetObject(id, OpenMode.ForRead);
+                var dbObj = acTrans.GetObject(id, OpenMode.ForRead);
                 var types = new List<Type>();
                 types.Add(dbObj.GetType());
                 while (true)
@@ -331,7 +329,7 @@ namespace Ferramentas_DLM
                         }
                     }
                 }
-                tr.Commit();
+                acTrans.Commit();
             }
 
             return msg;
@@ -467,20 +465,16 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
+            
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl= acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
                 List<Coordenada> lista = RemoverRepetidos(pts);
                 // Create the rotated dimension
                 using (Polyline p = new Polyline(lista.Count))
@@ -523,21 +517,17 @@ namespace Ferramentas_DLM
 
 
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Linetype table for read
                 LinetypeTable acLineTypTbl;
-                acLineTypTbl = acTrans.GetObject(acCurDb.LinetypeTableId,
-                                                    OpenMode.ForRead) as LinetypeTable;
+                acLineTypTbl = acTrans.GetObject(acCurDb.LinetypeTableId,OpenMode.ForRead) as LinetypeTable;
                 // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                 // Create a line that starts at 5,5 and ends at 12,3
                 using (Line acLine = new Line(inicio.GetPoint(),
@@ -571,20 +561,15 @@ namespace Ferramentas_DLM
         {
             RotatedDimension acRotDim;
             // Get the current database
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,  OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                 //if (tipo == Tipo_Cota.RotatedDimension)
                 //{
@@ -633,21 +618,15 @@ namespace Ferramentas_DLM
         public RotatedDimension AddCotaHorizontal(Coordenada inicio, Coordenada fim, string texto, Point3d posicao, bool dimtix, double tam, bool juntar_cotas, bool ultima_cota)
         {
             RotatedDimension acRotDim;
-            // Get the current database
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
 
 
                 using (acRotDim = new RotatedDimension())
@@ -694,26 +673,17 @@ namespace Ferramentas_DLM
         }
         public void AddCotaOrdinate(Point3d pontozero, Coordenada ponto, Point3d posicao, double tam)
         {
-            // Get the current database
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
             OrdinateDimension acOrdDim;
 
-
-
-
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl;
-                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
-                                                OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                OpenMode.ForWrite) as BlockTableRecord;
+                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
                 // Create an ordinate dimension
                 using (acOrdDim = new OrdinateDimension())
                 {
@@ -905,8 +875,7 @@ namespace Ferramentas_DLM
                 if (acSSObj != null)
                 {
                     // Open the selected object for write
-                    Entity acEnt = acTrans.GetObject(acSSObj.ObjectId,
-                                                        OpenMode.ForWrite) as Entity;
+                    Entity acEnt = acTrans.GetObject(acSSObj.ObjectId, OpenMode.ForWrite) as Entity;
 
                     if (acEnt != null)
                     {
@@ -1017,7 +986,7 @@ namespace Ferramentas_DLM
         {
 
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 PromptSelectionResult acSSPrompt;
                 acSSPrompt = acDoc.Editor.GetSelection();
@@ -1063,7 +1032,7 @@ namespace Ferramentas_DLM
         public ClasseBase SelecionarTudo()
         {
             ClasseBase p = new ClasseBase();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 p.SelecionarObjetos(acTrans, true);
             }

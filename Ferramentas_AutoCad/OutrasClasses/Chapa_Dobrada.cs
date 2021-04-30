@@ -90,7 +90,7 @@ namespace Ferramentas_DLM
                 {
                     return _Volume;
                 }
-                return $"{this.Comprimento.ToString("N0")}*{this.Espessura.ToString("N2")}*{this.Largura.ToString("N0")}";
+                return $"{this.Comprimento.ToString("N0").Replace(",", "")}*{this.Espessura.ToString("N2").Replace(",", "")}*{this.Largura.ToString("N0").Replace(",", "")}";
             }
         }
         [Display(Order = 5, Name = "Descontar Dobras", GroupName = "Geometria")]

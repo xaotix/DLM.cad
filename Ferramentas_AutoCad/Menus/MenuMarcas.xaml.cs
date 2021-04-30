@@ -20,6 +20,14 @@ namespace Ferramentas_DLM
     /// </summary>
     public partial class MenuMarcas : Window
     {
+        public List<MarcaTecnoMetal> GetPosicoes()
+        {
+            return this.TecnoMetal.GetMarcas().SelectMany(x => x.GetPosicoes()).ToList();
+        }
+        public List<MarcaTecnoMetal> GetMarcas()
+        {
+            return this.TecnoMetal.GetMarcas();
+        }
         public List<DB.Valor> lista_mercadorias { get; set; } = new List<DB.Valor>();
         public string NomeFim
         {
@@ -119,6 +127,13 @@ namespace Ferramentas_DLM
             this.TecnoMetal = tecnoMetal;
             this.seleciona_marca_composta.Visibility = Visibility.Visible;
             this.seleciona_marca_composta.ItemsSource = this.TecnoMetal.GetMarcasCompostas();
+
+
+            if(Conexoes.Utilz.ESoNumero(this.sufix.Text))
+            {
+                this.sufix.Text = (GetPosicoes().Count + 1).ToString().PadLeft(2,'0');
+            }
+
             if(this.seleciona_marca_composta.Items.Count>0)
             {
                 this.seleciona_marca_composta.SelectedIndex = 0;
@@ -137,7 +152,7 @@ namespace Ferramentas_DLM
             {
 
                 case Tipo_Bloco.Chapa:
-                    db_chapa = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetChapas(), null, "Selecione");
+                    db_chapa = this.TecnoMetal.PromptChapa(Tipo_Chapa.Tudo);
                     if (db_chapa != null)
                     {
                         perfil.Content = db_chapa.ToString();
@@ -166,7 +181,12 @@ namespace Ferramentas_DLM
                     }
                     break;
                 case Tipo_Bloco.Arremate:
-                    db_bobina = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetBobinas().FindAll(x => x.Corte == 1200).ToList(), null, "Selecione");
+                    var esp = TecnoMetal.PromptChapa(Tipo_Chapa.Fina);
+                    if(esp!=null)
+                    {
+                        db_bobina = TecnoMetal.PromptBobina(esp);
+                    }
+                    
                     if (db_bobina != null)
                     {
                         perfil.Content = db_bobina.ToString();
@@ -178,16 +198,10 @@ namespace Ferramentas_DLM
             this.Visibility = Visibility.Visible;
 
         }
-        private void mercadoria_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
-        private void material_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
         private void criar_bloco(object sender, RoutedEventArgs e)
         {
+            var qtd_double = Conexoes.Utilz.Double(this.quantidade.Text);
             if ((bool)m_composta.IsChecked)
             {
                 if (this.marca_selecionada == null)
@@ -205,9 +219,9 @@ namespace Ferramentas_DLM
                 }
             }
 
-            if(Conexoes.Utilz.Double(this.quantidade.Text)<=0)
+            if(qtd_double <= 0)
             {
-                Conexoes.Utilz.Alerta($"{this.quantidade.Text} quantidade inválida.");
+                Conexoes.Utilz.Alerta($"{qtd_double} quantidade inválida.");
                 return;
             }
 
@@ -239,7 +253,8 @@ namespace Ferramentas_DLM
             }
 
 
-            if (this.TecnoMetal.GetMarcas().FindAll(x => x.Marca == NomeFim | x.Posicao == NomeFim).Count > 0)
+
+            if (this.GetMarcas().FindAll(x => x.Marca == NomeFim).Count > 0 | this.GetPosicoes().FindAll(x => x.Posicao == NomeFim).Count > 0)
             {
                 if (this.marca_selecionada == null)
                 {
@@ -248,7 +263,14 @@ namespace Ferramentas_DLM
                 }
             }
 
-
+            if(tipo!= Tipo_Bloco.Elemento_Unitario)
+            {
+                if(!Conexoes.Utilz.E_Multiplo(qtd_double,1))
+                {
+                    Conexoes.Utilz.Alerta($"Quantidade inválida: {qtd_double}. Quantidades com números quebrados somente para elemento unitário.");
+                    return;
+                }
+            }
 
             switch (tipo)
             {
@@ -279,14 +301,6 @@ namespace Ferramentas_DLM
                         Conexoes.Utilz.Alerta("Selecione um item.");
                         return;
                     }
-
-                    var qtd = Conexoes.Utilz.Double(this.quantidade.Text);
-                    if(!db_unitario.MultiploOk(qtd))
-                    {
-                        Conexoes.Utilz.Alerta($"Quantidade inválida: {qtd}. Precisa ser múltiplo de {db_unitario.Multiplo}");
-                        return;
-                    }
-
                     break;
                 case Tipo_Bloco.Arremate:
                     if (this.db_bobina == null)
@@ -320,25 +334,25 @@ namespace Ferramentas_DLM
             switch (this.tipo)
             {
                 case Tipo_Bloco.Chapa:
-                    this.TecnoMetal.InserirChapa(nomeMarca, nomePos, this.db_material.valor,Conexoes.Utilz.Int(this.quantidade.Text),this.tratamento.Text,this.db_chapa, this.db_mercadoria.valor);
+                    this.TecnoMetal.InserirChapa(nomeMarca, nomePos, this.db_material.valor, (int)qtd_double, this.tratamento.Text,this.db_chapa, this.db_mercadoria.valor);
                     break;
                 case Tipo_Bloco.Perfil:
-                    this.TecnoMetal.InserirPerfil(nomeMarca, nomePos, this.db_material.valor, this.tratamento.Text, Conexoes.Utilz.Int(this.quantidade.Text), this.db_perfil, this.db_mercadoria.valor);
+                    this.TecnoMetal.InserirPerfil(nomeMarca, nomePos, this.db_material.valor, this.tratamento.Text, (int)qtd_double, this.db_perfil, this.db_mercadoria.valor);
                     break;
                 case Tipo_Bloco.Elemento_M2:
-                    this.TecnoMetal.InserirElementoM2(nomeMarca, nomePos,this.db_material.valor,this.tratamento.Text,Conexoes.Utilz.Int(this.quantidade.Text),this.db_perfil,this.db_mercadoria.valor);
+                    this.TecnoMetal.InserirElementoM2(nomeMarca, nomePos,this.db_material.valor,this.tratamento.Text, (int)qtd_double, this.db_perfil,this.db_mercadoria.valor);
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    this.TecnoMetal.InserirElementoUnitario(nomeMarca, nomePos, Conexoes.Utilz.Double(this.quantidade.Text),this.db_mercadoria.valor, this.db_unitario);
+                    this.TecnoMetal.InserirElementoUnitario(nomeMarca, nomePos, qtd_double, this.db_mercadoria.valor, this.db_unitario);
                     break;
                 case Tipo_Bloco.Arremate:
-                    this.TecnoMetal.InserirArremate(nomeMarca, nomePos, Conexoes.Utilz.Int(this.quantidade.Text), this.tratamento.Text, this.db_bobina,true, this.db_mercadoria.valor);
+                    this.TecnoMetal.InserirArremate(nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, this.db_bobina,true, this.db_mercadoria.valor);
                     break;
                 case Tipo_Bloco._:
                     break;
             }
 
-            this.Update(new TecnoMetal());
+            this.Update(this.TecnoMetal);
             this.Visibility = Visibility.Visible;
         }
 
@@ -354,7 +368,7 @@ namespace Ferramentas_DLM
             var nova = this.TecnoMetal.InserirMarcaComposta();
             if (nova != null)
             {
-                this.Update(new TecnoMetal());
+                this.Update(this.TecnoMetal);
                 this.seleciona_marca_composta.SelectedItem = nova;
                 this.tratamento.Text = nova.Tratamento;
       
@@ -422,9 +436,6 @@ namespace Ferramentas_DLM
                 }));
             }
         }
-        private void seleciona_marca_composta_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
     }
 }

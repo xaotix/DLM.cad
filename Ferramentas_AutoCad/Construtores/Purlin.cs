@@ -130,10 +130,10 @@ namespace Ferramentas_DLM
         public List<CCorrente> LinhasCorrentes()
         {
             List<CCorrente> retorno = new List<CCorrente>();
-            using (Transaction trAdding = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
-                BlockTable btTable = (BlockTable)trAdding.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 var estilo = Utilidades.GetEstilo(this.CorrenteMLStyle);
 
@@ -162,10 +162,10 @@ namespace Ferramentas_DLM
         public List<CTirante> LinhasTirantes()
         {
             List<CTirante> retorno = new List<CTirante>();
-            using (Transaction trAdding = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
-                BlockTable btTable = (BlockTable)trAdding.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 var estilo = Utilidades.GetEstilo(this.TirantesMLStyle);
 
@@ -218,8 +218,8 @@ namespace Ferramentas_DLM
 
         public void Mapear()
         {
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -319,8 +319,8 @@ namespace Ferramentas_DLM
         public void GetBoneco_Purlin()
         {
             List<double> retorno = new List<double>();
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -743,8 +743,8 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -768,8 +768,8 @@ namespace Ferramentas_DLM
         public void EdicaoCompleta()
         {
 
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -836,8 +836,7 @@ namespace Ferramentas_DLM
         public void Excluir()
         {
 
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -867,8 +866,8 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -892,8 +891,8 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -916,8 +915,8 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -936,7 +935,7 @@ namespace Ferramentas_DLM
         public void Editar(bool editar = false)
         {
 
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
@@ -945,8 +944,8 @@ namespace Ferramentas_DLM
                     if (this.Getblocos_tercas().Count > 0)
                     {
                         Conexoes.Utilz.Editar(GetPurlin(this.Getblocos_tercas()[0]),editar);
-                        //Conexoes.Editar_Purlin mm = new Conexoes.Editar_Purlin(GetPurlin(this.blocos_tercas[0]));
-                        //mm.Show();
+
+
                     }
                   
                 }
@@ -966,8 +965,8 @@ namespace Ferramentas_DLM
                 {
                     return;
                 }
-                //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+                using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
                     var sel = SelecionarObjetos(acTrans);
                     if (sel.Status == PromptStatus.OK)
@@ -1232,8 +1231,8 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -1258,8 +1257,8 @@ namespace Ferramentas_DLM
 
             var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", "", "337"));
 
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)
@@ -1302,8 +1301,8 @@ namespace Ferramentas_DLM
             }
 
 
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+
+            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var sel = SelecionarObjetos(acTrans);
                 if (sel.Status == PromptStatus.OK)

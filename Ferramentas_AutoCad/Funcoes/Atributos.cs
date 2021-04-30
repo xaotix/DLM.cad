@@ -79,10 +79,9 @@ namespace Ferramentas_DLM
         public static List<List<string>> GetStr(BlockReference bloco)
         {
             List<List<string>> retorno = new List<List<string>>();
-            Database acCurDb;
-            acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
+            var acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var attCol = bloco.AttributeCollection;
                 foreach (ObjectId objID in attCol)
@@ -129,7 +128,7 @@ namespace Ferramentas_DLM
                 acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
             }
 
-            using (Transaction acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var attCol = bloco.AttributeCollection;
                 foreach (ObjectId objID in attCol)
