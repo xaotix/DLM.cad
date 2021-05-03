@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using Autodesk.AutoCAD.Runtime;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.EditorInput;
 
-namespace Autodesk.AutoCAD.EditorInput
+namespace Autodesk.AutoeditorInput
 {
     public static class Extensoes
     {

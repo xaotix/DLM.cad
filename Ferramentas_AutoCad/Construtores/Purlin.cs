@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Ferramentas_DLM.Classes;
 using System;
@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static Ferramentas_DLM.CAD;
+using Autodesk.AutoCAD.EditorInput;
 
 namespace Ferramentas_DLM
 {
@@ -130,7 +132,7 @@ namespace Ferramentas_DLM
         public List<CCorrente> LinhasCorrentes()
         {
             List<CCorrente> retorno = new List<CCorrente>();
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -162,7 +164,7 @@ namespace Ferramentas_DLM
         public List<CTirante> LinhasTirantes()
         {
             List<CTirante> retorno = new List<CTirante>();
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -219,9 +221,9 @@ namespace Ferramentas_DLM
         public void Mapear()
         {
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -320,9 +322,9 @@ namespace Ferramentas_DLM
         {
             List<double> retorno = new List<double>();
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
                     foreach(var s in Getlinhas())
@@ -686,7 +688,7 @@ namespace Ferramentas_DLM
             //verifica se a purlin é maior que 150
             if (comp_sem_transpasse > 150)
             {
-                Blocos.Inserir(acDoc, Constantes.Incicacao_Tercas, origembloco, this.Getescala(), 0, ht);
+                Blocos.Inserir(CAD.acDoc, Constantes.Incicacao_Tercas, origembloco, this.Getescala(), 0, ht);
                 c++;
             }
 
@@ -706,7 +708,7 @@ namespace Ferramentas_DLM
             ht.Add("SFTA", sfta.ToString());
             ht.Add("SFTB", sftb.ToString());
 
-            Blocos.Inserir(acDoc, Constantes.Indicacao_Tirantes, origembloco, this.Getescala(), 0, ht);
+            Blocos.Inserir(CAD.acDoc, Constantes.Indicacao_Tirantes, origembloco, this.Getescala(), 0, ht);
             c++;
 
             return c;
@@ -726,7 +728,7 @@ namespace Ferramentas_DLM
 
 
 
-            Blocos.Inserir(acDoc, Constantes.Indicacao_Correntes, origembloco, this.Getescala(), 0, ht);
+            Blocos.Inserir(CAD.acDoc, Constantes.Indicacao_Correntes, origembloco, this.Getescala(), 0, ht);
             c++;
 
             return c;
@@ -744,9 +746,9 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -769,9 +771,9 @@ namespace Ferramentas_DLM
         {
 
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -836,9 +838,9 @@ namespace Ferramentas_DLM
         public void Excluir()
         {
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -867,9 +869,9 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -892,9 +894,9 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -916,9 +918,9 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -938,7 +940,7 @@ namespace Ferramentas_DLM
 
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
                     if (this.Getblocos_tercas().Count > 0)
@@ -966,9 +968,9 @@ namespace Ferramentas_DLM
                     return;
                 }
 
-                using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    var sel = SelecionarObjetos(acTrans);
+                    var sel = SelecionarObjetos();
                     if (sel.Status == PromptStatus.OK)
                     {
                         Conexoes.DBRM_Offline mm = new Conexoes.DBRM_Offline();
@@ -1232,9 +1234,9 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -1258,9 +1260,9 @@ namespace Ferramentas_DLM
             var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", "", "337"));
 
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 
@@ -1302,9 +1304,9 @@ namespace Ferramentas_DLM
 
 
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var sel = SelecionarObjetos(acTrans);
+                var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
 

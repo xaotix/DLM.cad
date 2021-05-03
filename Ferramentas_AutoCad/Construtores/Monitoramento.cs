@@ -1,12 +1,13 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Ferramentas_DLM.CAD;
 
 namespace Ferramentas_DLM
 {
@@ -14,12 +15,11 @@ namespace Ferramentas_DLM
     {
         public void MonitorarRotinas()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            var editor = doc.Editor;
-            doc.CommandEnded += new CommandEventHandler(CapturarEventoFinalizado);
-            doc.CommandWillStart += new CommandEventHandler(CapturarEventoIniciado);
-            doc.LispWillStart += MonitoraLisp;
-            doc.LispEnded += MonitoraLispFim;
+
+            acDoc.CommandEnded += new CommandEventHandler(CapturarEventoFinalizado);
+            acDoc.CommandWillStart += new CommandEventHandler(CapturarEventoIniciado);
+            acDoc.LispWillStart += MonitoraLisp;
+            acDoc.LispEnded += MonitoraLispFim;
            
         }
 

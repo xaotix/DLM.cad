@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +37,7 @@ namespace Ferramentas_DLM
         Elemento_M2,
         Elemento_Unitario,
         Arremate,
+        DUMMY,
         _ = -1
     }
 
@@ -50,7 +55,56 @@ namespace Ferramentas_DLM
         Tudo,
     }
 
+    internal static class CAD
+    {
 
+        public static DocumentCollection documentManager
+        {
+            get
+            {
+                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
+            }
+        }
+
+
+        public static Document acDoc
+        {
+            get
+            {
+                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            }
+        }
+
+
+        public static Editor editor
+        {
+            get
+            {
+                return acDoc.Editor;
+            }
+        }
+
+  
+        public static Database acCurDb
+        {
+            get
+            {
+                return acDoc.Database;
+            }
+        }
+
+
+
+
+        public static dynamic acadApp
+        {
+            get
+            {
+                dynamic acadApp = Autodesk.AutoCAD.ApplicationServices.Application.AcadApplication;
+                return acadApp;
+            }
+        }
+    }
     internal static class Constantes
     {
  

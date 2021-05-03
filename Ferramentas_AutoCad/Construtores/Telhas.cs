@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Internal;
 using Conexoes;
@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static Ferramentas_DLM.CAD;
 
 namespace Ferramentas_DLM
 {
@@ -73,10 +74,10 @@ namespace Ferramentas_DLM
         }
         public void ApagarLinhaDeVida()
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                SelecionarObjetos(acTrans);
-                foreach(var p in this.Getsflhs())
+                SelecionarObjetos();
+                foreach (var p in this.Getsflhs())
                 {
                     p.Erase(true);
                 }
@@ -100,15 +101,15 @@ namespace Ferramentas_DLM
                 }
 
 
-                acTrans.Commit();   
+                acTrans.Commit();
                 acDoc.Editor.Regen();
             }
         }
         public void ApagarPassarelas()
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                SelecionarObjetos(acTrans);
+                SelecionarObjetos();
                 foreach (var p in this.Getpassarelas())
                 {
                     p.Erase(true);
@@ -140,12 +141,12 @@ namespace Ferramentas_DLM
 
         public void AlinharLinhaDeVida()
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                SelecionarObjetos(acTrans);
-               
+                SelecionarObjetos();
 
-                
+
+
 
                 var xls = Getxlines();
 
@@ -265,7 +266,7 @@ namespace Ferramentas_DLM
         public void InserirPassarela(bool selecionar = false)
         {
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 //var selecao = SelecionarObjetos(acTrans);
@@ -291,8 +292,8 @@ namespace Ferramentas_DLM
                 Point3d p1 = new Point3d();
                 if (selecionar)
                 {
-                    SelecionarObjetos(acTrans);
-                    if(this.Getpassarelas().Count>0)
+                    SelecionarObjetos();
+                    if (this.Getpassarelas().Count>0)
                     {
                         var p = this.Getpassarelas()[0];
                         p1 = p.Position;
@@ -301,7 +302,7 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-                        AddMensagem("Nenhuma Passarela selecionada.");
+                        AddMensagem("\nNenhuma Passarela selecionada.");
                         return;
                     }
                 }
@@ -348,7 +349,7 @@ namespace Ferramentas_DLM
                             {
                                 Hashtable t = new Hashtable();
                                 t.Add("SAP", this.Codigo_Passarela);
-                                Blocos.Inserir(acDoc, Constantes.Peca_PASSARELA, p1, 1, 0, t);
+                                Blocos.Inserir(CAD.acDoc, Constantes.Peca_PASSARELA, p1, 1, 0, t);
                                 if(angulo==90 | angulo == 270)
                                 {
                                     mov = vert;
@@ -411,7 +412,7 @@ namespace Ferramentas_DLM
         public void InserirLinhaDeVida(bool selecionar = false)
         {
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var layer_atual = Utilidades.GetLayerAtual();
 
@@ -432,7 +433,7 @@ namespace Ferramentas_DLM
                 Point3d p1 = new Point3d();
                 if (selecionar)
                 {
-                    SelecionarObjetos(acTrans);
+                    SelecionarObjetos();
                     if (this.Getsflhs().Count > 0)
                     {
                         var p = this.Getsflhs()[0];
@@ -442,7 +443,7 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-                        AddMensagem("Nenhum SFL-H selecionado.");
+                        AddMensagem("\nNenhum SFL-H selecionado.");
                         return;
                     }
                 }
@@ -603,11 +604,11 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DBRM_Offline pp = new DBRM_Offline();
-                SelecionarObjetos(acTrans);
+                SelecionarObjetos();
                 pp.RMA.AddRange(this.GetRMAsBlocos());
                 if (pp.RMA.Count > 0)
                 {
@@ -627,12 +628,12 @@ namespace Ferramentas_DLM
             if (sequencia == 0)
             {
      
-                Blocos.Inserir(acDoc, Constantes.Peca_SFLH, p1, 1, 0, sftlh);
+                Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLH, p1, 1, 0, sftlh);
                 AddBlocoTexto(angulo, p1, SFLH, Getescala() * 5, "");
                 Utilidades.AddLeader(angulo, p1,this.Getescala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
 
             }
-            Blocos.Inserir(acDoc, Constantes.Peca_SFLH, p2, 1, 0, sftlh);
+            Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLH, p2, 1, 0, sftlh);
             AddBlocoTexto(angulo, p2, SFLH, Getescala() * 5,"");
             Utilidades.AddLeader(angulo, p2, this.Getescala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
@@ -644,7 +645,7 @@ namespace Ferramentas_DLM
                 Point3d pp0 = new Coordenada(p1).Mover(angulo, espacos).GetPoint();
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
-                    Blocos.Inserir(acDoc, Constantes.Peca_SFLI, pp0, 1, 0, sftli);
+                    Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, Getescala() * 5,"");
                     cotas.Add(pp0);
@@ -664,7 +665,7 @@ namespace Ferramentas_DLM
                 //move pro lado quando é vertical
                 p1 = new Coordenada(pp0).Mover(angulo + 90, (Getescala() * 16)/2).GetPoint();
             }
-            Blocos.Inserir(acDoc, Constantes.Texto, p1, Getescala(), 0, ss );
+            Blocos.Inserir(CAD.acDoc, Constantes.Texto, p1, Getescala(), 0, ss );
 
         }
         private void Ajustar(ref double angulo, ref double comp, Point3d p1, ref Point3d p2)

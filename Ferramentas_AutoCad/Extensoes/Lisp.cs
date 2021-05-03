@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 
 namespace Ferramentas_DLM.Lisp
 {

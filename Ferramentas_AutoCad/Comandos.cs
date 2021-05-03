@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using Ferramentas_DLM.Lisp;
@@ -13,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using static Ferramentas_DLM.CAD;
 
 [assembly: CommandClass(typeof(Ferramentas_DLM.Comandos))]
 
@@ -26,8 +27,7 @@ namespace Ferramentas_DLM
         [CommandMethod("listarcomandos")]
         public static void listarcomandos()
         {
-            DocumentCollection dm = Application.DocumentManager;
-            Editor editor = dm.MdiActiveDocument.Editor;
+
             Assembly asm = Assembly.GetExecutingAssembly();
             List<string> comandos = Utilidades.listarcomandos(asm, false).ToList().OrderBy(x=>x).ToList();
 
@@ -100,7 +100,7 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("purlin")]
-        public void purlin()
+        public static void purlin()
         {
             CADPurlin p = new CADPurlin();
 
@@ -218,20 +218,20 @@ namespace Ferramentas_DLM
         }
       
         [CommandMethod("mapeiapurlins")]
-        public void mapeiapurlins()
+        public static void mapeiapurlins()
         {
             CADPurlin P = new CADPurlin();
             P.Mapear();
 
         }
         [CommandMethod("boneco")]
-        public void boneco()
+        public static void boneco()
         {
             CADPurlin P = new CADPurlin();
             P.GetBoneco_Purlin();
         }
         [CommandMethod("mudaperfiltercas")]
-        public void mudaperfiltercas()
+        public static void mudaperfiltercas()
         {
             CADPurlin P = new CADPurlin();
             P.SetPerfil();
@@ -242,43 +242,43 @@ namespace Ferramentas_DLM
         
         
         [CommandMethod("passarela")]
-        public void passarela()
+        public static void passarela()
         {
             Telhas pp = new Telhas();
             pp.InserirPassarela();
         }
         [CommandMethod("apagapassarela")]
-        public void apagapassarela()
+        public static void apagapassarela()
         {
             Telhas pp = new Telhas();
             pp.ApagarPassarelas();
         }
         [CommandMethod("linhadevida")]
-        public void linhadevida()
+        public static void linhadevida()
         {
             Telhas pp = new Telhas();
             pp.InserirLinhaDeVida();
         }
         [CommandMethod("rlinhadevida")]
-        public void rlinhadevida()
+        public static void rlinhadevida()
         {
             Telhas pp = new Telhas();
             pp.InserirLinhaDeVida(true);
         }
         [CommandMethod("apagalinhadevida")]
-        public void apagalinhadevida()
+        public static void apagalinhadevida()
         {
             Telhas pp = new Telhas();
             pp.ApagarLinhaDeVida();
         }
         [CommandMethod("rpassarela")]
-        public void rpassarela()
+        public static void rpassarela()
         {
             Telhas pp = new Telhas();
             pp.InserirPassarela(true);
         }
         [CommandMethod("alinharlinhadevida")]
-        public void alinharlinhadevida()
+        public static void alinharlinhadevida()
         {
             Telhas pp = new Telhas();
             pp.AlinharLinhaDeVida();
@@ -291,14 +291,14 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("monitorar")]
-        public void monitorar()
+        public static void monitorar()
         {
             monitoramento = new Monitoramento();
 
         }
 
         [CommandMethod("salvarlog")]
-        public void salvarlog()
+        public static void salvarlog()
         {
             if (monitoramento != null)
             {
@@ -309,7 +309,7 @@ namespace Ferramentas_DLM
         
         
         [CommandMethod("setarLTS")]
-        public void setarLTS()
+        public static void setarLTS()
         {
 
             ClasseBase b = new ClasseBase();
@@ -319,7 +319,7 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("abrepasta")]
-        public void abrepasta()
+        public static void abrepasta()
         {
             ClasseBase pp = new ClasseBase();
             pp.AbrePasta();
@@ -327,13 +327,13 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("tabelatelhas")]
-        public void tabelatelhas()
+        public static void tabelatelhas()
         {
             Telhas pp = new Telhas();
             pp.InserirTabela();
         }
         [CommandMethod("tabelaRM")]
-        public void tabelaRM()
+        public static void tabelaRM()
         {
             string arquivo = Conexoes.Utilz.Abrir_String("RM", "Selecione");
             if (File.Exists(arquivo))
@@ -347,13 +347,13 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("tabelatecnometal")]
-        public void tabelatecnometal()
+        public static void tabelatecnometal()
         {
             TecnoMetal pp = new TecnoMetal();
             pp.InserirTabela();
         }
         [CommandMethod("tabelatecnometalauto")]
-        public void tabelatecnometalauto()
+        public static void tabelatecnometalauto()
         {
             TecnoMetal pp = new TecnoMetal();
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
@@ -366,13 +366,13 @@ namespace Ferramentas_DLM
         
         
         [CommandMethod("selopreenche")]
-        public void selopreenche()
+        public static void selopreenche()
         {
             TecnoMetal pp = new TecnoMetal();
             pp.PreencheSelo();
         }
         [CommandMethod("selolimpar")]
-        public void selolimpar()
+        public static void selolimpar()
         {
             TecnoMetal pp = new TecnoMetal();
             pp.PreencheSelo(true);
@@ -380,7 +380,7 @@ namespace Ferramentas_DLM
 
         
         [CommandMethod("rodarmacros")]
-        public void rodarmacros()
+        public static void rodarmacros()
         {
             TecnoMetal pp = new TecnoMetal();
             pp.RodarMacros();
@@ -388,13 +388,13 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("gerardbf3d")]
-        public void gerardbf3d()
+        public static void gerardbf3d()
         {
             TecnoMetal pp = new TecnoMetal();
             pp.GerarDBF3D();
         }
         [CommandMethod("gerardbf")]
-        public void gerardbf()
+        public static void gerardbf()
         {
 
             TecnoMetal mm = new TecnoMetal();
@@ -421,7 +421,7 @@ namespace Ferramentas_DLM
             pp.InserirArremate();
         }
         [CommandMethod("chapa")]
-        public static void chapa()
+        public  static void chapa()
         {
             TecnoMetal pp = new TecnoMetal();
             pp.InserirChapa();
@@ -442,7 +442,7 @@ namespace Ferramentas_DLM
         }
 
         [CommandMethod("criarmarcasdeexcel")]
-        public void criarmarcasdeexcel()
+        public static void criarmarcasdeexcel()
         {
 
 
@@ -453,7 +453,7 @@ namespace Ferramentas_DLM
 
         }
         [CommandMethod("criarmarcasdecam")]
-        public void criarmarcasdecam()
+        public static void criarmarcasdecam()
         {
 
             var arqs = Conexoes.Utilz.AbrirArquivos("Selecione os arquivos", new List<string> { "CAM" });
@@ -491,14 +491,14 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("bloqueiamviews")]
-        public void bloqueiamviews()
+        public static void bloqueiamviews()
         {
             ClasseBase b = new ClasseBase();
             b.SetViewport(true);
         }
 
         [CommandMethod("desbloqueiamviews")]
-        public void desbloqueiamviews()
+        public static void desbloqueiamviews()
         {
             ClasseBase b = new ClasseBase();
             b.SetViewport(false);
@@ -520,22 +520,28 @@ namespace Ferramentas_DLM
             pp.Marcar();
         }
 
+        [CommandMethod("offtec")]
+        public void offtec()
+        {
+            Utilidades.DesligarLayers(Constantes.LayersMarcasDesligar);
+        }
+
 
 
         [CommandMethod("mercadorias")]
-        public void mercadorias()
+        public static void mercadorias()
         {
             TecnoMetal p = new TecnoMetal();
             p.Mercadorias();
         }
         [CommandMethod("materiais")]
-        public void materiais()
+        public static void materiais()
         {
             TecnoMetal p = new TecnoMetal();
             p.Materiais();
         }
         [CommandMethod("tratamentos")]
-        public void tratamentos()
+        public static void tratamentos()
         {
             TecnoMetal p = new TecnoMetal();
             p.Tratamentos();
@@ -552,7 +558,7 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("testeinterseccao")]
-        public void testeinterseccao()
+        public static void testeinterseccao()
         {
             Utilidades.InterSectionPoint();
         }

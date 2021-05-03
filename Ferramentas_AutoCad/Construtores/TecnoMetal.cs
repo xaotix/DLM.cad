@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections;
@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using static Ferramentas_DLM.CAD;
 
 namespace Ferramentas_DLM
 {
@@ -127,7 +128,7 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    Document docToWorkOn = documentManager.Open(drawing, false);
+                    Document docToWorkOn = CAD.documentManager.Open(drawing, false);
 
                     using (docToWorkOn.LockDocument())
                     {
@@ -197,7 +198,7 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    erros.Add(new Conexoes.Report("Marcas duplicadas no mesmo desenho", $" {marcas[0].Prancha} - M: {m}"));
+                    erros.Add(new Conexoes.Report("Marcas duplicadas", $" {marcas[0].Prancha} - M: {m}"));
                     return new List<MarcaTecnoMetal>();
                 }
 
@@ -211,18 +212,8 @@ namespace Ferramentas_DLM
 
         public void Marcar()
         {
-            if(Constantes.menu_marcas==null)
-            {
-                Constantes.menu_marcas = new MenuMarcas(this);
-                Constantes.menu_marcas.Show();
-            }
-            else
-            {
-                Constantes.menu_marcas.Update(this);
-
-                Constantes.menu_marcas.Visibility = System.Windows.Visibility.Visible;
-            }
-            
+            Constantes.menu_marcas = new MenuMarcas(this);
+            Constantes.menu_marcas.Show();
         }
 
         public List<MarcaTecnoMetal> GetMarcasCompostas()
@@ -286,7 +277,7 @@ namespace Ferramentas_DLM
 
             Point3d pt = new Point3d();
             bool gerar_tabela = false;
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
@@ -372,39 +363,25 @@ namespace Ferramentas_DLM
             }
 
 
+            if(erros.Count>0)
+            {
+                foreach(var erro in erros)
+                {
+                    AddMensagem($"\n{ erro.ToString()}");
+                }
+            }
+
      
         }
 
-        public List<DB.Linha> GetMarcasLinhas(Database acCurDb, Transaction acTrans)
-        {
-            BlockTable acBlkTbl = acTrans.GetObject(base.acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
-            BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
-            List<BlockReference> blocos = new List<BlockReference>();
-            foreach (ObjectId objId in btr)
-            {
-                Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForWrite);
-                if (ent is BlockReference)
-                {
-                    var s = ent as BlockReference;
-                    blocos.Add(s);
-                }
-            }
-            List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas, false);
-            List<DB.Linha> retorno = new List<DB.Linha>();
 
-            retorno.AddRange(tabela_tecno.Select(x => GetLinha(x, acCurDb, this.Arquivo, this.Nome, DateTime.Now)));
-
-            return retorno;
-
-
-        }
         public void PreencheSelo(bool limpar = false)
         {
             if (!E_Tecnometal()) { return; }
             IrLayout();
             ZoomExtend();
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
@@ -425,9 +402,9 @@ namespace Ferramentas_DLM
                 List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false);
                 List<BlockReference> selo = Utilidades.Filtrar(blocos, new List<string> { "SELO" }, false);
 
-                var marcas = GetMarcasLinhas(this.acCurDb, acTrans);
+                var marcas = GetMarcas();
 
-                var nomes_PECAS = marcas.Select(x => x.Get(Constantes.ATT_MAR).valor).Distinct().ToList();
+                var nomes_PECAS = marcas.Select(x => x.Marca).Distinct().ToList();
 
                 foreach (var s in selo)
                 {
@@ -479,14 +456,22 @@ namespace Ferramentas_DLM
                     acTrans.Commit();
                     acDoc.Editor.Regen();
                 }
+                else
+                {
+                    AddMensagem("\nNenhum Selo encontrado no desenho.");
+                }
             }
 
 
         }
-        public DB.Linha GetLinha(BlockReference bloco, Database acCurDb, string arquivo, string nome, DateTime ultima_edicao)
+        public DB.Linha GetLinha(BlockReference bloco,  string arquivo, string nome, DateTime ultima_edicao, Database acCurDb = null)
         {
             try
             {
+                if(acCurDb==null)
+                {
+                    acCurDb = CAD.acCurDb;
+                }
                 var att = Atributos.GetLinha(bloco, acCurDb);
                 att.Add(Constantes.ATT_ARQ, arquivo);
                 if (this.E_Tecnometal(false))
@@ -525,7 +510,7 @@ namespace Ferramentas_DLM
         {
             DB.Tabela marcas = new DB.Tabela();
             DB.Tabela posicoes = new DB.Tabela();
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
                 DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
@@ -549,12 +534,12 @@ namespace Ferramentas_DLM
 
                 foreach (var m in ms)
                 {
-                    marcas.Linhas.Add(GetLinha(m, this.acCurDb, this.Arquivo, this.Nome, ultima_edicao));
+                    marcas.Linhas.Add(GetLinha(m, this.Arquivo, this.Nome, ultima_edicao));
                 }
 
                 foreach (var m in pos)
                 {
-                    posicoes.Linhas.Add(GetLinha(m, this.acCurDb, this.Arquivo, this.Nome, ultima_edicao));
+                    posicoes.Linhas.Add(GetLinha(m, this.Arquivo, this.Nome, ultima_edicao));
                 }
 
             }
@@ -596,7 +581,7 @@ namespace Ferramentas_DLM
 
                 if (arquivos.Count == 0)
                 {
-                    erros.Add(new Conexoes.Report("Abortado", "Operação abortada - Nada Selecionado."));
+                    erros.Add(new Conexoes.Report("Erro", "Operação abortada - Nada Selecionado."));
                     return new DB.Tabela();
                 }
 
@@ -637,12 +622,12 @@ namespace Ferramentas_DLM
 
                                 foreach (var m in ms)
                                 {
-                                    marcas.Linhas.Add(GetLinha(m, acTmpDb, arquivo, nome_arq, ultima_edicao));
+                                    marcas.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao, acTmpDb));
                                 }
 
                                 foreach (var m in pos)
                                 {
-                                    posicoes.Linhas.Add(GetLinha(m, acTmpDb, arquivo, nome_arq, ultima_edicao));
+                                    posicoes.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao, acTmpDb));
                                 }
 
                             }
@@ -776,7 +761,6 @@ namespace Ferramentas_DLM
                     m_simples.Set(Constantes.ATT_LRG, "");
                     m_simples.Set(Constantes.ATT_ESP, "");
                     m_simples.Set(Constantes.ATT_MAT, "");
-                    m_simples.Set(Constantes.ATT_MAT, "");
                     m_simples.Set(Constantes.ATT_PES, "");
                     m_simples.Set(Constantes.ATT_SUP, "");
                     m_simples.Set(Constantes.ATT_PRE, "");
@@ -897,16 +881,19 @@ namespace Ferramentas_DLM
             w.somaProgresso();
 
 
-            var posicoes = marcas.SelectMany(x => x.SubItens).ToList();
             var marcas_simples = marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaSimples);
-            posicoes.AddRange(marcas_simples);
-            var posicoes_perfis = posicoes.FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Perfil | x.Tipo_Bloco == Tipo_Bloco.Elemento_M2).ToList();
+
+            var posicoes = marcas.SelectMany(x => x.SubItens).ToList();
+            var marcas_compostas = marcas.FindAll(x => x.Tipo_Marca != Tipo_Marca.MarcaSimples);
+            var posicoes_perfis = posicoes.FindAll(x => x.TemCadastroDBF).ToList();
             var posicoes_elem_unit = posicoes.FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Elemento_Unitario).ToList();
+            var marcas_elemento_unit = marcas.FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Elemento_Unitario).ToList();
             var perfis = posicoes_perfis.GroupBy(x=>x.Perfil.ToUpper().TrimStart().TrimEnd()).ToList();
             var mercs = marcas.GroupBy(x => x.Mercadoria);
             var mats = posicoes.FindAll(x => x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).GroupBy(x => x.Material);
             var posicoes_grp = posicoes.FindAll(x=> x.Tipo_Bloco!= Tipo_Bloco.Arremate && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).GroupBy(x => x.Posicao).ToList();
-
+           
+            erros.AddRange(marcas_compostas.FindAll(x => x.SubItens.Count == 0).Select(x => new Conexoes.Report("Marca Composta sem posições", $"{x.Prancha} - {x.Marca}", Conexoes.TipoReport.Crítico)));
 
             foreach (var pf in perfis)
             {
@@ -929,7 +916,8 @@ namespace Ferramentas_DLM
                 AddDivergenciaPOS(ref erros, pos, pos.GroupBy(x => x.Perfil).ToList(), "perfil");
             }
 
-            erros.AddRange(posicoes_elem_unit.FindAll(x => !x.Posicao.ToUpper().EndsWith("_A")).Select(x => new Conexoes.Report("Nome Pos. Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.")));
+            erros.AddRange(marcas_elemento_unit.FindAll(x => !x.Marca.ToUpper().EndsWith("_A")).Select(x => new Conexoes.Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.")));
+            erros.AddRange(posicoes_elem_unit.FindAll(x => !x.Posicao.ToUpper().EndsWith("_A")).Select(x => new Conexoes.Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.")));
 
             w.somaProgresso();
        
@@ -1115,14 +1103,14 @@ namespace Ferramentas_DLM
             }
             return sel;
         }
-        public void PromptGeometria(out double comprimento, out double largura, out double area, out double perimetro)
+
+
+        public void PromptGeometria( out double comprimento, out double largura, out double area, out double perimetro)
         {
             comprimento = 0;
             largura = 0;
             area = 0;
             perimetro = 0;
-
-
 
            var opcao = this.PerguntaString("Selecione", new List<string> { "Digitar", "Polyline" });
 
@@ -1141,6 +1129,11 @@ namespace Ferramentas_DLM
                     Utilidades.GetInfo(pl, out comprimento, out largura, out area, out perimetro);
                     comprimento = Math.Round(comprimento, 4);
                     largura = Math.Round(largura, 4);
+
+
+
+
+
                 }
             }
             else if(opcao == "Digitar")
@@ -1308,7 +1301,7 @@ namespace Ferramentas_DLM
                     return;
                 }
 
-                Chapa_Dobrada pa = new Chapa_Dobrada(bobina, corte, comprimento, angulos) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, DescontarDobras = !chapa_fina, Ficha = ficha, Quantidade = (int)quantidade ,Mercadoria = mercadoria };
+                Chapa_Dobrada pa = new Chapa_Dobrada(bobina, corte, comprimento, 0, angulos) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, DescontarDobras = !chapa_fina, Ficha = ficha, Quantidade = (int)quantidade ,Mercadoria = mercadoria };
                 //pa = Conexoes.Utilz.Propriedades(pa, out status);
                 if (pa.Comprimento > 0 && pa.Espessura > 0 && pa.Marca.Replace(" ", "") != "" && pa.Quantidade > 0)
                 {
@@ -1431,8 +1424,7 @@ namespace Ferramentas_DLM
                         {
                             material = bobina.Material;
                         }
-                        Chapa_Dobrada pa = new Chapa_Dobrada(bobina, largura, comprimento, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade, Mercadoria = mercadoria };
-                        pa.SetSuperficie(Math.Round(area * 2 + perimetro * espessura.valor / 1000 / 1000 / 1000));
+                        Chapa_Dobrada pa = new Chapa_Dobrada(bobina, largura, comprimento,area, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade, Mercadoria = mercadoria };
 
                         var origem = Utilidades.PedirPonto3D("Selecione a origem", out status);
                         if (!status)
@@ -1616,7 +1608,7 @@ namespace Ferramentas_DLM
             }
             if (marca == null | marca == "") { return; }
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 bool status;
                 double comprimento = Utilidades.PedirDistancia("Defina o comprimento", out status);
@@ -1730,9 +1722,9 @@ namespace Ferramentas_DLM
 
         public void Mercadorias()
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var selecao = SelecionarObjetos(acTrans);
+                var selecao = SelecionarObjetos();
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if(marcas.Count>0)
@@ -1745,7 +1737,10 @@ namespace Ferramentas_DLM
                             Atributos.Set(bloco, acTrans, Constantes.ATT_MER, mercadoria);
                         }
                     }
+                    acTrans.Commit();
+                    editor.Regen();
                 }
+               
             }
         }
 
@@ -1754,9 +1749,9 @@ namespace Ferramentas_DLM
 
         public void Materiais()
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var selecao = SelecionarObjetos(acTrans);
+                var selecao = SelecionarObjetos();
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
@@ -1769,17 +1764,19 @@ namespace Ferramentas_DLM
                             Atributos.Set(bloco, acTrans, Constantes.ATT_MAT, mercadoria);
                         }
                     }
+                    acTrans.Commit();
+                    editor.Regen();
                 }
             }
         }
 
         public void Tratamentos()
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
 
-                var selecao = SelecionarObjetos(acTrans);
+                var selecao = SelecionarObjetos();
 
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
 
@@ -1793,6 +1790,8 @@ namespace Ferramentas_DLM
                             Atributos.Set(bloco, acTrans, Constantes.ATT_FIC, mercadoria);
                         }
                     }
+                    acTrans.Commit();
+                    editor.Regen();
                 }
             }
         }

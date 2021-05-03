@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Ferramentas_DLM.CAD;
 
 namespace Ferramentas_DLM
 {
@@ -55,15 +56,14 @@ namespace Ferramentas_DLM
             double y0 = 0;
             if (purlins.Count > 0)
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                double escala = doc.Database.Dimscale;
+                double escala = acDoc.Database.Dimscale;
                
 
                     x0 = p0.X;
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE TERÇAS");
-                    Blocos.Inserir(doc, Constantes.Tabela_Tercas_Titulo, p0, escala, 0, ht);
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                     foreach (var p in purlins)
                     {
@@ -74,7 +74,7 @@ namespace Ferramentas_DLM
                         hp.Add("COMP", p.Comprimento.ToString().PadLeft(5,'0'));
                         hp.Add("ESP", p.Espessura.ToString("N2").PadLeft(5, '0'));
                         hp.Add("VP;RM;TM", "RME");
-                        Blocos.Inserir(doc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
+                        Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                     }
                 
@@ -88,8 +88,7 @@ namespace Ferramentas_DLM
             double y0 = 0;
             if (trs.Count > 0)
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                double escala = doc.Database.Dimscale;
+                double escala = acDoc.Database.Dimscale;
 
                 if(mover_direita!=0)
                 {
@@ -100,7 +99,7 @@ namespace Ferramentas_DLM
                 y0 = p0.Y;
                 Hashtable ht = new Hashtable();
                 ht.Add("TITULO", "LISTA DE TIRANTES");
-                Blocos.Inserir(doc, Constantes.Tabela_Tirantes_Titulo, p0, escala, 0, ht);
+                Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes_Titulo, p0, escala, 0, ht);
                 p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                 foreach (var p in trs)
                 {
@@ -109,7 +108,7 @@ namespace Ferramentas_DLM
                     hp.Add("PEÇA", p.Marca);
                     hp.Add("QUANT.", p.Qtd.ToString().PadLeft(3, '0'));
                     hp.Add("COMP", p.Comprimento.ToString().PadLeft(5, '0'));
-                    Blocos.Inserir(doc, Constantes.Tabela_Tirantes, p0, escala, 0, hp);
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes, p0, escala, 0, hp);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                 }
             }
@@ -122,8 +121,7 @@ namespace Ferramentas_DLM
             double y0 = 0;
             if (trs.Count > 0)
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                double escala = doc.Database.Dimscale;
+                double escala = acDoc.Database.Dimscale;
 
                 if (mover_direita != 0)
                 {
@@ -134,7 +132,7 @@ namespace Ferramentas_DLM
                 y0 = p0.Y;
                 Hashtable ht = new Hashtable();
                 ht.Add("TITULO", "LISTA DE TIRANTES");
-                Blocos.Inserir(doc, Constantes.Tabela_Correntes_Titulo, p0, escala, 0, ht);
+                Blocos.Inserir(acDoc, Constantes.Tabela_Correntes_Titulo, p0, escala, 0, ht);
                 p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                 foreach (var p in trs)
                 {
@@ -143,7 +141,7 @@ namespace Ferramentas_DLM
                     hp.Add("PERFIL", p.Marca);
                     hp.Add("XXX", p.Qtd.ToString().PadLeft(3,'0'));
                     hp.Add("VÃO", p.Vao.ToString());
-                    Blocos.Inserir(doc, Constantes.Tabela_Correntes, p0, escala, 0, hp);
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Correntes, p0, escala, 0, hp);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                 }
             }
@@ -156,8 +154,7 @@ namespace Ferramentas_DLM
             double y0 = 0;
             if (RMES.Count > 0)
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                double escala = doc.Database.Dimscale;
+                double escala = acDoc.Database.Dimscale;
                 bool cancelado = false;
 
                 if (mover_direita != 0)
@@ -171,7 +168,7 @@ namespace Ferramentas_DLM
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Blocos.Inserir(doc, Constantes.Tabela_Tercas_Titulo, p0, escala, 0, ht);
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                     int seq = 1;
                     foreach (var p in RMES)
@@ -183,7 +180,7 @@ namespace Ferramentas_DLM
                         hp.Add("COMP", p.COMP.ToString().PadLeft(5, '0'));
                         hp.Add("ESP", p.ESP.ToString("N2").PadLeft(5, '0'));
                         hp.Add("VP;RM;TM", "RM");
-                        Blocos.Inserir(doc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
+                        Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
                     }
@@ -198,8 +195,7 @@ namespace Ferramentas_DLM
             double y0 = 0;
             if (RMAS.Count > 0)
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                double escala = doc.Database.Dimscale;
+                double escala = acDoc.Database.Dimscale;
                 bool cancelado = false;
 
                 if (mover_direita != 0)
@@ -213,7 +209,7 @@ namespace Ferramentas_DLM
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Blocos.Inserir(doc, Constantes.Tabela_Almox_Titulo, p0, escala, 0, ht);
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Almox_Titulo, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                     int seq = 1;
                     foreach (var p in RMAS)
@@ -224,7 +220,7 @@ namespace Ferramentas_DLM
                         hp.Add("UNID", p.UNIDADE);
                         hp.Add("SAP", p.SAP);
 
-                        Blocos.Inserir(doc, Constantes.Tabela_Almox, p0, escala, 0, hp);
+                        Blocos.Inserir(acDoc, Constantes.Tabela_Almox, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
                     }
@@ -239,7 +235,6 @@ namespace Ferramentas_DLM
             double y0 = 0;
             if (pecas_tecnometal.Count > 0)
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 //preguiça de ajustar os blocos da tabela, mantive um fator de escala
                 double fator_escala = 1.25 * escala;
                 bool cancelado = false;
@@ -278,7 +273,7 @@ namespace Ferramentas_DLM
 
                     ht.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
                     ht.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
-                    Blocos.Inserir(doc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
+                    Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (fator_escala * 20.4), p0.Z);
                     int seq = 1;
                     foreach(var pc in pecas)
@@ -312,11 +307,11 @@ namespace Ferramentas_DLM
                             hp.Add("PESO_TOT", Math.Round(pos.Get(Constantes.ATT_PES).Double() /1000 * pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str).Replace(",", ""));
                             hp.Add("FICHA", pos.Get(Constantes.ATT_FIC));
 
-                            Blocos.Inserir(doc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);
+                            Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);
                             p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
                             seq++;
                         }
-                        Blocos.Inserir(doc, Constantes.Tabela_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
+                        Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
                         p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
                     }
                    

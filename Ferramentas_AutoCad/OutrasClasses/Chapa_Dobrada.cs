@@ -8,6 +8,7 @@ namespace Ferramentas_DLM
     public class Chapa_Dobrada
     {
         private double _Peso_Unitario { get; set; } = 0;
+        private double _Area { get; set; } = 0;
         private double _Superficie { get; set; } = 0;
         private string _Volume { get; set; } = "";
         private double _Corte { get; set; } = 0;
@@ -59,7 +60,20 @@ namespace Ferramentas_DLM
                 {
                     return _Peso_Unitario;
                 }
-                return Math.Round(this.Comprimento * this.Largura * this.Espessura * this.Peso_Especifico /1000/1000,3);
+                return Math.Round(this.Espessura * this.Area * this.Peso_Especifico /1000/1000,3);
+            }
+        }
+
+        public double Area
+        {
+            get
+            {
+                if(_Area>0)
+                {
+                    return _Area;
+                }
+                return Comprimento * Largura;
+
             }
         }
 
@@ -135,7 +149,7 @@ namespace Ferramentas_DLM
         [ReadOnly(true)]
         public string SAP { get; set; } = "";
 
-        public Chapa_Dobrada(Conexoes.Bobina bobina, double corte, double comprimento,List<double> dobras, string Descricao = "")
+        public Chapa_Dobrada(Conexoes.Bobina bobina, double corte, double comprimento, double area,List<double> dobras, string Descricao = "")
         {
             this._Corte = Math.Round(corte);
             this.Espessura = bobina.Espessura;
@@ -146,11 +160,11 @@ namespace Ferramentas_DLM
             this.SAP = bobina.SAP;
             this.Dobras = dobras.Count;
             this.Peso_Especifico = bobina.Peso_Especifico;
-
+            this._Area = area;
             this.Descricao = Descricao;
             
         }
-        public void SetSuperficie(double valor)
+        public void SetArea(double valor)
         {
             this._Superficie = valor;
         }

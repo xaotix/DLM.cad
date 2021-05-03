@@ -13,6 +13,31 @@ namespace Ferramentas_DLM
         {
             return $"[{Marca}{(Tipo_Marca == Tipo_Marca.Posicao? $" - P = {Posicao}": $" - {Tipo_Bloco}")} ] - QTD.: {Quantidade}";
         }
+
+        private double _Comprimento { get; set; } = 1;
+        private double _Largura { get; set; } = 1;
+        private double _PesoUnit { get;  set; } = 1;
+        private double _Superficie { get; set; } = 1;
+        private string _Perfil { get; set; } = "";
+        private double _Espessura { get; set; } = 0;
+
+
+        public bool TemCadastroDBF
+        {
+            get
+            {
+                if(Tipo_Bloco == Tipo_Bloco.DUMMY | Tipo_Bloco == Tipo_Bloco.Elemento_M2 | Tipo_Bloco == Tipo_Bloco.Perfil)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+       
+
         public Tipo_Bloco Tipo_Bloco
         {
             get
@@ -37,35 +62,14 @@ namespace Ferramentas_DLM
                 {
                     return Tipo_Bloco.Arremate;
                 }
+                else if(NomeBloco == "DUMMY")
+                {
+                    return Tipo_Bloco.DUMMY;
+                }
 
                 return Tipo_Bloco._;
             }
         }
-
-        private Conexoes.TecnoMetal_Perfil _perfil { get; set; }
-
-        public Conexoes.TecnoMetal_Perfil GetPerfil()
-        {
-            if(_perfil==null)
-            {
-                if(this.Tipo_Marca != Tipo_Marca.Posicao && (Tipo_Bloco == Tipo_Bloco.Elemento_M2 | Tipo_Bloco == Tipo_Bloco.Perfil))
-                {
-                        _perfil = Utilidades.GetdbTecnoMetal().Get(this.Perfil);
-                }
-                else
-                {
-                    int cat = 0;
-                    if(Tipo_Bloco == Tipo_Bloco.Chapa | Tipo_Bloco == Tipo_Bloco.Arremate)
-                    {
-                        cat = -1;
-                    }
-                    _perfil = new Conexoes.TecnoMetal_Perfil() { CAT = cat };
-                }
-               
-            }
-            return _perfil;
-        }
-
         public Tipo_Marca Tipo_Marca
         {
             get
@@ -91,11 +95,52 @@ namespace Ferramentas_DLM
         public string Tratamento { get; private set; } = "";
         public string Posicao { get; private set; } = "";
         public double Quantidade { get; private set; } = 1;
-        public double Comprimento { get; private set; } = 1;
+        public double Comprimento
+        {
+            get
+            {
+                if(this.SubItens.Count>0 && Tipo_Marca == Tipo_Marca.MarcaSimples)
+                {
+                    return this.SubItens[0].Comprimento;
+                }
+                return _Comprimento;
+            }
+            private set
+            {
+                _Comprimento = value;
+            }
+        }
         public string Mercadoria { get; private set; } = "";
-        public double Largura { get; private set; } = 1;
-        public double Espessura { get; private set; } = 1;
-
+        public double Largura
+        {
+            get
+            {
+                if (this.SubItens.Count > 0 && Tipo_Marca == Tipo_Marca.MarcaSimples)
+                {
+                    return this.SubItens[0].Largura;
+                }
+                return _Largura;
+            }
+            private set
+            {
+                _Largura = value;
+            }
+        }
+        public double Espessura
+        {
+            get
+            {
+                if (this.SubItens.Count > 0 && Tipo_Marca == Tipo_Marca.MarcaSimples)
+                {
+                    return this.SubItens[0].Espessura;
+                }
+                return _Espessura;
+            }
+            private set
+            {
+                _Espessura = value;
+            }
+        }
         public double PesoUnit
         {
             get
@@ -107,7 +152,6 @@ namespace Ferramentas_DLM
                 return _PesoUnit;
             }
         }
-        private double _PesoUnit { get;  set; } = 1;
         public double Superficie
         {
             get
@@ -119,12 +163,27 @@ namespace Ferramentas_DLM
                 return _Superficie;
             }
         }
-        private double _Superficie { get; set; } = 1;
-        public string Perfil { get; private set; } = "";
+        public string Perfil
+        {
+            get
+            {
+                if(Tipo_Marca == Tipo_Marca.MarcaSimples)
+                {
+                    if(this.SubItens.Count>0)
+                    {
+                        return this.SubItens[0].Perfil;
+                    }
+                }
+                return _Perfil;
+            }
+            private set
+            {
+                _Perfil = value;
+            }
+        }
         public string NomeBloco { get; private set; } = "";
         public string Prancha { get; private set; } = "";
         public string Material { get; private set; } = "";
-
         public List<MarcaTecnoMetal> GetPosicoes()
         {
             var pcs = this.SubItens.GroupBy(x => x.Posicao).ToList();
@@ -137,9 +196,7 @@ namespace Ferramentas_DLM
 
             return marcaTecnoMetals;
         }
-
         public List<MarcaTecnoMetal> SubItens { get; private set; } = new List<MarcaTecnoMetal>();
-
         public DB.Linha Linha { get; set; } = new DB.Linha();
         public MarcaTecnoMetal(DB.Linha l)
         {

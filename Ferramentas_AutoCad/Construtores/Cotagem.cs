@@ -2,7 +2,7 @@
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Ferramentas_DLM.Classes;
 using System;
@@ -14,6 +14,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static Ferramentas_DLM.CAD;
+using Autodesk.AutoCAD.EditorInput;
 
 namespace Ferramentas_DLM
 {
@@ -22,6 +24,7 @@ namespace Ferramentas_DLM
     {
         public void LimparCotas()
         {
+
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 editor.WriteMessage("Selecione os objetos");
@@ -41,43 +44,7 @@ namespace Ferramentas_DLM
                 }
             }
         }
-        public Cotagem Ler(string Arquivo)
-        {
-            try
-            {
-                if (File.Exists(Arquivo))
-                {
-                    XmlSerializer x = new XmlSerializer(typeof(Cotagem));
-                    FileStream writer = new FileStream(Arquivo, FileMode.Open);
 
-                    Cotagem ts = (Cotagem)x.Deserialize(writer);
-                    writer.Close();
-                    GetVars(ts);
-                    return ts;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Alerta(ex.Message + "\n" + ex.StackTrace);
-            }
-            return null;
-        }
-
-        public void Gravar(string Arquivo)
-        {
-            try
-            {
-                XmlSerializer x = new XmlSerializer(typeof(Cotagem));
-                TextWriter writer = new StreamWriter(Arquivo);
-                x.Serialize(writer, this);
-                writer.Close();
-            }
-            catch (System.Exception ex)
-            {
-                Alerta(ex.Message + "\n" + ex.StackTrace);
-            }
-
-        }
         #region CAD
 
         public List<Line> Getlinhas_perfil()
@@ -1055,11 +1022,11 @@ namespace Ferramentas_DLM
 
         public void Contornar(bool calculo = true)
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                SelecionarObjetos(acTrans);
+                SelecionarObjetos();
 
-                if(calculo)
+                if (calculo)
                 {
                     AddPolyLine(GetContorno(), espessura_contorno,0, System.Drawing.Color.Red);
 
@@ -1079,9 +1046,9 @@ namespace Ferramentas_DLM
         }
         public void ContornarConvexo()
         {
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                SelecionarObjetos(acTrans);
+                SelecionarObjetos();
 
                 var s = GetContornoConvexo();
                 AddBarra();
@@ -1472,7 +1439,7 @@ namespace Ferramentas_DLM
         {
           
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 BlockTableRecord model = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
@@ -1482,10 +1449,10 @@ namespace Ferramentas_DLM
                 MLeader leader = new MLeader();
                 //leader.SetDatabaseDefaults();
                 leader.ContentType = ContentType.MTextContent;
-                leader.MLeaderStyle = base.acCurDb.MLeaderstyle;
+                leader.MLeaderStyle = acCurDb.MLeaderstyle;
 
                 MText mText = new MText();
-                mText.TextStyleId = base.acCurDb.Textstyle;
+                mText.TextStyleId = acCurDb.Textstyle;
                 //mText.SetDatabaseDefaults();
 
                 //mText.Width = 100;
@@ -1717,8 +1684,6 @@ namespace Ferramentas_DLM
         public void SetDimtix(bool valor, double size)
         {
             // Get the current database
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
             // Start a transaction
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
             {
@@ -1752,8 +1717,8 @@ namespace Ferramentas_DLM
         }
         private string CotarPeca(OpenCloseTransaction acTrans)
         {
-            
-            var selecao = SelecionarObjetos(acTrans);
+
+            var selecao = SelecionarObjetos();
 
 
 
@@ -1769,7 +1734,7 @@ namespace Ferramentas_DLM
             acCurDb.Dimtfill = 1;
             if(ForcarTamTexto)
             {
-            acCurDb.Textsize =size;
+                acCurDb.Textsize =size;
 
             }
             acCurDb.Dimtix = true;
@@ -1859,7 +1824,7 @@ namespace Ferramentas_DLM
 
             //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
             retentar:
               var st =   OpcoesComMenu();

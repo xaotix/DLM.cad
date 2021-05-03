@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Conexoes;
 using System;
@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Ferramentas_DLM.CAD;
 
 
 namespace Ferramentas_DLM
@@ -20,7 +21,7 @@ namespace Ferramentas_DLM
         {
             try
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                
                 Hashtable ht = new Hashtable();
 
 
@@ -29,7 +30,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_FIC, ficha);
                 ht.Add(Constantes.ATT_MER, mercadoria);
 
-                Inserir(doc, Constantes.Marca_Composta, p0, escala, 0, ht);
+                Inserir(acDoc, Constantes.Marca_Composta, p0, escala, 0, ht);
             }
             catch (System.Exception ex)
             {
@@ -85,8 +86,7 @@ namespace Ferramentas_DLM
             {
                 string nomeBloco = Conexoes.Utilz.getNome(endereco);
 
-                Database acCurDb = acDoc.Database;
-                Editor editor = acDoc.Editor;
+         
 
 
                 ObjectId blkid = ObjectId.Null;
@@ -258,7 +258,6 @@ namespace Ferramentas_DLM
         {
             try
             {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Hashtable ht = new Hashtable();
                 ht.Add(Constantes.ATT_MAR, marca);
                 ht.Add(Constantes.ATT_MER, mercadoria);
@@ -290,17 +289,17 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12);
+                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
                 if (posicao=="")
                 {
-                Inserir(doc, Constantes.Marca_Perfil, p0, escala, 0, ht);
+                Inserir(acDoc, Constantes.Marca_Perfil, p0, escala, 0, ht);
                 }
                 else
                 {
-                    Inserir(doc, Constantes.Posicao_Perfil, p0, escala, 0, ht);
+                    Inserir(acDoc, Constantes.Posicao_Perfil, p0, escala, 0, ht);
 
                 }
             }
@@ -315,7 +314,6 @@ namespace Ferramentas_DLM
             try
             {
                 var bloco =  Constantes.Marca_Chapa;
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Hashtable ht = new Hashtable();
                 //Pairs of tag-value:
                 ht.Add(Constantes.ATT_MAR, pf.Marca);
@@ -382,11 +380,11 @@ namespace Ferramentas_DLM
 
                 if(posicao!="")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala,"",12);
+                    p0 = Utilidades.AddLeader(0, p0, escala,"",12,true);
                 }
 
 
-                Inserir(doc, bloco, p0, escala, 0, ht);
+                Inserir(acDoc, bloco, p0, escala, 0, ht);
             }
             catch (System.Exception ex)
             {
@@ -400,7 +398,6 @@ namespace Ferramentas_DLM
             try
             {
                 var bloco = Constantes.Marca_Chapa;
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Hashtable ht = new Hashtable();
 
                 double superficie = area * 2 / 1000 / 100;
@@ -432,11 +429,11 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12);
+                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12,true);
                 }
 
 
-                Inserir(doc, bloco, p0, escala, 0, ht);
+                Inserir(acDoc, bloco, p0, escala, 0, ht);
             }
             catch (System.Exception ex)
             {
@@ -451,7 +448,6 @@ namespace Ferramentas_DLM
             try
             {
                 var bloco = Constantes.Marca_Chapa;
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Hashtable ht = new Hashtable();
                 //Pairs of tag-value:
                 ht.Add(Constantes.ATT_MAR, marca);
@@ -480,11 +476,11 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12);
+                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12,true);
                 }
 
 
-                Inserir(doc, bloco, p0, escala, 0, ht);
+                Inserir(acDoc, bloco, p0, escala, 0, ht);
             }
             catch (System.Exception ex)
             {

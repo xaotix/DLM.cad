@@ -2,7 +2,7 @@
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using Conexoes;
@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Ferramentas_DLM.Constantes;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
+using static Ferramentas_DLM.CAD;
+using Autodesk.AutoCAD.EditorInput;
 
 namespace Ferramentas_DLM
 {
@@ -40,11 +42,22 @@ namespace Ferramentas_DLM
 
         }
         #endregion
-        public static Point3d AddLeader(double angulo, Point3d pp0, double escala, string nome = "", double multiplicador = 7.5)
+        public static Point3d AddLeader(double angulo, Point3d pp0, double escala, string nome = "", double multiplicador = 7.5, bool pedir_ponto = false)
         {
             try
             {
                 var pt2 = new Coordenada(pp0).Mover(angulo + 45, escala * multiplicador).GetPoint();
+
+                if(pedir_ponto)
+                {
+                    bool cancelado = false;
+                    var pt0 = Utilidades.PedirPonto3D("Selecione o segundo ponto", pp0, out cancelado);
+                    if(!cancelado)
+                    {
+                        pt2 = pt0;
+                    }
+                }
+
                 AddLeader(pp0, pt2, nome, 2 * escala);
 
                 return pt2;
@@ -58,9 +71,6 @@ namespace Ferramentas_DLM
         }
         public static void AddLeader(Point3d origem, Point3d pt2, string texto, double escala)
         {
-            Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
-
             using (DocumentLock docLock = acDoc.LockDocument())
             {
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
@@ -140,72 +150,72 @@ namespace Ferramentas_DLM
         public static List<Layout> ListarLayouts()
         {
             List<Layout> retorno = new List<Layout>();
-            Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (DocumentLock docLock = acDoc.LockDocument())
             {
-                DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId,OpenMode.ForWrite) as DBDictionary;
-
-                foreach (DBDictionaryEntry item in lays)
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    Layout acLyrTblRec;
-                    acLyrTblRec = acTrans.GetObject(item.Value,OpenMode.ForWrite) as Layout;
+                    DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
 
-                    if(acLyrTblRec!=null)
+                    foreach (DBDictionaryEntry item in lays)
                     {
-                    retorno.Add(acLyrTblRec);
+                        Layout acLyrTblRec;
+                        acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
 
-
-                        var views = acLyrTblRec.GetViewports();
-                        foreach (ObjectId view in views)
+                        if (acLyrTblRec != null)
                         {
-                            Viewport vp = acTrans.GetObject(view,OpenMode.ForWrite) as Viewport;
-                        }
+                            retorno.Add(acLyrTblRec);
 
+
+                            var views = acLyrTblRec.GetViewports();
+                            foreach (ObjectId view in views)
+                            {
+                                Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
+                            }
+
+                        }
                     }
+                    acTrans.Abort();
                 }
-                acTrans.Abort();
             }
             return retorno;
         }
         public static List<Viewport> GetViewports(string layer = "")
         {
             List<Viewport> retorno = new List<Viewport>();
-            Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (DocumentLock docLock = acDoc.LockDocument())
             {
-                DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId,OpenMode.ForWrite) as DBDictionary;
-
-                foreach (DBDictionaryEntry item in lays)
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    Layout acLyrTblRec;
-                    acLyrTblRec = acTrans.GetObject(item.Value,OpenMode.ForWrite) as Layout;
+                    DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
 
-                    if (acLyrTblRec != null)
+                    foreach (DBDictionaryEntry item in lays)
                     {
-                        //retorno.Add(acLyrTblRec);
+                        Layout acLyrTblRec;
+                        acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
 
-
-                        var views = acLyrTblRec.GetViewports();
-                        foreach (ObjectId view in views)
+                        if (acLyrTblRec != null)
                         {
-                            Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
-                            if(vp!=null)
+                            //retorno.Add(acLyrTblRec);
+
+
+                            var views = acLyrTblRec.GetViewports();
+                            foreach (ObjectId view in views)
                             {
-                                retorno.Add(vp);
-                                if(layer!="")
+                                Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
+                                if (vp != null)
                                 {
-                                    vp.Layer = layer;
+                                    retorno.Add(vp);
+                                    if (layer != "")
+                                    {
+                                        vp.Layer = layer;
+                                    }
                                 }
                             }
-                        }
 
+                        }
                     }
+                    acTrans.Commit();
                 }
-                acTrans.Commit();
             }
             return retorno;
         }
@@ -319,9 +329,6 @@ namespace Ferramentas_DLM
         }
         public static void InterSectionPoint()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = doc.Database;
-            Editor editor = doc.Editor;
             Xline pl1 = null;
             Entity pl2 = null;
             Entity ent = null;
@@ -454,9 +461,6 @@ namespace Ferramentas_DLM
         }
         public static MlineStyle GetEstilo(string nome)
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Editor editor = doc.Editor;
-            Database acCurDb = doc.Database;
             try
             {
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
@@ -704,52 +708,55 @@ namespace Ferramentas_DLM
         }
         public static void LigarLayers(List<string> layers)
         {
-            Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (DocumentLock docLock = acDoc.LockDocument())
             {
-                LayerTable acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead) as LayerTable;
-
-               
-                foreach(var layer in layers)
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    if (acLyrTbl.Has(layer))
+
+                    LayerTable acLyrTbl;
+                    acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+
+                    foreach (var layer in layers)
                     {
-                        LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
+                        if (acLyrTbl.Has(layer))
+                        {
+                            LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
 
-                        acLyrTblRec.IsOff = false;
-                        acLyrTblRec.IsFrozen = false;
-                        acLyrTblRec.IsHidden = false;
-                        acLyrTblRec.IsLocked = false;
+                            acLyrTblRec.IsOff = false;
+                            acLyrTblRec.IsFrozen = false;
+                            acLyrTblRec.IsHidden = false;
+                            acLyrTblRec.IsLocked = false;
+                        }
                     }
+
+
+                    acTrans.Commit();
                 }
-
-
-                acTrans.Commit();
             }
         }
         public static void DesligarLayers(List<string> layers, bool congelar = true)
         {
-            Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (DocumentLock docLock = acDoc.LockDocument())
             {
-                LayerTable acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead) as LayerTable;
-
-                foreach(var layer in layers)
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    if (acLyrTbl.Has(layer))
-                    {
-                        LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
+                    LayerTable acLyrTbl;
+                    acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForWrite) as LayerTable;
 
-                        // Turn the layer off
-                        acLyrTblRec.IsOff = true;
-                        acLyrTblRec.IsFrozen = congelar;
+                    foreach (var layer in layers)
+                    {
+                        if (acLyrTbl.Has(layer))
+                        {
+                            LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
+
+                            // Turn the layer off
+                            acLyrTblRec.IsOff = true;
+                            acLyrTblRec.IsFrozen = congelar;
+                        }
                     }
+                    acTrans.Commit();
                 }
-                acTrans.Commit();
             }
         }
         public static string GetLayerAtual()
@@ -759,8 +766,6 @@ namespace Ferramentas_DLM
         public static void SetLayer(string layer, bool on =true ,bool criar_senao_existe = false)
         {
             // Get the current document and database
-            Document acDoc = Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = acDoc.Database;
 
             // Start a transaction
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
@@ -813,14 +818,10 @@ namespace Ferramentas_DLM
         }
         public static void CriarLayer(string nome, System.Drawing.Color cor, bool setar = true)
         {
-            Document doc =
-              Application.DocumentManager.MdiActiveDocument;
-            Database acCurDb = doc.Database;
-            Editor editor = doc.Editor;
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Get the layer table from the drawing
-                LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead);
+                LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
 
                 try
                 {
@@ -1330,6 +1331,11 @@ namespace Ferramentas_DLM
         }
 
 
+        public static double GetSuperficieM2(double espessura_mm, double area_mm2,  double perimetro_mm, int decimais = 4)
+        {
+            return Math.Round(((area_mm2 * 2) + (perimetro_mm * espessura_mm)) / 1000 / 1000, decimais);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1344,7 +1350,6 @@ namespace Ferramentas_DLM
         public static Point3d PedirPonto3D(string pergunta, Point3d origem, out bool cancelado, bool tem_origem = true)
         {
             cancelado = false;
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             PromptPointResult pPtRes;
             PromptPointOptions pPtOpts = new PromptPointOptions("");
 
@@ -1371,7 +1376,6 @@ namespace Ferramentas_DLM
         public static double PedirDistancia(string pergunta, out bool cancelado)
         {
             cancelado = false;
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             PromptDoubleResult resultado;
             PromptDistanceOptions opcoes = new PromptDistanceOptions("");
 

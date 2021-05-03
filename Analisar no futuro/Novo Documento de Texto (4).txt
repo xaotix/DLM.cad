@@ -1,0 +1,23 @@
+        public List<DB.Linha> GetMarcasLinhas(Database acCurDb, Transaction acTrans)
+        {
+            BlockTable acBlkTbl = acTrans.GetObject(CAD.acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
+            BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
+            List<BlockReference> blocos = new List<BlockReference>();
+            foreach (ObjectId objId in btr)
+            {
+                Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForWrite);
+                if (ent is BlockReference)
+                {
+                    var s = ent as BlockReference;
+                    blocos.Add(s);
+                }
+            }
+            List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas, false);
+            List<DB.Linha> retorno = new List<DB.Linha>();
+
+            retorno.AddRange(tabela_tecno.Select(x => GetLinha(x, acCurDb, this.Arquivo, this.Nome, DateTime.Now)));
+
+            return retorno;
+
+
+        }

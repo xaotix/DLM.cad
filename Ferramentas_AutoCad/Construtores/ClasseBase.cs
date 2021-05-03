@@ -1,7 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Internal.PropertyInspector;
 using Autodesk.AutoCAD.Runtime;
@@ -17,6 +17,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static Ferramentas_DLM.CAD;
+using Autodesk.AutoCAD.EditorInput;
 
 namespace Ferramentas_DLM
 {
@@ -30,10 +32,10 @@ namespace Ferramentas_DLM
             Utilidades.CriarLayer(layer, System.Drawing.Color.Gray, false);
             Utilidades.SetLayer("0");
             var view = Utilidades.GetViewports(layer);
-            this.editor.Command("mview", "lock", block ? "ON" : "OFF", "all", "");
-            this.editor.Command("layer", block ? "off":"on", layer, "");
-            this.editor.Command("pspace", "");
-            this.editor.Command("zoom", "e","");
+            editor.Command("mview", "lock", block ? "ON" : "OFF", "all", "");
+            editor.Command("layer", block ? "off":"on", layer, "");
+            editor.Command("pspace", "");
+            editor.Command("zoom", "e","");
 
         }
         public bool E_Tecnometal3D(bool mensagem = true)
@@ -70,58 +72,7 @@ namespace Ferramentas_DLM
                 return true;
             }
         }
-        [XmlIgnore]
-        [Browsable(false)]
-        public DocumentCollection documentManager
-        {
-            get
-            {
-                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
-            }
-        }
-        
-        [XmlIgnore]
-        [Browsable(false)]
-        public Document acDoc
-        {
-            get
-            {
-                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            }
-        }
 
-        [XmlIgnore]
-        [Browsable(false)]
-        public Editor editor
-        {
-            get
-            {
-                return acDoc.Editor;
-            }
-        }
-
-        [XmlIgnore]
-        [Browsable(false)]
-        public Database acCurDb
-        {
-            get
-            {
-                return acDoc.Database;
-            }
-        }
-
-
-
-        [XmlIgnore]
-        [Browsable(false)]
-        public dynamic acadApp
-        {
-            get
-            {
-                dynamic acadApp = Autodesk.AutoCAD.ApplicationServices.Application.AcadApplication;
-                return acadApp;
-            }
-        }
 
 
 
@@ -154,7 +105,7 @@ namespace Ferramentas_DLM
         }
         public void ZoomExtend()
         {
-            acadApp.ZoomExtents();
+            CAD.acadApp.ZoomExtents();
         }
        [Category("Configuração")]
        [DisplayName("Layer Blocos")]
@@ -166,7 +117,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                var pasta = Conexoes.Utilz.getPasta(this.acDoc.Name).ToUpper();
+                var pasta = Conexoes.Utilz.getPasta(acDoc.Name).ToUpper();
 
                 if (!Directory.Exists(pasta))
                 {
@@ -180,14 +131,14 @@ namespace Ferramentas_DLM
         {
             get
             {
-                return Conexoes.Utilz.getNome(this.acDoc.Name).ToUpper().Replace(".DWG","");
+                return Conexoes.Utilz.getNome(acDoc.Name).ToUpper().Replace(".DWG","");
             }
         }
         public string Arquivo
         {
             get
             {
-                return this.acDoc.Name;
+                return acDoc.Name;
             }
         }
 
@@ -195,7 +146,7 @@ namespace Ferramentas_DLM
         public List<string> GetMLStyles()
         {
             List<string> estilos = new List<string>();
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 DBDictionary acLyrTbl;
                 acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId,OpenMode.ForRead) as DBDictionary;
@@ -216,9 +167,9 @@ namespace Ferramentas_DLM
             List<string> lstlay = new List<string>();
 
             LayerTableRecord layer;
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                LayerTable lt = acTrans.GetObject(this.acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
+                LayerTable lt = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
                 foreach (ObjectId layerId in lt)
                 {
                     layer = acTrans.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
@@ -236,12 +187,10 @@ namespace Ferramentas_DLM
         public void GetInfos()
         {
             string msg = "";
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Editor editor = doc.Editor;
             var selecao = editor.GetEntity("\nSelecione: ");
             if (selecao.Status != PromptStatus.OK)
                 return;
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 Entity obj = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
 
@@ -380,7 +329,7 @@ namespace Ferramentas_DLM
         }
         public void Comando(params object[] comando)
         {
-            Extensoes.Command(this.acDoc.Editor, comando);
+            Extensoes.Command(acDoc.Editor, comando);
         }
         public List<Coordenada> RemoverRepetidos(List<Coordenada> pts)
         {
@@ -467,7 +416,7 @@ namespace Ferramentas_DLM
             }
             
             // Start a transaction
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl= acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
@@ -517,7 +466,7 @@ namespace Ferramentas_DLM
 
 
             // Start a transaction
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Linetype table for read
                 LinetypeTable acLineTypTbl;
@@ -562,7 +511,7 @@ namespace Ferramentas_DLM
             RotatedDimension acRotDim;
             // Get the current database
             // Start a transaction
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,  OpenMode.ForRead) as BlockTable;
@@ -619,7 +568,7 @@ namespace Ferramentas_DLM
         {
             RotatedDimension acRotDim;
             // Start a transaction
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -676,7 +625,7 @@ namespace Ferramentas_DLM
             OrdinateDimension acOrdDim;
 
             // Start a transaction
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -843,7 +792,7 @@ namespace Ferramentas_DLM
             {
                 pp.Add(cel.Coluna, cel.Valor);
             }
-            Blocos.Inserir(acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, pp);
+            Blocos.Inserir(CAD.acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, pp);
         }
 
         public void AddBarra()
@@ -924,73 +873,17 @@ namespace Ferramentas_DLM
                 }
             }
         }
-        public PromptSelectionResult SelecionarObjetos(OpenCloseTransaction acTrans, bool selecionar_tudo = false)
-        {
-            //TypedValue[] acTypValAr = new TypedValue[1];
-            //acTypValAr.SetValue(new TypedValue((int)DxfCode.Start, "CIRCLE"), 0);
-            //acTypValAr.SetValue(new TypedValue((int)DxfCode.Start, "LINE"), 0);
-            //acTypValAr.SetValue(new TypedValue((int)DxfCode.Start, "XLINE"), 0);
-            //acTypValAr.SetValue(new TypedValue((int)DxfCode.Start, "BLOCK"), 0);
-            //acTypValAr.SetValue(new TypedValue((int)DxfCode.Start, "POLYLINE"), 0);
-            //SelectionFilter acSelFtr = new SelectionFilter(acTypValAr);
-
-
-            PromptSelectionResult acSSPrompt;
-            if(!selecionar_tudo)
-            {
-                acSSPrompt = acDoc.Editor.GetSelection();
-            }
-            else
-            {
-                acSSPrompt = acDoc.Editor.SelectAll();
-             
-            }
-
-        
-
-            if (acSSPrompt.Status == PromptStatus.OK | selecionar_tudo)
-            {
-                SelectionSet acSSet = acSSPrompt.Value;
-                selecoes.Clear();
-                // Step through the objects in the selection set
-                foreach (SelectedObject acSSObj in acSSet)
-                {
-                    try
-                    {
-                        if (acSSObj != null)
-                        {
-                            Entity acEnt = acTrans.GetObject(acSSObj.ObjectId, (selecionar_tudo? OpenMode.ForRead: OpenMode.ForWrite)) as Entity;
-
-                            if (acEnt != null)
-                            {
-                                selecoes.Add(acEnt);
-                            }
-                        }
-                    }
-                    catch (System.Exception)
-                    {
-
-                    }
-                   
-                }
-
-            }
-            //var tps = selecoes.GroupBy(x => x.GetType().ToString()).Select(x => x.First()).ToList();
-
-            //AddMensagem("\nTipos de objetos selecionados:\n" + string.Join("\n", tps));
-            return acSSPrompt;
-        }
-
 
         public PromptSelectionResult SelecionarObjetos()
         {
+            PromptSelectionOptions pp = new PromptSelectionOptions();
+            pp.RejectObjectsOnLockedLayers = true;
+            pp.RejectPaperspaceViewport = true;
+            pp.RejectObjectsFromNonCurrentSpace = true;
+            PromptSelectionResult acSSPrompt = acDoc.Editor.GetSelection(pp);
 
-
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                PromptSelectionResult acSSPrompt;
-                acSSPrompt = acDoc.Editor.GetSelection();
-
 
 
                 if (acSSPrompt.Status == PromptStatus.OK)
@@ -1023,21 +916,13 @@ namespace Ferramentas_DLM
                 //var tps = selecoes.GroupBy(x => x.GetType().ToString()).Select(x => x.First()).ToList();
 
                 //AddMensagem("\nTipos de objetos selecionados:\n" + string.Join("\n", tps));
-                return acSSPrompt;
+                
             }
 
-            return null;
+            return acSSPrompt;
         }
 
-        public ClasseBase SelecionarTudo()
-        {
-            ClasseBase p = new ClasseBase();
-            using (var acTrans = this.acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                p.SelecionarObjetos(acTrans, true);
-            }
-                return p;
-        }
+
 
 
 

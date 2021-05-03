@@ -170,95 +170,117 @@
             <Setter Property="MinHeight" Value="20"></Setter>
         </Style>
     </Window.Resources>
-    <Grid>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <GroupBox Grid.Row="0" Header="Marca">
-        <Grid >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <RadioButton VerticalAlignment="Center"  x:Name="m_simples" IsChecked="True" Content="Simples" ></RadioButton>
-                <RadioButton VerticalAlignment="Center" x:Name="m_composta" Grid.Column="1" IsChecked="False" Content="Composta"></RadioButton>
-                <ComboBox Visibility="Collapsed" Grid.Column="2" Grid.Row="0" x:Name="seleciona_marca_composta" IsEnabled="{Binding ElementName=m_composta, Path=IsChecked,TargetNullValue=false}" ></ComboBox>
-                <Button Grid.Column="3" Grid.Row="0" x:Name="nova_marca" IsEnabled="{Binding ElementName=m_composta, Path=IsChecked,TargetNullValue=false}" Content="Nova..." Click="nova_marca_Click"></Button>
+    <TabControl>
+        <TabItem Header="Marcação">
+            <Grid>
 
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="Propriedades" Grid.Row="2">
-            <Grid VerticalAlignment="Center" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                <GroupBox Grid.Row="0" Header="Marca">
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton VerticalAlignment="Center"  x:Name="m_simples" IsChecked="True" Content="Simples" ></RadioButton>
+                        <RadioButton VerticalAlignment="Center" x:Name="m_composta" Grid.Column="1" IsChecked="False" Content="Composta"></RadioButton>
+                        <ComboBox Visibility="Collapsed" Grid.Column="2" Grid.Row="0" x:Name="seleciona_marca_composta" IsEnabled="{Binding ElementName=m_composta, Path=IsChecked,TargetNullValue=false}" ></ComboBox>
+                        <Button Grid.Column="3" Grid.Row="0" x:Name="nova_marca" IsEnabled="{Binding ElementName=m_composta, Path=IsChecked,TargetNullValue=false}" Content="Nova..." Click="nova_marca_Click"></Button>
 
-                </Grid.ColumnDefinitions>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Propriedades" Grid.Row="2">
+                    <Grid VerticalAlignment="Center" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
 
-                <Label Grid.Column="0" Grid.Row="0" Content="Nome:" VerticalAlignment="Center"></Label>
-                <TextBox TextAlignment="Center"  Grid.Column="1" Grid.Row="0" Name="prefix" Text="{Binding Prefix}" MaxLength="4" CharacterCasing="Upper"/>
-                <TextBox  Grid.Column="2" Grid.Row="0" Name="sufix" Text="{Binding Sufix}" MaxLength="4" CharacterCasing="Upper"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" Grid.Row="0" Content="Nome:" VerticalAlignment="Center"></Label>
+                        <TextBox TextAlignment="Center"  Grid.Column="1" Grid.Row="0" Name="prefix" Text="{Binding Prefix}" MaxLength="9" CharacterCasing="Upper"/>
+                        <TextBox  Grid.Column="2" Grid.Row="0" Name="sufix" Text="{Binding Sufix}" MaxLength="5" CharacterCasing="Upper"/>
 
 
 
-                <Label Grid.Column="0" Grid.Row="2" Content="Qtd.:" VerticalAlignment="Center"></Label>
-                <TextBox  Grid.Column="1" Grid.Row="2" Name="quantidade" Text="{Binding Quantidade}" MaxLength="20" CharacterCasing="Upper"/>
+                        <Label Grid.Column="0" Grid.Row="2" Content="Qtd.:" VerticalAlignment="Center"></Label>
+                        <TextBox  Grid.Column="1" Grid.Row="2" Name="quantidade" Text="{Binding Quantidade}" MaxLength="8" CharacterCasing="Upper"/>
 
 
-                <Label Grid.Row="1" Grid.Column="0" Content="Mercadoria:" VerticalAlignment="Center"></Label>
-                <ComboBox IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="mercadoria"/>
-               
-                <Label Grid.Row="3" Content="Material:" VerticalAlignment="Center"></Label>
-                <ComboBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="3" Name="material"/>
-                
-                <Label Grid.Column="2" Grid.Row="2" Content="Tratamento:" VerticalAlignment="Center"></Label>
-                <TextBox IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}"  Grid.Column="3" Grid.Row="2" Name="tratamento" Text="FICHA 01" MaxLength="20" CharacterCasing="Upper"/>
+                        <Label Grid.Row="1" Grid.Column="0" Content="Mercadoria:" VerticalAlignment="Center"></Label>
+                        <ComboBox IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="mercadoria"/>
+
+                        <Label Grid.Row="3" Content="Material:" VerticalAlignment="Center"></Label>
+                        <ComboBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="3" Name="material"/>
+
+                        <Label Grid.Column="2" Grid.Row="2" Content="Tratamento:" VerticalAlignment="Center"></Label>
+                        <TextBox IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}"  Grid.Column="3" Grid.Row="2" Name="tratamento" Text="FICHA 01" MaxLength="20" CharacterCasing="Upper"/>
 
 
-                <!--<Label Grid.Column="0" Grid.Row="4" Content="Larg.:" VerticalAlignment="Center"></Label>
+                        <!--<Label Grid.Column="0" Grid.Row="4" Content="Larg.:" VerticalAlignment="Center"></Label>
                 <TextBox  Grid.Column="1" Grid.Row="4" Name="largura" Text="{Binding Largura}" MaxLength="20" CharacterCasing="Upper"/>-->
 
-                <!--<Label Grid.Column="2" Grid.Row="4" Content="Comp.:" VerticalAlignment="Center"></Label>
+                        <!--<Label Grid.Column="2" Grid.Row="4" Content="Comp.:" VerticalAlignment="Center"></Label>
                 <TextBox  Grid.Column="3" Grid.Row="4" Name="comprimento" Text="{Binding Comprimento}" MaxLength="20" CharacterCasing="Upper"/>-->
 
 
-            </Grid>
-        </GroupBox>
-        <GroupBox Grid.Row="1" Header="Tipo">
-            <Grid >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <ComboBox Name="tipo_marca_combo" SelectionChanged="tipo_marca_combo_SelectionChanged"></ComboBox>
-                <Button  Grid.Column="1" Name="perfil" Content="..." Click="selecionar_perfil" />
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="1" Header="Tipo">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Name="tipo_marca_combo" SelectionChanged="tipo_marca_combo_SelectionChanged"></ComboBox>
+                        <Button  Grid.Column="1" Name="perfil" Content="..." Click="selecionar_perfil" />
+
+                    </Grid>
+                </GroupBox>
+
+                <Button Grid.Row="10" Content="Criar" Click="criar_bloco" FontSize="14" FontWeight="Bold" IsDefault="True"/>
 
             </Grid>
-        </GroupBox>
+        </TabItem>
+        <TabItem Header="Ferramentas">
+            <StackPanel Margin="2">
+                <Button Content="Mercadorias"  Click="mercadorias"></Button>
+                <Button Content="Materiais"  Click="materiais"></Button>
+                <Button Content="Tratamentos"  Click="tratamentos"></Button>
 
-        <Button Grid.Row="10" Content="Criar" Click="criar_bloco" FontSize="14" FontWeight="Bold"></Button>
-
-    </Grid>
+                <Separator></Separator>
+                <Button Content="Inserir Tabela"  Click="insere_tabela"></Button>
+                <Button Content="Inserir Tabela (Auto)"  Click="insere_tabela_auto"></Button>
+                <Separator></Separator>
+                <Button Content="Gerar DBF"  Click="gerar_dbf"></Button>
+                <Button Content="Gerar DBF 3D"  Click="gerar_dbf_3d"></Button>
+                <Separator></Separator>
+                <Button Content="Desligar Layers Posição"  Click="desliga_layer"></Button>
+                <Button Content="Ligar Layers Posição"  Click="liga_layer"></Button>
+            </StackPanel>
+            
+        </TabItem>
+    </TabControl>
 </Window>
