@@ -14,6 +14,109 @@ namespace Ferramentas_DLM
 {
     public class TecnoMetal : ClasseBase
     {
+        public void Quantificar()
+        {
+            var sel = SelecionarObjetos();
+            if(sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && this.selecoes.Count>0)
+            {
+                bool status = false;
+                var opt = Conexoes.Utilz.Propriedades(new ConfiguracaoQuantificar(), out status);
+
+                if(status)
+                {
+                    List<PCQuantificar> pecas = new List<PCQuantificar>();
+                    if(opt.Blocos)
+                    {
+                        foreach(var s in this.Getblocos().FindAll(x=>!x.Name.Contains("*")).GroupBy(x=>x.Name.ToUpper().Replace("SUPORTE ","")))
+                        {
+                            var att = Atributos.GetLinha(s.First());
+
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco,s.Key, "",s.ToList().Select(x=> Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
+                            pecas.Add(npc);
+
+                        }
+                    }
+
+                    if(opt.Textos)
+                    {
+
+                        foreach (var s in this.GetMtexts().GroupBy(x => x.Text.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n"," ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", "").Replace(")","")))
+                        {
+                           
+
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,s.ToList().Select(x=> new DB.Linha(new List<DB.Celula> { new DB.Celula("VALOR", x.Text) })).ToList());
+                            pecas.Add(npc);
+
+                        }
+                        foreach (var s in this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", "").Replace(")", "")))
+                        {
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString, s.ToList().Select(x => new DB.Linha(new List<DB.Celula> { new DB.Celula("VALOR", x.TextString) })).ToList());
+                            pecas.Add(npc);
+
+                        }
+                    }
+
+                    pecas = pecas.FindAll(x => x.Nome != "").OrderBy(x=>x.ToString()).ToList().FindAll(
+                        x=>
+                        x.Nome!="DETALHE" &&
+                        x.Nome !="PEÇA" &&
+                        !x.Nome.Contains(".") &&
+                        !x.Nome.Contains("@") &&
+                        !x.Nome.Contains("$") &&
+                        !x.Nome.Contains("+") &&
+                        !x.Nome.Contains("?") &&
+                        !x.Nome.Contains("%") &&
+                        !x.Nome.Contains("*") &&
+                        !x.Nome.Contains("3D_INFO") &&
+                        !x.Nome.Contains("SELO") &&
+                        !x.Nome.Contains("EIXO") &&
+                        !x.Nome.Contains("NOTA") &&
+                        !x.Nome.Contains("SOLUÇÃO") &&
+                        !x.Nome.Contains("FACHADA") &&
+                        !x.Nome.Contains("#")
+                        );
+
+                    
+                    if(pecas.Count>0)
+                    {
+                        List<PCQuantificar> pcs = Conexoes.Utilz.SelecionarObjetos(new List<PCQuantificar> { }, pecas, "Determine quais peças deseja que apareçam na tabela");
+
+
+                        Menus.Quantificar_Menu_Configuracao mm = new Menus.Quantificar_Menu_Configuracao(pcs);
+
+                        mm.Show();
+
+                        mm.Closed += FinalizaInsercao;
+                        
+                    }
+
+                }
+
+                
+            }
+        }
+
+        private void FinalizaInsercao(object sender, EventArgs e)
+        {
+            Menus.Quantificar_Menu_Configuracao mm = sender as Menus.Quantificar_Menu_Configuracao;
+            List<PCQuantificar> pcs = mm.original;
+            if (mm.confirmado)
+            {
+                pcs = mm.filtro;
+            }
+
+            if (pcs.Count > 0)
+            {
+                bool cancelado = false;
+                var pt = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+                if (!cancelado)
+                {
+                    Tabelas.Pecas(pcs, pt, 0);
+                }
+            }
+
+        }
+
         private List<DLMCam.ReadCam> _cams { get; set; } = new List<DLMCam.ReadCam>();
         public List<DLMCam.ReadCam> GetCams(bool atualizar = false)
         {
@@ -161,8 +264,6 @@ namespace Ferramentas_DLM
             Alerta("Finalizado", MessageBoxIcon.Information);
         }
 
-        
-
         public List<MarcaTecnoMetal> GetMarcas(DB.Tabela pcs = null)
         {
             
@@ -194,6 +295,12 @@ namespace Ferramentas_DLM
                 {
                     var marca = marcas[0];
                     marca.SubItens.AddRange(posicoes);
+                    foreach(var pos in posicoes)
+                    {
+                        pos.Pai = marca;
+                    }
+
+
                     Retorno.Add(marca);
                 }
                 else
@@ -208,19 +315,10 @@ namespace Ferramentas_DLM
             return Retorno;
 
         }
-
-
-        public void Marcar()
-        {
-            Constantes.menu_marcas = new MenuMarcas(this);
-            Constantes.menu_marcas.Show();
-        }
-
         public List<MarcaTecnoMetal> GetMarcasCompostas()
         {
             return this.GetMarcas().FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).ToList();
         }
-
         private Conexoes.SubEtapaTecnoMetal _subetapa { get; set; }
         private Conexoes.ObraTecnoMetal _obra { get; set; }
         private Conexoes.PedidoTecnoMetal _pedido { get; set; }
@@ -280,7 +378,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
-                DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
+                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                 BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<BlockReference> blocos = new List<BlockReference>();
@@ -384,8 +482,8 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
-                DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
-               
+                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
+
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                 BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<BlockReference> blocos = new List<BlockReference>();
@@ -464,7 +562,7 @@ namespace Ferramentas_DLM
 
 
         }
-        public DB.Linha GetLinha(BlockReference bloco,  string arquivo, string nome, DateTime ultima_edicao, Database acCurDb = null)
+        public DB.Linha GetLinha(BlockReference bloco,  string arquivo, string nome, string ultima_edicao, Database acCurDb = null)
         {
             try
             {
@@ -490,7 +588,7 @@ namespace Ferramentas_DLM
                 att.Add(Constantes.ATT_NUM, nome);
                 att.Add(Constantes.ATT_DWG, nome);
                 att.Add(Constantes.ATT_REC, att.Get(Constantes.ATT_POS).ToString() == "" ? Constantes.ATT_REC_MARCA : Constantes.ATT_REC_POSICAO);
-                att.Add(Constantes.ATT_DAT, ultima_edicao.ToShortDateString());
+                att.Add(Constantes.ATT_DAT, ultima_edicao);
                 att.Add(Constantes.ATT_BLK, bloco.Name.ToUpper());
 
                 return att;
@@ -513,7 +611,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
-                DateTime ultima_edicao = System.IO.File.GetLastWriteTime(this.Pasta);
+                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
                 List<BlockReference> blocos = new List<BlockReference>();
@@ -590,7 +688,7 @@ namespace Ferramentas_DLM
                 foreach (FileInfo file in arquivos)
                 {
                     w.somaProgresso($"Mapeando peças: {file.Name}");
-                    DateTime ultima_edicao = System.IO.File.GetLastWriteTime(file.FullName);
+                    var ultima_edicao = System.IO.File.GetLastWriteTime(file.FullName).ToString("dd/MM/yyyy");
 
                     var nome_arq = Conexoes.Utilz.getNome(file.FullName);
                     string arquivo = file.FullName;
@@ -901,7 +999,7 @@ namespace Ferramentas_DLM
 
                 if(igual.Nome=="")
                 {
-                    erros.Add(new Conexoes.Report($"Perfil não cadastrado.", $"{pf.Key} \n{string.Join("\n", pf.ToList().Select(x =>  $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}").Distinct().ToList())}", Conexoes.TipoReport.Crítico));
+                    erros.Add(new Conexoes.Report($"Perfil não cadastrado.", $"{pf.Key} \n{string.Join("\n", pf.ToList().Select(x =>  $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao} - Bloco: {x.NomeBloco}").Distinct().ToList())}", Conexoes.TipoReport.Crítico));
                 }
             }
             w.somaProgresso();
@@ -1038,15 +1136,46 @@ namespace Ferramentas_DLM
         private Conexoes.Bobina bobina_sel { get; set; }
         private List<Conexoes.Bobina> _bobinas { get; set; }
         private List<Conexoes.Chapa> _chapas { get; set; }
-
-        public Conexoes.Bobina PromptBobina(Conexoes.Chapa espessura = null)
+        private List<string> _materiais { get; set; }
+        private List<string> _mercadorias { get; set; }
+        public List<Conexoes.Bobina> GetBobinas()
         {
             if (_bobinas == null)
             {
                 _bobinas = Conexoes.DBases.GetBancoRM().GetBobinas();
             }
+            return _bobinas;
+        }
+        public List<Conexoes.Chapa> GetChapas()
+        {
+            if (_chapas == null)
+            {
+                _chapas = Conexoes.DBases.GetChapas();
+            }
+            return _chapas;
+        }
+        public List<string> GetMateriais()
+        {
+            if (_materiais == null)
+            {
+                _materiais = Conexoes.DBases.GetBancoRM().GetMateriais();
+            }
+            return _materiais;
+        }
+        public List<string> GetMercadorias()
+        {
+            if (_mercadorias == null)
+            {
+                _mercadorias = Conexoes.DBases.GetBancoRM().GetMercadorias();
+            }
+            return _mercadorias;
+        }
+
+
+        public Conexoes.Bobina PromptBobina(Conexoes.Chapa espessura = null)
+        {
             List<Conexoes.Bobina> bobinas = new List<Conexoes.Bobina>();
-            bobinas.AddRange(_bobinas);
+            bobinas.AddRange(GetBobinas());
             if (espessura != null)
             {
                 bobinas = bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte);
@@ -1061,25 +1190,21 @@ namespace Ferramentas_DLM
         }
         public Conexoes.Chapa PromptChapa(Tipo_Chapa tipo)
         {
-            if(_chapas==null)
-            {
-                _chapas = Conexoes.DBases.GetChapas();
-            }
 
             List<Conexoes.Chapa> chapas = new List<Conexoes.Chapa>();
-            chapas.AddRange(this._chapas);
+            chapas.AddRange(GetChapas());
             if (tipo == Tipo_Chapa.Fina)
             {
                 chapas = chapas.FindAll(x => x.GetChapa_Fina());
             }
-            else if (tipo ==  Tipo_Chapa.Grossa)
+            else if (tipo == Tipo_Chapa.Grossa)
             {
                 chapas = chapas.FindAll(x => !x.GetChapa_Fina());
             }
 
-            var sel = Conexoes.Utilz.SelecionaCombo(_chapas, chapa_sel, "Selecione uma espessura");
+            var sel = Conexoes.Utilz.SelecionaCombo(chapas, chapa_sel, "Selecione uma espessura");
 
-            if(sel!=null)
+            if (sel != null)
             {
                 chapa_sel = sel;
             }
@@ -1087,16 +1212,16 @@ namespace Ferramentas_DLM
         }
         public string PromptMaterial()
         {
-            string sel = Conexoes.Utilz.SelecionaCombo(Conexoes.DBases.GetBancoRM().GetMateriais(), material_sel, "Selecione o Material");
-            if(sel!=null)
+            string sel = Conexoes.Utilz.SelecionaCombo(GetMateriais(), material_sel, "Selecione o Material");
+            if (sel != null)
             {
-            material_sel = sel;
+                material_sel = sel;
             }
             return sel;
         }
         public string PromptMercadoria()
         {
-            var sel = Conexoes.Utilz.SelecionaCombo(Conexoes.DBases.GetBancoRM().GetMercadorias(), mercadoria_sel, "Selecione a Mercadoria");
+            var sel = Conexoes.Utilz.SelecionaCombo(GetMercadorias(), mercadoria_sel, "Selecione a Mercadoria");
             if (sel != null)
             {
                 mercadoria_sel = sel;
@@ -1321,9 +1446,13 @@ namespace Ferramentas_DLM
                         if (pa.GerarCam == Opcao.Sim)
                         {
                             string destino = this.Pasta;
-                            if (this.Pasta.EndsWith(".TEC"))
+                            if (this.E_Tecnometal(false))
                             {
                                 destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), "CAM");
+                            }
+                            else
+                            {
+                                return;
                             }
                             if (Directory.Exists(destino))
                             {
@@ -1441,9 +1570,13 @@ namespace Ferramentas_DLM
                             if (pa.GerarCam == Opcao.Sim)
                             {
                                 string destino = this.Pasta;
-                                if (this.Pasta.EndsWith(".TEC"))
+                                if (this.E_Tecnometal(false))
                                 {
                                     destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), "CAM");
+                                }
+                                else
+                                {
+                                    return;
                                 }
                                 if (Directory.Exists(destino))
                                 {

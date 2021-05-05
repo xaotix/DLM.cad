@@ -340,7 +340,7 @@ namespace Ferramentas_DLM
 
                         if (Math.Abs(comp) > this.LarguraTelha)
                         {
-                            Utilidades.CriarLayer(LayerPassarela, System.Drawing.Color.White);
+                            FLayer.Criar(LayerPassarela, System.Drawing.Color.White);
 
                             var pcs = Conexoes.Utilz.ArredondarMultiplo(Math.Abs(comp), this.LarguraTelha);
                             int qtd = Conexoes.Utilz.Int(pcs / this.LarguraTelha);
@@ -367,7 +367,7 @@ namespace Ferramentas_DLM
                             }
                             if (AdicionarCotas)
                             {
-                                Utilidades.CriarLayer(LayerPassarelaCotas, System.Drawing.Color.White);
+                                FLayer.Criar(LayerPassarelaCotas, System.Drawing.Color.White);
                                 var d1 = new Coordenada(p0);
                                 if(sequencia>0)
                                 {
@@ -414,9 +414,9 @@ namespace Ferramentas_DLM
 
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var layer_atual = Utilidades.GetLayerAtual();
+                var layer_atual = FLayer.GetAtual();
 
-                Utilidades.CriarLayer(LayerLinhaDeVida, System.Drawing.Color.Red);
+                FLayer.Criar(LayerLinhaDeVida, System.Drawing.Color.Red);
 
                 //var selecao = SelecionarObjetos(acTrans);
 
@@ -460,7 +460,7 @@ namespace Ferramentas_DLM
                     var p2 = Utilidades.PedirPonto3D("Selecione o ponto final", p1, out cancelado);
                     if (!cancelado)
                     {
-                        Utilidades.SetLayer(LayerLinhaDeVida);
+                        FLayer.Set(LayerLinhaDeVida);
 
                         List<Point3d> cotas = new List<Point3d>();
                         if (sequencia == 0 && !selecionar)
@@ -553,7 +553,7 @@ namespace Ferramentas_DLM
 
                             if (AdicionarCotas)
                             {
-                                Utilidades.CriarLayer(LayerLinhaDeVidaCotas, System.Drawing.Color.White);
+                                FLayer.Criar(LayerLinhaDeVidaCotas, System.Drawing.Color.White);
                                 for (int i = 0; i < cotas.Count - 1; i++)
                                 {
                                     if (angulo == 0 | angulo == 180)
@@ -589,7 +589,7 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-                        Utilidades.SetLayer(layer_atual);
+                        FLayer.Set(layer_atual);
                     }
 
                 }

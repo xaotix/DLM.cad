@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Ferramentas_DLM
 {
+    public enum Tipo_Objeto
+    {
+        Texto,
+        Bloco,
+    }
     public enum Tipo_Calculo_Contorno
     {
         Maximo,
@@ -38,6 +43,7 @@ namespace Ferramentas_DLM
         Elemento_Unitario,
         Arremate,
         DUMMY,
+        DUMMY_Perfil,
         _ = -1
     }
 
@@ -57,7 +63,6 @@ namespace Ferramentas_DLM
 
     internal static class CAD
     {
-
         public static DocumentCollection documentManager
         {
             get
@@ -65,8 +70,6 @@ namespace Ferramentas_DLM
                 return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
             }
         }
-
-
         public static Document acDoc
         {
             get
@@ -74,8 +77,6 @@ namespace Ferramentas_DLM
                 return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             }
         }
-
-
         public static Editor editor
         {
             get
@@ -83,8 +84,6 @@ namespace Ferramentas_DLM
                 return acDoc.Editor;
             }
         }
-
-  
         public static Database acCurDb
         {
             get
@@ -92,10 +91,6 @@ namespace Ferramentas_DLM
                 return acDoc.Database;
             }
         }
-
-
-
-
         public static dynamic acadApp
         {
             get
@@ -107,9 +102,6 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
- 
-
-        public static MenuMarcas menu_marcas { get; set; }
         public static string RaizArquivos { get; set; } = @"\\10.54.0.4\BancoDeDados\";
         public static string RaizA2Blocos { get; set; } = RaizArquivos + @"Blocos\SELO A2\";
         public static string RaizPcsBlocos { get; set; } = RaizArquivos + @"Blocos\SELO A2\Listagem\Peças Mapeáveis\";

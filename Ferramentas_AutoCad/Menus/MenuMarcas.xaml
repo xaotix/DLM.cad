@@ -265,22 +265,72 @@
             </Grid>
         </TabItem>
         <TabItem Header="Ferramentas">
+                <ScrollViewer>
             <StackPanel Margin="2">
-                <Button Content="Mercadorias"  Click="mercadorias"></Button>
-                <Button Content="Materiais"  Click="materiais"></Button>
-                <Button Content="Tratamentos"  Click="tratamentos"></Button>
+                    <GroupBox Header="Marcação">
+                        <StackPanel>
+                            <Button Content="Mercadorias"  Click="mercadorias"></Button>
+                            <Button Content="Materiais"  Click="materiais"></Button>
+                            <Button Content="Tratamentos"  Click="tratamentos"></Button>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Tabelas">
+                        <StackPanel>
+                            <Button Content="Quantificar Montagem"  Click="quantificar"></Button>
+                            <Button Content="Inserir Tabela TecnoMetal"  Click="insere_tabela"></Button>
+                            <Button Content="Inserir Tabela TecnoMetal (Auto)"  Click="insere_tabela_auto"></Button>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Liberação">
+                        <StackPanel>
+                            <Button Content="Rodar Macro"  Click="rodar_macro"></Button>
+                            <Button Content="Gerar DBF"  Click="gerar_dbf"></Button>
+                            <Separator></Separator>
+                            <Button Content="Gerar DBF 3D"  Click="gerar_dbf_3d"></Button>
+                            <Separator></Separator>
+                            <Button Content="Preenche Selo" Click="preenche_selo"></Button>
+                            <Button Content="Limpar Selo" Click="limpa_selo"></Button>
+                        </StackPanel>
+                    </GroupBox>
+                    
 
-                <Separator></Separator>
-                <Button Content="Inserir Tabela"  Click="insere_tabela"></Button>
-                <Button Content="Inserir Tabela (Auto)"  Click="insere_tabela_auto"></Button>
-                <Separator></Separator>
-                <Button Content="Gerar DBF"  Click="gerar_dbf"></Button>
-                <Button Content="Gerar DBF 3D"  Click="gerar_dbf_3d"></Button>
-                <Separator></Separator>
-                <Button Content="Desligar Layers Posição"  Click="desliga_layer"></Button>
-                <Button Content="Ligar Layers Posição"  Click="liga_layer"></Button>
+                    <GroupBox Header="Purlin">
+                        <StackPanel>
+                            <Button Content="Mapear Purlins (em testes)"  Click="purlin"></Button>
+                            <Button Content="Extrair Boneco"  Click="boneco"></Button>
+                        </StackPanel>
+                    </GroupBox>
+
+
+
+                    <GroupBox Header="Telhas">
+                        <StackPanel>
+                            <Button Content="Passarelas"  Click="passarelas"></Button>
+                            <Button Content="Apagar Passarelas"  Click="passarelas_apaga"></Button>
+                            <Button Content="Linha de Vida"  Click="linha_de_vida"></Button>
+                            <Button Content="Apagar Linha de Vida"  Click="linha_de_vida_apaga"></Button>
+                            <Button Content="Alinhar Linha de Vida"  Click="linha_de_vida_alinha"></Button>
+
+                        </StackPanel>
+                    </GroupBox>
+
+
+
+                    <GroupBox Header="Outros">
+                        <StackPanel>
+                            <Button Content="Desligar Layers Posição"  Click="desliga_layer"></Button>
+                            <Button Content="Ligar Layers Posição"  Click="liga_layer"></Button>
+                            <Button Content="Cotar"  Click="cotar"></Button>
+                            <Button Content="Limpar Cotas"  Click="limpar_cotas"></Button>
+                            <Button Content="Criar marcas a partir de CAMs" Click="criar_marcas_cam"></Button>
+                        </StackPanel>
+                    </GroupBox>
+               
+               
             </StackPanel>
+                </ScrollViewer>
             
         </TabItem>
+
     </TabControl>
 </Window>

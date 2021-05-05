@@ -20,6 +20,17 @@ namespace Ferramentas_DLM
     /// </summary>
     public partial class MenuMarcas : Window
     {
+        public void Iniciar()
+        {
+            if(this.IsLoaded)
+            {
+                this.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                this.Show();
+            }
+        }
         public string Prefix { get; set; } = "P";
         public string Sufix { get; set; } = "01";
         public double Quantidade { get; set; } = 1;
@@ -46,24 +57,24 @@ namespace Ferramentas_DLM
                 return Tipo_Bloco._;
             }
         }
-        public DB.Valor db_mercadoria
+        public string db_mercadoria
         {
             get
             {
-                if (mercadoria.SelectedItem is DB.Valor)
+                if (mercadoria.SelectedItem is string)
                 {
-                    return mercadoria.SelectedItem as DB.Valor;
+                    return mercadoria.SelectedItem as string;
                 }
                 return null;
             }
         }
-        public DB.Valor db_material
+        public string db_material
         {
             get
             {
-                if (material.SelectedItem is DB.Valor)
+                if (material.SelectedItem is string)
                 {
-                    return material.SelectedItem as DB.Valor;
+                    return material.SelectedItem as string;
                 }
                 return null;
             }
@@ -94,9 +105,9 @@ namespace Ferramentas_DLM
 
             try
             {
-
-                this.mercadoria.ItemsSource = Conexoes.DBases.GetMercadorias();
-                this.material.ItemsSource = Conexoes.DBases.GetMateriais();
+                TecnoMetal = tecnoMetal;
+                this.mercadoria.ItemsSource = TecnoMetal.GetMercadorias();
+                this.material.ItemsSource = TecnoMetal.GetMateriais();
 
 
                 tipo_marca_combo.ItemsSource = Conexoes.Utilz.GetLista_Enumeradores<Tipo_Bloco>().ToList().FindAll(x=> x!= Tipo_Bloco._ && x!= Tipo_Bloco.DUMMY);
@@ -106,8 +117,8 @@ namespace Ferramentas_DLM
                 this.mercadoria.SelectedIndex = 0;
                 this.material.SelectedIndex = 0;
 
-                Update(tecnoMetal);
                 this.DataContext = this;
+                Update(tecnoMetal);
             }
             catch (Exception)
             {
@@ -154,10 +165,13 @@ namespace Ferramentas_DLM
             {
 
                 case Tipo_Bloco.Chapa:
-                    db_chapa = MenuMarcas.TecnoMetal.PromptChapa(Tipo_Chapa.Tudo);
+                    db_chapa = MenuMarcas.TecnoMetal.PromptChapa(Tipo_Chapa.Grossa);
+                    db_bobina = Conexoes.Utilz.Clonar(Conexoes.DBases.GetBobinaDummy());
                     if (db_chapa != null)
                     {
                         perfil.Content = db_chapa.ToString();
+                        db_bobina.Espessura = db_chapa.valor;
+                        db_bobina.Material = this.db_material;
                     }
                     break;
                 case Tipo_Bloco.Perfil:
@@ -170,23 +184,23 @@ namespace Ferramentas_DLM
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
                     db_perfil_m2 = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis().FindAll(x => x.Tipo == DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione");
-                    if (db_perfil != null)
+                    if (db_perfil_m2 != null)
                     {
                         perfil.Content = db_perfil_m2.ToString();
                     }
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
                     db_unitario = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione");
-                    if (db_perfil != null)
+                    if (db_unitario != null)
                     {
                         perfil.Content = db_unitario.ToString();
                     }
                     break;
                 case Tipo_Bloco.Arremate:
-                    var esp = TecnoMetal.PromptChapa(Tipo_Chapa.Fina);
-                    if(esp!=null)
+                    db_chapa = TecnoMetal.PromptChapa(Tipo_Chapa.Fina);
+                    if(db_chapa != null)
                     {
-                        db_bobina = TecnoMetal.PromptBobina(esp);
+                        db_bobina = TecnoMetal.PromptBobina(db_chapa);
                     }
                     
                     if (db_bobina != null)
@@ -339,32 +353,56 @@ namespace Ferramentas_DLM
             switch (this.tipo)
             {
                 case Tipo_Bloco.Chapa:
-                    MenuMarcas.TecnoMetal.InserirChapa(nomeMarca, nomePos, this.db_material.valor, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria.valor);
+
+                    var sel = Conexoes.Utilz.SelecionaCombo(new List<string> { "Sem Dobras", "Com Dobras" }, null);
+                    if(sel == "Com Dobras")
+                    {
+                        this.mercadoria.Text = "PERFIL DOBRADO";
+                        MenuMarcas.TecnoMetal.InserirArremate(nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, false, this.db_mercadoria);
+                    }
+                    else if(sel == "Sem Dobras")
+                    {
+                        MenuMarcas.TecnoMetal.InserirChapa(nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
+                    }
+                  
                     break;
                 case Tipo_Bloco.Perfil:
-                    MenuMarcas.TecnoMetal.InserirPerfil(nomeMarca, nomePos, this.db_material.valor, this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil, this.db_mercadoria.valor);
+                    MenuMarcas.TecnoMetal.InserirPerfil(nomeMarca, nomePos, this.db_material, this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil, this.db_mercadoria);
                     break;
                 case Tipo_Bloco.Elemento_M2:
-                    MenuMarcas.TecnoMetal.InserirElementoM2(nomeMarca, nomePos,this.db_material.valor,this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil,this.db_mercadoria.valor);
+                    MenuMarcas.TecnoMetal.InserirElementoM2(nomeMarca, nomePos,this.db_material,this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil,this.db_mercadoria);
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    MenuMarcas.TecnoMetal.InserirElementoUnitario(nomeMarca, nomePos, qtd_double, this.db_mercadoria.valor, MenuMarcas.db_unitario);
+                    MenuMarcas.TecnoMetal.InserirElementoUnitario(nomeMarca, nomePos, qtd_double, this.db_mercadoria, MenuMarcas.db_unitario);
                     break;
                 case Tipo_Bloco.Arremate:
-                    MenuMarcas.TecnoMetal.InserirArremate(nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina,true, this.db_mercadoria.valor);
+                    var sel2 = Conexoes.Utilz.SelecionaCombo(new List<string> { "Corte", "Vista" }, null);
+                    if (sel2 == "Corte")
+                    {
+                        MenuMarcas.TecnoMetal.InserirArremate(nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, true, this.db_mercadoria);
+                    }
+                    else if (sel2 == "Vista")
+                    {
+                        MenuMarcas.TecnoMetal.InserirChapa(nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
+                    }
                     break;
                 case Tipo_Bloco._:
                     break;
             }
 
-            this.Update(MenuMarcas.TecnoMetal);
+            if(this.Sufix_Count ==1)
+            {
+                FLayer.Desligar(Constantes.LayersMarcasDesligar);
+            }
+
+            this.Update(Comandos.TecnoMetal);
             this.Visibility = Visibility.Visible;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //e.Cancel = true;
-            //this.Visibility = Visibility.Collapsed;
+            e.Cancel = true;
+            this.Visibility = Visibility.Collapsed;
         }
         private void nova_marca_Click(object sender, RoutedEventArgs e)
         {
@@ -392,6 +430,18 @@ namespace Ferramentas_DLM
 
 
             this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0');
+            this.tratamento.Visibility = Visibility.Visible;
+            this.material.Visibility = Visibility.Visible;
+
+            if((bool)m_composta.IsChecked)
+            {
+                this.prefix.Text = "M";
+            }
+            else
+            {
+                this.prefix.Text = "P";
+            }
+
 
             switch (tipo)
             {
@@ -400,12 +450,16 @@ namespace Ferramentas_DLM
                     {
                         perfil.Content = db_chapa.ToString();
                     }
+                    mercadoria.Text = "CHAPA";
+                    material.Text = "CIVIL 350";
+                    this.tratamento.Visibility = Visibility.Visible;
                     break;
                 case Tipo_Bloco.Perfil:
                     if (db_perfil != null)
                     {
                         perfil.Content = db_perfil.ToString();
                     }
+                    material.Text = "CIVIL 350";
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     if (db_perfil_m2 != null)
@@ -413,6 +467,8 @@ namespace Ferramentas_DLM
                         perfil.Content = db_perfil_m2.ToString();
 
                     }
+                    mercadoria.Text = "CHAPA DE PISO";
+                    material.Text = "A572";
 
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
@@ -420,6 +476,10 @@ namespace Ferramentas_DLM
                     {
                         perfil.Content = db_unitario.ToString();
                     }
+                    mercadoria.Text = "ALMOX";
+                    material.Text = "A325";
+                    this.material.Visibility = Visibility.Collapsed;
+                    this.tratamento.Visibility = Visibility.Collapsed;
                     this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0') + "_A";
                     break;
                 case Tipo_Bloco.Arremate:
@@ -427,6 +487,9 @@ namespace Ferramentas_DLM
                     {
                         perfil.Content = db_bobina.ToString();
                     }
+                    mercadoria.Text = "ARREMATE";
+                    material.Text = "PP ZINC";
+                    this.tratamento.Visibility = Visibility.Collapsed;
                     break;
                 case Tipo_Bloco._:
                     break;
@@ -454,63 +517,147 @@ namespace Ferramentas_DLM
 
         private void desliga_layer(object sender, RoutedEventArgs e)
         {
-           
-            Utilidades.DesligarLayers(Constantes.LayersMarcasDesligar);
-            this.Close();
+
+            FLayer.Desligar(Constantes.LayersMarcasDesligar);
+            this.Visibility = Visibility.Collapsed;
         }
 
         private void liga_layer(object sender, RoutedEventArgs e)
         {
-            Utilidades.LigarLayers(Constantes.LayersMarcasDesligar);
-            this.Close();
+            FLayer.Ligar(Constantes.LayersMarcasDesligar);
+            this.Visibility = Visibility.Collapsed;
         }
 
         private void insere_tabela(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Visibility = Visibility.Collapsed;
             MenuMarcas.TecnoMetal.InserirTabela();
         }
 
         private void insere_tabela_auto(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             MenuMarcas.TecnoMetal.InserirTabelaAuto(ref erros);
         }
 
         private void gerar_dbf(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             Comandos.gerardbf();
         }
 
         private void gerar_dbf_3d(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             Comandos.gerardbf3d();
         }
 
         private void mercadorias(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             Comandos.mercadorias();
         }
 
         private void materiais(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             Comandos.materiais();
         }
 
         private void tratamentos(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             Comandos.tratamentos();
+        }
+
+        private void quantificar(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.quantificar();
+        }
+
+        private void purlin(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.purlin();
+        }
+
+        private void cotar(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.Cotar();
+        }
+
+        private void limpar_cotas(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.LimparCotas();
+        }
+
+        private void boneco(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.boneco();
+        }
+
+        private void passarelas(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.passarela();
+        }
+
+        private void passarelas_apaga(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.apagapassarela();
+        }
+
+        private void linha_de_vida(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.linhadevida();
+        }
+
+        private void linha_de_vida_apaga(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.apagalinhadevida();
+        }
+
+        private void linha_de_vida_alinha(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.alinharlinhadevida();
+        }
+
+        private void preenche_selo(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.selopreenche();
+        }
+
+        private void limpa_selo(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.selolimpar();
+        }
+
+        private void criar_marcas_cam(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.criarmarcasdecam();
+        }
+
+        private void rodar_macro(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.rodarmacros();
         }
     }
 }

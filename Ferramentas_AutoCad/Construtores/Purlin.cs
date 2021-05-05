@@ -260,7 +260,7 @@ namespace Ferramentas_DLM
                     int c = 0;
 
 
-                    Utilidades.SetLayer(LayerBlocos, true, true);
+                    FLayer.Set(LayerBlocos, true, true);
 
                     if (MapearTercas)
                     {

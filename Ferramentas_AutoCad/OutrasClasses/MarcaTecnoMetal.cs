@@ -9,6 +9,7 @@ namespace Ferramentas_DLM
 {
     public class MarcaTecnoMetal
     {
+        public MarcaTecnoMetal Pai { get; set; }
         public override string ToString()
         {
             return $"[{Marca}{(Tipo_Marca == Tipo_Marca.Posicao? $" - P = {Posicao}": $" - {Tipo_Bloco}")} ] - QTD.: {Quantidade}";
@@ -26,8 +27,9 @@ namespace Ferramentas_DLM
         {
             get
             {
-                if(Tipo_Bloco == Tipo_Bloco.DUMMY | Tipo_Bloco == Tipo_Bloco.Elemento_M2 | Tipo_Bloco == Tipo_Bloco.Perfil)
+                if(Tipo_Bloco == Tipo_Bloco.DUMMY_Perfil | Tipo_Bloco == Tipo_Bloco.Elemento_M2 | Tipo_Bloco == Tipo_Bloco.Perfil)
                 {
+                    
                     return true;
                 }
                 else
@@ -64,6 +66,13 @@ namespace Ferramentas_DLM
                 }
                 else if(NomeBloco == "DUMMY")
                 {
+                    if(Pai!=null)
+                    {
+                        if(Pai.Tipo_Bloco ==  Tipo_Bloco.Elemento_M2 | Pai.Tipo_Bloco ==  Tipo_Bloco.Perfil)
+                        {
+                            return Tipo_Bloco.DUMMY_Perfil;
+                        }
+                    }
                     return Tipo_Bloco.DUMMY;
                 }
 

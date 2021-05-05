@@ -229,6 +229,48 @@ namespace Ferramentas_DLM
             return new Point3d(x0, y0, 0);
 
         }
+
+
+        public static Point3d Pecas(List<PCQuantificar> pcs, Point3d p0, double mover_direita = 0)
+        {
+            double x0 = 0;
+            double y0 = 0;
+            if (pcs.Count > 0)
+            {
+                double escala = acDoc.Database.Dimscale;
+                bool cancelado = false;
+
+                if (mover_direita != 0)
+                {
+                    p0 = new Point3d(p0.X + (mover_direita * escala), p0.Y, p0.Z);
+                }
+
+                if (!cancelado)
+                {
+                    x0 = p0.X;
+                    y0 = p0.Y;
+                    Hashtable ht = new Hashtable();
+                    ht.Add("TITULO", "LISTA DE PEÇAS");
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Almox_Titulo, p0, escala, 0, ht);
+                    p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
+                    int seq = 1;
+                    foreach (var p in pcs)
+                    {
+                        Hashtable hp = new Hashtable();
+                        hp.Add("QTD", p.Quantidade);
+                        hp.Add("DESC", p.Descricao);
+                        hp.Add("UNID", "PC");
+                        hp.Add("SAP", p.Nome);
+
+                        Blocos.Inserir(acDoc, Constantes.Tabela_Almox, p0, escala, 0, hp);
+                        p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
+                        seq++;
+                    }
+                }
+            }
+            return new Point3d(x0, y0, 0);
+
+        }
         public static Point3d TecnoMetal(List<DB.Linha> pecas_tecnometal, Point3d p0, double mover_direita = 0, double escala = 1)
         {
             double x0 = 0;

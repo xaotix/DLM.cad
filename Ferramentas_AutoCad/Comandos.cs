@@ -21,8 +21,43 @@ namespace Ferramentas_DLM
 {
     public class Comandos
     {
+        private static Cotagem _Cotas { get; set; }
         public static Monitoramento monitoramento { get; set; }
-        public static Cotagem Cotas { get; set; } = new Cotagem();
+        private static MenuMarcas _MenuMarcas { get; set; }
+        public static MenuMarcas MenuMarcas
+        {
+            get
+            {
+                if(_MenuMarcas==null)
+                {
+                    _MenuMarcas = new MenuMarcas(TecnoMetal);
+                }
+                return _MenuMarcas;
+            }
+        }
+        public static Cotagem Cotas
+        {
+            get
+            {
+                if(_Cotas ==null)
+                {
+                    _Cotas = new Cotagem();
+                }
+                return _Cotas;
+            }
+        }
+        private static TecnoMetal _TecnMetal { get; set; }
+        public static TecnoMetal TecnoMetal
+        {
+            get
+            {
+                if (_TecnMetal == null)
+                {
+                    _TecnMetal = new TecnoMetal();
+                }
+                return _TecnMetal;
+            }
+        }
 
         [CommandMethod("listarcomandos")]
         public static void listarcomandos()
@@ -47,7 +82,6 @@ namespace Ferramentas_DLM
         [CommandMethod("cotar")]
         public static void Cotar()
         {
-            Cotas = new Cotagem();
             Cotas.Cotar();
 
         }
@@ -105,7 +139,7 @@ namespace Ferramentas_DLM
             CADPurlin p = new CADPurlin();
 
             var estilos = p.GetMLStyles();
-            var layers = p.GetLayers();
+            var layers = FLayer.Get();
             TercasMenu mm = new TercasMenu();
             mm.tirantes_mlstyle.Items.AddRange(estilos.ToArray());
             mm.correntes_mlstyle.Items.AddRange(estilos.ToArray());
@@ -457,7 +491,6 @@ namespace Ferramentas_DLM
         {
 
             var arqs = Conexoes.Utilz.AbrirArquivos("Selecione os arquivos", new List<string> { "CAM" });
-            Cotas = new Cotagem();
             var offset = Cotas.Getescala() * 70;
             if (arqs.Count > 0)
             {
@@ -507,29 +540,34 @@ namespace Ferramentas_DLM
 
 
         [CommandMethod("teste")]
-        public void teste()
+        public static void teste()
         {
             TecnoMetal pp = new TecnoMetal();
             pp.GetMarcas();
         }
 
         [CommandMethod("marcar")]
-        public void marcar()
+        public static void marcar()
         {
-            TecnoMetal pp = new TecnoMetal();
-            pp.Marcar();
+            MenuMarcas.Iniciar();
+        }
+
+        [CommandMethod("quantificar")]
+        public static void quantificar()
+        {
+            TecnoMetal.Quantificar();
         }
 
         [CommandMethod("offtec")]
-        public void offtec()
+        public static void offtec()
         {
-            Utilidades.DesligarLayers(Constantes.LayersMarcasDesligar);
+            FLayer.Desligar(Constantes.LayersMarcasDesligar);
         }
 
 
 
         [CommandMethod("mercadorias")]
-        public static void mercadorias()
+        public  static void mercadorias()
         {
             TecnoMetal p = new TecnoMetal();
             p.Mercadorias();

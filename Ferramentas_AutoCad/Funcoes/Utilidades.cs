@@ -147,7 +147,7 @@ namespace Ferramentas_DLM
             }
             }
         }
-        public static List<Layout> ListarLayouts()
+        public static List<Layout> GetLayouts()
         {
             List<Layout> retorno = new List<Layout>();
             using (DocumentLock docLock = acDoc.LockDocument())
@@ -179,6 +179,8 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
+ 
+
         public static List<Viewport> GetViewports(string layer = "")
         {
             List<Viewport> retorno = new List<Viewport>();
@@ -706,180 +708,8 @@ namespace Ferramentas_DLM
 
 
         }
-        public static void LigarLayers(List<string> layers)
-        {
-            using (DocumentLock docLock = acDoc.LockDocument())
-            {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                {
 
-                    LayerTable acLyrTbl;
-                    acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
-
-
-                    foreach (var layer in layers)
-                    {
-                        if (acLyrTbl.Has(layer))
-                        {
-                            LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
-
-                            acLyrTblRec.IsOff = false;
-                            acLyrTblRec.IsFrozen = false;
-                            acLyrTblRec.IsHidden = false;
-                            acLyrTblRec.IsLocked = false;
-                        }
-                    }
-
-
-                    acTrans.Commit();
-                }
-            }
-        }
-        public static void DesligarLayers(List<string> layers, bool congelar = true)
-        {
-            using (DocumentLock docLock = acDoc.LockDocument())
-            {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                {
-                    LayerTable acLyrTbl;
-                    acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForWrite) as LayerTable;
-
-                    foreach (var layer in layers)
-                    {
-                        if (acLyrTbl.Has(layer))
-                        {
-                            LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
-
-                            // Turn the layer off
-                            acLyrTblRec.IsOff = true;
-                            acLyrTblRec.IsFrozen = congelar;
-                        }
-                    }
-                    acTrans.Commit();
-                }
-            }
-        }
-        public static string GetLayerAtual()
-        {
-            return (string)Autodesk.AutoCAD.ApplicationServices.Application.GetSystemVariable("clayer");
-        }
-        public static void SetLayer(string layer, bool on =true ,bool criar_senao_existe = false)
-        {
-            // Get the current document and database
-
-            // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                // Open the Layer table for read
-                LayerTable acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,OpenMode.ForRead) as LayerTable;
-
-
-                if (acLyrTbl.Has(layer) == false && criar_senao_existe)
-                {
-                    using (LayerTableRecord acLyrTblRec = new LayerTableRecord())
-                    {
-                        // Assign the layer a name
-                        acLyrTblRec.Name = layer;
-
-                        // Upgrade the Layer table for write
-                        acLyrTbl.UpgradeOpen();
-
-                        // Append the new layer to the Layer table and the transaction
-                        acLyrTbl.Add(acLyrTblRec);
-                        acTrans.AddNewlyCreatedDBObject(acLyrTblRec, true);
-
-                        // Turn the layer off
-                        acLyrTblRec.IsOff = !on;
-                        acDoc.Editor.WriteMessage("\nLayer criada e setada: " + layer);
-                    }
-                }
-                else
-                {
-                    LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer],OpenMode.ForWrite) as LayerTableRecord;
-
-                    // Turn the layer off
-                    acLyrTblRec.IsOff = !on;
-                }
-
-                // Open the Block table for read
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
-
-                // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
-
-                acCurDb.Clayer = acLyrTbl[layer];
-                // Save the changes and dispose of the transaction
-                acDoc.Editor.WriteMessage("\nLayer setada: " + layer);
-
-                acTrans.Commit();
-            }
-        }
-        public static void CriarLayer(string nome, System.Drawing.Color cor, bool setar = true)
-        {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                // Get the layer table from the drawing
-                LayerTable lt = (LayerTable)acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead);
-
-                try
-                {
-                    // Validate the provided symbol table name
-                    SymbolUtilityServices.ValidateSymbolName(
-                      nome,
-                      false
-                    );
-                    // Only set the layer name if it isn't in use
-                    if (lt.Has(nome))
-                    {
-                        editor.WriteMessage(
-                          "\nA Já existe uma layer com esse nome: " + nome
-
-                        );
-                        if (setar)
-                        {
-                            SetLayer(nome);
-                        }
-                        return;
-                    }
-
-
-                }
-                catch
-                {
-                    // An exception has been thrown, indicating the
-                    // name is invalid
-                    editor.WriteMessage(
-                      "\nNome inválido de layer: " + nome
-                    );
-                    return;
-                }
-                // Create our new layer table record...
-                LayerTableRecord ltr = new LayerTableRecord();
-                // ... and set its properties
-                ltr.Name = nome;
-                ltr.Color =
-                 Autodesk.AutoCAD.Colors.Color.FromColor(cor);
-                // Add the new layer to the layer table
-                lt.UpgradeOpen();
-                ObjectId ltId = lt.Add(ltr);
-                acTrans.AddNewlyCreatedDBObject(ltr, true);
-                // Set the layer to be current for this drawing
-                acCurDb.Clayer = ltId;
-                // Commit the transaction
-                acTrans.Commit();
-                // Report what we've done
-                editor.WriteMessage(
-                  "\nLayer Criada \"{0}\" ",
-                  nome
-                );
-                if (setar)
-                {
-                    SetLayer(nome);
-                }
-            }
-        }
+        
 
         public static List<Line> LinhasHorizontais(List<Line> LS, double comp_min = 100)
         {

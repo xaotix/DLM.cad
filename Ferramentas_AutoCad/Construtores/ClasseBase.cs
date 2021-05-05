@@ -29,8 +29,8 @@ namespace Ferramentas_DLM
         {
 
             IrLayout();
-            Utilidades.CriarLayer(layer, System.Drawing.Color.Gray, false);
-            Utilidades.SetLayer("0");
+            FLayer.Criar(layer, System.Drawing.Color.Gray);
+            FLayer.Set("0");
             var view = Utilidades.GetViewports(layer);
             editor.Command("mview", "lock", block ? "ON" : "OFF", "all", "");
             editor.Command("layer", block ? "off":"on", layer, "");
@@ -40,7 +40,7 @@ namespace Ferramentas_DLM
         }
         public bool E_Tecnometal3D(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().EndsWith(@".S&G\"))
+            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith(@".S&G"))
             {
                 if (mensagem)
                 {
@@ -57,7 +57,7 @@ namespace Ferramentas_DLM
         }
         public bool E_Tecnometal(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().EndsWith(@".TEC\"))
+            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith(".TEC"))
             {
                 if (mensagem)
                 {
@@ -89,7 +89,7 @@ namespace Ferramentas_DLM
         }
         public void IrLayout()
         {
-            var lista = Utilidades.ListarLayouts().Select(x=>x.LayoutName).ToList();
+            var lista = Utilidades.GetLayouts().Select(x=>x.LayoutName).ToList();
             if(lista.Count>0)
             {
                 using (acDoc.LockDocument())
@@ -162,23 +162,7 @@ namespace Ferramentas_DLM
             }
             return estilos;
         }
-        public List<string> GetLayers()
-        {
-            List<string> lstlay = new List<string>();
-
-            LayerTableRecord layer;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                LayerTable lt = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
-                foreach (ObjectId layerId in lt)
-                {
-                    layer = acTrans.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
-                    lstlay.Add(layer.Name);
-                }
-
-            }
-            return lstlay;
-        }
+       
         public void SetUCSParaWorld()
         {
             acDoc.Editor.CurrentUserCoordinateSystem = Matrix3d.Identity;
@@ -722,6 +706,15 @@ namespace Ferramentas_DLM
         public List<Polyline> Getpolylinhas()
         {
             return selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).ToList();
+        }
+
+        public List<MText> GetMtexts()
+        {
+            return selecoes.FindAll(x => x is MText).Select(x => x as MText).ToList();
+        }
+        public List<DBText> GetTexts()
+        {
+            return selecoes.FindAll(x => x is Autodesk.AutoCAD.DatabaseServices.DBText).Select(x => x as DBText).ToList();
         }
 
         public List<BlockReference> Getblocos()
