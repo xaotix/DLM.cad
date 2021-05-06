@@ -67,7 +67,7 @@ namespace Ferramentas_DLM.Menus
                     try
                     {
                         this.lista.ItemsSource = null;
-                        var nv = sel.Agrupar(col);
+                        var nv = sel.Agrupar(new List<string> { col });
                         this.filtro.Remove(sel);
                         this.filtro.AddRange(nv);
                         this.filtro = this.filtro.OrderBy(x => x.Nome).ToList();
@@ -169,6 +169,91 @@ namespace Ferramentas_DLM.Menus
               
             }
 
+        }
+
+        private void seleciona_tudo(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = null;
+            if (sender is TextBox)
+            {
+                textBox = ((TextBox)sender);
+
+            }
+
+
+            if (textBox != null)
+            {
+                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.SelectAll();
+                }));
+            }
+        }
+
+        private void editar_filtro_numero(object sender, RoutedEventArgs e)
+        {
+            PCQuantificar sel = ((FrameworkElement)sender).DataContext as PCQuantificar;
+            if (sel == null)
+            {
+                return;
+            }
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0)
+            {
+                var qtd = Conexoes.Utilz.Prompt(sel.Numero, 4);
+                if (qtd != null && qtd != "")
+                {
+                    sel.Numero = qtd;
+                    Update();
+                }
+                return;
+            }
+
+
+            if (sel.GetAtributos().Count > 0)
+            {
+                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                if (col != null)
+                {
+                    lista.ItemsSource = null;
+                    sel.SetNumeroPorAtributo(col);
+
+                    Update();
+                }
+
+            }
+        }
+
+        private void editar_filtro_Destino(object sender, RoutedEventArgs e)
+        {
+            PCQuantificar sel = ((FrameworkElement)sender).DataContext as PCQuantificar;
+            if (sel == null)
+            {
+                return;
+            }
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0)
+            {
+                var qtd = Conexoes.Utilz.Prompt(sel.Destino, 4);
+                if (qtd != null && qtd != "")
+                {
+                    sel.Destino = qtd;
+                    Update();
+                }
+                return;
+            }
+
+
+            if (sel.GetAtributos().Count > 0)
+            {
+                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                if (col != null)
+                {
+                    lista.ItemsSource = null;
+                    sel.SetDestinoPorAtributo(col);
+
+                    Update();
+                }
+
+            }
         }
     }
 }

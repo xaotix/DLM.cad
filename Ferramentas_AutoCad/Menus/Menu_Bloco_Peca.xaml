@@ -1,17 +1,12 @@
-﻿<Window x:Class="Ferramentas_DLM.Menus.Quantificar_Menu_Configuracao"
+﻿<Window x:Class="Ferramentas_DLM.Menus.Menu_Bloco_Peca"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Ferramentas_DLM.Menus"
-        Title="Editar tabela"
              mc:Ignorable="d" 
-        
-        Width="750"
-        Height="450"
-        WindowStartupLocation="CenterScreen"
-             
-        >
+            Closing="Window_Closing"
+             Width="475" Height="325">
     <Window.Resources>
         <Style TargetType="RadioButton">
             <Setter Property="Margin" Value="2"></Setter>
@@ -172,83 +167,78 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="297*"/>
-            <ColumnDefinition Width="295*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <DataGrid Name="lista" Margin="2" AutoGenerateColumns="False" HeadersVisibility="All" Grid.ColumnSpan="2">
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Width="100">
-                    <DataGridTemplateColumn.Header>
-                        <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Nome"></Label>
-                        </Grid>
-                    </DataGridTemplateColumn.Header>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button IsEnabled="{Binding isbloco}" Content="{Binding Nome}" BorderThickness="0" ToolTip="Trocar Atributo..." Height="19" Click="set_nome" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="60">
-                    <DataGridTemplateColumn.Header>
-                        <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Qtd."></Label>
-                        </Grid>
-                    </DataGridTemplateColumn.Header>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button  Content="{Binding Quantidade}" BorderThickness="0" ToolTip="Trocar Atributo..." Height="19" Click="editar_filtro_quantidade" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="60">
-                    <DataGridTemplateColumn.Header>
-                        <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="N°."></Label>
-                        </Grid>
-                    </DataGridTemplateColumn.Header>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button  Content="{Binding Numero}" BorderThickness="0" ToolTip="Trocar Atributo..." Height="19" Click="editar_filtro_numero" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="60">
-                    <DataGridTemplateColumn.Header>
-                        <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Dest."></Label>
-                        </Grid>
-                    </DataGridTemplateColumn.Header>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button  Content="{Binding Destino}" BorderThickness="0" ToolTip="Trocar Atributo..." Height="19" Click="editar_filtro_Destino" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="*">
-                    <DataGridTemplateColumn.Header>
-                        <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Descr."></Label>
-                        </Grid>
-                    </DataGridTemplateColumn.Header>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding Descricao}" BorderThickness="0" ToolTip="Trocar Atributo..." Height="19" Click="editar_descricao" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Binding="{Binding Tipo}" Header="Tipo" IsReadOnly="True"></DataGridTextColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Margin="3" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <ComboBox Name="lista_blocos" SelectionChanged="set_imagem"></ComboBox>
+                <Image Name="imagem" Grid.Row="1" Margin="5"/>
+            </Grid>
 
-        <WrapPanel Margin="0,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1">
-            <Button Margin="2" Content="Cancelar" IsCancel="True" Click="Button_Click"></Button>
-            <Button Margin="2" Content="Ok" IsDefault="True" Click="Button_Click_1"></Button>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>   
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Tipo de Peça:"></Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" Name="tipo_de_peca" SelectionChanged="tipo_de_peca_SelectionChanged"></ComboBox>
+                <Button Content="[...]" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Name="peca_selecionar" Click="peca_selecionar_Click"></Button>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Código:"></Label>
+                <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="codigo" MaxLength="15"></TextBox>
+                
+                <Label Grid.Row="2" Grid.Column="2" Content="Destino:"></Label>
+                <TextBox Text="" Grid.Row="2" Grid.Column="3" Name="destino_txt" MaxLength="15"></TextBox>
+
+                <Label Grid.Row="3" Grid.Column="0" Content="Qtd.:"></Label>
+                <TextBox Text="{Binding qtd}" Grid.Row="3" Grid.Column="1" Name="quantidade" MaxLength="4"></TextBox>
+
+                <Label Grid.Row="3" Grid.Column="2" Content="Comp.:"></Label>
+                <TextBox Text="{Binding comp}" Grid.Row="3" Grid.Column="3" Name="comprimento" MaxLength="5"></TextBox>
+
+                <Label Grid.Row="4" Grid.Column="0" Content="Desc.:"></Label>
+                <TextBox Text="" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="descricao_txt" MaxLength="4"></TextBox>
+
+
+                <Label Grid.Row="5" Grid.Column="0" Content="Ficha:"></Label>
+                <TextBox Text="FICHA 01" Grid.Row="5" Grid.Column="1" Name="ficha" MaxLength="4" CharacterCasing="Upper"></TextBox>
+
+                <Label Grid.Row="5" Grid.Column="2" Content="Família:"></Label>
+                <TextBox Text="PEÇA" Grid.Row="5" Grid.Column="3" Name="familia" MaxLength="4" CharacterCasing="Upper"></TextBox>
+
+                <Label Grid.Row="7" Grid.Column="0" Content="N°:"></Label>
+                <TextBox Text="01" Grid.Row="7" Grid.Column="1" Name="numero" MaxLength="3" CharacterCasing="Upper"></TextBox>
+
+                <Label Grid.Row="7" Grid.Column="2" Content="Escala:"></Label>
+                <TextBox  Text="{Binding escala}" Grid.Row="7" Grid.Column="3" Name="escala_txt" MaxLength="3" CharacterCasing="Upper"></TextBox>
+            </Grid>
+        </Grid>
+        <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="10">
+            <Button Content="Inserir" Click="Button_Click" FontSize="16" FontWeight="Bold"></Button>
         </WrapPanel>
     </Grid>
 </Window>

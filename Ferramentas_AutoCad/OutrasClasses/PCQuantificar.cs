@@ -42,8 +42,10 @@ namespace Ferramentas_DLM
         public string Nome { get; set; } = "";
         public double Quantidade { get; set; } = 1;
         public string Descricao { get; set; } = "";
+        public string Numero { get; set; } = "";
+        public string Destino { get; set; } = "";
 
-        public List<PCQuantificar> Agrupar( string atributoNome, List<DB.Linha> blocos = null)
+        public List<PCQuantificar> Agrupar( List<string>  atributoNome, List<DB.Linha> blocos = null)
         {
 
             if(blocos==null)
@@ -52,13 +54,13 @@ namespace Ferramentas_DLM
             }
             List<PCQuantificar> retorno = new List<PCQuantificar>();
 
-           if(atributoNome != "")
+           if(atributoNome.Count>0)
             {
-                var ss = blocos.GroupBy(x => x.Get(atributoNome).ToString()).ToList();
+                var ss = blocos.GroupBy(x => string.Join("|",(atributoNome.Select(y=> x.Get(y).valor).Distinct().ToList()))).ToList();
 
                 foreach (var s in ss.ToList())
                 {
-                    PCQuantificar nn = new PCQuantificar(Tipo_Objeto.Bloco, s.Key,"", s.ToList());
+                    PCQuantificar nn = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.Split('|')[0],"", s.ToList());
                     retorno.Add(nn);
                   
                     
@@ -81,6 +83,22 @@ namespace Ferramentas_DLM
             if(s!="")
             {
                 this.Descricao = s;
+            }
+        }
+        public void SetNumeroPorAtributo(string tag)
+        {
+            var s = this.Atributos.Get(tag).ToString();
+            if (s != "")
+            {
+                this.Numero = s;
+            }
+        }
+        public void SetDestinoPorAtributo(string tag)
+        {
+            var s = this.Atributos.Get(tag).ToString();
+            if (s != "")
+            {
+                this.Destino = s;
             }
         }
         public void SetQtdPorAtributo(string tag_qtd)

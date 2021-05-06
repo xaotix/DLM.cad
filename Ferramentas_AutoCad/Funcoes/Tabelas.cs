@@ -251,18 +251,19 @@ namespace Ferramentas_DLM
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Almox_Titulo, p0, escala, 0, ht);
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Titulo, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                     int seq = 1;
                     foreach (var p in pcs)
                     {
                         Hashtable hp = new Hashtable();
+                        hp.Add("N°", p.Numero);
+                        hp.Add("MARCA", p.Nome);
+                        hp.Add("DESCRICAO", p.Descricao);
                         hp.Add("QTD", p.Quantidade);
-                        hp.Add("DESC", p.Descricao);
-                        hp.Add("UNID", "PC");
-                        hp.Add("SAP", p.Nome);
+                        hp.Add("DESTINO", p.Destino);
 
-                        Blocos.Inserir(acDoc, Constantes.Tabela_Almox, p0, escala, 0, hp);
+                        Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Linha, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
                     }

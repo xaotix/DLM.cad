@@ -27,12 +27,46 @@ namespace Ferramentas_DLM
                     List<PCQuantificar> pecas = new List<PCQuantificar>();
                     if(opt.Blocos)
                     {
-                        foreach(var s in this.Getblocos().FindAll(x=>!x.Name.Contains("*")).GroupBy(x=>x.Name.ToUpper().Replace("SUPORTE ","")))
+                        foreach(var s in this.Getblocos().FindAll(x=>!
+                        x.Name.Contains("*"))
+                        .GroupBy(x=>x.Name.ToUpper()
+                        .Replace("SUPORTE_","")
+                        .Replace("SUPORTE ","")
+                        ))
                         {
                             var att = Atributos.GetLinha(s.First());
 
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco,s.Key, "",s.ToList().Select(x=> Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
+
+                            if(npc.Nome.StartsWith("PECA_INDICACAO"))
+                            {
+                                var blcs = npc.Agrupar(new List<string> { "CODIGO", "Nº" });
+                                foreach(var bl in blcs)
+                                {
+                                    bl.SetDescPorAtributo("DESC");
+                                    bl.SetNumeroPorAtributo("Nº");
+                                    bl.SetDestinoPorAtributo("DESTINO");
+                                    bl.SetQtdPorAtributo("QTD");
+                                }
+
+                                pecas.AddRange(blcs);
+                                    /*
+                                     *             Hashtable att = new Hashtable();
+            att.Add("Nº", this.numero.Text);
+            att.Add("FAMILIA", this.familia.Text);
+            att.Add("TIPO", this.peca_selecionar.Content);
+            att.Add("COMP", comp.ToString().Replace(",",""));
+            att.Add("CODIGO", codigo);
+            att.Add("ID", id);
+            att.Add("DESC", descricao);
+            att.Add("DESTINO", tipo_selecionado);
+                                     */
+                            }
+                            else
+                            {
                             pecas.Add(npc);
+                            }
+
 
                         }
                     }
@@ -201,8 +235,17 @@ namespace Ferramentas_DLM
             }
 
 
+            if(cfg.DXFs_de_CAMs)
+            {
+                GerarDXFs();
+            }
+
+
             Conexoes.Wait w = new Conexoes.Wait(Arquivos.Count);
             w.Show();
+
+
+
 
             foreach (string drawing in Arquivos)
             {
@@ -347,6 +390,36 @@ namespace Ferramentas_DLM
             return _pedido;
         }
 
+
+        public void GerarDXFs(List<DLMCam.ReadCam> cams = null)
+        {
+            if (!E_Tecnometal()) { return; }
+
+
+            if(cams==null)
+            {
+                cams = GetCams();
+               cams = Conexoes.Utilz.SelecionarObjetos(new List<DLMCam.ReadCam>(), cams);
+            }
+
+            if(cams.Count>0)
+            {
+                var dxfs = cams.Select(x => x.Pasta + x.Nome + ".dxf").ToList();
+                Conexoes.Wait w = new Conexoes.Wait(dxfs.Count, "Apagando dxfs...");
+                w.Show();
+
+                foreach(var s in dxfs)
+                {
+                    Conexoes.Utilz.Apagar(s);
+                    w.somaProgresso();
+                }
+                w.Close();
+
+
+                Conexoes.Utilz.GerarDXF(cams.Select(x => x.Arquivo).ToList());
+
+            }
+        }
 
         public void InserirTabela()
         {

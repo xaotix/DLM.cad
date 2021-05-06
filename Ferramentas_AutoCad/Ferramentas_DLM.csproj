@@ -152,8 +152,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Funcoes\FLayer.cs" />
+    <Compile Include="Funcoes\Imagem.cs" />
     <Compile Include="Menus\MenuMarcas.xaml.cs">
       <DependentUpon>MenuMarcas.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Menus\Menu_Bloco_Peca.xaml.cs">
+      <DependentUpon>Menu_Bloco_Peca.xaml</DependentUpon>
     </Compile>
     <Compile Include="Menus\Quantificar_Menu_Configuracao.xaml.cs">
       <DependentUpon>Quantificar_Menu_Configuracao.xaml</DependentUpon>
@@ -230,6 +234,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Menus\MenuMarcas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Menus\Menu_Bloco_Peca.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

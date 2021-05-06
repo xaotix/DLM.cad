@@ -21,6 +21,7 @@ namespace Ferramentas_DLM
 {
     public class Comandos
     {
+        private static Menus.Menu_Bloco_Peca menu_bloco { get; set; }
         private static Cotagem _Cotas { get; set; }
         public static Monitoramento monitoramento { get; set; }
         private static MenuMarcas _MenuMarcas { get; set; }
@@ -552,10 +553,30 @@ namespace Ferramentas_DLM
             MenuMarcas.Iniciar();
         }
 
+        [CommandMethod("medabil")]
+        public static void medabil()
+        {
+            MenuMarcas.Iniciar();
+        }
+
         [CommandMethod("quantificar")]
         public static void quantificar()
         {
             TecnoMetal.Quantificar();
+        }
+
+        [CommandMethod("marcarmontagem")]
+        public static void marcarmontagem()
+        {
+         if(menu_bloco==null)
+            {
+                menu_bloco = new Menus.Menu_Bloco_Peca(TecnoMetal);
+                menu_bloco.Show();
+            }
+         else
+            {
+                menu_bloco.Visibility = System.Windows.Visibility.Visible;
+            }
         }
 
         [CommandMethod("offtec")]
@@ -593,7 +614,11 @@ namespace Ferramentas_DLM
         ////    p.Mercadorias3d();
         ////}
 
-
+        [CommandMethod("gerardxf")]
+        public static void gerardxf()
+        {
+            TecnoMetal.GerarDXFs();
+        }
 
         [CommandMethod("testeinterseccao")]
         public static void testeinterseccao()
@@ -601,6 +626,12 @@ namespace Ferramentas_DLM
             Utilidades.InterSectionPoint();
         }
 
+
+        [CommandMethod("testeimagem")]
+        public static void testeimagem()
+        {
+   
+        }
 
     }
 }

@@ -252,7 +252,7 @@ namespace Ferramentas_DLM
                     $"{ex.StackTrace}");
                 return;
             }
-
+            FLayer.Desligar(new List<string> { "Defpoints" }, false);
         }
         public static void MarcaPerfil(Point3d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
         {

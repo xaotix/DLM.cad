@@ -276,6 +276,7 @@
                     </GroupBox>
                     <GroupBox Header="Tabelas">
                         <StackPanel>
+                            <Button Content="Indicar Peças Montagem"  Click="marcar_montagem"></Button>
                             <Button Content="Quantificar Montagem"  Click="quantificar"></Button>
                             <Button Content="Inserir Tabela TecnoMetal"  Click="insere_tabela"></Button>
                             <Button Content="Inserir Tabela TecnoMetal (Auto)"  Click="insere_tabela_auto"></Button>
@@ -283,8 +284,9 @@
                     </GroupBox>
                     <GroupBox Header="Liberação">
                         <StackPanel>
-                            <Button Content="Rodar Macro"  Click="rodar_macro"></Button>
+                            <Button Content="Rodar Macro de Geração"  Click="rodar_macro"></Button>
                             <Button Content="Gerar DBF"  Click="gerar_dbf"></Button>
+                            <Button Content="Gerar DXFs de CAMs" Click="gerar_dxf_cams"></Button>
                             <Separator></Separator>
                             <Button Content="Gerar DBF 3D"  Click="gerar_dbf_3d"></Button>
                             <Separator></Separator>

@@ -659,5 +659,17 @@ namespace Ferramentas_DLM
             this.Visibility = Visibility.Collapsed;
             Comandos.rodarmacros();
         }
+
+        private void gerar_dxf_cams(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.gerardxf();
+        }
+
+        private void marcar_montagem(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.marcarmontagem();
+        }
     }
 }

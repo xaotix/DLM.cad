@@ -102,9 +102,11 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
+
         public static string RaizArquivos { get; set; } = @"\\10.54.0.4\BancoDeDados\";
         public static string RaizA2Blocos { get; set; } = RaizArquivos + @"Blocos\SELO A2\";
         public static string RaizPcsBlocos { get; set; } = RaizArquivos + @"Blocos\SELO A2\Listagem\Peças Mapeáveis\";
+        public static string RaizIndicacaoBlocos { get; set; } = RaizArquivos + @"Blocos\SELO A2\Indicação\";
         public static string RaizTecnoMetalBlocos { get; set; } = RaizArquivos + @"Simbologias\usr\";
         public static string DBPROF { get; set; } = RaizArquivos + @"\DB2011\DBPROF.dbf";
 
@@ -118,7 +120,9 @@ namespace Ferramentas_DLM
         public static string Tabela_Tercas { get; set; } = RaizA2Blocos + @"Listagem\TERCAS.dwg";
         public static string Tabela_TecnoMetal { get; set; } = RaizA2Blocos + @"Listagem\TECNOMETAL_TAB_LIN.dwg";
         public static string Tabela_TecnoMetal_Titulo { get; set; } = RaizA2Blocos + @"Listagem\TECNOMETAL_TAB_CAB.dwg";
-        public static string Tabela_TecnoMetal_Vazia { get; set; } = RaizA2Blocos + @"Listagem\TECNOMETAL_TAB_LIN_VAZIA.dwg";
+        public static string Tabela_TecnoMetal_Vazia { get; set; } = RaizA2Blocos + @"Listagem\TECNOMETAL_TAB_LIN_VAZIA.dwg"; 
+        public static string Tabela_Pecas_Titulo { get; set; } = RaizA2Blocos + @"Listagem\PECAS_TITULO.dwg";
+        public static string Tabela_Pecas_Linha { get; set; } = RaizA2Blocos + @"Listagem\PECAS_LINHA.dwg";
 
 
         public static string Incicacao_Tercas { get; set; } = RaizA2Blocos + @"Listagem\TERCA_INDICACAO.dwg";
@@ -208,6 +212,12 @@ namespace Ferramentas_DLM
                 return retorno;
             }
         }
+
+        public static List<string> BlocosIndicacao()
+        {
+            return Conexoes.Utilz.GetArquivos(RaizIndicacaoBlocos, "*.dwg");
+        }
+
 
         public static string Marca_Composta { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_M_Composta}.dwg";
         public static string Marca_Perfil { get; set; } = $@"{RaizTecnoMetalBlocos }{BL_M_PERF}.dwg";

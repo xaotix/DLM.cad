@@ -9,8 +9,8 @@ namespace Ferramentas_DLM
 {
     public class ConfiguracaoMacro
     {
-        [DisplayName("Gerar Tabelas")]
-        public bool GerarTabela { get; set; } = true;
+        [DisplayName("Gerar/Atualizar Tabelas")]
+        public bool GerarTabela { get; set; } = false;
         [DisplayName("Preencher Selos")]
         public bool PreencheSelos { get; set; } = false;
 
@@ -24,6 +24,9 @@ namespace Ferramentas_DLM
 
         [DisplayName("Ajustar MViews")]
         public bool AjustarMViews { get; set; } = true;
+
+        [DisplayName("Gerar DXF de CAMs")]
+        public bool DXFs_de_CAMs { get; set; } = true;
         public ConfiguracaoMacro()
         {
 
