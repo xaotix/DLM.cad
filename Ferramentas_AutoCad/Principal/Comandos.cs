@@ -453,13 +453,13 @@ namespace Ferramentas_DLM
         {
 
             TecnoMetal pp = new TecnoMetal();
-            pp.InserirArremate();
+            pp.InserirArremate(pp.Getescala());
         }
         [CommandMethod("chapa")]
         public  static void chapa()
         {
             TecnoMetal pp = new TecnoMetal();
-            pp.InserirChapa();
+            pp.InserirChapa(pp.Getescala());
 
         }
 
@@ -467,13 +467,13 @@ namespace Ferramentas_DLM
         public static void unitario()
         {
             TecnoMetal pp = new TecnoMetal();
-            pp.InserirElementoUnitario();
+            pp.InserirElementoUnitario(pp.Getescala());
         }
         [CommandMethod("elem2")]
         public static void elem2()
         {
             TecnoMetal pp = new TecnoMetal();
-            pp.InserirElementoM2();
+            pp.InserirElementoM2(pp.Getescala());
         }
 
         [CommandMethod("criarmarcasdeexcel")]
@@ -562,7 +562,7 @@ namespace Ferramentas_DLM
         [CommandMethod("quantificar")]
         public static void quantificar()
         {
-            TecnoMetal.Quantificar();
+            TecnoMetal.Quantificar(true,false,true,true,false);
         }
 
         [CommandMethod("marcarmontagem")]

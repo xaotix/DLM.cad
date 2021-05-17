@@ -1,15 +1,14 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ferramentas_DLM
 {
 
     public class PCQuantificar
     {
+        public List<PCQuantificar> Filhos_Ignorar { get; set; } = new List<PCQuantificar>();
+        public string Nome_Bloco { get; set; } = "";
         public bool isbloco
         {
             get
@@ -21,22 +20,22 @@ namespace Ferramentas_DLM
         {
             return $"[{this.Tipo}] { this.Nome} - {this.Quantidade}x";
         }
-        public List<DB.Linha> Objetos { get; private set; } = new List<DB.Linha>();
+        public List<BlocoTags> Blocos { get; private set; } = new List<BlocoTags>();
 
         public List<string> GetAtributos()
         {
-            var s = this.Objetos.SelectMany(x => x.Celulas).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
+            var s = this.Blocos.SelectMany(x => x.Celulas).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
             return s;
         }
-        public DB.Linha Atributos
+        public BlocoTags Atributos
         {
             get
             {
-                if(Objetos.Count>0)
+                if(Blocos.Count>0)
                 {
-                    return Objetos[0];
+                    return Blocos[0];
                 }
-                return new DB.Linha();
+                return new BlocoTags();
             }
         }
         public string Nome { get; set; } = "";
@@ -44,14 +43,14 @@ namespace Ferramentas_DLM
         public string Descricao { get; set; } = "";
         public string Numero { get; set; } = "";
         public string Destino { get; set; } = "";
+        public string Perfil { get; set; } = "";
+        public double Comprimento { get; set; } = 0;
+        public string Material { get; set; } = "";
 
-        public List<PCQuantificar> Agrupar( List<string>  atributoNome, List<DB.Linha> blocos = null)
+        public List<PCQuantificar> Agrupar( List<string>  atributoNome, string novo_nome_bloco)
         {
 
-            if(blocos==null)
-            {
-                blocos = this.Objetos;
-            }
+            var blocos = this.Blocos;
             List<PCQuantificar> retorno = new List<PCQuantificar>();
 
            if(atributoNome.Count>0)
@@ -60,7 +59,8 @@ namespace Ferramentas_DLM
 
                 foreach (var s in ss.ToList())
                 {
-                    PCQuantificar nn = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.Split('|')[0],"", s.ToList());
+                    var blks = s.ToList();
+                    PCQuantificar nn = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.Split('|')[0],"", novo_nome_bloco, blks);
                     retorno.Add(nn);
                   
                     
@@ -76,6 +76,8 @@ namespace Ferramentas_DLM
         }
 
         public Tipo_Objeto Tipo { get; private set; } = Tipo_Objeto.Texto;
+
+        public string Familia { get; set; } = "PEÇAS";
 
         public void SetDescPorAtributo(string tag)
         {
@@ -101,10 +103,35 @@ namespace Ferramentas_DLM
                 this.Destino = s;
             }
         }
+        public void SetCompPorAtributo(string tag)
+        {
+            var s = this.Atributos.Get(tag).ToString();
+            if (s != "")
+            {
+                this.Comprimento = Conexoes.Utilz.Double(s);
+            }
+        } 
+        public void SetPerfilPorAtributo(string tag)
+        {
+            var s = this.Atributos.Get(tag).ToString();
+            if (s != "")
+            {
+                this.Perfil = s;
+            }
+        }
+
+        public void SetMaterialPorAtributo(string tag)
+        {
+            var s = this.Atributos.Get(tag).ToString();
+            if (s != "")
+            {
+                this.Material = s;
+            }
+        }
         public void SetQtdPorAtributo(string tag_qtd)
         {
             double tot = 0;
-            foreach (var p in this.Objetos)
+            foreach (var p in this.Blocos)
             {
                 var qtd = p.Get(tag_qtd).Double();
                 if (qtd > 0)
@@ -120,10 +147,20 @@ namespace Ferramentas_DLM
             this.Quantidade = tot;
         }
 
-        public PCQuantificar(Tipo_Objeto Tipo, string nom, string desc,List<DB.Linha> objetos)
+        public void SetFamiliaPorAtributo(string tag)
+        {
+            var s = this.Atributos.Get(tag).ToString();
+            if (s != "")
+            {
+                this.Familia = s;
+            }
+        }
+
+        public PCQuantificar(Tipo_Objeto Tipo, string nom, string desc, string nome_bloco,List<BlocoTags> objetos)
         {
             this.Tipo = Tipo;
             this.Nome = nom;
+            this.Nome_Bloco = nome_bloco;
             if(desc.Length>0)
             {
                 this.Descricao = desc.Replace(this.Nome, "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").Replace("*", "").TrimStart();
@@ -131,15 +168,13 @@ namespace Ferramentas_DLM
             }
 
 
-            if(objetos!=null)
-            {
-                this.Objetos = objetos;
-            }
+            this.Blocos = objetos;
+
             this.Quantidade = objetos.Count;
 
             if(Tipo== Tipo_Objeto.Texto)
             {
-                List<string> atts = this.Objetos.Select(x => x.Get("VALOR").ToString()).ToList();
+                List<string> atts = this.Blocos.Select(x => x.Get("VALOR").ToString()).ToList();
 
              
 
@@ -179,18 +214,47 @@ namespace Ferramentas_DLM
                 this.Quantidade = qtd;
             }
         }
+        public PCQuantificar(Tipo_Objeto tipo, string nome, string desc, string nome_bloco, List<BlocoTags> blocos, string numero,  string familia = "", string destino = "",  string perfil = "", string material = "", double comprimento = 0 )
+        {
+            this.Comprimento = comprimento;
+            this.Descricao = desc;
+            this.Destino = destino;
+            this.Familia = familia;
+            this.Material = material;
+            this.Nome = nome;
+            this.Nome_Bloco = nome_bloco;
+            this.Numero = numero;
+            this.Perfil = perfil;
+            this.Quantidade = blocos.Count;
+            this.Tipo = tipo;
+            this.Blocos = blocos;
 
+        }
+        public PCQuantificar(Tipo_Objeto Tipo)
+        {
+            this.Tipo = Tipo;
+        }
         public PCQuantificar(List<PCQuantificar> pecas)
         {
             if(pecas.Count>0)
             {
+                this.Blocos.AddRange(pecas.SelectMany(x => x.Blocos).ToList());
                 this.Tipo = pecas.First().Tipo;
-                this.Nome = pecas.First().Nome;
-                this.Descricao = pecas.First().Descricao;
-                this.Quantidade = pecas.Sum(x => x.Quantidade);
-                this.Objetos.AddRange(pecas.SelectMany(x => x.Objetos).ToList());
-            }
 
-          }
+                this.Familia = pecas.First().Familia;
+                this.Nome_Bloco = pecas.First().Nome_Bloco;
+                this.Perfil = pecas.First().Perfil;
+                this.Comprimento = pecas.First().Comprimento;
+                this.Material = pecas.First().Material;
+                this.Nome = pecas.First().Nome;
+                this.Quantidade = pecas.Sum(x => x.Quantidade);
+                this.Descricao = pecas.First().Descricao;
+                this.Numero = pecas.First().Numero;
+                this.Destino = pecas.First().Destino;
+
+            }
+        }
+
+
     }
 }

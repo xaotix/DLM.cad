@@ -68,12 +68,12 @@ namespace Ferramentas_DLM
                     foreach (var p in purlins)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add("Nº", p.Sequencia.ToString().PadLeft(2, '0'));
+                        hp.Add("N", p.Sequencia.ToString().PadLeft(2, '0'));
                         hp.Add("PERFIL", p.Nome);
-                        hp.Add("XX", p.Quantidade.ToString().PadLeft(3,'0'));
+                        hp.Add("QTD", p.Quantidade.ToString().PadLeft(3,'0'));
                         hp.Add("COMP", p.Comprimento.ToString().PadLeft(5,'0'));
                         hp.Add("ESP", p.Espessura.ToString("N2").PadLeft(5, '0'));
-                        hp.Add("VP;RM;TM", "RME");
+                        hp.Add("DESTINO", "RME");
                         Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                     }
@@ -105,8 +105,8 @@ namespace Ferramentas_DLM
                 {
                     Hashtable hp = new Hashtable();
                     hp.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
-                    hp.Add("PEÇA", p.Marca);
-                    hp.Add("QUANT.", p.Qtd.ToString().PadLeft(3, '0'));
+                    hp.Add("PECA", p.Marca);
+                    hp.Add("QTD", p.Qtd.ToString().PadLeft(3, '0'));
                     hp.Add("COMP", p.Comprimento.ToString().PadLeft(5, '0'));
                     Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes, p0, escala, 0, hp);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
@@ -137,10 +137,10 @@ namespace Ferramentas_DLM
                 foreach (var p in trs)
                 {
                     Hashtable hp = new Hashtable();
-                    hp.Add("Nº", p.Sequencia);
+                    hp.Add("N", p.Sequencia);
                     hp.Add("PERFIL", p.Marca);
-                    hp.Add("XXX", p.Qtd.ToString().PadLeft(3,'0'));
-                    hp.Add("VÃO", p.Vao.ToString());
+                    hp.Add("QTD", p.Qtd.ToString().PadLeft(3,'0'));
+                    hp.Add("VAO", p.Vao.ToString());
                     Blocos.Inserir(acDoc, Constantes.Tabela_Correntes, p0, escala, 0, hp);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                 }
@@ -174,12 +174,12 @@ namespace Ferramentas_DLM
                     foreach (var p in RMES)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add("Nº", seq.ToString().PadLeft(2, '0'));
+                        hp.Add("N", seq.ToString().PadLeft(2, '0'));
                         hp.Add("PERFIL", p.CODIGOFIM);
-                        hp.Add("XX", p.Quantidade.ToString().PadLeft(3, '0'));
+                        hp.Add("QTD", p.Quantidade.ToString().PadLeft(3, '0'));
                         hp.Add("COMP", p.COMP.ToString().PadLeft(5, '0'));
                         hp.Add("ESP", p.ESP.ToString("N2").PadLeft(5, '0'));
-                        hp.Add("VP;RM;TM", "RM");
+                        hp.Add("DESTINO", "RM");
                         Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
@@ -231,43 +231,88 @@ namespace Ferramentas_DLM
         }
 
 
-        public static Point3d Pecas(List<PCQuantificar> pcs, Point3d p0, double mover_direita = 0)
+        public static Point3d Pecas(List<PCQuantificar> pcs, bool separar, Point3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
+
+            double x_tabela = 125;
+
+
             if (pcs.Count > 0)
             {
                 double escala = acDoc.Database.Dimscale;
-                bool cancelado = false;
 
+                Point3d p1 = new Point3d(p0.X, p0.Y, p0.Z);
                 if (mover_direita != 0)
                 {
-                    p0 = new Point3d(p0.X + (mover_direita * escala), p0.Y, p0.Z);
+                    p1 = new Point3d(p1.X + (mover_direita * escala), p1.Y, p1.Z);
                 }
 
-                if (!cancelado)
+                Point3d p0a = new Point3d(p1.X, p1.Y, p1.Z);
+
+                List<List<PCQuantificar>> pacotes = new List<List<PCQuantificar>>();
+                if(separar)
                 {
-                    x0 = p0.X;
-                    y0 = p0.Y;
+                    pacotes = pcs.GroupBy(x => x.Familia).Select(X => X.ToList()).ToList();
+                }
+                else
+                {
+                    pacotes = new List<List<PCQuantificar>> { pcs };
+                }
+
+                foreach(var pacote in pacotes)
+                {
+                    x0 = p1.X;
+                    y0 = p1.Y;
                     Hashtable ht = new Hashtable();
-                    ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Titulo, p0, escala, 0, ht);
-                    p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
+                    ht.Add("TITULO", "LISTA " + pacote[0].Familia.ToUpper());
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Titulo, p1, escala, 0, ht);
+                    p1 = new Point3d(p1.X, p1.Y - (escala * 12.86), p1.Z);
                     int seq = 1;
-                    foreach (var p in pcs)
+                    var linhas = pacote.OrderBy(x => x.Numero + "|" + x.Nome).ToList();
+                    foreach (var p in linhas)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add("N°", p.Numero);
                         hp.Add("MARCA", p.Nome);
-                        hp.Add("DESCRICAO", p.Descricao);
+                        if (p.Nome_Bloco.StartsWith("PECA_INDICACAO"))
+                        {
+                            Point3d pcentro = new Point3d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152), p1.Z);
+                            Hashtable bl = new Hashtable();
+                            foreach (var obj in p.Atributos.Celulas)
+                            {
+                                bl.Add(obj.Coluna, obj.Valor);
+                            }
+                            bl.Add("N", p.Numero);
+                            bl.Add("FAMILIA", p.Familia);
+                            bl.Add("TIPO", p.Tipo);
+                            bl.Add("COMP", p.Comprimento);
+                            bl.Add("DESC", p.Descricao);
+                            bl.Add("DESTINO", p.Destino);
+                            bl.Add("QTD", p.Quantidade);
+
+                            Blocos.Inserir(acDoc, p.Nome_Bloco, pcentro, escala * .8, 0, bl);
+                            hp.Add("N", " ");
+
+                        }
+                        else
+                        {
+                            hp.Add("N", p.Numero);
+                        }
                         hp.Add("QTD", p.Quantidade);
                         hp.Add("DESTINO", p.Destino);
+                        hp.Add("DESCRICAO", p.Descricao);
 
-                        Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Linha, p0, escala, 0, hp);
-                        p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
+                        Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Linha, p1, escala, 0, hp);
+                        p1 = new Point3d(p1.X, p1.Y - (escala * 6.43), p1.Z);
                         seq++;
                     }
+
+                    //p0a = new Point3d(p0a.X + (x_tabela * escala), p0a.Y, p0a.Z);
+                    //p1 = new Point3d(p0a.X, p0a.Y, p0a.Z);
                 }
+              
+
             }
             return new Point3d(x0, y0, 0);
 

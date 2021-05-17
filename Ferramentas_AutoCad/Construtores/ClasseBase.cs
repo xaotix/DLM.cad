@@ -765,7 +765,16 @@ namespace Ferramentas_DLM
         {
             return acCurDb.Dimscale;
         }
-
+        public void SetEscala(double valor)
+        {
+            if(valor>0)
+            {
+                using (DocumentLock acLckDoc = acDoc.LockDocument())
+                {
+                    acCurDb.Dimscale = valor;
+                }
+            }
+        }
         public void AddMensagem(string Mensagem)
         {
             acDoc.Editor.WriteMessage(Mensagem);
@@ -866,14 +875,62 @@ namespace Ferramentas_DLM
                 }
             }
         }
-
-        public PromptSelectionResult SelecionarObjetos()
+        public enum Tipo_Selecao
+        {
+            Tudo,
+            Blocos,
+            Textos,
+            Blocos_Textos,
+            Dimensoes,
+            Polyline,
+        }
+        public PromptSelectionResult SelecionarObjetos(Tipo_Selecao tipo = Tipo_Selecao.Tudo)
         {
             PromptSelectionOptions pp = new PromptSelectionOptions();
             pp.RejectObjectsOnLockedLayers = true;
             pp.RejectPaperspaceViewport = true;
             pp.RejectObjectsFromNonCurrentSpace = true;
-            PromptSelectionResult acSSPrompt = acDoc.Editor.GetSelection(pp);
+            pp.AllowDuplicates = false;
+            //pp.MessageForAdding = "Item adicionado à seleção";
+            //pp.MessageForRemoval = "Item removido da seleção";
+
+
+
+            var lista_filtro = new List<TypedValue>();
+
+            switch (tipo)
+            {
+                case Tipo_Selecao.Tudo:
+                    break;
+                case Tipo_Selecao.Blocos:
+                    lista_filtro.Add(new TypedValue(0, "INSERT"));
+                    break;
+                case Tipo_Selecao.Textos:
+                    lista_filtro.Add(new TypedValue(0, "TEXT,MTEXT,LEADER"));
+                    break;
+                case Tipo_Selecao.Blocos_Textos:
+                    lista_filtro.Add(new TypedValue(0, "INSERT,TEXT,MTEXT,LEADER"));
+                    break;
+                case Tipo_Selecao.Dimensoes:
+                    lista_filtro.Add(new TypedValue(0, "DIMENSION,TEXT,MTEXT,LEADER"));
+                    break;
+                case Tipo_Selecao.Polyline:
+                    lista_filtro.Add(new TypedValue(0, "POLYLINE"));
+                    break;
+            }
+
+
+            SelectionFilter filtro =   new SelectionFilter(lista_filtro.ToArray());
+            PromptSelectionResult acSSPrompt = null;
+
+            if (lista_filtro.Count>0)
+            {
+                acSSPrompt = acDoc.Editor.GetSelection(pp, filtro);
+            }
+            else
+            {
+                acSSPrompt = acDoc.Editor.GetSelection(pp);
+            }
 
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {

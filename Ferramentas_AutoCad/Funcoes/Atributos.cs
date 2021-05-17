@@ -34,6 +34,27 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
+        public static void Set(List<Autodesk.AutoCAD.DatabaseServices.BlockReference> blocos, Transaction tr, Hashtable t)
+        {
+
+            using (DocumentLock acLckDoc = acDoc.LockDocument())
+            {
+                foreach(var bloco in blocos)
+                {
+                    AttributeCollection attCol = bloco.AttributeCollection;
+                    foreach (ObjectId attId in attCol)
+                    {
+
+                        AttributeReference att = tr.GetObject(attId, OpenMode.ForRead, false) as AttributeReference;
+                        if (t.ContainsKey(att.Tag.ToUpper()))
+                        {
+                            att.UpgradeOpen();
+                            att.TextString = t[att.Tag.ToUpper()].ToString();
+                        }
+                    }
+                }
+            }
+        }
         public static void Set(BlockReference myBlockRef, Transaction tr, string tag, string valor)
         {
            
@@ -69,10 +90,11 @@ namespace Ferramentas_DLM
                 }
             }
         }
-        public static DB.Linha GetLinha(BlockReference bloco, Database acCurDb = null)
+        public static BlocoTags GetLinha(BlockReference bloco, Database acCurDb = null)
         {
-            DB.Linha retorno = new DB.Linha();
+            BlocoTags retorno = new BlocoTags();
 
+            retorno.Bloco = bloco;
             if(acCurDb==null)
             {
                 acCurDb = CAD.acCurDb;

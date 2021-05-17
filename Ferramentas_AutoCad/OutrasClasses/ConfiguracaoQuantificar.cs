@@ -17,6 +17,11 @@ namespace Ferramentas_DLM
         [DisplayName("Blocos")]
         public bool Blocos { get; set; } = true;
 
+        [Category("Mapear")]
+        [DisplayName("Blocos Montagem TecnoMetal")]
+        public bool Pecas_TecnoMetal { get; set; } = true;
+
+
         public ConfiguracaoQuantificar()
         {
 

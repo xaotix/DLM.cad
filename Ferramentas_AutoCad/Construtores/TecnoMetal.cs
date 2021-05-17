@@ -14,61 +14,348 @@ namespace Ferramentas_DLM
 {
     public class TecnoMetal : ClasseBase
     {
-        public void Quantificar()
+        public int MapearPCsTecnoMetal(int seq, int arredon, bool subs_bloco, List<CTV_de_para> perfis_mapeaveis, double escala, string arquivo_bloco, bool agrupar_proximos = true, bool contraventos = true, bool mapear_pecas = true)
         {
-            var sel = SelecionarObjetos();
+            this.SetEscala(escala);
+            string nome_bloco = Conexoes.Utilz.getNome(arquivo_bloco);
+    
+            List<PCQuantificar> pecas = this.Quantificar(false,false,false,false,true);
+            if(pecas.Count==0)
+            {
+                Alerta($"Nenhuma peça mapeável encontrada na seleção.");
+                return seq;
+            }
+            List<PCQuantificar> tirantes = new List<PCQuantificar>();
+            List<PCQuantificar> outros = new List<PCQuantificar>();
+            if(contraventos)
+            {
+                foreach (var pc in pecas)
+                {
+                    var nome = pc.Nome.ToUpper().Replace(" ", "");
+                    var perfil = pc.Perfil.ToUpper().Replace(" ", "");
+                    var igual = perfis_mapeaveis.Find(x => x.Perfil.ToUpper().Replace(" ", "") == perfil);
+
+                    if (igual != null)
+                    {
+                        tirantes.Add(pc);
+                        continue;
+                    }
+
+
+                    /*procura por marcas já definidas com o nome do perfil*/
+                    igual = perfis_mapeaveis.Find(x => nome.StartsWith(x.Perfil.Replace("@", "")));
+
+                    if (igual != null)
+                    {
+                        var ccmp = Conexoes.Utilz.Double(nome.Replace(igual.Perfil.Replace("@", ""), ""));
+
+                        if (ccmp > 0)
+                        {
+                            pc.Perfil = igual.Perfil;
+                            tirantes.Add(pc);
+                            continue;
+                        }
+                    }
+                    if(mapear_pecas)
+                    {
+                    outros.Add(pc);
+
+                    }
+                }
+            }
+            else
+            {
+                outros.AddRange(pecas);
+            }
+
+            outros = outros.OrderBy(x => x.Nome).ToList();
+
+            List<PCQuantificar> final_tabela = new List<PCQuantificar>();
+
+            final_tabela.AddRange(tirantes);
+            final_tabela.AddRange(outros);
+
+            if (tirantes.Count > 0)
+            {
+                if (perfis_mapeaveis.Count == 0)
+                {
+                    Alerta($"Não foi possível carregar o arquivo de configuração de contraventos. Contacte suporte. \n{Constantes.Arquivo_CTV}");
+
+                    return seq;
+                }
+
+                var tipos = tirantes.GroupBy(x => x.Perfil).ToList().OrderBy(x=>x.Key).ToList();
+                //List<Autodesk.AutoCAD.DatabaseServices.BlockReference> excluir = new List<Autodesk.AutoCAD.DatabaseServices.BlockReference>();
+
+                Conexoes.Wait w = new Conexoes.Wait(tipos.Count);
+                w.Show();
+
+                List<BlocoTags> final = new List<BlocoTags>();
+                List<BlocoTags> desagrupado = new List<BlocoTags>();
+                foreach (var tipo_por_perfil in tipos)
+                {
+                    w.somaProgresso();
+                    string perfil = tipo_por_perfil.Key;
+                    var igual = perfis_mapeaveis.Find(x => x.Perfil.ToUpper().Replace(" ","") == perfil.ToUpper().Replace(" ",""));
+                    var comps = tipo_por_perfil.ToList().GroupBy(x => Conexoes.Utilz.ArredondarMultiplo(x.Comprimento, arredon)).ToList().OrderBy(x=>x.Key).ToList();
+                    foreach (var comp in comps)
+                    {
+                        string numero = seq.ToString().PadLeft(2, '0');
+                        string familia = "TIRANTE " + igual.PecaLiberar.Replace("$C$", "");
+                        string codigo = igual.PecaLiberar.Replace("$C$", Math.Round(comp.Key).ToString().PadLeft(igual.CaractComp, '0'));
+                        var pedacos = Conexoes.Utilz.Quebrar(comp.Key, 6000, 600, 0);
+                        string descricao = string.Join(" ",pedacos.GroupBy(x => x).ToList().Select(x => "(" + x.Key + " " + x.Count().ToString() + "x)"));
+
+
+                        var atuais = comp.ToList();
+
+                        List<BlocoTags> bl_agrupados = new List<BlocoTags>();
+
+                        var blocos_atuais = atuais.SelectMany(x => x.Blocos).ToList();
+                        desagrupado.AddRange(blocos_atuais);
+
+
+                        if (agrupar_proximos)
+                        {
+                            foreach (var bl in blocos_atuais)
+                            {
+                                bl.Descricao = codigo;
+                                var bl_ja_adicionados = bl_agrupados.SelectMany(x => x.Filhos).ToList();
+                                bl_ja_adicionados.AddRange(bl_agrupados);
+
+                                if (bl_ja_adicionados.Find(x => x.Bloco.Id == bl.Bloco.Id) == null)
+                                {
+                                    var bl_a_adicionar = blocos_atuais.FindAll(x => bl_ja_adicionados.Find(y => y.Bloco.Id == x.Bloco.Id) == null).ToList();
+                                    var iguais = bl_a_adicionar.FindAll(x => x.GetCoordenada().Distancia(bl.GetCoordenada()) <= escala * 5);
+                                    bl.Filhos = iguais.FindAll(x=>x.Bloco.Id!=bl.Bloco.Id);
+                                    bl_agrupados.Add(bl);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            bl_agrupados.AddRange(blocos_atuais);
+                        }
+                     
+
+                        final.AddRange(bl_agrupados);
+
+
+                        foreach (var s in bl_agrupados)
+                        {
+                          
+                            Hashtable att = new Hashtable();
+                            att.Add("N", numero);
+                            att.Add("FAMILIA", familia);
+                            att.Add("TIPO", "TECNOMETAL");
+                            att.Add("COMP", comp.Key);
+                            att.Add("CODIGO", codigo);
+                            att.Add("ID", 0);
+                            att.Add("DESC",string.Join(" ", descricao));
+                            att.Add("DESTINO", "RME");
+                            att.Add("QTD", 1 + s.Filhos.Count);
+                            if(subs_bloco)
+                            {
+                            Blocos.Inserir(CAD.acDoc, arquivo_bloco, s.Bloco.Position, escala, 0, att);
+                            }
+                            else
+                            {
+                                var angulo = s.GetAngulo();
+                                Blocos.Inserir(CAD.acDoc, Constantes.Bloco_Indicacao_Texto, s.Bloco.Position, escala, angulo, att);
+                            }
+                        }
+
+
+                        using (var acTrans = CAD.acCurDb.TransactionManager.StartOpenCloseTransaction())
+                        {
+                            foreach (var s in atuais)
+                            {
+                                s.Nome = codigo;
+                                s.Descricao = descricao;
+                                s.Numero = numero;
+                                s.Nome_Bloco = nome_bloco;
+                                s.Familia = familia;
+                                s.Destino = "RME";
+                                s.Perfil = perfil;
+                                Hashtable att = new Hashtable();
+                                //att.Add("LUN_PRO", comp);
+                                att.Add("MARK", codigo);
+                                att.Add("MAR_PEZ", codigo);
+                                Atributos.Set(s.Blocos.Select(x => x.Bloco).ToList().ToList(), acTrans, att);
+                                Atributos.Set(s.Filhos_Ignorar.SelectMany(x => x.Blocos).Select(x => x.Bloco).ToList().ToList(), acTrans, att);
+                            }
+
+                            acTrans.Commit();
+                        }
+
+                        seq++;
+                    }
+
+                }
+
+                acDoc.Editor.Regen();
+
+
+                
+
+                w.Close();
+
+            }
+
+            if(outros.Count>0 && mapear_pecas)
+            {
+                var tot = outros.Sum(x => x.Blocos.Count);
+                Conexoes.Wait w = new Conexoes.Wait(tot,  $"Inserindo {tot} blocos de outras peças");
+                w.Show();
+                foreach (var pc in outros)
+                {
+                    pc.Numero = seq.ToString().PadLeft(2, '0');
+                    seq++;
+                    foreach (var s in pc.Blocos)
+                    {
+                        w.somaProgresso();
+
+                        Hashtable att = new Hashtable();
+                        att.Add("N", pc.Numero);
+                        att.Add("FAMILIA", pc.Familia);
+                        att.Add("TIPO", "TECNOMETAL");
+                        att.Add("COMP", pc.Comprimento.ToString().Replace(",", ""));
+                        att.Add("CODIGO", pc.Nome);
+                        att.Add("ID", 0);
+                        att.Add("DESC", pc.Descricao);
+                        att.Add("DESTINO", pc.Destino);
+                        att.Add("QTD", 1 + s.Filhos.Count);
+
+                        Blocos.Inserir(CAD.acDoc, Constantes.BlocosIndicacao()[0], s.Bloco.Position, escala, 0, att);
+                    }
+
+                }
+                w.Close();
+            }
+
+            if (Conexoes.Utilz.Pergunta("Mapeamento finalizado! Deseja inserir a tabela?"))
+            {
+                InserirTabelaQuantificacao(final_tabela);
+            }
+
+            CAD.editor.Regen();
+
+            return seq;
+        }
+        public List<PCQuantificar> Quantificar(bool gerar_tabela = true, bool configurar = true, bool blocos = true, bool textos = true, bool tecnometal = true)
+        {
+            List<PCQuantificar> pecas = new List<PCQuantificar>();
+
+            var sel = SelecionarObjetos( Tipo_Selecao.Blocos_Textos);
             if(sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && this.selecoes.Count>0)
             {
-                bool status = false;
-                var opt = Conexoes.Utilz.Propriedades(new ConfiguracaoQuantificar(), out status);
+                bool status = true;
+                var opt = new ConfiguracaoQuantificar();
+                opt.Blocos = blocos;
+                opt.Textos = textos;
+                opt.Pecas_TecnoMetal = tecnometal;
+                if(configurar)
+                {
+                opt = Conexoes.Utilz.Propriedades(opt, out status);
+                }
 
                 if(status)
                 {
-                    List<PCQuantificar> pecas = new List<PCQuantificar>();
-                    if(opt.Blocos)
+                    if(opt.Blocos | opt.Pecas_TecnoMetal)
                     {
-                        foreach(var s in this.Getblocos().FindAll(x=>!
-                        x.Name.Contains("*"))
-                        .GroupBy(x=>x.Name.ToUpper()
-                        .Replace("SUPORTE_","")
-                        .Replace("SUPORTE ","")
+                        List<PCQuantificar> blocos_montagem_tecnometal = new List<PCQuantificar>();
+                        foreach (var s in this.Getblocos().FindAll(x => !
+                         x.Name.Contains("*"))
+                        .GroupBy(x => x.Name.ToUpper()
+                        .Replace("SUPORTE_", "")
+                        .Replace("SUPORTE ", "")
                         ))
                         {
                             var att = Atributos.GetLinha(s.First());
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco,s.Key, "",s.ToList().Select(x=> Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
-
-                            if(npc.Nome.StartsWith("PECA_INDICACAO"))
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
+                            if (npc.Nome.StartsWith("PECA_INDICACAO"))
                             {
-                                var blcs = npc.Agrupar(new List<string> { "CODIGO", "Nº" });
-                                foreach(var bl in blcs)
+                                var blcs = npc.Agrupar(new List<string> { "CODIGO", "Nº" }, npc.Nome_Bloco);
+                                foreach (var bl in blcs)
                                 {
                                     bl.SetDescPorAtributo("DESC");
                                     bl.SetNumeroPorAtributo("Nº");
                                     bl.SetDestinoPorAtributo("DESTINO");
                                     bl.SetQtdPorAtributo("QTD");
+                                    bl.SetFamiliaPorAtributo("FAMILIA");
                                 }
 
                                 pecas.AddRange(blcs);
-                                    /*
-                                     *             Hashtable att = new Hashtable();
-            att.Add("Nº", this.numero.Text);
-            att.Add("FAMILIA", this.familia.Text);
-            att.Add("TIPO", this.peca_selecionar.Content);
-            att.Add("COMP", comp.ToString().Replace(",",""));
-            att.Add("CODIGO", codigo);
-            att.Add("ID", id);
-            att.Add("DESC", descricao);
-            att.Add("DESTINO", tipo_selecionado);
-                                     */
+                                /*
+                                 *             Hashtable att = new Hashtable();
+                                    att.Add("Nº", this.numero.Text);
+                                    att.Add("FAMILIA", this.familia.Text);
+                                    att.Add("TIPO", this.peca_selecionar.Content);
+                                    att.Add("COMP", comp.ToString().Replace(",",""));
+                                    att.Add("CODIGO", codigo);
+                                    att.Add("ID", id);
+                                    att.Add("DESC", descricao);
+                                    att.Add("DESTINO", tipo_selecionado);
+                                 */
                             }
-                            else
+                            if (npc.Nome == Constantes.Bloco_3D_Montagem_Info)
                             {
-                            pecas.Add(npc);
+                                if (opt.Pecas_TecnoMetal)
+                                {
+                                    var blcs = npc.Agrupar(new List<string> { "MAR_PEZ" }, npc.Nome_Bloco);
+                                    foreach (var bl in blcs)
+                                    {
+                                        bl.SetPerfilPorAtributo(Constantes.ATT_PER);
+                                        bl.SetCompPorAtributo(Constantes.ATT_CMP);
+                                        bl.SetMaterialPorAtributo(Constantes.ATT_MAT);
+                                        bl.SetDescPorAtributo(Constantes.ATT_PER);
+                                    }
+                                    blocos_montagem_tecnometal.AddRange(blcs);
+                                }
+
+
                             }
-
-
+                            else if (npc.Nome == Constantes.Bloco_3D_Montagem_Tecnometal)
+                            {
+                                if (opt.Pecas_TecnoMetal)
+                                {
+                                    var blcs = npc.Agrupar(new List<string> { "MARK" }, npc.Nome_Bloco);
+                                    blocos_montagem_tecnometal.AddRange(blcs);
+                                }
+                            }
+                            else if (opt.Blocos)
+                            {
+                                pecas.Add(npc);
+                            }
                         }
+
+
+                        var blk_tec = blocos_montagem_tecnometal.GroupBy(x => x.Nome);
+                        foreach(var bl in blk_tec)
+                        {
+                            //nesse segmento, ignoro o bloco repetido que dá os dados da peça e crio 1 objeto novo, quantificando pela quantidade do bloco que contém somente a marca
+                            var blocs = bl.ToList().FindAll(x => x.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal);
+                            if(blocs.Count>0)
+                            {
+                                var p = blocs[0];
+                                var p_filhos_infos = bl.ToList().FindAll(x => x.Nome_Bloco == Constantes.Bloco_3D_Montagem_Info);
+
+                                var pf = new PCQuantificar(Tipo_Objeto.Bloco);
+
+                                if (p_filhos_infos.Count > 0)
+                                {
+                                    pf = p_filhos_infos[0];
+                                }
+                                PCQuantificar pc = new PCQuantificar(Tipo_Objeto.Bloco, bl.Key, pf.Descricao, p.Nome_Bloco, blocs.SelectMany(x=> x.Blocos).ToList(), "", pf.Perfil, "TECNOMETAL", pf.Perfil, pf.Material, pf.Comprimento);
+                                pc.Descricao = pf.Descricao;
+                               /*essa propriedade guarda os blocos que tem as sub-informações dos blocos no tecnometal*/
+                                pc.Filhos_Ignorar = p_filhos_infos;
+                                pecas.Add(pc);
+                            }
+           
+                        }
+
                     }
 
                     if(opt.Textos)
@@ -76,15 +363,33 @@ namespace Ferramentas_DLM
 
                         foreach (var s in this.GetMtexts().GroupBy(x => x.Text.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n"," ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", "").Replace(")","")))
                         {
-                           
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,s.ToList().Select(x=> new DB.Linha(new List<DB.Celula> { new DB.Celula("VALOR", x.Text) })).ToList());
+                            var st = s.Key.Split(' ')[0].ToUpper();
+
+                            bool nao_adicionar = false;
+                            List<string> ignorar = Constantes.Ignorar();
+                            foreach(var ign in ignorar)
+                            {
+                                if(st.Contains(ign))
+                                {
+                                    nao_adicionar = true;
+                                    break;
+                                }
+                            }
+
+                            if(nao_adicionar)
+                            {
+                                continue;
+                            }
+
+
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,"",s.ToList().Select(x=> new BlocoTags(new List<DB.Celula> { new DB.Celula("VALOR", x.Text) })).ToList());
                             pecas.Add(npc);
 
                         }
                         foreach (var s in this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", "").Replace(")", "")))
                         {
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString, s.ToList().Select(x => new DB.Linha(new List<DB.Celula> { new DB.Celula("VALOR", x.TextString) })).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTags(new List<DB.Celula> { new DB.Celula("VALOR", x.TextString) })).ToList());
                             pecas.Add(npc);
 
                         }
@@ -101,9 +406,12 @@ namespace Ferramentas_DLM
                         !x.Nome.Contains("?") &&
                         !x.Nome.Contains("%") &&
                         !x.Nome.Contains("*") &&
+                        !x.Nome.StartsWith("_") &&
                         !x.Nome.Contains("3D_INFO") &&
                         !x.Nome.Contains("SELO") &&
+                        !x.Nome.Contains("CORTE") &&
                         !x.Nome.Contains("EIXO") &&
+                        !x.Nome.Contains("REVISÃO") &&
                         !x.Nome.Contains("NOTA") &&
                         !x.Nome.Contains("SOLUÇÃO") &&
                         !x.Nome.Contains("FACHADA") &&
@@ -111,26 +419,33 @@ namespace Ferramentas_DLM
                         );
 
                     
-                    if(pecas.Count>0)
+                    if(pecas.Count>0 && gerar_tabela)
                     {
-                        List<PCQuantificar> pcs = Conexoes.Utilz.SelecionarObjetos(new List<PCQuantificar> { }, pecas, "Determine quais peças deseja que apareçam na tabela");
+                        InserirTabelaQuantificacao(pecas);
 
-
-                        Menus.Quantificar_Menu_Configuracao mm = new Menus.Quantificar_Menu_Configuracao(pcs);
-
-                        mm.Show();
-
-                        mm.Closed += FinalizaInsercao;
-                        
                     }
 
                 }
 
                 
             }
+
+            return pecas.OrderBy(x=> x.Numero + " - " + x.Nome).ToList();
         }
 
-        private void FinalizaInsercao(object sender, EventArgs e)
+        private void InserirTabelaQuantificacao(List<PCQuantificar> pecas)
+        {
+            List<PCQuantificar> pcs = Conexoes.Utilz.SelecionarObjetos(new List<PCQuantificar> { }, pecas, "Determine quais peças deseja que apareçam na tabela");
+
+
+            Menus.Quantificar_Menu_Configuracao mm = new Menus.Quantificar_Menu_Configuracao(pcs);
+
+            mm.Show();
+
+            mm.Closed += InserirTabelaQuantificacao;
+        }
+
+        private void InserirTabelaQuantificacao(object sender, EventArgs e)
         {
             Menus.Quantificar_Menu_Configuracao mm = sender as Menus.Quantificar_Menu_Configuracao;
             List<PCQuantificar> pcs = mm.original;
@@ -145,11 +460,14 @@ namespace Ferramentas_DLM
                 var pt = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
                 if (!cancelado)
                 {
-                    Tabelas.Pecas(pcs, pt, 0);
+
+                    var separar = Conexoes.Utilz.Pergunta("Separar as peças e gerar tabelas por família?");
+                    Tabelas.Pecas(pcs, separar, pt, 0);
                 }
             }
 
         }
+
 
         private List<DLMCam.ReadCam> _cams { get; set; } = new List<DLMCam.ReadCam>();
         public List<DLMCam.ReadCam> GetCams(bool atualizar = false)
@@ -718,13 +1036,24 @@ namespace Ferramentas_DLM
 
             if (converter_padrao_dbf)
             {
-                return GetDBF(ref erros ,marcas, posicoes);
+                return ConverterParaDBF(ref erros ,marcas, posicoes);
             }
             else
             {
                 var lista = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
                 return lista;
             }
+        }
+        public List<MarcaTecnoMetal> GetMarcasPranchas()
+        {
+            if(!this.E_Tecnometal())
+            {
+                return new List<MarcaTecnoMetal>();
+            }
+            List<MarcaTecnoMetal> retorno = new List<MarcaTecnoMetal>();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            var pcs = GetPecasPranchas(ref erros);
+            return GetMarcas(pcs);
         }
         public DB.Tabela GetPecasPranchas(ref List<Conexoes.Report> erros, List<string> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
         {
@@ -822,7 +1151,7 @@ namespace Ferramentas_DLM
 
             if (converter_padrao_dbf)
             {
-                return GetDBF(ref erros, marcas, posicoes);
+                return ConverterParaDBF(ref erros, marcas, posicoes);
             }
             else
             {
@@ -844,7 +1173,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        private DB.Tabela GetDBF(ref List<Conexoes.Report> erros, DB.Tabela marcas, DB.Tabela posicoes)
+        private DB.Tabela ConverterParaDBF(ref List<Conexoes.Report> erros, DB.Tabela marcas, DB.Tabela posicoes)
         {
             var lista = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
             List<string> colunas = new List<string>();
@@ -1314,7 +1643,7 @@ namespace Ferramentas_DLM
 
             if(opcao =="Polyline")
             {
-                var sel = SelecionarObjetos();
+                var sel = SelecionarObjetos( Tipo_Selecao.Polyline);
                 var pols = this.Getpolylinhas();
                 if (pols.Count > 0)
                 {
@@ -1401,9 +1730,9 @@ namespace Ferramentas_DLM
 
 
 
-        public void InserirArremate(string marca = "", string posicao = "", int quantidade = 1, string ficha = null, Conexoes.Bobina bobina = null, bool chapa_fina = true, string mercadoria = null)
+        public void InserirArremate(double escala,string marca = "", string posicao = "", int quantidade = 1, string ficha = null, Conexoes.Bobina bobina = null, bool chapa_fina = true, string mercadoria = null)
         {
-
+            this.SetEscala(escala);
             if (marca == "")
             {
                 marca = PromptMarca("ARR-");
@@ -1411,7 +1740,7 @@ namespace Ferramentas_DLM
             if (marca == null | marca == "") { return; }
 
 
-            SelecionarObjetos();
+            SelecionarObjetos( Tipo_Selecao.Polyline);
             var pols = this.Getpolylinhas();
             if (pols.Count > 0)
             {
@@ -1509,11 +1838,11 @@ namespace Ferramentas_DLM
                     {
                         if (chapa_fina)
                         {
-                            Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Arremate, this.Getescala(), posicao);
+                            Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Arremate, escala, posicao);
                         }
                         else
                         {
-                            Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Chapa, this.Getescala(), posicao);
+                            Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Chapa, escala, posicao);
                         }
 
                         if (pa.GerarCam == Opcao.Sim)
@@ -1560,8 +1889,9 @@ namespace Ferramentas_DLM
 
             }
         }
-        public void InserirChapa(string marca = "", string posicao = "", string material =null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null)
+        public void InserirChapa(double escala, string marca = "", string posicao = "", string material =null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null)
         {
+            this.SetEscala(escala);
             if (marca == "")
             {
                 marca = PromptMarca("CH-");
@@ -1633,11 +1963,11 @@ namespace Ferramentas_DLM
                         {
                             if (chapa_fina)
                             {
-                                Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Arremate, this.Getescala(), posicao);
+                                Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Arremate, escala, posicao);
                             }
                             else
                             {
-                                Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Chapa, this.Getescala(), posicao);
+                                Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Chapa, escala, posicao);
                             }
 
                             if (pa.GerarCam == Opcao.Sim)
@@ -1675,8 +2005,9 @@ namespace Ferramentas_DLM
                 }
             }
         }
-        public void InserirElementoUnitario(string marca = "", string posicao = "", double quantidade = 0, string mercadoria = null, Conexoes.RMA peca = null)
+        public void InserirElementoUnitario(double escala, string marca = "", string posicao = "", double quantidade = 0, string mercadoria = null, Conexoes.RMA peca = null)
         {
+            this.SetEscala(escala);
             if (marca == "")
             {
                 marca = PromptMarca("PC-");
@@ -1730,12 +2061,12 @@ namespace Ferramentas_DLM
                     return;
                 }
 
-                Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, this.Getescala(), posicao,mercadoria);
+                Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, escala, posicao,mercadoria);
             }
         }
-        public void InserirElementoM2(string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_Perfil perfil = null, string mercadoria = null)
+        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_Perfil perfil = null, string mercadoria = null)
         {
-
+            this.SetEscala(escala);
             if (marca == "")
             {
                 marca = PromptMarca("PC-");
@@ -1797,7 +2128,7 @@ namespace Ferramentas_DLM
 
                             if (!status)
                             {
-                                Blocos.MarcaElemM2(ponto, perfil, marca, quantidade, comprimento, largura, area, perimetro, ficha, material, this.Getescala(), posicao,mercadoria);
+                                Blocos.MarcaElemM2(ponto, perfil, marca, quantidade, comprimento, largura, area, perimetro, ficha, material, escala, posicao,mercadoria);
                             }
                         }
                     }
@@ -1805,9 +2136,9 @@ namespace Ferramentas_DLM
             }
 
         }
-        public void InserirPerfil(string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_Perfil perfil = null, string mercadoria = null)
+        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_Perfil perfil = null, string mercadoria = null)
         {
-
+            this.SetEscala(escala);
             if (marca == "")
             {
                 marca = PromptMarca("PF-");
@@ -1870,7 +2201,7 @@ namespace Ferramentas_DLM
 
                                 if (!status)
                                 {
-                                    Blocos.MarcaPerfil(ponto, marca, comprimento, perfil, quantidade, material, ficha, 0, 0, this.Getescala(), posicao,mercadoria);
+                                    Blocos.MarcaPerfil(ponto, marca, comprimento, perfil, quantidade, material, ficha, 0, 0, escala, posicao,mercadoria);
                                 }
                             }
                         }
@@ -1879,8 +2210,9 @@ namespace Ferramentas_DLM
                 }
             }
         }
-        public void InserirMarcaComposta(string nome, string mercadoria, double quantidade, string ficha)
+        public void InserirMarcaComposta(double escala, string nome, string mercadoria, double quantidade, string ficha)
         {
+            this.SetEscala(escala);
             bool cancelado = true;
             var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
 
@@ -1889,12 +2221,12 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, this.Getescala());
+            Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
 
         }
-        public MarcaTecnoMetal InserirMarcaComposta()
+        public MarcaTecnoMetal InserirMarcaComposta(double escala)
         {
-
+            this.SetEscala(escala);
             bool cancelado = true;
             var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
 
@@ -1915,7 +2247,7 @@ namespace Ferramentas_DLM
                         string mercadoria = this.PromptMercadoria();
                         if (mercadoria != null && mercadoria != "")
                         {
-                            Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, this.Getescala());
+                            Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
                          
 
                             return this.GetMarcasCompostas().Find(x=>x.Marca == nome);
@@ -1926,11 +2258,13 @@ namespace Ferramentas_DLM
             return null;
         }
 
+
+
         public void Mercadorias()
         {
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var selecao = SelecionarObjetos();
+                var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if(marcas.Count>0)
@@ -1949,15 +2283,11 @@ namespace Ferramentas_DLM
                
             }
         }
-
-
-
-
         public void Materiais()
         {
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                var selecao = SelecionarObjetos();
+                var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
@@ -1975,14 +2305,13 @@ namespace Ferramentas_DLM
                 }
             }
         }
-
         public void Tratamentos()
         {
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
 
-                var selecao = SelecionarObjetos();
+                var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
 
                 var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
 

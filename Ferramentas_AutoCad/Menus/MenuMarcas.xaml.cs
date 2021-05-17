@@ -34,6 +34,7 @@ namespace Ferramentas_DLM
         public string Prefix { get; set; } = "P";
         public string Sufix { get; set; } = "01";
         public double Quantidade { get; set; } = 1;
+        public double Escala { get; set; } = 1;
 
         public static List<DB.Valor> lista_mercadorias { get; set; } = new List<DB.Valor>();
         public string NomeFim
@@ -48,7 +49,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                var s = tipo_marca_combo.SelectedItem;
+                var s = combo_tipo_marca.SelectedItem;
                 if (s is Tipo_Bloco)
                 {
                     return (Tipo_Bloco)s;
@@ -61,9 +62,9 @@ namespace Ferramentas_DLM
         {
             get
             {
-                if (mercadoria.SelectedItem is string)
+                if (combo_mercadoria.SelectedItem is string)
                 {
-                    return mercadoria.SelectedItem as string;
+                    return combo_mercadoria.SelectedItem as string;
                 }
                 return null;
             }
@@ -72,9 +73,9 @@ namespace Ferramentas_DLM
         {
             get
             {
-                if (material.SelectedItem is string)
+                if (combo_material.SelectedItem is string)
                 {
-                    return material.SelectedItem as string;
+                    return combo_material.SelectedItem as string;
                 }
                 return null;
             }
@@ -106,16 +107,17 @@ namespace Ferramentas_DLM
             try
             {
                 TecnoMetal = tecnoMetal;
-                this.mercadoria.ItemsSource = TecnoMetal.GetMercadorias();
-                this.material.ItemsSource = TecnoMetal.GetMateriais();
+                this.combo_mercadoria.ItemsSource = TecnoMetal.GetMercadorias();
+                this.combo_material.ItemsSource = TecnoMetal.GetMateriais();
 
+                this.Escala = TecnoMetal.Getescala();
 
-                tipo_marca_combo.ItemsSource = Conexoes.Utilz.GetLista_Enumeradores<Tipo_Bloco>().ToList().FindAll(x=> x!= Tipo_Bloco._ && x!= Tipo_Bloco.DUMMY);
+                combo_tipo_marca.ItemsSource = Conexoes.Utilz.GetLista_Enumeradores<Tipo_Bloco>().ToList().FindAll(x=> x!= Tipo_Bloco._ && x!= Tipo_Bloco.DUMMY);
 
-                tipo_marca_combo.SelectedIndex = 0;
+                combo_tipo_marca.SelectedIndex = 0;
 
-                this.mercadoria.SelectedIndex = 0;
-                this.material.SelectedIndex = 0;
+                this.combo_mercadoria.SelectedIndex = 0;
+                this.combo_material.SelectedIndex = 0;
 
                 this.DataContext = this;
                 Update(tecnoMetal);
@@ -217,11 +219,17 @@ namespace Ferramentas_DLM
 
         private void criar_bloco(object sender, RoutedEventArgs e)
         {
+            double escala = Conexoes.Utilz.Double(txt_escala.Text);
+            if(escala<1)
+            {
+                Conexoes.Utilz.Alerta("Valor escala inválido.");
+                return;
+            }
             var ms = MenuMarcas.TecnoMetal.GetMarcas().ToList();
             var pos = ms.SelectMany(x => x.GetPosicoes()).ToList();
 
             var qtd_double = Conexoes.Utilz.Double(this.quantidade.Text);
-            if ((bool)m_composta.IsChecked)
+            if ((bool)rad_m_composta.IsChecked)
             {
                 if (this.marca_selecionada == null)
                 {
@@ -340,7 +348,7 @@ namespace Ferramentas_DLM
             string nomeMarca = "";
             string nomePos = "";
 
-            if((bool)m_simples.IsChecked)
+            if((bool)rad_m_simples.IsChecked)
             {
                 nomeMarca = this.NomeFim;
             }
@@ -357,33 +365,33 @@ namespace Ferramentas_DLM
                     var sel = Conexoes.Utilz.SelecionaCombo(new List<string> { "Sem Dobras", "Com Dobras" }, null);
                     if(sel == "Com Dobras")
                     {
-                        this.mercadoria.Text = "PERFIL DOBRADO";
-                        MenuMarcas.TecnoMetal.InserirArremate(nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, false, this.db_mercadoria);
+                        this.combo_mercadoria.Text = "PERFIL DOBRADO";
+                        MenuMarcas.TecnoMetal.InserirArremate(escala,nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, false, this.db_mercadoria);
                     }
                     else if(sel == "Sem Dobras")
                     {
-                        MenuMarcas.TecnoMetal.InserirChapa(nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
+                        MenuMarcas.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
                     }
                   
                     break;
                 case Tipo_Bloco.Perfil:
-                    MenuMarcas.TecnoMetal.InserirPerfil(nomeMarca, nomePos, this.db_material, this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil, this.db_mercadoria);
+                    MenuMarcas.TecnoMetal.InserirPerfil(escala, nomeMarca, nomePos, this.db_material, this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil, this.db_mercadoria);
                     break;
                 case Tipo_Bloco.Elemento_M2:
-                    MenuMarcas.TecnoMetal.InserirElementoM2(nomeMarca, nomePos,this.db_material,this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil,this.db_mercadoria);
+                    MenuMarcas.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos,this.db_material,this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil,this.db_mercadoria);
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    MenuMarcas.TecnoMetal.InserirElementoUnitario(nomeMarca, nomePos, qtd_double, this.db_mercadoria, MenuMarcas.db_unitario);
+                    MenuMarcas.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.db_mercadoria, MenuMarcas.db_unitario);
                     break;
                 case Tipo_Bloco.Arremate:
                     var sel2 = Conexoes.Utilz.SelecionaCombo(new List<string> { "Corte", "Vista" }, null);
                     if (sel2 == "Corte")
                     {
-                        MenuMarcas.TecnoMetal.InserirArremate(nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, true, this.db_mercadoria);
+                        MenuMarcas.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, true, this.db_mercadoria);
                     }
                     else if (sel2 == "Vista")
                     {
-                        MenuMarcas.TecnoMetal.InserirChapa(nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
+                        MenuMarcas.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
                     }
                     break;
                 case Tipo_Bloco._:
@@ -408,7 +416,8 @@ namespace Ferramentas_DLM
         {
 
             this.Visibility = Visibility.Collapsed;
-            var nova = MenuMarcas.TecnoMetal.InserirMarcaComposta();
+            
+            var nova = MenuMarcas.TecnoMetal.InserirMarcaComposta(MenuMarcas.TecnoMetal.Getescala());
             if (nova != null)
             {
                 this.Update(MenuMarcas.TecnoMetal);
@@ -426,14 +435,16 @@ namespace Ferramentas_DLM
 
         private void SetTextos()
         {
+            if (perfil == null) { return; }
             perfil.Content = "...";
 
+            this.bt_criar.IsEnabled = true;
 
             this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0');
             this.tratamento.Visibility = Visibility.Visible;
-            this.material.Visibility = Visibility.Visible;
+            this.combo_material.Visibility = Visibility.Visible;
 
-            if((bool)m_composta.IsChecked)
+            if((bool)rad_m_composta.IsChecked)
             {
                 this.prefix.Text = "M";
             }
@@ -450,8 +461,8 @@ namespace Ferramentas_DLM
                     {
                         perfil.Content = db_chapa.ToString();
                     }
-                    mercadoria.Text = "CHAPA";
-                    material.Text = "CIVIL 350";
+                    combo_mercadoria.Text = "CHAPA";
+                    combo_material.Text = "CIVIL 350";
                     this.tratamento.Visibility = Visibility.Visible;
                     break;
                 case Tipo_Bloco.Perfil:
@@ -459,7 +470,7 @@ namespace Ferramentas_DLM
                     {
                         perfil.Content = db_perfil.ToString();
                     }
-                    material.Text = "CIVIL 350";
+                    combo_material.Text = "CIVIL 350";
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     if (db_perfil_m2 != null)
@@ -467,8 +478,8 @@ namespace Ferramentas_DLM
                         perfil.Content = db_perfil_m2.ToString();
 
                     }
-                    mercadoria.Text = "CHAPA DE PISO";
-                    material.Text = "A572";
+                    combo_mercadoria.Text = "CHAPA DE PISO";
+                    combo_material.Text = "A572";
 
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
@@ -476,9 +487,15 @@ namespace Ferramentas_DLM
                     {
                         perfil.Content = db_unitario.ToString();
                     }
-                    mercadoria.Text = "ALMOX";
-                    material.Text = "A325";
-                    this.material.Visibility = Visibility.Collapsed;
+
+                    if((bool)rad_m_simples.IsChecked)
+                    {
+                        bt_criar.IsEnabled = false;
+                    }
+
+                    combo_mercadoria.Text = "ALMOX";
+                    combo_material.Text = "A325";
+                    this.combo_material.Visibility = Visibility.Collapsed;
                     this.tratamento.Visibility = Visibility.Collapsed;
                     this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0') + "_A";
                     break;
@@ -487,8 +504,8 @@ namespace Ferramentas_DLM
                     {
                         perfil.Content = db_bobina.ToString();
                     }
-                    mercadoria.Text = "ARREMATE";
-                    material.Text = "PP ZINC";
+                    combo_mercadoria.Text = "ARREMATE";
+                    combo_material.Text = "PP ZINC";
                     this.tratamento.Visibility = Visibility.Collapsed;
                     break;
                 case Tipo_Bloco._:
@@ -670,6 +687,11 @@ namespace Ferramentas_DLM
         {
             this.Visibility = Visibility.Collapsed;
             Comandos.marcarmontagem();
+        }
+
+        private void rad_m_simples_Checked(object sender, RoutedEventArgs e)
+        {
+            SetTextos();
         }
     }
 }

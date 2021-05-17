@@ -92,9 +92,18 @@ namespace Ferramentas_DLM
                     LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
 
                     // Turn the layer off
-                    acLyrTblRec.IsOff = !on;
-                    acLyrTblRec.IsFrozen = false;
-                    acLyrTblRec.IsLocked = false;
+                    try
+                    {
+                        acLyrTblRec.IsOff = !on;
+
+                        acLyrTblRec.IsFrozen = false;
+                        acLyrTblRec.IsLocked = false;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+  
 
                     acTrans.Commit();
                 }

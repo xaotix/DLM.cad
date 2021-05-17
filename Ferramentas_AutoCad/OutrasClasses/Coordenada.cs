@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferramentas_DLM.Classes
+namespace Ferramentas_DLM
 {
 
     public class Coordenada

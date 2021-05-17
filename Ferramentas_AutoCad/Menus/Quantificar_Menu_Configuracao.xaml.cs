@@ -45,7 +45,7 @@ namespace Ferramentas_DLM.Menus
                 return;
             }
 
-            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0)
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
                 var qtd = Conexoes.Utilz.Prompt(sel.Descricao, 30);
                 if (qtd != null && qtd != "")
@@ -67,7 +67,7 @@ namespace Ferramentas_DLM.Menus
                     try
                     {
                         this.lista.ItemsSource = null;
-                        var nv = sel.Agrupar(new List<string> { col });
+                        var nv = sel.Agrupar(new List<string> { col },sel.Nome_Bloco);
                         this.filtro.Remove(sel);
                         this.filtro.AddRange(nv);
                         this.filtro = this.filtro.OrderBy(x => x.Nome).ToList();
@@ -89,7 +89,7 @@ namespace Ferramentas_DLM.Menus
             }
 
 
-            if (sel.Tipo== Tipo_Objeto.Texto | sel.GetAtributos().Count==0)
+            if (sel.Tipo== Tipo_Objeto.Texto | sel.GetAtributos().Count==0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
                 bool status = false;
                 var qtd = Conexoes.Utilz.Prompt(sel.Quantidade, out status);
@@ -117,9 +117,9 @@ namespace Ferramentas_DLM.Menus
 
         private void Update()
         {
-            filtro = filtro.GroupBy(x => x.Nome).Select(x => new PCQuantificar(x.ToList())).ToList().OrderBy(x => x.Nome).ToList();
+            filtro = filtro.GroupBy(x => x.Numero + "|" + x.Nome).Select(x => new PCQuantificar(x.ToList())).ToList().OrderBy(x => x.Nome).ToList();
             this.lista.ItemsSource = null;
-            this.lista.ItemsSource = filtro;
+            this.lista.ItemsSource = filtro.OrderBy(x => x.Numero + "|" + x.Nome).ToList(); 
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -144,7 +144,7 @@ namespace Ferramentas_DLM.Menus
             {
                 return;
             }
-            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0)
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
                 var qtd = Conexoes.Utilz.Prompt(sel.Descricao,30);
                 if (qtd!=null && qtd!="")
@@ -197,7 +197,7 @@ namespace Ferramentas_DLM.Menus
             {
                 return;
             }
-            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0)
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
                 var qtd = Conexoes.Utilz.Prompt(sel.Numero, 4);
                 if (qtd != null && qtd != "")
@@ -230,7 +230,7 @@ namespace Ferramentas_DLM.Menus
             {
                 return;
             }
-            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0)
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
                 var qtd = Conexoes.Utilz.Prompt(sel.Destino, 4);
                 if (qtd != null && qtd != "")
@@ -253,6 +253,101 @@ namespace Ferramentas_DLM.Menus
                     Update();
                 }
 
+            }
+        }
+
+        private void editar_filtro_familia(object sender, RoutedEventArgs e)
+        {
+            PCQuantificar sel = ((FrameworkElement)sender).DataContext as PCQuantificar;
+            if (sel == null)
+            {
+                return;
+            }
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
+            {
+                var qtd = Conexoes.Utilz.Prompt(sel.Destino, 4);
+                if (qtd != null && qtd != "")
+                {
+                    sel.Destino = qtd;
+                    Update();
+                }
+                return;
+            }
+
+
+            if (sel.GetAtributos().Count > 0)
+            {
+                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                if (col != null)
+                {
+                    lista.ItemsSource = null;
+                    sel.SetFamiliaPorAtributo(col);
+
+                    Update();
+                }
+
+            }
+        }
+
+        private void set_familia(object sender, RoutedEventArgs e)
+        {
+           if(selecoes.Count>0)
+            {
+                var nova = Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Familia);
+                if(nova==null | nova == "") { return; }
+                foreach(var s in selecoes)
+                {
+                    s.Familia = nova;
+                }
+                Update();
+            }
+        }
+        public List<PCQuantificar> selecoes { get; set; } = new List<PCQuantificar>();
+        private void lista_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selecoes = lista.SelectedItems.Cast<object>().ToList().FindAll(x => x is PCQuantificar).Select(x=> x as PCQuantificar).ToList();
+        }
+
+        private void set_descricao(object sender, RoutedEventArgs e)
+        {
+            if (selecoes.Count > 0)
+            {
+                var nova = Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Descricao);
+                if (nova == null | nova == "") { return; }
+                foreach (var s in selecoes)
+                {
+                    s.Descricao = nova;
+                }
+                Update();
+            }
+
+        }
+
+        private void set_quantidade(object sender, RoutedEventArgs e)
+        {
+            if (selecoes.Count > 0)
+            {
+                var nova = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Quantidade.ToString()));
+                if (nova<=0) { return; }
+                foreach (var s in selecoes)
+                {
+                    s.Quantidade = nova;
+                }
+                Update();
+            }
+        }
+
+        private void set_numero(object sender, RoutedEventArgs e)
+        {
+            if (selecoes.Count > 0)
+            {
+                var nova = Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Numero);
+                if (nova == null | nova == "") { return; }
+                foreach (var s in selecoes)
+                {
+                    s.Numero = nova;
+                }
+                Update();
             }
         }
     }

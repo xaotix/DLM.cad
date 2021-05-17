@@ -698,7 +698,7 @@ namespace Ferramentas_DLM
         {
             //AddMensagem("Origem: " + centro + "\n");
             Hashtable ht = new Hashtable();
-            ht.Add("Nº", Conexoes.Utilz.getLetra(c));
+            ht.Add("N", Conexoes.Utilz.getLetra(c));
 
             ht.Add("COMP", Comp.ToString());
             ht.Add("OFFSET1", offset1.ToString());
@@ -720,7 +720,7 @@ namespace Ferramentas_DLM
         {
             //AddMensagem("Origem: " + centro + "\n");
             Hashtable ht = new Hashtable();
-            ht.Add("Nº", Conexoes.Utilz.getLetra(c));
+            ht.Add("N", Conexoes.Utilz.getLetra(c));
             ht.Add("TIP", tip);
             ht.Add("DESC", desc.ToString());
             ht.Add("COMP", Comp.ToString());

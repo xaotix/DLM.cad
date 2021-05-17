@@ -6,8 +6,14 @@
              xmlns:local="clr-namespace:Ferramentas_DLM.Menus"
              mc:Ignorable="d" 
             Closing="Window_Closing"
+            WindowStartupLocation="CenterScreen"
+        MinWidth="475"
+        MinHeight="325"
              Width="475" Height="325">
     <Window.Resources>
+        <Style TargetType="ListBox">
+            <Setter Property="Margin" Value="2"></Setter>
+        </Style>
         <Style TargetType="RadioButton">
             <Setter Property="Margin" Value="2"></Setter>
         </Style>
@@ -167,78 +173,124 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="150"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid Margin="3" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <ComboBox Name="lista_blocos" SelectionChanged="set_imagem"></ComboBox>
-                <Image Name="imagem" Grid.Row="1" Margin="5"/>
-            </Grid>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+    <TabControl>
+        <TabItem Header="Indicação">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>   
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+                <Grid>
 
-                <Label Grid.Row="0" Grid.Column="0" Content="Tipo de Peça:"></Label>
-                <ComboBox Grid.Row="0" Grid.Column="1" Name="tipo_de_peca" SelectionChanged="tipo_de_peca_SelectionChanged"></ComboBox>
-                <Button Content="[...]" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Name="peca_selecionar" Click="peca_selecionar_Click"></Button>
+                   
 
-                <Label Grid.Row="2" Grid.Column="0" Content="Código:"></Label>
-                <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="codigo" MaxLength="15"></TextBox>
-                
-                <Label Grid.Row="2" Grid.Column="2" Content="Destino:"></Label>
-                <TextBox Text="" Grid.Row="2" Grid.Column="3" Name="destino_txt" MaxLength="15"></TextBox>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
 
-                <Label Grid.Row="3" Grid.Column="0" Content="Qtd.:"></Label>
-                <TextBox Text="{Binding qtd}" Grid.Row="3" Grid.Column="1" Name="quantidade" MaxLength="4"></TextBox>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Tipo de Peça:"></Label>
+                        <ComboBox Grid.Row="0" Grid.Column="1" Name="combo_tipo_de_peca" SelectionChanged="tipo_de_peca_SelectionChanged"></ComboBox>
+                        <Button Content="[...]" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Name="bt_peca_selecionar" Click="peca_selecionar_Click"></Button>
 
-                <Label Grid.Row="3" Grid.Column="2" Content="Comp.:"></Label>
-                <TextBox Text="{Binding comp}" Grid.Row="3" Grid.Column="3" Name="comprimento" MaxLength="5"></TextBox>
+                        <Label Grid.Row="2" Grid.Column="0" Content="Código:"></Label>
+                        <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="txt_codigo" MaxLength="9"></TextBox>
 
-                <Label Grid.Row="4" Grid.Column="0" Content="Desc.:"></Label>
-                <TextBox Text="" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="descricao_txt" MaxLength="4"></TextBox>
+                        <Label Grid.Row="2" Grid.Column="2" Content="Destino:"></Label>
+                        <TextBox Text="" Grid.Row="2" Grid.Column="3" Name="txt_destino" MaxLength="10"></TextBox>
+
+                        <Label Grid.Row="3" Grid.Column="0" Content="Qtd.:"></Label>
+                        <TextBox Text="{Binding qtd}" Grid.Row="3" Grid.Column="1" Name="txt_quantidade" MaxLength="4"></TextBox>
+
+                        <Label Grid.Row="3" Grid.Column="2" Content="Comp.:"></Label>
+                        <TextBox Text="{Binding comp}" Grid.Row="3" Grid.Column="3" Name="txt_comprimento" MaxLength="5"></TextBox>
+
+                        <Label Grid.Row="4" Grid.Column="0" Content="Desc.:"></Label>
+                        <TextBox Text="" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="txt_descricao" MaxLength="25"></TextBox>
 
 
-                <Label Grid.Row="5" Grid.Column="0" Content="Ficha:"></Label>
-                <TextBox Text="FICHA 01" Grid.Row="5" Grid.Column="1" Name="ficha" MaxLength="4" CharacterCasing="Upper"></TextBox>
+                        <Label Grid.Row="5" Grid.Column="0" Content="Ficha:"></Label>
+                        <TextBox Text="FICHA 01" Grid.Row="5" Grid.Column="1" Name="ficha" MaxLength="15" CharacterCasing="Upper"></TextBox>
 
-                <Label Grid.Row="5" Grid.Column="2" Content="Família:"></Label>
-                <TextBox Text="PEÇA" Grid.Row="5" Grid.Column="3" Name="familia" MaxLength="4" CharacterCasing="Upper"></TextBox>
+                        <Label Grid.Row="5" Grid.Column="2" Content="Família:"></Label>
+                        <TextBox Text="PEÇA" Grid.Row="5" Grid.Column="3" Name="familia" MaxLength="25" CharacterCasing="Upper"></TextBox>
 
-                <Label Grid.Row="7" Grid.Column="0" Content="N°:"></Label>
-                <TextBox Text="01" Grid.Row="7" Grid.Column="1" Name="numero" MaxLength="3" CharacterCasing="Upper"></TextBox>
-
-                <Label Grid.Row="7" Grid.Column="2" Content="Escala:"></Label>
-                <TextBox  Text="{Binding escala}" Grid.Row="7" Grid.Column="3" Name="escala_txt" MaxLength="3" CharacterCasing="Upper"></TextBox>
+                      
+                    </Grid>
+                </Grid>
+                <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="10">
+                    <Button Content="Inserir" Click="Button_Click" FontSize="16" FontWeight="Bold"></Button>
+                </WrapPanel>
             </Grid>
+        </TabItem>
+            <TabItem Header="Mapear Vista TecnoMetal" Name="vista_tecnometal">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Content="Mapear Contraventos e ajusta-los:" x:Name="chk_mapear_contraventos"></CheckBox>
+                    <ListBox IsEnabled="{Binding ElementName=chk_mapear_contraventos, Path=IsChecked,TargetNullValue=false}" Grid.Row="1" Grid.ColumnSpan="2" x:Name="lista_perfis_ctv"></ListBox>
+                    <CheckBox IsEnabled="{Binding ElementName=chk_mapear_contraventos, Path=IsChecked,TargetNullValue=false}" x:Name="chk_bloco_ctv" Content="Inserir bloco de indicação" Grid.Row="3" IsChecked="True"></CheckBox>
+                    <CheckBox IsEnabled="{Binding ElementName=chk_mapear_contraventos, Path=IsChecked,TargetNullValue=false}" x:Name="chk_agrupar" Content="Agrupar tirantes próximos iguais" Grid.Row="4" IsChecked="True"></CheckBox>
+                    <CheckBox  x:Name="chk_mapear_pecas" Content="Mapear todas as peças TecnoMetal" Grid.Row="5" IsChecked="True"></CheckBox>
+                    <Label HorizontalAlignment="Right" Grid.Row="2" Content="Arredondamento:"/>
+                    <TextBox IsEnabled="{Binding ElementName=chk_mapear_contraventos, Path=IsChecked,TargetNullValue=false}" Grid.Row="2" Grid.Column="2" Text="{Binding arredondamento}" Name="txt_arredondamento"></TextBox>
+                    <WrapPanel  HorizontalAlignment="Right" Grid.Row="10" Grid.Column="10" VerticalAlignment="Bottom">
+                        <Button Content="Mapear" Click="mapear_contraventos" FontSize="16" FontWeight="Bold" IsDefault="True"></Button>
+                    </WrapPanel>
+                </Grid>
+                
+            </TabItem>
+    </TabControl>
+        <Grid Margin="3" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ComboBox Name="combo_lista_blocos" SelectionChanged="set_imagem" Grid.ColumnSpan="2"></ComboBox>
+            <Image Name="caixa_imagem" Grid.Row="1" Margin="5" Grid.ColumnSpan="2"/>
+
+            <Label HorizontalAlignment="Right"  Grid.Row="3" Grid.Column="0" Content="Sequencial:"></Label>
+            <TextBox Text="{Binding sequencial}" Grid.Row="3" Grid.Column="1" Name="txt_sequencial" MaxLength="3" CharacterCasing="Upper"></TextBox>
+
+            <Label HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="Escala:"></Label>
+            <TextBox  Text="{Binding escala}" Grid.Row="4" Grid.Column="3" Name="txt_escala" MaxLength="4" CharacterCasing="Upper"></TextBox>
         </Grid>
-        <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="10">
-            <Button Content="Inserir" Click="Button_Click" FontSize="16" FontWeight="Bold"></Button>
-        </WrapPanel>
     </Grid>
 </Window>

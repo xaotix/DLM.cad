@@ -38,6 +38,8 @@ namespace Ferramentas_DLM
             }
 
         }
+
+
         public static void Inserir(Document acDoc, string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
         {
             string endereco = "";
@@ -51,17 +53,24 @@ namespace Ferramentas_DLM
                 {
                     nome = Conexoes.Utilz.getNome(nome);
                 }
-                var s = Conexoes.Utilz.GetArquivos(Constantes.RaizArquivos + @"Simbologias\usr", nome + "*.dwg");
+                var s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_TecnoMetal_Marcacao, nome + ".dwg");
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(Constantes.RaizArquivos + @"Simbologias", nome + "*.dwg"); ;
+                    s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_TecnoMetal_Simbologias, nome + ".dwg"); ;
                 }
 
 
+                s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_Indicacao, nome + ".dwg");
+
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(Constantes.RaizArquivos + @"Blocos\SELO A2", nome + "*.dwg", SearchOption.AllDirectories);
+                    s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_Pcs, nome + ".dwg"); ;
+                }
+
+                if (s.Count == 0)
+                {
+                    s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_A2, nome + ".dwg", SearchOption.AllDirectories);
                 }
                 if (s.Count == 0)
                 {
@@ -238,7 +247,7 @@ namespace Ferramentas_DLM
 
                             acBlkTbl.DowngradeOpen();
 
-                            editor.Regen();
+                           // editor.Regen();
 
                             acTrans.Commit();
                         }
@@ -319,9 +328,9 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_MAR, pf.Marca);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, pf.Descricao);
-                ht.Add(Constantes.ATT_QTD, pf.Quantidade.ToString().Replace(",", ""));
-                ht.Add(Constantes.ATT_CMP, pf.Comprimento.ToString().Replace(",", ""));
-                ht.Add(Constantes.ATT_LRG, pf.Largura.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_QTD, pf.Quantidade.ToString("N4").Replace(",", ""));
+                ht.Add(Constantes.ATT_CMP, pf.Comprimento.ToString("N0").Replace(",", ""));
+                ht.Add(Constantes.ATT_LRG, pf.Largura.ToString("N0").Replace(",", ""));
                 ht.Add(Constantes.ATT_ESP, pf.Espessura.ToString("N2").Replace(",", ""));
                 ht.Add(Constantes.ATT_MAT, pf.Material);
                 ht.Add(Constantes.ATT_FIC, pf.Ficha);

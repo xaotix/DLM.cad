@@ -79,7 +79,12 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="DataGridExtensions, Version=2.5.1.0, Culture=neutral, PublicKeyToken=43de855f87de903a, processorArchitecture=MSIL">
-      <HintPath>..\packages\DataGridExtensions.2.5.1\lib\net45\DataGridExtensions.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\DataGridExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="DataGridFilterLibrary, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\DataGridFilterLibrary.dll</HintPath>
     </Reference>
     <Reference Include="DB, Version=3.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -183,10 +188,12 @@
     <Compile Include="Extensoes\Extensoes.cs" />
     <Compile Include="Comandos.cs" />
     <Compile Include="Funcoes\Atributos.cs" />
+    <Compile Include="OutrasClasses\CTV_de_para.cs" />
     <Compile Include="OutrasClasses\Furo.cs" />
     <Compile Include="OutrasClasses\LinhaFuros.cs" />
     <Compile Include="OutrasClasses\MarcaTecnoMetal.cs" />
     <Compile Include="OutrasClasses\PCQuantificar.cs" />
+    <Compile Include="OutrasClasses\BlocoTags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Construtores\Purlin.cs" />
     <Compile Include="Funcoes\Tabelas.cs" />
@@ -207,6 +214,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="DE_PARA_CTV.CFG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="IGNORAR.CFG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="iniciar.scr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
