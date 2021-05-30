@@ -10,58 +10,6 @@ using System.Threading.Tasks;
 
 namespace Ferramentas_DLM
 {
-    public enum Tipo_Objeto
-    {
-        Texto,
-        Bloco,
-    }
-    public enum Tipo_Calculo_Contorno
-    {
-        Maximo,
-        Bordas
-    }
-    public enum Opcao
-    {
-        Nao = 0,
-        Sim = 1,
-    }
-    public enum Tipo_Coordenada
-    {
-        Furo_Vista,
-        Furo_Corte,
-        Linha,
-        Projecao,
-        Sem,
-        Ponto,
-        Bloco,
-    }
-
-    public enum Tipo_Bloco
-    {
-        Chapa,
-        Perfil,
-        Elemento_M2,
-        Elemento_Unitario,
-        Arremate,
-        DUMMY,
-        DUMMY_Perfil,
-        _ = -1
-    }
-
-    public enum Tipo_Marca
-    {
-        MarcaComposta,
-        MarcaSimples,
-        Posicao,
-        _ = -1
-    }
-    public enum Tipo_Chapa
-    {
-        Fina,
-        Grossa,
-        Tudo,
-    }
-
     internal static class CAD
     {
         public static DocumentCollection documentManager
@@ -103,10 +51,14 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
-
+        public static string LineType_Eixos { get; set; } = "DASHDOT";
+        public static string LineType_ByLayer { get; set; } = "BYLAYER";
         public static string RaizApp { get; set; } =@"C:\Medabil\Ferramentas_DLM\";
-        public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
-        public static string Raiz_Blocos_A2 { get; set; } = Raiz + @"Blocos\SELO A2\";
+        public static string Raiz { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
+        //public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
+        public static string Raiz_Blocos { get; set; } = Raiz + @"Blocos\";
+        public static string Raiz_Blocos_A2 { get; set; } = Raiz_Blocos + @"SELO A2\";
+        public static string Raiz_MlStyles { get; set; } = Raiz_Blocos + @"Multilines\";
         public static string Raiz_Blocos_Listagem { get; set; } = Raiz_Blocos_A2 + @"Listagem\";
         public static string Raiz_Blocos_Pcs { get; set; } = Raiz_Blocos_Listagem + @"Peças Mapeáveis\";
         public static string Raiz_Blocos_Indicacao { get; set; } = Raiz_Blocos_A2 + @"Indicação\";
@@ -158,7 +110,10 @@ namespace Ferramentas_DLM
             }
             return _cts;
         }
-
+        public static List<string> GetArquivosMlStyles()
+        {
+            return Conexoes.Utilz.GetArquivos(Raiz_MlStyles, "*.mln");
+        }
         public static string Tabela_Correntes_Titulo { get; set; } = Raiz_Blocos_Listagem + @"CORRENTES_TITULO.dwg";
         public static string Tabela_Correntes { get; set; } = Raiz_Blocos_Listagem + @"CORRENTES.dwg";
         public static string Tabela_Tercas_Titulo { get; set; } = Raiz_Blocos_Listagem + @"TERCAS_TITULO.dwg";
@@ -180,6 +135,7 @@ namespace Ferramentas_DLM
 
         public static string Texto { get; set; } = Raiz_Blocos_Listagem + @"TEXTO.dwg";
 
+        
 
         public static string BL_M_Composta { get; set; } = "M8_COM";
         public static string BL_M_PERF { get; set; } = "M8_PRO";

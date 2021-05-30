@@ -1,10 +1,12 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using static Ferramentas_DLM.CAD;
@@ -90,29 +92,53 @@ namespace Ferramentas_DLM
                 }
             }
         }
+
         public static BlocoTags GetLinha(BlockReference bloco, Database acCurDb = null)
         {
+
             BlocoTags retorno = new BlocoTags();
 
             retorno.Bloco = bloco;
-            if(acCurDb==null)
+
+            if (acCurDb == null)
             {
                 acCurDb = CAD.acCurDb;
             }
+
+            var pai = Blocos.GetPai(bloco);
+
 
             using (DocumentLock acLckDoc = acDoc.LockDocument())
             {
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
+                    //var attCol = btr.AttributeCollection;
+
                     var attCol = bloco.AttributeCollection;
                     foreach (ObjectId objID in attCol)
                     {
-                        DBObject dbObj = acTrans.GetObject(objID, OpenMode.ForRead) as DBObject;
-                        AttributeReference acAttRef = dbObj as AttributeReference;
-                        retorno.Add(acAttRef.Tag, acAttRef.TextString);
+                        AttributeReference acAttRef = acTrans.GetObject(objID, OpenMode.ForRead) as AttributeReference;
+                       
+                        if(!acAttRef.Visible)
+                        {
+
+                        }
+
+                        if (!acAttRef.Visible && pai.IsDynamicBlock)
+                        {
+                            /*é pra evitar de puxar os dados de atributos ocultos das sets do bloco dinamico*/
+                        }
+                        else
+                        {
+                            retorno.Add(acAttRef.Tag, acAttRef.TextString);
+                        }
                     }
+
+
+
                 }
             }
+
             retorno.Tabela = bloco.Name;
             return retorno;
         }
@@ -121,5 +147,9 @@ namespace Ferramentas_DLM
             var s = GetLinha(bloco);
             return s.Get(atributo);
         }
+
+
+
+
     }
 }

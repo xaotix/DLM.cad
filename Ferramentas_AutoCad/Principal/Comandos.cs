@@ -78,7 +78,7 @@ namespace Ferramentas_DLM
         public static void LimparCotas()
         {
             Cotagem pp = new Cotagem();
-            pp.LimparCotas();
+            pp.ApagarCotas();
         }
         [CommandMethod("cotar")]
         public static void Cotar()
@@ -130,6 +130,25 @@ namespace Ferramentas_DLM
         }
 
 
+        [CommandMethod("testeml")]
+        public static void testeml()
+        {
+            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().Select(x=> Conexoes.Utilz.getNome(x)).ToList(), null);
+            if(estilo!=null)
+            {
+                var pts = Utilidades.PedirPontos3D();
+                if (pts.Count > 0)
+                {
+                    Utilidades.DesenharMLine(estilo, pts);
+                }
+            }
+
+
+
+
+        }
+
+
 
 
 
@@ -142,24 +161,27 @@ namespace Ferramentas_DLM
             var estilos = p.GetMLStyles();
             var layers = FLayer.Get();
             TercasMenu mm = new TercasMenu();
-            mm.tirantes_mlstyle.Items.AddRange(estilos.ToArray());
-            mm.correntes_mlstyle.Items.AddRange(estilos.ToArray());
             mm.furos_manuais_layer.Items.AddRange(layers.ToArray());
-            if (estilos.Find(x => x == p.CorrenteMLStyle) != null)
-            {
-                mm.correntes_mlstyle.Text = p.CorrenteMLStyle;
-            }
-            if (estilos.Find(x => x == p.TirantesMLStyle) != null)
-            {
-                mm.tirantes_mlstyle.Text = p.TirantesMLStyle;
-            }
+            mm.correntes_mlstyles.Items.AddRange(p.CorrenteMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
+            mm.tirantes_mlstyles.Items.AddRange(p.TirantesMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
+            mm.tercas_mlstyles.Items.AddRange(p.TercasMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
+
+
 
             if (layers.Find(x => x == p.MapeiaFurosManuaisLayer) != null)
             {
                 mm.furos_manuais_layer.Text = p.MapeiaFurosManuaisLayer;
             }
+            else if(mm.furos_manuais_layer.Items.Count>0)
+            {
+                mm.furos_manuais_layer.SelectedIndex = 0;
+            }
 
-            mm.tercas_mlstyles.Items.AddRange(p.TercasMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
+            if(mm.ficha_de_pintura.Items.Count>0)
+            {
+                mm.ficha_de_pintura.Text = "FICHA 01";
+            }
+
 
             mm.propertyGrid1.SelectedObject = p;
             mm.ShowDialog();
@@ -169,13 +191,13 @@ namespace Ferramentas_DLM
             p.FichaDePintura = mm.ficha_de_pintura.Text;
             p.MapeiaFurosManuais = mm.mapeia_furos_manuais.Checked;
             p.MapeiaFurosManuaisLayer = mm.furos_manuais_layer.Text;
-            p.TirantesMLStyle = mm.tirantes_mlstyle.Text;
             p.MapearTirantes = mm.mapeia_tirantes.Checked;
-
-            p.CorrenteMLStyle = mm.correntes_mlstyle.Text;
             p.MapearCorrentes = mm.mapeia_correntes.Checked;
             p.MapearTercas = mm.mapeia_tercas.Checked;
+            
             p.TercasMLStyles = mm.tercas_mlstyles.Items.Cast<string>().ToList();
+            p.TirantesMLStyles = mm.tirantes_mlstyles.Items.Cast<string>().ToList();
+            p.CorrenteMLStyles = mm.correntes_mlstyles.Items.Cast<string>().ToList();
 
 
             if (mm.id_terca != 1763)
@@ -236,7 +258,7 @@ namespace Ferramentas_DLM
             }
             else if (mm.acao == "excluir")
             {
-                p.Excluir();
+                p.ExcluirBlocosMarcas();
             }
             else if (mm.acao == "marcacao_purlin")
             {
@@ -445,7 +467,11 @@ namespace Ferramentas_DLM
             Conexoes.Utilz.ShowReports(erros);
         }
 
-
+        [CommandMethod("listarquantidadeblocos")]
+        public static void listarquantidadeblocos()
+        {
+            Utilidades.ListarQuantidadeBlocos();
+        }
 
 
         [CommandMethod("arremate")]
@@ -607,6 +633,13 @@ namespace Ferramentas_DLM
         }
 
 
+        [CommandMethod("criarlayersPadrao")]
+        public static void criarlayersPadrao()
+        {
+            ClasseBase p = new ClasseBase();
+            p.CriarLayersPadrao();
+        }
+
         ////[CommandMethod("3dmercadorias")]
         ////public void mercadorias3d()
         ////{
@@ -627,10 +660,18 @@ namespace Ferramentas_DLM
         }
 
 
-        [CommandMethod("testeimagem")]
-        public static void testeimagem()
+        [CommandMethod("testeeixos")]
+        public static void testeeixos()
         {
-   
+            ClasseBase p = new ClasseBase();
+
+            p.SelecionarObjetos();
+
+
+
+            var eixos = p.GetEixos();
+
+
         }
 
     }

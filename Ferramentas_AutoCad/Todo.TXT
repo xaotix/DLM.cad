@@ -1,6 +1,15 @@
 ﻿desenvolver ferramenta para criar object grouping
-fazer testes com dbf com quantidades quebradas
-fazer um esquema pra extrair uma tabela de vistas de montagem
 descobrir pra que servem os campos da DBF que deixo setado em branco, talvez utilizar pra gravar algo.
 
+Interface CAD
 
+Mapear
+	Purlin
+	Correntes
+	Tirantes
+	Suportes
+	Parafusos
+
+Agrupar em blocos ou grouping
+
+criar logica para lançar fachadas

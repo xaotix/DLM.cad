@@ -21,21 +21,21 @@ namespace Ferramentas_DLM
         private void button1_Click(object sender, EventArgs e)
         {
 
-            if (correntes_mlstyle.Text == "" && mapeia_correntes.Checked)
+            if (correntes_mlstyles.Items.Count==0&& mapeia_correntes.Checked)
             {
-                Utilidades.Alerta("Não é possivel mapear as correntes sem definir um estilo de MLinha");
+                Utilidades.Alerta("Não é possivel mapear as correntes sem ter um estilo de MLinha");
                 return;
             }
 
-            if (tirantes_mlstyle.Text== "" &&  mapeia_tirantes.Checked)
+            if (tirantes_mlstyles.Items.Count== 0 &&  mapeia_tirantes.Checked)
             {
-                Utilidades.Alerta("Não é possivel mapear os tirantes sem definir um estilo de MLinha");
+                Utilidades.Alerta("Não é possivel mapear os tirantes sem ter um estilo de MLinha");
                 return;
             }
 
             if (tercas_mlstyles.Items.Count == 0 && mapeia_tercas.Checked)
             {
-                Utilidades.Alerta("Não é possivel mapear os tercas sem definir um estilo de MLinha");
+                Utilidades.Alerta("Não é possivel mapear os tercas sem ter um estilo de MLinha");
                 return;
             }
             if (furos_manuais_layer.Text == "" && mapeia_furos_manuais.Checked)

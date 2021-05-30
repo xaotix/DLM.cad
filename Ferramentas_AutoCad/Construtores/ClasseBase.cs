@@ -25,6 +25,85 @@ namespace Ferramentas_DLM
     [Serializable]
     public class ClasseBase
     {
+        
+        public List<BlockReference> GetBlocosPrancha(string nome = "")
+        {
+            List<BlockReference> blocos = new List<BlockReference>();
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                foreach (ObjectId objId in acBlkTblRec)
+                {
+                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
+                    if (ent is BlockReference)
+                    {
+                        var s = ent as BlockReference;
+
+                        if (nome != "")
+                        {
+                            if(s.Name.Replace(" ","").ToUpper() == nome.ToUpper().Replace(" ", ""))
+                            {
+                                blocos.Add(s);
+                            }
+                        }
+                        else
+                        {
+                        blocos.Add(s);
+                        }
+
+                    }
+                }
+
+
+
+            }
+            return blocos;
+        }
+
+        public void ApagarCotas()
+        {
+            var sel = SelecionarObjetos(Tipo_Selecao.Dimensoes);
+            List<Entity> remover = new List<Entity>();
+            foreach (var acEnt in selecoes)
+            {
+                if (
+                          acEnt is AlignedDimension |
+                          acEnt is OrdinateDimension |
+                          acEnt is RadialDimension |
+                          acEnt is RotatedDimension |
+                          acEnt is MLeader |
+                          acEnt is Leader |
+                          acEnt is MText |
+                          acEnt is DBText |
+                          acEnt is Dimension
+                          )
+                {
+                    remover.Add(acEnt);
+                }
+            }
+
+            Apagar(remover);
+
+
+        }
+        public void Apagar(List<Entity> entities)
+        {
+            if(entities.Count==0) { return; }
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                foreach (var b in entities)
+                {
+                    Entity acEnt = acTrans.GetObject(b.ObjectId, OpenMode.ForWrite) as Entity;
+                    acEnt.Erase(true);
+                }
+                acTrans.Commit();
+
+            }
+            acDoc.Editor.Regen();
+        }
         public  void SetViewport(bool block = true, string layer = "MV")
         {
 
@@ -74,7 +153,36 @@ namespace Ferramentas_DLM
         }
 
 
+        public void CriarLayersPadrao()
+        {
+            string nome = "LAYERS_PADRAO";
+            
+            Blocos.Inserir(CAD.acDoc, nome, new Point3d(), 0.001, 0, new Hashtable());
+            Apagar(GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
 
+
+        }
+
+        public void SelecionarTudoPrancha()
+        {
+            List<Entity> retorno = new List<Entity>();
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                /*blocos*/
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                foreach (ObjectId objId in acBlkTblRec)
+                {
+                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
+                    retorno.Add(ent);
+                }
+
+              
+            }
+            selecoes.Clear();
+            selecoes.AddRange(retorno);
+        }
 
 
         public List<string> SelecionarDWGs()
@@ -89,7 +197,7 @@ namespace Ferramentas_DLM
         }
         public void IrLayout()
         {
-            var lista = Utilidades.GetLayouts().Select(x=>x.LayoutName).ToList();
+            var lista = Utilidades.GetLayouts().Select(x=>x.LayoutName).ToList().FindAll(x=> x.ToUpper()!="MODEL");
             if(lista.Count>0)
             {
                 using (acDoc.LockDocument())
@@ -406,8 +514,7 @@ namespace Ferramentas_DLM
                 BlockTable acBlkTbl= acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
                 List<Coordenada> lista = RemoverRepetidos(pts);
                 // Create the rotated dimension
                 using (Polyline p = new Polyline(lista.Count))
@@ -459,8 +566,7 @@ namespace Ferramentas_DLM
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                 // Create a line that starts at 5,5 and ends at 12,3
                 using (Line acLine = new Line(inicio.GetPoint(),
@@ -501,8 +607,7 @@ namespace Ferramentas_DLM
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,  OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                 //if (tipo == Tipo_Cota.RotatedDimension)
                 //{
@@ -558,8 +663,7 @@ namespace Ferramentas_DLM
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
 
 
                 using (acRotDim = new RotatedDimension())
@@ -615,8 +719,7 @@ namespace Ferramentas_DLM
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
                 // Create an ordinate dimension
                 using (acOrdDim = new OrdinateDimension())
                 {
@@ -653,18 +756,18 @@ namespace Ferramentas_DLM
         #region mapeamento de objetos a serem usados
 
 
-        public List<Line> Getlinhas_eixo()
+        public List<Line> GetEixos_Linhas()
         {
             return Utilidades.LinhasVerticais(this.Getlinhas()).FindAll(x =>
-                x.Linetype.ToUpper() == "DASHDOT" |
+                (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) && 
                 (x.Layer.ToUpper().Contains("EIXO"))
                 ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.First()).OrderBy(x => x.StartPoint.X).ToList();
         }
 
-        public List<Polyline> Getpolylines_eixo()
+        public List<Polyline> GetEixos_PolyLines()
         {
             return Utilidades.PolylinesVerticais(this.Getpolylinhas()).FindAll(x =>
-                x.Linetype.ToUpper() == "DASHDOT" |
+                (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) &&
                 (x.Layer.ToUpper().Contains("EIXO"))
                 ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.First()).OrderBy(x => x.StartPoint.X).ToList();
         }
@@ -694,14 +797,15 @@ namespace Ferramentas_DLM
 
         public List<Line> Getlinhas_Verticais()
         {
-            return Getlinhas().FindAll(x=> Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 90 | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 270);
+            
+            return Getlinhas().FindAll(x=> Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 90 | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 270).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<Line> Getlinhas_Horizontais()
         {
             return Getlinhas().FindAll(x => 
             Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 0 
             | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 360
-            |  Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 180);
+            |  Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 180).OrderBy(x=>x.StartPoint.Y).ToList();
         }
         public List<Polyline> Getpolylinhas()
         {
@@ -757,6 +861,106 @@ namespace Ferramentas_DLM
         {
             return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Texto));
         }
+        public List<BlockReference> GetBlocosEixos()
+        {
+            /*pega blocos dinâmicos*/
+            return this.Getblocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO"));
+        }
+
+        public GradeEixos GetEixos()
+        {
+            GradeEixos retorno = new GradeEixos();
+            double tolerancia = 10;
+            var blocos = GetBlocosEixos().OrderBy(x=> new Coordenada(x.Position).Distancia(new Point3d())).ToList();
+   
+            
+            
+            /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
+            var HORIS = Getlinhas_Horizontais().FindAll(x => x.Layer.ToUpper().Contains("EIXO") && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+            var VERTS = Getlinhas_Verticais().FindAll(x => x.Layer.ToUpper().Contains("EIXO") && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+
+            
+
+            if (HORIS.Count > 0)
+            {
+                var linhas = HORIS.GroupBy(x => Math.Round(x.StartPoint.Y)).Select(x => x.First()).ToList();
+
+                for (int i = 0; i < linhas.Count; i++)
+                {
+                    var L = linhas[i];
+                    double dist = 0;
+                    if (retorno.GetEixosHorizontais().Count > 0)
+                    {
+                        dist = Math.Round(Math.Abs(linhas[i].StartPoint.X - retorno.GetEixosHorizontais().Last().Linha.StartPoint.Y));
+                    }
+
+                    var pt1 = L.StartPoint.X > L.EndPoint.X ? L.StartPoint : L.EndPoint;
+                    var pt2 = L.StartPoint.X < L.EndPoint.X ? L.StartPoint : L.EndPoint;
+
+                    var blks = blocos.FindAll(x =>
+                    Math.Abs(new Coordenada(x.Position).Distancia(pt1)) <= tolerancia
+                    |
+                    Math.Abs(new Coordenada(x.Position).Distancia(pt2)) <= tolerancia
+                    );
+
+                    if (blks.Count > 0)
+                    {
+                        retorno.Add(Sentido.Horizontal, dist, blks[0], L);
+                    }
+                    else
+                    {
+
+                    }
+                    if (blks.Count > 1)
+                    {
+
+                    }
+                }
+            }
+
+
+            if (VERTS.Count>0)
+            {
+                var linhas = VERTS.GroupBy(x => Math.Round(x.StartPoint.X)).Select(x=>x.First()).ToList();
+
+                for (int i = 0; i < linhas.Count; i++)
+                {
+                    var L = linhas[i];
+                    double dist = 0;
+                    if (retorno.GetEixosVerticais().Count>0)
+                    {
+                        dist = Math.Round(Math.Abs(linhas[i].StartPoint.X - retorno.GetEixosVerticais().Last().Linha.StartPoint.X));
+                    }
+
+                    var pt1 = L.StartPoint.Y> L.EndPoint.Y?L.StartPoint:L.EndPoint;
+                    var pt2 = L.StartPoint.Y< L.EndPoint.Y?L.StartPoint:L.EndPoint;
+
+                    var pts = blocos.Select(x => new List<double> { new Coordenada(x.Position).Distancia(pt1), new Coordenada(x.Position).Distancia(pt2) }).ToList();
+
+                    var blks = blocos.FindAll(x => 
+                    Math.Abs(new Coordenada(x.Position).Distancia(pt1)) <= tolerancia 
+                    |
+                    Math.Abs(new Coordenada(x.Position).Distancia(pt2)) <= tolerancia
+                    );
+
+                    if (blks.Count > 0)
+                    {
+                        retorno.Add(Sentido.Vertical, dist, blks[0], L);
+                    }
+                    else
+                    {
+
+                    }
+                    if (blks.Count > 1)
+                    {
+
+                    }
+                }
+            }
+
+
+            return retorno;
+        }
 
         #endregion
 
@@ -781,8 +985,8 @@ namespace Ferramentas_DLM
         }
         public void MoverBloco(BlockReference bloco, Point3d posicao, Transaction trans)
         {
-            bloco.Erase(true);
             ClonarBloco(bloco, posicao);
+            Apagar(new List<Entity> { bloco });
         }
 
         public void ClonarBloco(BlockReference bloco, Point3d posicao)
@@ -830,60 +1034,25 @@ namespace Ferramentas_DLM
 
                     if (acEnt != null)
                     {
-                        if (acEnt is AlignedDimension)
+                        if (
+                            acEnt is AlignedDimension |
+                            acEnt is OrdinateDimension |
+                            acEnt is RadialDimension |
+                            acEnt is RotatedDimension |
+                            acEnt is MLeader |
+                            acEnt is MText |
+                            acEnt is DBText |
+                            acEnt is Dimension
+                            )
                         {
-                            var s = acEnt as AlignedDimension;
-                            s.Erase(true);
+                            acEnt.Erase(true);
                         }
-                        else if (acEnt is OrdinateDimension)
-                        {
-                            var s = acEnt as OrdinateDimension;
-                            s.Erase(true);
-                        }
-                        else if (acEnt is RadialDimension)
-                        {
-                            var s = acEnt as RadialDimension;
-                            s.Erase(true);
-                        }
-                        else if (acEnt is RotatedDimension)
-                        {
-                            var s = acEnt as RotatedDimension;
-                            s.Erase(true);
-                        }
-                        //else if (acEnt is Leader)
-                        //{
-                        //    var s = acEnt as Leader;
-                        //    s.Erase(true);
-                        //}
-                        else if (acEnt is MLeader)
-                        {
-                            var s = acEnt as MLeader;
-                            s.Erase(true);
-                        }
-                        else if (acEnt is MText)
-                        {
-                            var s = acEnt as MText;
-                            s.Erase(true);
-                        }
-
-                        else if (acEnt is Dimension)
-                        {
-                            var s = acEnt as Dimension;
-                            s.Erase(true);
-                        }
+                       
                     }
                 }
             }
         }
-        public enum Tipo_Selecao
-        {
-            Tudo,
-            Blocos,
-            Textos,
-            Blocos_Textos,
-            Dimensoes,
-            Polyline,
-        }
+
         public PromptSelectionResult SelecionarObjetos(Tipo_Selecao tipo = Tipo_Selecao.Tudo)
         {
             PromptSelectionOptions pp = new PromptSelectionOptions();
@@ -901,18 +1070,20 @@ namespace Ferramentas_DLM
             switch (tipo)
             {
                 case Tipo_Selecao.Tudo:
+                    lista_filtro.Add(new TypedValue(0, "LINE,POLYLINE,TEXT,MTEXT,DIMENSION,LEADER,INSERT,MLINE"));
+
                     break;
                 case Tipo_Selecao.Blocos:
                     lista_filtro.Add(new TypedValue(0, "INSERT"));
                     break;
                 case Tipo_Selecao.Textos:
-                    lista_filtro.Add(new TypedValue(0, "TEXT,MTEXT,LEADER"));
+                    lista_filtro.Add(new TypedValue(0, "TEXT,MTEXT,LEADER,MLEADER"));
                     break;
                 case Tipo_Selecao.Blocos_Textos:
                     lista_filtro.Add(new TypedValue(0, "INSERT,TEXT,MTEXT,LEADER"));
                     break;
                 case Tipo_Selecao.Dimensoes:
-                    lista_filtro.Add(new TypedValue(0, "DIMENSION,TEXT,MTEXT,LEADER"));
+                    lista_filtro.Add(new TypedValue(0, "DIMENSION,TEXT,MTEXT,LEADER,MLEADER"));
                     break;
                 case Tipo_Selecao.Polyline:
                     lista_filtro.Add(new TypedValue(0, "POLYLINE"));

@@ -22,28 +22,7 @@ namespace Ferramentas_DLM
     [Serializable]
     public class Cotagem :ClasseBase
     {
-        public void LimparCotas()
-        {
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                editor.WriteMessage("Selecione os objetos");
-                PromptSelectionOptions sel = new PromptSelectionOptions();
-
-                PromptSelectionResult acSSPrompt = acDoc.Editor.GetSelection();
-                if (acSSPrompt.Status == PromptStatus.OK)
-                {
-                    SelectionSet acSSet = acSSPrompt.Value;
-                    Utilidades.LimparCotas(acTrans, acSSet);
-
-
-                    // Save the new object to the database
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
-                    acDoc.Editor.WriteMessage("Finalizado.");
-                }
-            }
-        }
+     
 
         #region CAD
 
@@ -1442,7 +1421,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-                BlockTableRecord model = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
 
 
 
@@ -1471,7 +1450,7 @@ namespace Ferramentas_DLM
                 int idx = leader.AddLeaderLine(origem);
                 leader.AddFirstVertex(idx, origem);
 
-                model.AppendEntity(leader);
+                acBlkTblRec.AppendEntity(leader);
                 acTrans.AddNewlyCreatedDBObject(leader, true);
 
                 acTrans.Commit();
@@ -1691,8 +1670,7 @@ namespace Ferramentas_DLM
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for read
-                BlockTableRecord acBlkTblRec;
-                acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead) as BlockTableRecord;
 
 
 
@@ -1757,7 +1735,7 @@ namespace Ferramentas_DLM
                 return "Nada";
             }
             //limpa as cotas atuais
-            Utilidades.LimparCotas(acTrans, selecao.Value);
+            this.ApagarCotas();
 
             List<Coordenada> pp = new List<Coordenada>();
 

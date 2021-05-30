@@ -17,7 +17,7 @@ using Autodesk.AutoCAD.EditorInput;
 namespace Ferramentas_DLM
 {
     [Serializable]
-    public class CADPurlin :ClasseBase
+    public class CADPurlin : ClasseBase
     {
         #region Opções para configuração
         [Category("Correntes")]
@@ -98,10 +98,10 @@ namespace Ferramentas_DLM
         public string CorrenteFixador { get; set; } = "F156";
         [Category("Tirantes")]
         [DisplayName("MLStyle")]
-        public string TirantesMLStyle { get; set; } = "10MM";
+        public List<string> TirantesMLStyles { get; set; } = new List<string> { "10MM" };
         [Category("Correntes")]
         [DisplayName("MLStyle")]
-        public string CorrenteMLStyle { get; set; } = "L32X32X3MM";
+        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3"};
 
         [Category("Purlin")]
         [DisplayName("MLStyle")]
@@ -132,61 +132,58 @@ namespace Ferramentas_DLM
         public List<CCorrente> LinhasCorrentes()
         {
             List<CCorrente> retorno = new List<CCorrente>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            var lista = Utilidades.MlinesVerticais(this.Getmultilines(), this.CorrenteCompMin);
+
+
+            List<MlineStyle> estilos = new List<MlineStyle>();
+            foreach (var s in this.CorrenteMLStyles)
             {
-
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-
-                var estilo = Utilidades.GetEstilo(this.CorrenteMLStyle);
-
-                if (estilo != null)
+                var st = Utilidades.GetEstilo(s);
+                if (st != null)
                 {
-                    var lista = this.selecoes.FindAll(x => x is Mline).FindAll(x => (x as Mline).Style == estilo.ObjectId);
-
-                    //retorno.AddRange(lista.Select(x => x as Mline));
-
-                    foreach (Entity s in lista)
-                    {
-                        Point3d p0, p1, centro;
-                        double comp, angulo;
-                        Utilidades.GetCoordenadas(s, out p0, out p1, out angulo, out comp, out centro);
-                        if (angulo >= 85 && angulo <= 95)
-                        {
-                            retorno.Add(new CCorrente(s as Mline));
-                        }
-                    }
+                    estilos.Add(st);
                 }
-
             }
 
+            foreach (var l in lista)
+            {
+                if (estilos.Find(x => x.ObjectId == l.Style) != null)
+                {
+                    retorno.Add(new CCorrente(l));
+                }
+            }
             return retorno;
         }
         public List<CTirante> LinhasTirantes()
         {
             List<CTirante> retorno = new List<CTirante>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            var lista = this.Getmultilines();
+
+
+            List<MlineStyle> estilos = new List<MlineStyle>();
+            foreach (var s in this.TirantesMLStyles)
             {
-
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-
-                var estilo = Utilidades.GetEstilo(this.TirantesMLStyle);
-
-                if(estilo!=null)
+                var st = Utilidades.GetEstilo(s);
+                if (st != null)
                 {
-                    var lista = this.selecoes.FindAll(x => x is Mline).FindAll(x => (x as Mline).Style == estilo.ObjectId);
-
-                    retorno.AddRange(lista.Select(x => new CTirante(x as Mline)));
+                    estilos.Add(st);
                 }
-
             }
 
+            foreach (var l in lista)
+            {
+                if (estilos.Find(x => x.ObjectId == l.Style) != null)
+                {
+                    retorno.Add(new CTirante(l));
+                }
+            }
             return retorno;
         }
 
         private List<CTerca> _purlins { get; set; }
-        private List<CTerca> Getpurlins()
+        private List<CTerca> Getpurlins(bool update = false)
         {
-            if(_purlins==null)
+            if(_purlins==null | update)
             {
                 _purlins = new List<CTerca>();
                 var lista = Utilidades.MlinesHorizontais(this.Getmultilines(), this.PurlinCompMin);
@@ -220,34 +217,29 @@ namespace Ferramentas_DLM
 
         public void Mapear()
         {
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            var sel = SelecionarObjetos();
+            if (sel.Status == PromptStatus.OK)
             {
-                var sel = SelecionarObjetos();
-                if (sel.Status == PromptStatus.OK)
+
+                List<BlockReference> blocos = new List<BlockReference>();
+                if (MapearTercas)
+                {
+                    blocos.AddRange(this.Getblocos_tercas());
+                }
+                if (MapearTirantes)
+                {
+                    blocos.AddRange(this.Getblocos_tirantes());
+                }
+
+                if (MapearCorrentes)
+                {
+                    blocos.AddRange(this.Getblocos_correntes());
+                }
+
+                Apagar(blocos.Select(x => x as Entity).ToList());
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
 
-                    List<BlockReference> blocos = new List<BlockReference>();
-                    if (MapearTercas)
-                    {
-                        blocos.AddRange(this.Getblocos_tercas());
-                    }
-                    if (MapearTirantes)
-                    {
-                        blocos.AddRange(this.Getblocos_tirantes());
-                    }
-
-                    if (MapearCorrentes)
-                    {
-                        blocos.AddRange(this.Getblocos_correntes());
-                    }
-
-                    foreach (var b in blocos)
-                    {
-                        b.Erase(true);
-                    }
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
 
 
 
@@ -265,18 +257,18 @@ namespace Ferramentas_DLM
                     if (MapearTercas)
                     {
 
-                        for (int i = 1; i < Getlinhas_eixo().Count; i++)
+                        for (int i = 1; i < GetEixos_Linhas().Count; i++)
                         {
                             AddBarra();
-                            var e0 = Getlinhas_eixo()[i - 1].StartPoint;
-                            var e1 = Getlinhas_eixo()[i].StartPoint;
+                            var e0 = GetEixos_Linhas()[i - 1].StartPoint;
+                            var e1 = GetEixos_Linhas()[i].StartPoint;
                             c = MapeiaPurlins(c, e0, e1);
                         }
 
-                        for (int i = 1; i < Getpolylines_eixo().Count; i++)
+                        for (int i = 1; i < GetEixos_PolyLines().Count; i++)
                         {
-                            var e0 = Getpolylines_eixo()[i - 1].StartPoint;
-                            var e1 = Getpolylines_eixo()[i].StartPoint;
+                            var e0 = GetEixos_PolyLines()[i - 1].StartPoint;
+                            var e1 = GetEixos_PolyLines()[i].StartPoint;
                             c = MapeiaPurlins(c, e0, e1);
                         }
 
@@ -302,8 +294,8 @@ namespace Ferramentas_DLM
 
                     AddBarra();
                     AddMensagem("\n" + blocos.Count.ToString() + " blocos encontrados excluídos");
-                    AddMensagem("\n" + this.Getlinhas_eixo().Count.ToString() + " Linhas eixo encontradas");
-                    AddMensagem("\n" + this.Getpolylines_eixo().Count.ToString() + " PolyLinhas eixo encontradas");
+                    AddMensagem("\n" + this.GetEixos_Linhas().Count.ToString() + " Linhas eixo encontradas");
+                    AddMensagem("\n" + this.GetEixos_PolyLines().Count.ToString() + " PolyLinhas eixo encontradas");
                     AddMensagem("\n" + this.Getmultilines().Count.ToString() + " Multilines encontradas");
                     AddMensagem("\n" + this.mlines_verticais.Count.ToString() + " Mlines Verticais");
                     AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
@@ -835,30 +827,17 @@ namespace Ferramentas_DLM
 
             
         }
-        public void Excluir()
+        public void ExcluirBlocosMarcas()
         {
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            var sel = SelecionarObjetos(Tipo_Selecao.Blocos);
+            if (sel.Status == PromptStatus.OK)
             {
-                var sel = SelecionarObjetos();
-                if (sel.Status == PromptStatus.OK)
-                {
+                List<BlockReference> blocos = new List<BlockReference>();
+                blocos.AddRange(this.Getblocos_tercas());
+                blocos.AddRange(this.Getblocos_correntes());
+                blocos.AddRange(this.Getblocos_tirantes());
 
-                    foreach (var s in this.Getblocos_tercas())
-                    {
-                        s.Erase(true);
-                    }
-                    foreach (var s in this.Getblocos_correntes())
-                    {
-                        s.Erase(true);
-                    }
-                    foreach (var s in this.Getblocos_tirantes())
-                    {
-                        s.Erase(true);
-                    }
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
-                }
+                Apagar(blocos.Select(x => x as Entity).ToList());
             }
         }
         public void SetCorrente()

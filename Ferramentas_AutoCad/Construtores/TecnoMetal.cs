@@ -771,12 +771,12 @@ namespace Ferramentas_DLM
 
                 var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
-                BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<BlockReference> blocos = new List<BlockReference>();
                 List<Line> linhas = new List<Line>();
                 List<Entity> apagar = new List<Entity>();
                 List<Autodesk.AutoCAD.DatabaseServices.DBText> textos = new List<Autodesk.AutoCAD.DatabaseServices.DBText>();
-                foreach (ObjectId objId in btr)
+                foreach (ObjectId objId in acBlkTblRec)
                 {
                     Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForWrite);
                     if (ent is BlockReference)
@@ -828,15 +828,12 @@ namespace Ferramentas_DLM
                     break;
                 }
 
-                if (apagar.Count > 0)
+
+                foreach(var s in apagar)
                 {
-                    foreach (var s in apagar)
-                    {
-                        s.Erase(true);
-                    }
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    s.Erase(true);
                 }
+                acTrans.Commit();
             }
 
             if (gerar_tabela)
@@ -860,6 +857,7 @@ namespace Ferramentas_DLM
                 }
             }
 
+            editor.Regen();
      
         }
 
@@ -876,9 +874,9 @@ namespace Ferramentas_DLM
                 var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
 
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
-                BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<BlockReference> blocos = new List<BlockReference>();
-                foreach (ObjectId objId in btr)
+                foreach (ObjectId objId in acBlkTblRec)
                 {
                     Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForWrite);
                     if (ent is BlockReference)
@@ -1103,9 +1101,9 @@ namespace Ferramentas_DLM
                             {
 
                                 BlockTable acBlkTbl = acTrans.GetObject(acTmpDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-                                BlockTableRecord btr = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
                                 List<BlockReference> blocos = new List<BlockReference>();
-                                foreach (ObjectId objId in btr)
+                                foreach (ObjectId objId in acBlkTblRec)
                                 {
                                     Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
                                     if (ent is BlockReference)

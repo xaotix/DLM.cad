@@ -11,17 +11,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Ferramentas_DLM.CAD;
-
+using Autodesk.AutoCAD.EditorInput;
+using System.Runtime.InteropServices;
 
 namespace Ferramentas_DLM
 {
-   public static class Blocos
+    public static class Blocos
     {
-        public static void MarcaComposta(Point3d p0,string marca, double quantidade, string ficha,string mercadoria, double escala = 10)
+        public static void MarcaComposta(Point3d p0, string marca, double quantidade, string ficha, string mercadoria, double escala = 10)
         {
             try
             {
-                
+
                 Hashtable ht = new Hashtable();
 
 
@@ -72,6 +73,12 @@ namespace Ferramentas_DLM
                 {
                     s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_A2, nome + ".dwg", SearchOption.AllDirectories);
                 }
+
+
+                if (s.Count == 0)
+                {
+                    s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos, nome + ".dwg", SearchOption.TopDirectoryOnly);
+                }
                 if (s.Count == 0)
                 {
                     Utilidades.Alerta($"Bloco não encontrado:{nome}", "Operação abortada");
@@ -95,7 +102,7 @@ namespace Ferramentas_DLM
             {
                 string nomeBloco = Conexoes.Utilz.getNome(endereco);
 
-         
+
 
 
                 ObjectId blkid = ObjectId.Null;
@@ -181,8 +188,7 @@ namespace Ferramentas_DLM
 
 
 
-                            BlockTableRecord btr = (BlockTableRecord)acCurDb.CurrentSpaceId.GetObject(OpenMode.ForWrite);
-                            using (btr)
+                            using (BlockTableRecord btr = (BlockTableRecord)acCurDb.CurrentSpaceId.GetObject(OpenMode.ForWrite))
                             {
                                 using (BlockReference bref = new BlockReference(origem, blkid))
                                 {
@@ -194,11 +200,11 @@ namespace Ferramentas_DLM
                                     btr.AppendEntity(bref);
                                     acTrans.AddNewlyCreatedDBObject(bref, true);
 
-                                    using (BlockTableRecord btAttRec = (BlockTableRecord)bref.BlockTableRecord.GetObject(OpenMode.ForRead))
+                                    using (BlockTableRecord acBlkTblRec = (BlockTableRecord)bref.BlockTableRecord.GetObject(OpenMode.ForRead))
                                     {
                                         Autodesk.AutoCAD.DatabaseServices.AttributeCollection atcoll = bref.AttributeCollection;
 
-                                        foreach (ObjectId subid in btAttRec)
+                                        foreach (ObjectId subid in acBlkTblRec)
                                         {
                                             Entity ent = (Entity)subid.GetObject(OpenMode.ForRead);
                                             AttributeDefinition attDef = ent as AttributeDefinition;
@@ -247,7 +253,7 @@ namespace Ferramentas_DLM
 
                             acBlkTbl.DowngradeOpen();
 
-                           // editor.Regen();
+                            // editor.Regen();
 
                             acTrans.Commit();
                         }
@@ -278,7 +284,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_FIC, tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(Constantes.ATT_PES, Math.Round(perfil.PESO * comprimento / 1000,4).ToString("N4").Replace(",", ""));
+                    ht.Add(Constantes.ATT_PES, Math.Round(perfil.PESO * comprimento / 1000, 4).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -287,7 +293,7 @@ namespace Ferramentas_DLM
 
                 if (superficie == 0)
                 {
-                    ht.Add(Constantes.ATT_SUP, Math.Round(perfil.SUPERFICIE * comprimento / 1000/1000/100,4).ToString("N4").Replace(",", ""));
+                    ht.Add(Constantes.ATT_SUP, Math.Round(perfil.SUPERFICIE * comprimento / 1000 / 1000 / 100, 4).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -302,9 +308,9 @@ namespace Ferramentas_DLM
                 }
 
 
-                if (posicao=="")
+                if (posicao == "")
                 {
-                Inserir(acDoc, Constantes.Marca_Perfil, p0, escala, 0, ht);
+                    Inserir(acDoc, Constantes.Marca_Perfil, p0, escala, 0, ht);
                 }
                 else
                 {
@@ -318,11 +324,11 @@ namespace Ferramentas_DLM
 
             }
         }
-        public static void MarcaChapa(Point3d p0, Chapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao ="")
+        public static void MarcaChapa(Point3d p0, Chapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao = "")
         {
             try
             {
-                var bloco =  Constantes.Marca_Chapa;
+                var bloco = Constantes.Marca_Chapa;
                 Hashtable ht = new Hashtable();
                 //Pairs of tag-value:
                 ht.Add(Constantes.ATT_MAR, pf.Marca);
@@ -349,7 +355,7 @@ namespace Ferramentas_DLM
 
                 if (tipo == Tipo_Bloco.Arremate)
                 {
-                    if(posicao!="")
+                    if (posicao != "")
                     {
                         bloco = Constantes.Posicao_Chapa;
                     }
@@ -369,7 +375,7 @@ namespace Ferramentas_DLM
                         bloco = Constantes.Marca_Chapa;
                     }
                 }
-                else if (tipo ==  Tipo_Bloco.Elemento_M2)
+                else if (tipo == Tipo_Bloco.Elemento_M2)
                 {
                     if (posicao != "")
                     {
@@ -387,9 +393,9 @@ namespace Ferramentas_DLM
                 }
 
 
-                if(posicao!="")
+                if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala,"",12,true);
+                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
@@ -402,7 +408,7 @@ namespace Ferramentas_DLM
 
         }
 
-        public static void MarcaElemM2(Point3d p0,Conexoes.TecnoMetal_Perfil pf,  string marca, double quantidade,double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "",string mercadoria = "")
+        public static void MarcaElemM2(Point3d p0, Conexoes.TecnoMetal_Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -419,8 +425,8 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_CMP, comp.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_LRG, larg.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_FIC, ficha);
-                ht.Add(Constantes.ATT_PES, Math.Round(pf.PESO * area /1000/1000/100,3));
-                ht.Add(Constantes.ATT_SUP, Math.Round((area*2 + perimetro*2)/1000/1000,3));
+                ht.Add(Constantes.ATT_PES, Math.Round(pf.PESO * area / 1000 / 1000 / 100, 3));
+                ht.Add(Constantes.ATT_SUP, Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, 3));
                 ht.Add(Constantes.ATT_VOL, $"{comp}*{larg}");
                 ht.Add(Constantes.ATT_SAP, pf.SAP);
                 ht.Add(Constantes.ATT_MAT, material);
@@ -438,7 +444,7 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12,true);
+                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
@@ -485,7 +491,7 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12,true);
+                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
@@ -511,7 +517,7 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-                        MarcaPerfil(origem, cam.Posicao, cam.Comprimento, perfil, cam.Quantidade, cam.Material, cam.Tratamento, cam.Peso, cam.Superficie,escala);
+                        MarcaPerfil(origem, cam.Posicao, cam.Comprimento, perfil, cam.Quantidade, cam.Material, cam.Tratamento, cam.Peso, cam.Superficie, escala);
                     }
                 }
 
@@ -526,5 +532,33 @@ namespace Ferramentas_DLM
                 Utilidades.Alerta("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.TipoPerfil);
             }
         }
+
+
+        public static BlockTableRecord GetPai(BlockReference bloco)
+        {
+            using (Transaction tx = CAD.acCurDb.TransactionManager.StartTransaction())
+            {
+                BlockReference blk = tx.GetObject(bloco.ObjectId, OpenMode.ForRead) as BlockReference;
+                BlockTableRecord acBlkTblRec = blk.IsDynamicBlock?
+                     tx.GetObject(blk.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord
+                     :
+                     tx.GetObject(blk.BlockTableRecord, OpenMode.ForRead) as BlockTableRecord
+                     ;
+
+                tx.Commit();
+
+                return acBlkTblRec;
+            }
+        }
+        public static string GetNome(BlockReference bloco)
+        {
+            var nt = GetPai(bloco);
+            if(nt!=null)
+            {
+                return nt.Name;
+            }
+            return bloco.Name;
+        }
+
     }
 }

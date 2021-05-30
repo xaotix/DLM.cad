@@ -124,13 +124,7 @@ namespace Ferramentas_DLM
 
                 {
 
-                    BlockTableRecord blk =
-
-                      (BlockTableRecord)tr.GetObject(
-
-                        blkId, OpenMode.ForRead
-
-                      );
+                    BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject( blkId, OpenMode.ForRead);
 
 
 
@@ -138,7 +132,7 @@ namespace Ferramentas_DLM
 
 
 
-                    if (blk.IsLayout || blk.IsAnonymous)
+                    if (acBlkTblRec.IsLayout || acBlkTblRec.IsAnonymous)
 
                         continue;
 
@@ -148,13 +142,13 @@ namespace Ferramentas_DLM
 
 
 
-                    if (blk.PreviewIcon == null)
+                    if (acBlkTblRec.PreviewIcon == null)
 
                     {
 
                         object ActiveDocument = doc.AcadDocument;
 
-                        object[] data = { "_.BLOCKICON " + blk.Name + "\n" };
+                        object[] data = { "_.BLOCKICON " + acBlkTblRec.Name + "\n" };
 
                         ActiveDocument.GetType().InvokeMember(
 
@@ -174,7 +168,7 @@ namespace Ferramentas_DLM
 
 
 
-                    if (blk.PreviewIcon != null)
+                    if (acBlkTblRec.PreviewIcon != null)
 
                     {
 
@@ -192,9 +186,9 @@ namespace Ferramentas_DLM
 
 
 
-                        blk.PreviewIcon.Save(
+                        acBlkTblRec.PreviewIcon.Save(
 
-                           iconPath + "\\" + blk.Name + ".bmp"
+                           iconPath + "\\" + acBlkTblRec.Name + ".bmp"
 
                         );
 

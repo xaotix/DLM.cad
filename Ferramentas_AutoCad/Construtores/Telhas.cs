@@ -74,53 +74,28 @@ namespace Ferramentas_DLM
         }
         public void ApagarLinhaDeVida()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                SelecionarObjetos();
-                foreach (var p in this.Getsflhs())
-                {
-                    p.Erase(true);
-                }
-                foreach (var p in this.Getsflis())
-                {
-                    p.Erase(true);
-                }
-
-                foreach(var p in this.Getcabos())
-                {
-                    p.Erase(true);
-                }
-                foreach(var p in this.Getblocostexto().FindAll(x=>x.Layer == LayerLinhaDeVida))
-                {
-                    p.Erase(true);
-                }
-
-                foreach (var p in this.Getcotas().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas))
-                {
-                    p.Erase(true);
-                }
+            SelecionarObjetos();
+            List<Entity> list_apagar = new List<Entity>();
+            list_apagar.AddRange(this.Getsflhs());
+            list_apagar.AddRange(this.Getsflis());
+            list_apagar.AddRange(this.Getcabos());
+            list_apagar.AddRange(this.Getblocostexto().FindAll(x => x.Layer == LayerLinhaDeVida));
+            list_apagar.AddRange(this.Getcotas().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
 
 
-                acTrans.Commit();
-                acDoc.Editor.Regen();
-            }
+            Apagar(list_apagar);
         }
         public void ApagarPassarelas()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                SelecionarObjetos();
-                foreach (var p in this.Getpassarelas())
-                {
-                    p.Erase(true);
-                }
-                foreach (var p in this.Getcotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas))
-                {
-                    p.Erase(true);
-                }
-                acTrans.Commit();
-                acDoc.Editor.Regen();
-            }
+
+            SelecionarObjetos();
+            List<Entity> list_apagar = new List<Entity>();
+            list_apagar.AddRange(this.Getpassarelas());
+            list_apagar.AddRange(this.Getcotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
+
+
+            Apagar(list_apagar);
+
         }
 
         public List<BlockReference> Getsflhs()
@@ -298,7 +273,6 @@ namespace Ferramentas_DLM
                         var p = this.Getpassarelas()[0];
                         p1 = p.Position;
                         p.Erase(true);
-
                     }
                     else
                     {
@@ -439,7 +413,6 @@ namespace Ferramentas_DLM
                         var p = this.Getsflhs()[0];
                         p1 = p.Position;
                         p.Erase(true);
-
                     }
                     else
                     {

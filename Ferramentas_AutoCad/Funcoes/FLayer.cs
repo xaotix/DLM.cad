@@ -145,9 +145,7 @@ namespace Ferramentas_DLM
                     acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,
                                                        OpenMode.ForRead) as BlockTable;
                     // Open the Block table record Model space for write
-                    BlockTableRecord acBlkTblRec;
-                    acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],
-                                                          OpenMode.ForWrite) as BlockTableRecord;
+                    BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
                     // Create a circle object
                     Circle acCirc = new Circle();
                     acCirc.SetDatabaseDefaults();

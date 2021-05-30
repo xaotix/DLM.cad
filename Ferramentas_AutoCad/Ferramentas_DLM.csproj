@@ -158,6 +158,7 @@
   <ItemGroup>
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />
+    <Compile Include="Input\Eixo.cs" />
     <Compile Include="Menus\MenuMarcas.xaml.cs">
       <DependentUpon>MenuMarcas.xaml</DependentUpon>
     </Compile>
@@ -186,7 +187,7 @@
       <DependentUpon>CriarCAMs.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensoes\Extensoes.cs" />
-    <Compile Include="Comandos.cs" />
+    <Compile Include="Principal\Comandos.cs" />
     <Compile Include="Funcoes\Atributos.cs" />
     <Compile Include="OutrasClasses\CTV_de_para.cs" />
     <Compile Include="OutrasClasses\Furo.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="OutrasClasses\MarcaTecnoMetal.cs" />
     <Compile Include="OutrasClasses\PCQuantificar.cs" />
     <Compile Include="OutrasClasses\BlocoTags.cs" />
+    <Compile Include="Principal\Enumeradores.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Construtores\Purlin.cs" />
     <Compile Include="Funcoes\Tabelas.cs" />
@@ -210,7 +212,7 @@
       <DependentUpon>TercasMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Funcoes\Utilidades.cs" />
-    <Compile Include="Constantes.cs" />
+    <Compile Include="Principal\Constantes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

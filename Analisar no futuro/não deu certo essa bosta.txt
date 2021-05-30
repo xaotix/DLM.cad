@@ -1,0 +1,140 @@
+
+
+
+//seria para mapear os objetos visiveis num bloco
+
+        public static List<Entity> GetEntitiesVisiveis(BlockReference bloco)
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            PromptResult pr = ed.GetString("\nEnter block name: ");
+            List<Entity> retorno = new List<Entity>();
+
+            if (pr.Status != PromptStatus.OK)
+                return retorno;
+
+            //var acBlkTblRec = GetPai(bloco);
+
+            using (Transaction Tx = db.TransactionManager.StartTransaction())
+            {
+                BlockTable bt = Tx.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord btr = Tx.GetObject(bt[pr.StringResult], OpenMode.ForRead) as BlockTableRecord;
+                DBDictionary dico = Tx.GetObject(btr.ExtensionDictionary,OpenMode.ForRead) as DBDictionary;
+
+
+                //DBDictionary dico = Tx.GetObject(acBlkTblRec.ExtensionDictionary, OpenMode.ForRead) as DBDictionary;
+
+                ObjectId graphId = dico.GetAt("ACAD_ENHANCEDBLOCK");
+                System.Collections.Generic.List<object> parameterIds = acdbEntGetObjects(graphId, 360);
+
+                foreach (object parameterId in parameterIds)
+                {
+                    ObjectId id = (ObjectId)parameterId;
+
+                    if (id.ObjectClass.Name == "AcDbBlockVisibilityParameter")
+                    {
+                        System.Collections.Generic.List<TypedValue> visibilityParam = acdbEntGetTypedVals(id);
+                        System.Collections.Generic.List<TypedValue>.Enumerator enumerator = visibilityParam.GetEnumerator();
+
+                        while (enumerator.MoveNext())
+                        {
+                            if (enumerator.Current.TypeCode == 303)
+                            {
+                                string group = (string)enumerator.Current.Value;
+                                enumerator.MoveNext();
+                                int nbEntitiesInGroup = (int)enumerator.Current.Value;
+
+                                ed.WriteMessage(
+
+                                   "\n . Visibility Group: " + group +
+
+                                   " Nb Entities in group: " +
+
+                                   nbEntitiesInGroup);
+
+
+
+                                for (int i = 0; i < nbEntitiesInGroup; ++i)
+                                {
+                                    enumerator.MoveNext();
+                                    ObjectId entityId = (ObjectId)enumerator.Current.Value;
+
+                                    Entity entity = Tx.GetObject(entityId,OpenMode.ForRead) as Entity;
+
+                                    retorno.Add(entity);
+
+                                    ed.WriteMessage("\n    - " +
+
+                                        entity.ToString() + " " +
+
+                                        entityId.ToString());
+
+                                }
+
+                            }
+
+                        }
+
+                        break;
+
+                    }
+
+                }
+
+
+
+                Tx.Commit();
+
+            }
+
+            return retorno;
+
+        }
+
+        public struct ads_name
+        {
+            IntPtr a;
+            IntPtr b;
+        };
+
+
+
+        [DllImport("acdb18.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?acdbGetAdsName@@YA?AW4ErrorStatus@Acad@@AAY01JVAcDbObjectId@@@Z")]
+        public static extern int acdbGetAdsName(ref ads_name name, ObjectId objId);
+
+        [DllImport("acad.exe", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl, EntryPoint = "acdbEntGet")]
+        public static extern System.IntPtr acdbEntGet(ref ads_name ename);
+        private static System.Collections.Generic.List<object> acdbEntGetObjects(ObjectId id, short dxfcode)
+        {
+            System.Collections.Generic.List<object> result = new System.Collections.Generic.List<object>();
+            ads_name name = new ads_name();
+            int res = acdbGetAdsName(ref name, id);
+            ResultBuffer rb = new ResultBuffer();
+            Autodesk.AutoCAD.Runtime.Interop.AttachUnmanagedObject(rb, acdbEntGet(ref name), true);
+            ResultBufferEnumerator iter = rb.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                TypedValue typedValue = (TypedValue)iter.Current;
+                if (typedValue.TypeCode == dxfcode)
+                {
+                    result.Add(typedValue.Value);
+                }
+            }
+            return result;
+        }
+        private static System.Collections.Generic.List<TypedValue> acdbEntGetTypedVals(ObjectId id)
+        {
+            System.Collections.Generic.List<TypedValue> result = new System.Collections.Generic.List<TypedValue>();
+            ads_name name = new ads_name();
+            int res = acdbGetAdsName(ref name, id);
+            ResultBuffer rb = new ResultBuffer();
+            Autodesk.AutoCAD.Runtime.Interop.AttachUnmanagedObject(rb, acdbEntGet(ref name), true);
+            ResultBufferEnumerator iter = rb.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                result.Add((TypedValue)iter.Current);
+            }
+            return result;
+        }
