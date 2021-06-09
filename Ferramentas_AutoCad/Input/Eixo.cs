@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,66 @@ namespace Ferramentas_DLM
 {
    public class Eixo
     {
+        public Point3d Origem
+        {
+            get
+            {
+                return new Point3d(Xmin, Ymin, 0);
+            }
+        }
+        public double Xmin
+        {
+            get
+            {
+                if (Linha == null)
+                {
+                    return 0;
+                }
+                return Linha.StartPoint.X < Linha.EndPoint.X ? Linha.StartPoint.X : Linha.EndPoint.X;
+            }
+        }
+        public double Xmax
+        {
+            get
+            {
+                if (Linha == null)
+                {
+                    return 0;
+                }
+                return Linha.StartPoint.X > Linha.EndPoint.X ? Linha.StartPoint.X : Linha.EndPoint.X;
+            }
+        }
+        public double Ymin
+        {
+            get
+            {
+                if (Linha == null)
+                {
+                    return 0;
+                }
+                return Linha.StartPoint.Y < Linha.EndPoint.Y ? Linha.StartPoint.Y : Linha.EndPoint.Y;
+            }
+        }
+        public double Ymax
+        {
+            get
+            {
+                if (Linha == null)
+                {
+                    return 0;
+                }
+                return Linha.StartPoint.Y>Linha.EndPoint.Y?Linha.StartPoint.Y:Linha.EndPoint.Y;
+            }
+        }
+        public double Z
+        {
+            get
+            {
+                return 0;
+            }
+        }
+       
+
         public BlockReference Bloco { get; set; }
         public Line Linha { get; set; }
         public override string ToString()
@@ -69,21 +130,25 @@ namespace Ferramentas_DLM
         }
         public void Add(Sentido Sentido, double Vao, BlockReference bloco, Line line)
         {
-            var atributos = Atributos.GetLinha(bloco);
 
-            string Nome = "";
-
-            Nome = atributos.Get("Eixo").valor;
-            if (Nome == "") { Nome = atributos.Get("Nome").valor; };
-
-            var preenchidos = atributos.Celulas.FindAll(x => x.Valor.Replace(" ", "") != "");
-            if (Nome=="" && preenchidos.Count>0)
+            string Nome = "?";
+            if(bloco!=null)
             {
-                Nome = preenchidos[0].Valor;
+                var atributos = Atributos.GetLinha(bloco);
+                Nome = atributos.Get("Eixo").valor;
+                if (Nome == "") { Nome = atributos.Get("Nome").valor; };
+                var preenchidos = atributos.Celulas.FindAll(x => x.Valor.Replace(" ", "") != "");
+                if (Nome == "" && preenchidos.Count > 0)
+                {
+                    Nome = preenchidos[0].Valor;
+                }
             }
+       
             var neixo = new Eixo(Sentido, Nome, Vao);
+
             neixo.Bloco = bloco;
             neixo.Linha = line;
+            
             _eixos.Add(neixo);
         }
         public GradeEixos()

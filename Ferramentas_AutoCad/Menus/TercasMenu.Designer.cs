@@ -69,6 +69,7 @@
             this.button6 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.button16 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ofsset_apoio)).BeginInit();
@@ -498,7 +499,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(385, 228);
+            this.tabPage6.Size = new System.Drawing.Size(454, 382);
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "Correntes";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -509,7 +510,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button10.Location = new System.Drawing.Point(6, 6);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(373, 23);
+            this.button10.Size = new System.Drawing.Size(442, 23);
             this.button10.TabIndex = 3;
             this.button10.Text = "Trocar Corrente";
             this.button10.UseVisualStyleBackColor = true;
@@ -521,7 +522,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button12.Location = new System.Drawing.Point(7, 64);
             this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(373, 23);
+            this.button12.Size = new System.Drawing.Size(442, 23);
             this.button12.TabIndex = 5;
             this.button12.Text = "Corrente Fixador";
             this.button12.UseVisualStyleBackColor = true;
@@ -533,7 +534,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button11.Location = new System.Drawing.Point(7, 35);
             this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(373, 23);
+            this.button11.Size = new System.Drawing.Size(442, 23);
             this.button11.TabIndex = 4;
             this.button11.Text = "Corrente Descontar";
             this.button11.UseVisualStyleBackColor = true;
@@ -544,13 +545,14 @@
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(385, 228);
+            this.tabPage7.Size = new System.Drawing.Size(454, 382);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "Tirantes";
             this.tabPage7.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.button16);
             this.tabPage3.Controls.Add(this.button5);
             this.tabPage3.Controls.Add(this.button6);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -605,6 +607,18 @@
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(460, 437);
             this.propertyGrid1.TabIndex = 0;
+            // 
+            // button16
+            // 
+            this.button16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button16.Location = new System.Drawing.Point(6, 65);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(340, 23);
+            this.button16.TabIndex = 2;
+            this.button16.Text = "Gerar Croqui";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
             // 
             // TercasMenu
             // 
@@ -674,5 +688,6 @@
         public System.Windows.Forms.ComboBox furos_manuais_layer;
         public System.Windows.Forms.ListBox correntes_mlstyles;
         public System.Windows.Forms.ListBox tirantes_mlstyles;
+        private System.Windows.Forms.Button button16;
     }
 }

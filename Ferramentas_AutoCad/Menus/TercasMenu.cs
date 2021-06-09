@@ -156,5 +156,11 @@ namespace Ferramentas_DLM
 
             this.Close();
         }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            acao = "gerarcroqui";
+            this.Close();
+        }
     }
 }

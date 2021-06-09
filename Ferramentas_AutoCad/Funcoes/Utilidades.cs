@@ -511,16 +511,8 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static TecnoMetal_Banco GetdbTecnoMetal()
-        {
-            if (_db == null)
-            {
-                _db = new Conexoes.TecnoMetal_Banco(Constantes.DBPROF);
-            }
 
-            return _db;
-        }
-        private static Conexoes.TecnoMetal_Banco _db { get; set; }
+
         public static void GetCoordenadas(Mline s, out Point3d p1, out Point3d p2)
         {
             List<Point3d> lista = new List<Point3d>();

@@ -101,11 +101,11 @@ namespace Ferramentas_DLM
         public List<string> TirantesMLStyles { get; set; } = new List<string> { "10MM" };
         [Category("Correntes")]
         [DisplayName("MLStyle")]
-        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3"};
+        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3","CR"};
 
         [Category("Purlin")]
         [DisplayName("MLStyle")]
-        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360" };
+        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360","TERCA" };
         [Category("Tirantes")]
         [DisplayName("Mapear")]
         public bool MapearTirantes { get; set; } = true;
@@ -181,7 +181,7 @@ namespace Ferramentas_DLM
         }
 
         private List<CTerca> _purlins { get; set; }
-        private List<CTerca> Getpurlins(bool update = false)
+        private List<CTerca> GetCtercas(bool update = false)
         {
             if(_purlins==null | update)
             {
@@ -254,26 +254,22 @@ namespace Ferramentas_DLM
 
                     FLayer.Set(LayerBlocos, true, true);
 
-                    if (MapearTercas)
+                       var eixos = this.GetEixos();
+                    var verticais = eixos.GetEixosVerticais();
+                    if (MapearTercas && verticais.Count>1)
                     {
-
-                        for (int i = 1; i < GetEixos_Linhas().Count; i++)
+                        for (int i = 1; i < verticais.Count; i++)
                         {
                             AddBarra();
-                            var e0 = GetEixos_Linhas()[i - 1].StartPoint;
-                            var e1 = GetEixos_Linhas()[i].StartPoint;
+                            var e0 = verticais[i - 1];
+                            var e1 = verticais[i];
                             c = MapeiaPurlins(c, e0, e1);
                         }
 
-                        for (int i = 1; i < GetEixos_PolyLines().Count; i++)
-                        {
-                            var e0 = GetEixos_PolyLines()[i - 1].StartPoint;
-                            var e1 = GetEixos_PolyLines()[i].StartPoint;
-                            c = MapeiaPurlins(c, e0, e1);
-                        }
+ 
 
 
-                        foreach (var s in this.Getpurlins().FindAll(x => !x.Mapeado && x.comprimento >= this.PurlinCompMin))
+                        foreach (var s in this.GetCtercas().FindAll(x => !x.Mapeado && x.comprimento >= this.PurlinCompMin))
                         {
                             //adiciona as purlins pequenas fora do vão.
                             //essa parte precisa emplementar melhor para mapear furos manuais e correntes.
@@ -301,7 +297,7 @@ namespace Ferramentas_DLM
                     AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
                     AddBarra();
                     AddMensagem("\n" + this.LinhasTirantes().Count + " Tirantes");
-                    AddMensagem("\n" + this.Getpurlins().Count.ToString() + " Purlins");
+                    AddMensagem("\n" + this.GetCtercas().Count.ToString() + " Purlins");
                     AddMensagem("\n" + this.correntes.Count.ToString() + " Correntes");
                     AddBarra();
                     acTrans.Commit();
@@ -423,7 +419,7 @@ namespace Ferramentas_DLM
         public List<CTerca> GetPurlinsPassando(CCorrente corrente)
         {
             return this
-                .Getpurlins()
+                .GetCtercas()
                 .FindAll(x => 
                 x.centro.Y >= corrente.miny-5 
                 && 
@@ -452,18 +448,18 @@ namespace Ferramentas_DLM
             return c;
         }
 
-        private int MapeiaPurlins(int c, Point3d e0, Point3d e1)
+        private int MapeiaPurlins(int c, Eixo e0, Eixo e1)
         {
-            var VAO = Math.Round(Math.Abs(e1.X - e0.X));
+            var VAO = Math.Round(Math.Abs(e1.Xmin - e0.Xmin));
             AddMensagem("\nVÃO " + VAO + " - " + c.ToString().PadLeft(2,'0'));
 
             if (VAO >= this.VaoMinimo && VAO<=this.VaoMaximo)
             {
 
-                var purlins = Utilidades.MlinesPassando(e0, e1, this.Getpurlins());
-                var correntes = Utilidades.MlinesPassando(e0, e1, this.correntes,true,true);
+                var purlins = Utilidades.MlinesPassando(e0.Origem, e1.Origem, this.GetCtercas());
+                var correntes = Utilidades.MlinesPassando(e0.Origem, e1.Origem, this.correntes,true,true);
                 AddMensagem("\n" + correntes.Count + " correntes encontradas");
-                var centroxx = e0.X + (VAO / 2);
+                var centroxx = e0.Xmin + (VAO / 2);
 
 
                 foreach (var p in purlins)
@@ -479,24 +475,24 @@ namespace Ferramentas_DLM
                     double TRD = this.TranspassePadrao;
 
 
-                    if (p0.X >= e0.X && p1.X <= e1.X)
+                    if (p0.X >= e0.Xmin && p1.X <= e1.Xmin)
                     {
                         //purlin está dentro do eixo
                         centroxx = p0.X + ((p1.X - p0.X) / 2);
-                        TRE = Math.Round(e0.X - p0.X);
-                        TRD = Math.Round(p1.X - e1.X);
+                        TRE = Math.Round(e0.Xmin - p0.X);
+                        TRD = Math.Round(p1.X - e1.Xmin);
                     }
 
-                    if (p1.X < e1.X + 1500)
+                    if (p1.X < e1.Xmin + 1500)
                     {
                         //se a linha da purlin for menor que a soma do transpasse 
-                        TRD = Math.Round(p1.X - e1.X);
+                        TRD = Math.Round(p1.X - e1.Xmin);
                     }
 
-                    if (p0.X > e0.X - 1500)
+                    if (p0.X > e0.Xmin - 1500)
                     {
                         //se a linha da purlin for menor que a soma do transpasse
-                        TRE = Math.Round(e0.X - p0.X);
+                        TRE = Math.Round(e0.Xmin - p0.X);
                     }
 
                     //mapeia as correntes
@@ -509,8 +505,8 @@ namespace Ferramentas_DLM
                     if (TRE < 0 | TRD < 0)
                     {
                         //desloca para a direita
-                        var pe = new Point3d(e0.X, e0.Y, e0.Z);
-                        var pd = new Point3d(e1.X, e1.Y, e1.Z);
+                        var pe = new Point3d(e0.Xmin, e0.Ymin, e0.Z);
+                        var pd = new Point3d(e1.Xmin, e1.Ymin, e1.Z);
 
                         if (TRE < 0)
                         {
@@ -546,11 +542,11 @@ namespace Ferramentas_DLM
                         {
                             if ((crp0.X < centroxx | crp1.X < centroxx))
                             {
-                                cre.Add(Math.Round(crp0.X - e0.X));
+                                cre.Add(Math.Round(crp0.X - e0.Xmin));
                             }
                             else
                             {
-                                crd.Add(Math.Round(e1.X - crp0.X));
+                                crd.Add(Math.Round(e1.Xmin - crp0.X));
                             }
                         }
 
@@ -564,7 +560,7 @@ namespace Ferramentas_DLM
                     List<double> fd = new List<double>();
                     if (MapeiaFurosManuais)
                     {
-                        var lista = Utilidades.LinhasPassando(e0, e1, LinhasFuros(), true, true, true);
+                        var lista = Utilidades.LinhasPassando(e0.Origem, e1.Origem, LinhasFuros(), true, true, true);
                         foreach (var ls in lista)
                         {
                             Point3d crp0 = new Point3d();
@@ -582,11 +578,11 @@ namespace Ferramentas_DLM
                             {
                                 if ((crp0.X < centroxx | crp1.X < centroxx))
                                 {
-                                    fe.Add(Math.Round(crp0.X - e0.X));
+                                    fe.Add(Math.Round(crp0.X - e0.Xmin));
                                 }
                                 else
                                 {
-                                    fd.Add(Math.Round(e1.X - crp0.X));
+                                    fd.Add(Math.Round(e1.Xmin - crp0.X));
                                 }
                             }
 
@@ -933,6 +929,81 @@ namespace Ferramentas_DLM
             }
         }
 
+        public void InserirCroquis_Purlin()
+        {
+           if(SelecionarObjetos(Tipo_Selecao.Blocos).Status!= PromptStatus.OK)
+            {
+                return;
+            }
+
+            var pecas = this.Getblocos_tercas().Select(x => GetPurlin(x)).ToList();
+                
+                
+                
+                
+             var purlins = pecas.GroupBy(x=>x.GetChave()).ToList();
+
+            if (purlins.Count>0)
+            {
+                bool cancelado = false;
+                double dist = this.Getescala() * 0.25;
+                var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+                if(!cancelado)
+                {
+
+                    double offset = dist;
+                    foreach(var p in purlins)
+                    {
+                        var purlin = p.ToList()[0];
+                        Point3d p0 = new Point3d(purlin.Origem.X - purlin.Vao/2, origem.Y - offset, 0);
+                        InserirCroqui_Purlin(p.ToList()[0], p0);
+                        offset = offset + dist;
+                    }
+                }
+            }
+
+        }
+
+
+        public void InserirCroqui_Purlin(Conexoes.Macros.Purlin purlin, Point3d pt)
+        {
+            double fonte = 0.25 * this.Getescala();
+            List<Entity> linhas = new List<Entity>();
+            Line pp = new Line();
+            pp.StartPoint = new Point3d(- purlin.Esquerda.Comprimento,0,0);
+            pp.EndPoint = new Point3d(purlin.Vao + purlin.Direita.Comprimento, 0, 0);
+            pp.Color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Yellow);
+            linhas.Add(pp);
+            double off_y = 100;
+                var xx = - purlin.Esquerda.Comprimento;
+            foreach (var s in purlin.GetFurosVista(false))
+            {
+                Line fr = new Line();
+
+
+                fr.StartPoint = new Point3d(xx + s.X, - off_y, 0);
+                fr.EndPoint = new Point3d(xx + s.X, off_y, 0);
+                fr.Color = Autodesk.AutoCAD.Colors.Color.FromColor(purlin.GetCor(s.Posicao).ToColor());
+
+                DBText txt = new DBText();
+                txt.Color = (Autodesk.AutoCAD.Colors.Color)fr.Color.Clone();
+                txt.TextString = $"{s.Posicao.ToString()} - {s.X}";
+                txt.Position = new Point3d(fr.StartPoint.X, fr.StartPoint.Y - 5, 0);
+                txt.Rotation = Conexoes.Utilz.GrausParaRadianos(-90);
+                txt.Height = fonte;
+
+                linhas.Add(txt);
+                linhas.Add(fr);
+            }
+            DBText nome = new DBText();
+            nome.TextString = $"{purlin.Nome}";
+            nome.Position = new Point3d(pp.StartPoint.X + (purlin.Vao/2), pp.StartPoint.Y + 125, 0);
+            nome.Height = fonte;
+            linhas.Add(nome);
+
+            Blocos.Criar("PURLIN_" + purlin.Nome, linhas, pt);
+        }
+
         public void Exportar(bool tabela = true, bool exportar = true)
         {
             try
@@ -954,7 +1025,7 @@ namespace Ferramentas_DLM
                     {
                         Conexoes.DBRM_Offline mm = new Conexoes.DBRM_Offline();
                         var purlins = this.Getblocos_tercas().Select(x => GetPurlin(x));
-                        List<Conexoes.Macros.Purlin> ss = JuntarPurlinsIguais(purlins, acTrans);
+                        List<Conexoes.Macros.Purlin> ss = JuntarERenomearPurlinsIguais(purlins, acTrans);
                         Point3d p = new Point3d();
                         if (tabela)
                         {
@@ -1005,7 +1076,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        private List<Conexoes.Macros.Purlin> JuntarPurlinsIguais(IEnumerable<Conexoes.Macros.Purlin> purlins, OpenCloseTransaction acTrans)
+        private List<Conexoes.Macros.Purlin> JuntarERenomearPurlinsIguais(IEnumerable<Conexoes.Macros.Purlin> purlins, OpenCloseTransaction acTrans)
         {
             int c = 1;
             List<Conexoes.Macros.Purlin> ss = new List<Conexoes.Macros.Purlin>();
@@ -1093,7 +1164,7 @@ namespace Ferramentas_DLM
             var AD = atributos.Get("AD").Double();
             var AE = atributos.Get("AE").Double();
             var REB = atributos.Get("REB").ToString().ToUpper() == "SIM";
-            var SBR = atributos.Get("REB").ToString().ToUpper() == "SIM";
+            var SBR = atributos.Get("SBR").ToString().ToUpper() == "SIM";
 
             var NOME = atributos.Get("NOME").ToString();
             var FE = atributos.Get("FE").ToString();
@@ -1105,11 +1176,14 @@ namespace Ferramentas_DLM
             var CRD = atributos.Get("CRD").ToString();
 
             Conexoes.Macros.Purlin p = new Conexoes.Macros.Purlin();
-            p.SetPeca(Conexoes.DBases.GetBancoRM().GetTercas().Find(x => x.id_db == ID_PECA));
+            p.id_peca = ID_PECA;
+            //p.SetPeca(Conexoes.DBases.GetBancoRM().GetTercas().Find(x => x.id_db == ID_PECA));
             p.Objeto = bloco;
             p.Tipo_Corrente = Conexoes.Tipo_Corrente_Purlin.Manual;
             p.Rebater_Furos = REB;
             p.Corrente_SBR = SBR;
+
+            p.Origem = new System.Windows.Media.Media3D.Point3D(bloco.Position.X, bloco.Position.Y, 0);
         
             //CORRENTES RÍGIDAS
             foreach(var s in CRE.Split(';').Select(x=> Conexoes.Utilz.Double(x)).OrderBy(x=>x).ToList().Distinct().ToList())

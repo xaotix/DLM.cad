@@ -18,6 +18,45 @@ namespace Ferramentas_DLM
 {
     public static class Blocos
     {
+        public static void Criar(string nome, List<Entity> Objetos, Point3d origem)
+        {
+            string nome_fim = nome;
+            using (var tr = CAD.acCurDb.TransactionManager.StartTransaction())
+            {
+                // Get the block table from the drawing
+                BlockTable bt = (BlockTable)tr.GetObject(CAD.acCurDb.BlockTableId,OpenMode.ForRead);
+
+                int c = 1;
+                while (bt.Has(nome_fim))
+                {
+                    nome_fim = nome + "_" + c;
+                    c++;
+                }
+                
+                //cria o bloco
+                BlockTableRecord btr = new BlockTableRecord();
+                btr.Name = nome_fim;
+                bt.UpgradeOpen();
+
+                ObjectId btrId = bt.Add(btr);
+                tr.AddNewlyCreatedDBObject(btr, true);
+
+                foreach (Entity ent in Objetos)
+                {
+                    btr.AppendEntity(ent);
+                    tr.AddNewlyCreatedDBObject(ent, true);
+                }
+                // Insere o bloco
+                BlockTableRecord ms = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace],OpenMode.ForWrite);
+                BlockReference br = new BlockReference(origem, btrId);
+
+                ms.AppendEntity(br);
+                tr.AddNewlyCreatedDBObject(br, true);
+                tr.Commit();
+            }
+
+        }
+
         public static void MarcaComposta(Point3d p0, string marca, double quantidade, string ficha, string mercadoria, double escala = 10)
         {
             try
@@ -508,7 +547,7 @@ namespace Ferramentas_DLM
 
             if (cam.Familia == DLMCam.Familia.Dobrado | cam.Familia == DLMCam.Familia.Laminado | cam.Familia == DLMCam.Familia.Soldado && !cam.Nome.Contains("_"))
             {
-                TecnoMetal_Perfil perfil = Utilidades.GetdbTecnoMetal().Get(cam.Descricao);
+                TecnoMetal_Perfil perfil = Conexoes.DBases.GetdbTecnoMetal().Get(cam.Descricao);
                 if (perfil != null)
                 {
                     if (perfil.Nome == "")
@@ -534,21 +573,35 @@ namespace Ferramentas_DLM
         }
 
 
-        public static BlockTableRecord GetPai(BlockReference bloco)
+        public static BlockTableRecord GetPai(BlockReference bloco, Database acCurDb = null)
         {
-            using (Transaction tx = CAD.acCurDb.TransactionManager.StartTransaction())
+            try
             {
-                BlockReference blk = tx.GetObject(bloco.ObjectId, OpenMode.ForRead) as BlockReference;
-                BlockTableRecord acBlkTblRec = blk.IsDynamicBlock?
-                     tx.GetObject(blk.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord
-                     :
-                     tx.GetObject(blk.BlockTableRecord, OpenMode.ForRead) as BlockTableRecord
-                     ;
+                if (acCurDb == null)
+                {
+                    acCurDb = CAD.acCurDb;
+                }
+                using (DocumentLock acLckDoc = acDoc.LockDocument())
+                {
+                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                    {
+                        BlockReference blk = acTrans.GetObject(bloco.ObjectId, OpenMode.ForRead) as BlockReference;
+                        BlockTableRecord acBlkTblRec = blk.IsDynamicBlock ?
+                             acTrans.GetObject(blk.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord
+                             :
+                             acTrans.GetObject(blk.BlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
 
-                tx.Commit();
 
-                return acBlkTblRec;
+                        return acBlkTblRec;
+                    }
+                }
             }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
         }
         public static string GetNome(BlockReference bloco)
         {

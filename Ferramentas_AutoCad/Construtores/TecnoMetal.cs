@@ -1372,6 +1372,7 @@ namespace Ferramentas_DLM
             if (lista_pecas.Linhas.Count == 0)
             {
                 erros.Add(new Conexoes.Report("Erro", "Nenhuma peça encontrada nas pranchas selecionadas", Conexoes.TipoReport.Crítico));
+                w.Close();
                 return new DB.Tabela();
             }
 
@@ -1395,7 +1396,7 @@ namespace Ferramentas_DLM
 
             foreach (var pf in perfis)
             {
-                var igual = Utilidades.GetdbTecnoMetal().Get(pf.Key);
+                var igual = Conexoes.DBases.GetdbTecnoMetal().Get(pf.Key);
 
                 if(igual.Nome=="")
                 {
@@ -2102,7 +2103,7 @@ namespace Ferramentas_DLM
                     {
                         if (perfil == null)
                         {
-                            perfil = Conexoes.Utilz.SelecionarObjeto(Utilidades.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
+                            perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
                         }
 
                         if (perfil != null)
@@ -2173,7 +2174,7 @@ namespace Ferramentas_DLM
                         {
                             if (perfil == null)
                             {
-                                perfil = Conexoes.Utilz.SelecionarObjeto(Utilidades.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
+                                perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
                             }
 
 

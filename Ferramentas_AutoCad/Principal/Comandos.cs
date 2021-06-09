@@ -130,8 +130,8 @@ namespace Ferramentas_DLM
         }
 
 
-        [CommandMethod("testeml")]
-        public static void testeml()
+        [CommandMethod("desenharmline")]
+        public static void desenharmline()
         {
             var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().Select(x=> Conexoes.Utilz.getNome(x)).ToList(), null);
             if(estilo!=null)
@@ -143,13 +143,36 @@ namespace Ferramentas_DLM
                 }
             }
 
-
-
-
         }
 
 
+        [CommandMethod("substituirpolylinepormultiline")]
+        public static void substituirpolylinepormultiline()
+        {
+            ClasseBase pp = new ClasseBase();
+            var s = pp.SelecionarObjetos();
+            if(s.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) { return; }
 
+            var polylines = pp.Getpolylinhas();
+
+            if(polylines.Count == 0) { return; }
+
+            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().Select(x => Conexoes.Utilz.getNome(x)).ToList(), null);
+            if (estilo != null)
+            {
+
+               foreach(var p in polylines)
+                {
+                    FLayer.Set(p.Layer);
+                   if(Utilidades.DesenharMLine(estilo,new List<Point3d> { p.StartPoint, p.EndPoint}))
+                    {
+                        pp.Apagar(p);
+                    }
+                }
+
+            }
+
+        }
 
 
 
@@ -271,6 +294,10 @@ namespace Ferramentas_DLM
             else if (mm.acao == "boneco")
             {
                 p.GetBoneco_Purlin();
+            }
+            else if (mm.acao == "gerarcroqui")
+            {
+                p.InserirCroquis_Purlin();
             }
         }
       

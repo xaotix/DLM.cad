@@ -105,7 +105,7 @@ namespace Ferramentas_DLM
                 acCurDb = CAD.acCurDb;
             }
 
-            var pai = Blocos.GetPai(bloco);
+            var pai = Blocos.GetPai(bloco, acCurDb);
 
 
             using (DocumentLock acLckDoc = acDoc.LockDocument())
@@ -123,15 +123,22 @@ namespace Ferramentas_DLM
                         {
 
                         }
-
-                        if (!acAttRef.Visible && pai.IsDynamicBlock)
+                        if(pai!=null)
                         {
-                            /*é pra evitar de puxar os dados de atributos ocultos das sets do bloco dinamico*/
+                            if (!acAttRef.Visible && pai.IsDynamicBlock)
+                            {
+                                /*é pra evitar de puxar os dados de atributos ocultos das sets do bloco dinamico*/
+                            }
+                            else
+                            {
+                                retorno.Add(acAttRef.Tag, acAttRef.TextString);
+                            }
                         }
                         else
                         {
                             retorno.Add(acAttRef.Tag, acAttRef.TextString);
                         }
+                       
                     }
 
 

@@ -89,6 +89,10 @@ namespace Ferramentas_DLM
 
 
         }
+        public void Apagar(Entity ent)
+        {
+            Apagar(new List<Entity> { ent });
+        }
         public void Apagar(List<Entity> entities)
         {
             if(entities.Count==0) { return; }
@@ -870,7 +874,7 @@ namespace Ferramentas_DLM
         public GradeEixos GetEixos()
         {
             GradeEixos retorno = new GradeEixos();
-            double tolerancia = 10;
+            double tolerancia = 100;
             var blocos = GetBlocosEixos().OrderBy(x=> new Coordenada(x.Position).Distancia(new Point3d())).ToList();
    
             
@@ -949,7 +953,7 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-
+                        retorno.Add(Sentido.Vertical, dist,null, L);
                     }
                     if (blks.Count > 1)
                     {
@@ -1070,7 +1074,7 @@ namespace Ferramentas_DLM
             switch (tipo)
             {
                 case Tipo_Selecao.Tudo:
-                    lista_filtro.Add(new TypedValue(0, "LINE,POLYLINE,TEXT,MTEXT,DIMENSION,LEADER,INSERT,MLINE"));
+                    lista_filtro.Add(new TypedValue(0, "LINE,POLYLINE,LWPOLYLINE,TEXT,MTEXT,DIMENSION,LEADER,INSERT,MLINE"));
 
                     break;
                 case Tipo_Selecao.Blocos:
@@ -1086,7 +1090,7 @@ namespace Ferramentas_DLM
                     lista_filtro.Add(new TypedValue(0, "DIMENSION,TEXT,MTEXT,LEADER,MLEADER"));
                     break;
                 case Tipo_Selecao.Polyline:
-                    lista_filtro.Add(new TypedValue(0, "POLYLINE"));
+                    lista_filtro.Add(new TypedValue(0, "POLYLINE,LWPOLYLINE"));
                     break;
             }
 

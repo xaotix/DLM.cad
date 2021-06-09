@@ -19,11 +19,11 @@ namespace Ferramentas_DLM
         public CriarMarcas()
         {
             InitializeComponent();
-            this.db = new Conexoes.TecnoMetal_Banco(Constantes.Raiz + @"\DB2011\DBPROF.dbf");
+
 
 
         }
-        public Conexoes.TecnoMetal_Banco db;
+
         private void button1_Click(object sender, EventArgs e)
         {
             Point3d p0 = new Point3d();
@@ -46,7 +46,7 @@ namespace Ferramentas_DLM
                     var marca = s.Cells[0].Value.ToString();
                     var perfil = s.Cells[1].Value.ToString();
                     var comprimento = Conexoes.Utilz.Double(s.Cells[2].Value.ToString());
-                    var pf = db.Get(perfil);
+                    var pf = Conexoes.DBases.GetdbTecnoMetal().Get(perfil);
                     if (marca == "")
                     {
                         s.Cells[3].Value = "Marca em Branco.";
