@@ -19,13 +19,19 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using static Ferramentas_DLM.CAD;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.PlottingServices;
 
 namespace Ferramentas_DLM
 {
     [Serializable]
     public class ClasseBase
     {
-        
+
+
+
+
+      
+
         public List<BlockReference> GetBlocosPrancha(string nome = "")
         {
             List<BlockReference> blocos = new List<BlockReference>();
@@ -189,13 +195,20 @@ namespace Ferramentas_DLM
         }
 
 
-        public List<string> SelecionarDWGs()
+        public List<string> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
             var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg");
 
             var selecao = arqs.FindAll(x => Conexoes.Utilz.getNome(x).ToUpper().Contains("-FA-"));
             var resto = arqs.FindAll(x => !Conexoes.Utilz.getNome(x).ToUpper().Contains("-FA-"));
+            if(dxfs_tecnometal && E_Tecnometal(false))
+            {
+                var etapa = new Conexoes.SubEtapaTecnoMetal(this.Pasta);
+
+                selecao.AddRange(Conexoes.Utilz.GetArquivos(etapa.PastaCAM, "*.DXF"));
+            }
             var arquivos = Conexoes.Utilz.SelecionarObjetos(resto, selecao, "Selecione as pranchas.");
+
 
             return arquivos;
         }

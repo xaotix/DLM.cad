@@ -14,6 +14,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using static Ferramentas_DLM.CAD;
+using Autodesk.AutoCAD.PlottingServices;
+using Autodesk.AutoCAD.EditorInput;
+using System.Runtime.InteropServices;
+using Autodesk.AutoCAD.Internal.Reactors;
 
 [assembly: CommandClass(typeof(Ferramentas_DLM.Comandos))]
 
@@ -700,6 +704,24 @@ namespace Ferramentas_DLM
 
 
         }
+
+
+
+
+
+        [CommandMethod("gerarPDF")]
+
+        static public void gerarPDF()
+        {
+            TecnoMetal.GerarPDF();
+        }
+
+
+
+       
+
+
+
 
     }
 }

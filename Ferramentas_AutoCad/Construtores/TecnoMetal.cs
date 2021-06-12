@@ -1,7 +1,8 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.PlottingServices;
+using Autodesk.AutoeditorInput;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +15,239 @@ namespace Ferramentas_DLM
 {
     public class TecnoMetal : ClasseBase
     {
+        public void GerarPDF()
+        {
+            if(Conexoes.Utilz.Pergunta("Gerar DXF dos CAMs?"))
+            {
+                GerarDXFs();
+            }
+
+
+            var arquivos = this.SelecionarDWGs(true);
+            if (arquivos.Count == 0)
+            {
+                return;
+            }
+            int pranchas_por_page_setup = 50;
+            string config_layout = "PDF-A3-PAISAGEM";
+            string config_model = "PDF_A3_PAISAGEM";
+            string arquivo_dwg = @"R:\Lisps\Plot_pdf\CFG\Selo_2017.dwg";
+            Conexoes.Wait w;
+
+            string destino = this.Pasta + @"PDF";
+
+            string pasta_dsd = destino + @"\DSD";
+
+            try
+            {
+                if (!Directory.Exists(destino))
+                {
+                    Directory.CreateDirectory(destino);
+                }
+
+                if (!Directory.Exists(pasta_dsd))
+                {
+                    Directory.CreateDirectory(pasta_dsd);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Alerta(ex.Message);
+                return;
+            }
+
+            
+            /*
+             Value	PLOT	    PUBLISH
+              0	    Foreground	Foreground
+              1	    Background	Foreground
+              2	    Foreground	Background
+              3	    Background	Background
+             */
+            Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
+            var dsds = Conexoes.Utilz.GetArquivos(pasta_dsd, "*.dsd");
+            foreach (var arq in dsds)
+            {
+                if (!Conexoes.Utilz.Apagar(arq))
+                {
+                    return;
+                }
+            }
+
+
+            if (arquivos.Count == 0)
+            {
+                return;
+            }
+            var pacotes = Conexoes.Utilz.quebrar_lista(arquivos, pranchas_por_page_setup);
+
+            w = new Conexoes.Wait(arquivos.Count);
+            w.Show();
+            int c = 1;
+
+
+            List<string> arquivos_dsd = new List<string>();
+            w.SetProgresso(1, arquivos.Count, $"Gerando Pacote {c}/{pacotes.Count}");
+            foreach (var pacote in pacotes)
+            {
+                string arquivo_dsd = pasta_dsd + $@"\Plotagem_{c}.dsd";
+                try
+                {
+                    if (!Conexoes.Utilz.Apagar(arquivo_dsd))
+                    {
+                        return;
+                    }
+
+                    DsdData dsdData = new DsdData();
+
+                    DsdEntryCollection collection = new DsdEntryCollection();
+                    Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                    /*todo = adicionar tela para configurar qual layout o usuário quer gerar*/
+                    foreach (string arquivo in pacote)
+                    {
+                        string extensao = Conexoes.Utilz.getExtensao(arquivo);
+                        try
+                        {
+                            var pdf = destino + @"\" + Conexoes.Utilz.getNome(arquivo) + ".PDF";
+                            if (!Conexoes.Utilz.Apagar(pdf))
+                            {
+                                w.Close();
+                                return;
+                            }
+                            string nome = "";
+                            if (extensao.ToUpper().EndsWith(".DXF"))
+                            {
+                                nome = "Model";
+                            }
+                           else if (arquivo.ToUpper() == this.Arquivo.ToUpper())
+                            {
+
+
+                                var layouts = Utilidades.GetLayouts();
+                                if (layouts.Count > 0)
+                                {
+                                    nome = layouts[0].LayoutName;
+                                }
+                            }
+                            else
+                            {
+                                Database db = new Database(false, true);
+                                db.ReadDwgFile(arquivo, System.IO.FileShare.Read, true, "");
+                                System.IO.FileInfo fi = new System.IO.FileInfo(arquivo);
+
+
+                                using (Transaction Tx = db.TransactionManager.StartTransaction())
+                                {
+
+                                    var layouts = Utilidades.getLayoutIds(db);
+                                    if (layouts.Count > 0)
+                                    {
+                                        Layout layout = Tx.GetObject(layouts[0], OpenMode.ForRead) as Layout;
+                                        nome = layout.LayoutName;
+                                    }
+
+                                    Tx.Commit();
+                                }
+                            }
+
+                            if (nome != "")
+                            {
+                                collection.Add(GetEntradaDSD(arquivo, nome));
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Alerta($"Erro ao tentar ler o arquivo {arquivo} \n\n{ex.Message}\n{ex.StackTrace}");
+                        }
+
+
+                        w.somaProgresso();
+                    }
+
+
+
+                    dsdData.SheetType = SheetType.SinglePdf;
+                    dsdData.NoOfCopies = 1;
+                    dsdData.ProjectPath = destino;
+                    dsdData.LogFilePath = pasta_dsd + $@"\Plotagem_{c}.log";
+                    dsdData.SheetSetName = @"PublisherSet";
+
+                    dsdData.SetDsdEntryCollection(collection);
+
+
+
+
+
+
+
+
+                    dsdData.WriteDsd(arquivo_dsd);
+
+
+                    /*tem q fazer essa gambiarra pra setar o pagesetup*/
+                    var txt = Conexoes.Utilz.Arquivo.Ler(arquivo_dsd);
+                    for (int i = 0; i < txt.Count; i++)
+                    {
+                        string setup = $@"PDF-A3-PAISAGEM|{arquivo_dwg}";
+                        if (txt[i].Contains("Setup="))
+                        {
+                            string pagesetup = $@"{config_layout}|{arquivo_dwg}";
+                            var opt = txt[i - 1];
+                            if (opt.ToUpper().Contains("MODEL"))
+                            {
+                                pagesetup = $@"{config_model}|{arquivo_dwg}";
+                            }
+                            txt[i] = $"Setup={pagesetup}";
+                        }
+                    }
+                    Conexoes.Utilz.Arquivo.Gravar(arquivo_dsd, txt, null, true);
+
+                    arquivos_dsd.Add(arquivo_dsd);
+                }
+                catch (Exception ex)
+                {
+                    Alerta(ex.Message + "\n" + ex.StackTrace);
+                }
+                c++;
+            }
+
+            w.SetProgresso(1, arquivos_dsd.Count, "Gerando PDFs...");
+            foreach (var arquivo_dsd in arquivos_dsd)
+            {
+                PlotConfig plotConfig = Autodesk.AutoCAD.PlottingServices.PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
+
+                Autodesk.AutoCAD.Publishing.Publisher publisher = Autodesk.AutoCAD.ApplicationServices.Application.Publisher;
+
+                DsdData dsdData = new DsdData();
+                dsdData.ReadDsd(arquivo_dsd);
+              
+                dsdData.SheetType = SheetType.SinglePdf;
+                dsdData.NoOfCopies = 1;
+                dsdData.ProjectPath = destino;
+                dsdData.DestinationName = destino + @"\arquivo.pdf";
+                publisher.PublishExecute(dsdData, plotConfig);
+
+                w.somaProgresso();
+            }
+
+
+            w.Close();
+            Alerta("Plotagem finalizada!");
+
+
+        }
+
+        private static DsdEntry GetEntradaDSD(string arquivo, string layout)
+        {
+
+            DsdEntry entry = new DsdEntry();
+            entry.DwgName = arquivo;
+            entry.Layout = layout;
+            entry.Title = Conexoes.Utilz.getNome(arquivo);
+            entry.NpsSourceDwg = "";
+            entry.Nps = "";
+            return entry;
+        }
         public int MapearPCsTecnoMetal(int seq, int arredon, bool subs_bloco, List<CTV_de_para> perfis_mapeaveis, double escala, string arquivo_bloco, bool agrupar_proximos = true, bool contraventos = true, bool mapear_pecas = true)
         {
             this.SetEscala(escala);
@@ -476,11 +710,15 @@ namespace Ferramentas_DLM
             {
                 var sub = this.GetSubEtapa();
                 var cams = Conexoes.Utilz.GetArquivos(sub.PastaCAM, "*.CAM");
+                Conexoes.Wait w = new Conexoes.Wait(cams.Count, "Carregando CAMs...");
+                w.Show();
 
                 foreach(var CAM in cams)
                 {
                     _cams.Add(new DLMCam.ReadCam(CAM));
+                    w.somaProgresso();
                 }
+                w.Close();
             }
             return _cams;
         }

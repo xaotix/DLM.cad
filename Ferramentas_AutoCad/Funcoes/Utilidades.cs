@@ -22,6 +22,7 @@ using static Ferramentas_DLM.Constantes;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using static Ferramentas_DLM.CAD;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.PlottingServices;
 
 namespace Ferramentas_DLM
 {
@@ -1316,5 +1317,27 @@ namespace Ferramentas_DLM
         }
 
 
+
+
+
+
+
+        public static System.Collections.Generic.List<ObjectId> getLayoutIds(Database db)
+        {
+            System.Collections.Generic.List<ObjectId> layoutIds =
+                new System.Collections.Generic.List<ObjectId>();
+            using (Transaction Tx = db.TransactionManager.StartTransaction())
+            {
+                DBDictionary layoutDic = Tx.GetObject(
+                    db.LayoutDictionaryId,
+                    OpenMode.ForRead, false)
+                        as DBDictionary;
+                foreach (DBDictionaryEntry entry in layoutDic)
+                {
+                    layoutIds.Add(entry.Value);
+                }
+            }
+            return layoutIds;
+        }
     }
 }
