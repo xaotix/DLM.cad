@@ -102,17 +102,20 @@ namespace Ferramentas_DLM
         public void Apagar(List<Entity> entities)
         {
             if(entities.Count==0) { return; }
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (acDoc.LockDocument())
             {
-                foreach (var b in entities)
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    Entity acEnt = acTrans.GetObject(b.ObjectId, OpenMode.ForWrite) as Entity;
-                    acEnt.Erase(true);
-                }
-                acTrans.Commit();
+                    foreach (var b in entities)
+                    {
+                        Entity acEnt = acTrans.GetObject(b.ObjectId, OpenMode.ForWrite) as Entity;
+                        acEnt.Erase(true);
+                    }
+                    acTrans.Commit();
 
+                }
+                acDoc.Editor.Regen();
             }
-            acDoc.Editor.Regen();
         }
         public  void SetViewport(bool block = true, string layer = "MV")
         {
@@ -195,17 +198,20 @@ namespace Ferramentas_DLM
         }
 
 
-        public List<string> SelecionarDWGs(bool dxfs_tecnometal = false)
+        public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
-            var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg");
+            var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg").Select(x=>new Conexoes.Arquivo(x)).ToList();
 
-            var selecao = arqs.FindAll(x => Conexoes.Utilz.getNome(x).ToUpper().Contains("-FA-"));
-            var resto = arqs.FindAll(x => !Conexoes.Utilz.getNome(x).ToUpper().Contains("-FA-"));
+            var selecao = arqs.FindAll(x => x.Nome.ToUpper().Contains("-FA-") && x.Nome.Length>8);
+            var ultimas_revs = selecao.GroupBy(x => x.Nome.Substring(0, x.Nome.Length - 3)).Select(x => x.ToList().OrderByDescending(y => y.Nome)).Select(x => x.First()).ToList();
+            selecao = ultimas_revs;
+
+            var resto = arqs.FindAll(x => selecao.Find(y=> y.Nome == x.Nome) == null);
             if(dxfs_tecnometal && E_Tecnometal(false))
             {
                 var etapa = new Conexoes.SubEtapaTecnoMetal(this.Pasta);
 
-                selecao.AddRange(Conexoes.Utilz.GetArquivos(etapa.PastaCAM, "*.DXF"));
+                selecao.AddRange(Conexoes.Utilz.GetArquivos(etapa.PastaCAM, "*.DXF").Select(x=>new Conexoes.Arquivo(x)));
             }
             var arquivos = Conexoes.Utilz.SelecionarObjetos(resto, selecao, "Selecione as pranchas.");
 
@@ -525,7 +531,7 @@ namespace Ferramentas_DLM
             }
             
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl= acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
@@ -574,7 +580,7 @@ namespace Ferramentas_DLM
 
 
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Linetype table for read
                 LinetypeTable acLineTypTbl;
@@ -618,7 +624,7 @@ namespace Ferramentas_DLM
             RotatedDimension acRotDim;
             // Get the current database
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,  OpenMode.ForRead) as BlockTable;
@@ -674,7 +680,7 @@ namespace Ferramentas_DLM
         {
             RotatedDimension acRotDim;
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -708,11 +714,6 @@ namespace Ferramentas_DLM
                         acRotDim.DimensionText = (inicio.PegarIguaisX().Count + 1).ToString() + "@" + Math.Round(inicio.Getdist_proximaX());
 
                     }
-                    //else if (fim.PegarIguaisX().Count > 0 && juntar_cotas && sequencia == 0 && !ultima_cota)
-                    //{
-                    //    double distp = (fim.PegarIguaisX().Count + 1) * fim.Getdist_proximaX();
-                    //    acRotDim.DimensionText = (fim.PegarIguaisX().Count + 1).ToString() + "@" + Math.Round(fim.Getdist_proximaX());
-                    //}
                     // Add the new object to Model space and the transaction
                     acBlkTblRec.AppendEntity(acRotDim);
 
@@ -730,7 +731,7 @@ namespace Ferramentas_DLM
             OrdinateDimension acOrdDim;
 
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;

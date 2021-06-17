@@ -570,7 +570,7 @@ namespace Ferramentas_DLM
                 acDoc.Editor.Regen();
             }
         }
-        public void InserirTabela()
+        public void ExportarRMAdeTabela()
         {
             string dest = Conexoes.Utilz.SalvarArquivo("RM");
             if(dest=="")

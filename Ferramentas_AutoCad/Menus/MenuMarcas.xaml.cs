@@ -20,6 +20,24 @@ namespace Ferramentas_DLM
     /// </summary>
     public partial class MenuMarcas : Window
     {
+        private void seleciona_tudo(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = null;
+            if (sender is TextBox)
+            {
+                textBox = ((TextBox)sender);
+
+            }
+
+
+            if (textBox != null)
+            {
+                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.SelectAll();
+                }));
+            }
+        }
         public void Iniciar()
         {
             if(this.IsLoaded)
@@ -513,24 +531,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        private void seleciona_tudo(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = null;
-            if (sender is TextBox)
-            {
-                textBox = ((TextBox)sender);
-
-            }
-
-
-            if (textBox != null)
-            {
-                textBox.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    textBox.SelectAll();
-                }));
-            }
-        }
+ 
 
         private void desliga_layer(object sender, RoutedEventArgs e)
         {
@@ -692,6 +693,78 @@ namespace Ferramentas_DLM
         private void rad_m_simples_Checked(object sender, RoutedEventArgs e)
         {
             SetTextos();
+        }
+
+        private void gerar_pdf(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.gerarPDFEtapa();
+        }
+
+        private void composicao(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            MenuMarcas.TecnoMetal.InserirSoldaComposicao();
+        }
+
+        private void preenche_selo_tabela(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.preenche();
+        }
+
+        private void limpar_selo_tabela(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.limpa();
+        }
+
+        private void purlin_muda_perfil(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.mudaperfiltercas();
+        }
+
+        private void abre_pasta(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.abrepasta();
+        }
+
+        private void exporta_rma(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.exportarma();
+        }
+
+        private void importa_rm(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.importarm();
+        }
+
+        private void listar_quantidades(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.listarquantidadeblocos();
+        }
+
+        private void bloqueia_mviews(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.bloqueiamviews();
+        }
+
+        private void desloqueia_mviews(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.desbloqueiamviews();
+        }
+
+        private void cria_layers_padrao(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.criarlayersPadrao();
         }
     }
 }

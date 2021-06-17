@@ -54,12 +54,13 @@ namespace Ferramentas_DLM
         public static string LineType_Eixos { get; set; } = "DASHDOT";
         public static string LineType_ByLayer { get; set; } = "BYLAYER";
         public static string RaizApp { get; set; } =@"C:\Medabil\Ferramentas_DLM\";
-        public static string Raiz { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
-        //public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
+        //public static string Raiz { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
+        public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
         public static string Raiz_Blocos { get; set; } = Raiz + @"Blocos\";
         public static string Raiz_Blocos_A2 { get; set; } = Raiz_Blocos + @"SELO A2\";
         public static string Raiz_MlStyles { get; set; } = Raiz_Blocos + @"Multilines\";
         public static string Raiz_Blocos_Listagem { get; set; } = Raiz_Blocos_A2 + @"Listagem\";
+        public static string Raiz_Blocos_Soldas { get; set; } = Raiz_Blocos_A2 + @"Solda\";
         public static string Raiz_Blocos_Pcs { get; set; } = Raiz_Blocos_Listagem + @"Peças Mapeáveis\";
         public static string Raiz_Blocos_Indicacao { get; set; } = Raiz_Blocos_A2 + @"Indicação\";
         public static string Raiz_Blocos_TecnoMetal_Marcacao { get; set; } = Raiz + @"Simbologias\usr\";
@@ -151,6 +152,8 @@ namespace Ferramentas_DLM
         public static string BL_P_ELUNIT { get; set; } = "P8_ELU";
 
 
+        public static string BL_Solda_1 { get; set; } = "SOLDA1";
+        public static string BL_Solda_2 { get; set; } = "SOLDA2";
         public static string BL_SubConjunto { get; set; } = "S8_ASS";
         public static string BL_Posicao_Perfil_M { get; set; } = "P8_PRO_M";
         public static string BL_Posicao_Chapa_M { get; set; } = "P8_LAM_M";

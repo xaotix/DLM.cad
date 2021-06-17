@@ -408,7 +408,7 @@ namespace Ferramentas_DLM.Menus
 
 
             this.Visibility = Visibility.Collapsed;
-            seq = this.TecnoMetal.MapearPCsTecnoMetal(seq, arredon, subs_bloco,this.perfis_mapeaveis,escala,arquivo, agrupar, gerar_ctvs, gerar_pecas);
+            seq = this.TecnoMetal.MapearPCsTecnoMetal(seq, arredon, subs_bloco,this.perfis_mapeaveis,Conexoes.Utilz.Double(txt_escala.Text),arquivo, agrupar, gerar_ctvs, gerar_pecas);
 
             this.Visibility = Visibility.Visible;
         }

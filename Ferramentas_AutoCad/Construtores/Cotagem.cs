@@ -1418,7 +1418,7 @@ namespace Ferramentas_DLM
         {
           
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
@@ -1693,157 +1693,153 @@ namespace Ferramentas_DLM
                 }
             };
         }
-        private string CotarPeca(OpenCloseTransaction acTrans)
+        private string CotarPeca()
         {
-
             var selecao = SelecionarObjetos();
-
-
-
-            if (Getlinhas().Count == 0 | selecao.Status !=PromptStatus.OK)
+            if(selecao.Status != PromptStatus.OK)
             {
-                AddMensagem("\nNenhuma linha encontrada na seleção.\nÉ necessário selecionar uma peça de TecnoMetal.\nExploda a seleção antes de tentar cotar.");
                 return "";
             }
 
-           
-            //escala = acCurDb.Dimscale;
-            size = acCurDb.Dimtxt;
-            acCurDb.Dimtfill = 1;
-            if(ForcarTamTexto)
-            {
-                acCurDb.Textsize =size;
-
-            }
-            acCurDb.Dimtix = true;
-
-
-
-           
-
-            MapeiaObjetos();
-
-          if(marcas_ajusta_escala)
-            {
-                UpdateEscala(this.GetBlocos_Marcas_Posicoes());
-            }
-
-
-            if (GetContorno().Count == 0)
-            {
-                AddMensagem("Região selecionada não contém objetos cotáveis do TecnoMetal. \nExploda as vistas para poder usar a ferramenta.");
-                return "Nada";
-            }
             //limpa as cotas atuais
-            this.ApagarCotas();
+             this.Apagar(this.Getcotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
 
-            List<Coordenada> pp = new List<Coordenada>();
-
-            Point3d origem;
-            double y;
-            //cotas horizotais superiores
-
-            GetPontosHorizontais(out pp,   out y, out origem,true);
-
-
-            if (cotar_emcima)
-            {
-                AddCotasHorizontais( pp, y);
-            }
-
-            //cotas acumuladas
-            if (acumuladas_cima && !tipo_desenho.StartsWith("C"))
-            {
-                AddCotasAcumuladas(pp, y, origem);
-            }
-
-            //cotas horizotais inferiores
-            GetPontosHorizontais(out pp,  out y, out origem, false);
-
-            if (cotar_embaixo)
-            {
-                AddCotasHorizontais(pp, y, false);
-            }
-
-            if (acumuladas_baixo && !tipo_desenho.StartsWith("C"))
-            {
-                AddCotasAcumuladas(pp, y, origem, false);
-            }
-
-            //cotas dos cantos
-            AddCotasVerticaisCantos();
-
-            if(linha_projecao && !tipo_desenho.StartsWith("C"))
-            {
-                foreach(var s in this.GetCoordenadasFurosProjecao())
+                if (Getlinhas().Count == 0 | selecao.Status != PromptStatus.OK)
                 {
-                    AddLinha(s.Origem(), s.Fim(), "DASHDOT", System.Drawing.Color.Yellow);
+                    AddMensagem("\nNenhuma linha encontrada na seleção.\nÉ necessário selecionar uma peça de TecnoMetal.\nExploda a seleção antes de tentar cotar.");
+                    return "";
                 }
-            }
 
-            if (indicar_diametro && !tipo_desenho.StartsWith("C"))
-            {
-                foreach (var s in this.GetFurosPorDiam())
+
+                //escala = acCurDb.Dimscale;
+                size = acCurDb.Dimtxt;
+                acCurDb.Dimtfill = 1;
+                if (ForcarTamTexto)
                 {
-                    Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1/2).GetPoint(), s.Nome, size * this.Getescala());
+                    acCurDb.Textsize = size;
 
                 }
-            }
+                acCurDb.Dimtix = true;
 
-            acTrans.Commit();
-            AddMensagem("\nFinalizado.");
-            AddBarra();
-            return "Finalizado";
+
+
+
+
+                MapeiaObjetos();
+
+                if (marcas_ajusta_escala)
+                {
+                    UpdateEscala(this.GetBlocos_Marcas_Posicoes());
+                }
+
+
+                if (GetContorno().Count == 0)
+                {
+                    AddMensagem("Região selecionada não contém objetos cotáveis do TecnoMetal. \nExploda as vistas para poder usar a ferramenta.");
+                    return "Nada";
+                }
+       
+
+                List<Coordenada> pp = new List<Coordenada>();
+
+                Point3d origem;
+                double y;
+                //cotas horizotais superiores
+
+                GetPontosHorizontais(out pp, out y, out origem, true);
+
+
+                if (cotar_emcima)
+                {
+                    AddCotasHorizontais(pp, y);
+                }
+
+                //cotas acumuladas
+                if (acumuladas_cima && !tipo_desenho.StartsWith("C"))
+                {
+                    AddCotasAcumuladas(pp, y, origem);
+                }
+
+                //cotas horizotais inferiores
+                GetPontosHorizontais(out pp, out y, out origem, false);
+
+                if (cotar_embaixo)
+                {
+                    AddCotasHorizontais(pp, y, false);
+                }
+
+                if (acumuladas_baixo && !tipo_desenho.StartsWith("C"))
+                {
+                    AddCotasAcumuladas(pp, y, origem, false);
+                }
+
+                //cotas dos cantos
+                AddCotasVerticaisCantos();
+
+                if (linha_projecao && !tipo_desenho.StartsWith("C"))
+                {
+                    foreach (var s in this.GetCoordenadasFurosProjecao())
+                    {
+                        AddLinha(s.Origem(), s.Fim(), "DASHDOT", System.Drawing.Color.Yellow);
+                    }
+                }
+
+                if (indicar_diametro && !tipo_desenho.StartsWith("C"))
+                {
+                    foreach (var s in this.GetFurosPorDiam())
+                    {
+                        Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1 / 2).GetPoint(), s.Nome, size * this.Getescala());
+
+                    }
+                }
+
+                AddMensagem("\nFinalizado.");
+                AddBarra();
+                return "Finalizado";
+            
+
+
         }
 
         public void Cotar()
         {
-            //SetWidthFactor(this.widthfactor);
-
-            //this.acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+        retentar:
+            var st = OpcoesComMenu();
+            if (st == false)
             {
-            retentar:
-              var st =   OpcoesComMenu();
-                if(st==false)
+                return;
+            }
+            if (tipo_desenho == "") { return; }
+
+
+
+
+        denovo:
+            try
+            {
+                var s = CotarPeca();
+                if (s != "")
                 {
+                    goto denovo;
+                }
+                else
+                {
+                    var pp = this.PerguntaString("Deseja mudar as opções e continuar?", new List<string> { "Sim", "Não" });
+                    if (pp.StartsWith("S"))
+                    {
+                        //Opcoes();
+                        goto retentar;
+                    }
                     return;
                 }
 
-
-                if (tipo_desenho == "") { return; }
-
-
-    
-
-            denovo:
-                try
-                {
-                    var s = CotarPeca(acTrans);
-                    if (s != "")
-                    {
-                        goto denovo;
-                    }
-                    else
-                    {
-                        var pp = this.PerguntaString("Deseja mudar as opções e continuar?", new List<string> { "Sim", "Não" });
-                        if (pp.StartsWith("S"))
-                        {
-                            //Opcoes();
-                            goto retentar;
-                        }
-                        return;
-                    }
-
-                }
-                catch (System.Exception ex)
-                {
-
-                    Alerta(ex.Message + "\n" + ex.StackTrace);
-                }
-                
             }
+            catch (System.Exception ex)
+            {
+
+                Alerta(ex.Message + "\n" + ex.StackTrace);
+            }
+
         }
     }
 

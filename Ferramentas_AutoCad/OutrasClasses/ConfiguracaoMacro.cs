@@ -26,7 +26,10 @@ namespace Ferramentas_DLM
         public bool AjustarMViews { get; set; } = true;
 
         [DisplayName("Gerar DXF de CAMs")]
-        public bool DXFs_de_CAMs { get; set; } = true;
+        public bool DXFs_de_CAMs { get; set; } = false;
+
+        [DisplayName("Gerar PDFs")]
+        public bool Gerar_PDFs { get; set; } = false;
         public ConfiguracaoMacro()
         {
 

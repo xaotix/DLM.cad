@@ -318,7 +318,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, perfil.Nome);
                 ht.Add(Constantes.ATT_QTD, quantidade.ToString().Replace(",", ""));
-                ht.Add(Constantes.ATT_CMP, comprimento.ToString().Replace(",", ""));
+                ht.Add(Constantes.ATT_CMP, comprimento.ToString("N0").Replace(",", ""));
                 ht.Add(Constantes.ATT_MAT, material);
                 ht.Add(Constantes.ATT_FIC, tratamento);
                 if (peso == 0)
@@ -373,7 +373,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_MAR, pf.Marca);
                 ht.Add(Constantes.ATT_POS, posicao);
                 ht.Add(Constantes.ATT_PER, pf.Descricao);
-                ht.Add(Constantes.ATT_QTD, pf.Quantidade.ToString("N4").Replace(",", ""));
+                ht.Add(Constantes.ATT_QTD, pf.Quantidade.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_CMP, pf.Comprimento.ToString("N0").Replace(",", ""));
                 ht.Add(Constantes.ATT_LRG, pf.Largura.ToString("N0").Replace(",", ""));
                 ht.Add(Constantes.ATT_ESP, pf.Espessura.ToString("N2").Replace(",", ""));

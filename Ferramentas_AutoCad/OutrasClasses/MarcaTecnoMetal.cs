@@ -172,6 +172,11 @@ namespace Ferramentas_DLM
                 return _Superficie;
             }
         }
+
+        public Conexoes.TecnoMetal_Perfil GetPerfil()
+        {
+            return Conexoes.DBases.GetdbTecnoMetal().Get(this.Perfil);
+        }
         public string Perfil
         {
             get

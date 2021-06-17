@@ -31,7 +31,24 @@ namespace Ferramentas_DLM.Menus
             InitializeComponent();
             this.Update();
         }
+        private void seleciona_tudo(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = null;
+            if (sender is TextBox)
+            {
+                textBox = ((TextBox)sender);
 
+            }
+
+
+            if (textBox != null)
+            {
+                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.SelectAll();
+                }));
+            }
+        }
         private void set_nome(object sender, RoutedEventArgs e)
         {
             PCQuantificar sel = ((FrameworkElement)sender).DataContext as PCQuantificar;
@@ -133,6 +150,7 @@ namespace Ferramentas_DLM.Menus
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             //this.DialogResult = true;
+            this.filtro = this.lista.Items.Cast<PCQuantificar>().ToList();
             this.confirmado = true;
             this.Close();
         }
@@ -171,24 +189,7 @@ namespace Ferramentas_DLM.Menus
 
         }
 
-        private void seleciona_tudo(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = null;
-            if (sender is TextBox)
-            {
-                textBox = ((TextBox)sender);
 
-            }
-
-
-            if (textBox != null)
-            {
-                textBox.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    textBox.SelectAll();
-                }));
-            }
-        }
 
         private void editar_filtro_numero(object sender, RoutedEventArgs e)
         {

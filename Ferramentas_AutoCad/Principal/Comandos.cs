@@ -414,14 +414,14 @@ namespace Ferramentas_DLM
         }
 
 
-        [CommandMethod("tabelatelhas")]
-        public static void tabelatelhas()
+        [CommandMethod("exportarma")]
+        public static void exportarma()
         {
             Telhas pp = new Telhas();
-            pp.InserirTabela();
+            pp.ExportarRMAdeTabela();
         }
-        [CommandMethod("tabelaRM")]
-        public static void tabelaRM()
+        [CommandMethod("importarm")]
+        public static void importarm()
         {
             string arquivo = Conexoes.Utilz.Abrir_String("RM", "Selecione");
             if (File.Exists(arquivo))
@@ -485,17 +485,41 @@ namespace Ferramentas_DLM
         public static void gerardbf()
         {
 
-            TecnoMetal mm = new TecnoMetal();
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            var tbl = mm.GerarDBF(ref erros,Conexoes.Utilz.Pergunta("Atualizar CAMs?\nAo ativar essa opção também será verificado CAM x Projeto"));
 
-            if (File.Exists(tbl.Banco) && erros.Count==0)
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            var tbl = TecnoMetal.GerarDBF(ref erros,Conexoes.Utilz.Pergunta("Atualizar CAMs?\nAo ativar essa opção também será verificado CAM x Projeto"));
+
+            if (File.Exists(tbl.Banco))
             {
-                Utilidades.Alerta("Arquivo gerado com sucesso!\nCAMs Atualizados!");
-                Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
+          
+                if(erros.FindAll(x=>x.Tipo == Conexoes.TipoReport.Crítico).Count>0)
+                {
+                    Conexoes.Utilz.ShowReports(erros);
+                }
+                else
+                {
+                    if(Conexoes.Utilz.Pergunta($"Arquivo {tbl.Banco} gerado! Deseja fazer um testlist?"))
+                    {
+                        var etapa = TecnoMetal.GetSubEtapa();
+                        if(etapa!=null)
+                        {
+                            var pacote = etapa.GetPacote();
+                            if(pacote!=null)
+                            {
+                                pacote.Selecionar(Conexoes.Tipo_Pacote.DBF);
+                                var testlist = pacote.GetTestList();
+                                Conexoes.Utilz.ShowReports(testlist.Verificar());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
+
+                    }
+                }
             }
 
-            Conexoes.Utilz.ShowReports(erros);
         }
 
         [CommandMethod("listarquantidadeblocos")]
@@ -632,6 +656,7 @@ namespace Ferramentas_DLM
             }
          else
             {
+                menu_bloco.txt_escala.Text = TecnoMetal.Getescala().ToString();
                 menu_bloco.Visibility = System.Windows.Visibility.Visible;
             }
         }
@@ -695,30 +720,62 @@ namespace Ferramentas_DLM
         public static void testeeixos()
         {
             ClasseBase p = new ClasseBase();
-
             p.SelecionarObjetos();
-
-
-
             var eixos = p.GetEixos();
-
-
         }
 
 
+        [CommandMethod("preenche")]
+
+        static public void preenche()
+        {
+            TecnoMetal.IrLayout();
+            TecnoMetal.SetLts(10);
+            TecnoMetal.ZoomExtend();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            TecnoMetal.InserirTabelaAuto(ref erros);
+            TecnoMetal.PreencheSelo();
+
+            Conexoes.Utilz.ShowReports(erros);
+        }
+
+        [CommandMethod("limpa")]
+
+        static public void limpa()
+        {
+            TecnoMetal.IrLayout();
+            TecnoMetal.SetLts(10);
+            TecnoMetal.ZoomExtend();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            TecnoMetal.ApagarTabelaAuto();
+            TecnoMetal.PreencheSelo(true);
+
+            Conexoes.Utilz.ShowReports(erros);
+        }
 
 
+        [CommandMethod("gerarPDFEtapa")]
 
-        [CommandMethod("gerarPDF")]
-
-        static public void gerarPDF()
+        static public void gerarPDFEtapa()
         {
             TecnoMetal.GerarPDF();
         }
 
+        [CommandMethod("gerarPDFEtapacarrega")]
 
+        static public void gerarPDFEtapacarrega()
+        {
+            var arquivos = Conexoes.Utilz.Arquivo.Ler(TecnoMetal.Pasta + @"DAT\plotar.txt").Select(x=> new Conexoes.Arquivo(x)).ToList();
+            arquivos = arquivos.FindAll(x => x.Existe);
+            TecnoMetal.GerarPDF(arquivos);
+        }
 
-       
+        [CommandMethod("composicao")]
+
+        static public void composicao()
+        {
+            TecnoMetal.InserirSoldaComposicao();
+        }
 
 
 

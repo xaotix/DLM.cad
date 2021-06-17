@@ -31,6 +31,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCui, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcCui.dll</HintPath>
@@ -122,6 +126,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -156,9 +161,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />
     <Compile Include="Input\Eixo.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Menus\MenuMarcas.xaml.cs">
       <DependentUpon>MenuMarcas.xaml</DependentUpon>
     </Compile>
@@ -167,6 +178,9 @@
     </Compile>
     <Compile Include="Menus\Quantificar_Menu_Configuracao.xaml.cs">
       <DependentUpon>Quantificar_Menu_Configuracao.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Menus\SoldaComposicao.xaml.cs">
+      <DependentUpon>SoldaComposicao.xaml</DependentUpon>
     </Compile>
     <Compile Include="OutrasClasses\Chapa_Dobrada.cs" />
     <Compile Include="Construtores\ClasseBase.cs" />
@@ -248,6 +262,14 @@
     <None Include="Todo.TXT" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Menus\MenuMarcas.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -260,6 +282,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Menus\SoldaComposicao.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Logo-Medabil-Vertical-01.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -267,7 +296,9 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>start Xcopy /y /r  "C:\Medabil\Ferramentas_DLM\*.*" "C:\Program Files\Autodesk\AutoCAD 2012 - English\"
-PAUSE</PostBuildEvent>
+    <PostBuildEvent>
+			start Xcopy /y /r  "C:\Medabil\Ferramentas_DLM\*.*" "C:\Program Files\Autodesk\AutoCAD 2012 - English\"
+			PAUSE
+		</PostBuildEvent>
   </PropertyGroup>
 </Project>
