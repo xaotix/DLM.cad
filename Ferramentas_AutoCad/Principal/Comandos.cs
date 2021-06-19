@@ -498,25 +498,27 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    if(Conexoes.Utilz.Pergunta($"Arquivo {tbl.Banco} gerado! Deseja fazer um testlist?"))
-                    {
-                        var etapa = TecnoMetal.GetSubEtapa();
-                        if(etapa!=null)
-                        {
-                            var pacote = etapa.GetPacote();
-                            if(pacote!=null)
-                            {
-                                pacote.Selecionar(Conexoes.Tipo_Pacote.DBF);
-                                var testlist = pacote.GetTestList();
-                                Conexoes.Utilz.ShowReports(testlist.Verificar());
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
+                    Conexoes.Utilz.Alerta($"Arquivo {tbl.Banco} gerado!", "", System.Windows.MessageBoxImage.Information);
+                    Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
+                    //if(Conexoes.Utilz.Pergunta($"Arquivo {tbl.Banco} gerado! Deseja fazer um testlist?"))
+                    //{
+                    //    var etapa = TecnoMetal.GetSubEtapa();
+                    //    if(etapa!=null)
+                    //    {
+                    //        var pacote = etapa.GetPacote();
+                    //        if(pacote!=null)
+                    //        {
+                    //            pacote.Selecionar(Conexoes.Tipo_Pacote.DBF);
+                    //            var testlist = pacote.GetTestList();
+                    //            Conexoes.Utilz.ShowReports(testlist.Verificar());
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
 
-                    }
+                    //}
                 }
             }
 

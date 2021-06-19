@@ -23,7 +23,7 @@ namespace Ferramentas_DLM.Menus
     public partial class Menu_Bloco_Peca : Window
     {
         public List<CTV_de_para> perfis_mapeaveis { get; set; } = new List<CTV_de_para>();
-        public double escala { get; set; } = 0;
+        public double escala { get; set; } = 10;
         public double comp { get; set; } = 0;
         public double qtd { get; set; } = 1;
         public int arredondamento { get; set; } = 50;
@@ -59,6 +59,9 @@ namespace Ferramentas_DLM.Menus
 
             this.perfis_mapeaveis = Constantes.CTVs();
             this.lista_perfis_ctv.ItemsSource = perfis_mapeaveis;
+
+
+            this.Title = $"Indicações Montagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
         }
         public string arquivo { get; set; } = "";
         private void set_imagem(object sender, SelectionChangedEventArgs e)
@@ -113,89 +116,90 @@ namespace Ferramentas_DLM.Menus
             }
         }
 
+        private int id { get; set; } = 0;
+
         private void set_titulo_peca_selecionar()
         {
+            this.id = 0;
             this.txt_codigo.Text = "";
             this.txt_descricao.Text = "";
-            this.txt_comprimento.IsEnabled = false;
-            this.txt_codigo.IsEnabled = false;
-            this.txt_descricao.IsEnabled = false;
-            this.txt_destino.IsEnabled = false;
-
             this.txt_codigo.Text = "";
-            //this.txt_comprimento.Text = "0";
             this.txt_descricao.Text = "";
             this.txt_destino.Text = "";
             this.txt_quantidade.Text = "1";
             this.bt_peca_selecionar.Content = "[...]";
 
             this.txt_destino.Text = tipo_selecionado;
-           
-            if (tipo_selecionado == "RMA" && this.rma_sel != null)
+
+            try
             {
-                bt_peca_selecionar.Content = this.rma_sel.ToString();
-                this.txt_codigo.Text = this.rma_sel.SAP;
-                this.txt_descricao.Text = this.rma_sel.DESC;
-            }
-            else if (tipo_selecionado == "RME" && this.rme_sel != null)
-            {
-                var pc = new Conexoes.RME(this.rme_sel);
-                bt_peca_selecionar.Content = this.rme_sel.COD_DB;
-                if(this.rme_sel.VARIAVEL)
+                if (tipo_selecionado == "RMA" && this.rma_sel != null)
                 {
-                    this.txt_comprimento.IsEnabled = true;
-                    pc.COMP = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
+                    bt_peca_selecionar.Content = this.rma_sel.ToString();
+                    this.txt_codigo.Text = this.rma_sel.SAP;
+                    this.txt_descricao.Text = this.rma_sel.DESC;
+                }
+                else if (tipo_selecionado == "RME" && this.rme_sel != null)
+                {
+                    var pc = new Conexoes.RME(this.rme_sel);
+                    bt_peca_selecionar.Content = this.rme_sel.COD_DB;
+                    if (this.rme_sel.VARIAVEL)
+                    {
+                        this.txt_comprimento.IsEnabled = true;
+                        pc.COMP = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
+                    }
+                    else
+                    {
+                        this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
+                    }
+                    this.txt_codigo.Text = pc.CODIGOFIM;
+                    this.txt_descricao.Text = pc.MAKTX;
+                }
+                else if (tipo_selecionado == "RMU" && this.rmu_sel != null)
+                {
+                    var selec = this.rmu_sel;
+                    var pc = new Conexoes.RMU(selec);
+                    bt_peca_selecionar.Content = selec.COD_DB;
+                    if (this.rmu_sel.VARIAVEL)
+                    {
+                        this.txt_comprimento.IsEnabled = true;
+                        pc.COMP = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
+                    }
+                    else
+                    {
+                        this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
+                    }
+                    this.txt_codigo.Text = pc.CODIGOFIM;
+                    this.txt_descricao.Text = pc.MAKTX;
+                }
+                else if (tipo_selecionado == "RMT" && this.rmt_sel != null)
+                {
+                    bt_peca_selecionar.Content = this.rmt_sel.ToString();
+                    var pc = new Conexoes.RMT(this.rmt_sel, Conexoes.DBases.GetBobinaDummyPP());
+                    this.rmt_sel.Comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
+                    this.txt_descricao.Text = rmt_sel.Desc;
+                }
+                else if (tipo_selecionado == "TECNOMETAL")
+                {
+                    if (this.marca_sel != null)
+                    {
+                        this.txt_codigo.Text = this.marca_sel.Marca;
+                        this.txt_comprimento.Text = this.marca_sel.Comprimento.ToString();
+                        this.txt_descricao.Text = this.marca_sel.Mercadoria;
+                        this.txt_destino.Text = "TECNOMETAL";
+                        this.txt_quantidade.Text = this.marca_sel.Quantidade.ToString();
+                        this.bt_peca_selecionar.Content = this.marca_sel.ToString();
+                    }
                 }
                 else
                 {
-                    this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
                 }
-                this.txt_codigo.Text = pc.CODIGOFIM;
-                this.txt_descricao.Text = pc.MAKTX;
+
+
+               
             }
-            else if (tipo_selecionado == "RMU" && this.rmu_sel != null)
+            catch (Exception)
             {
-                var selec = this.rmu_sel;
-                var pc = new Conexoes.RMU(selec);
-                bt_peca_selecionar.Content = selec.COD_DB;
-                if (this.rme_sel.VARIAVEL)
-                {
-                    this.txt_comprimento.IsEnabled = true;
-                    pc.COMP = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
-                }
-                else
-                {
-                    this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
-                }
-                this.txt_codigo.Text = pc.CODIGOFIM;
-                this.txt_descricao.Text = pc.MAKTX;
-            }
-            else if (tipo_selecionado == "RMT" && this.rmt_sel != null)
-            {
-                bt_peca_selecionar.Content = this.rmt_sel.ToString();
-                this.rmt_sel.Comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
-                this.txt_comprimento.IsEnabled = true;
-                this.txt_descricao.Text = rmt_sel.Desc;
-            }
-            else if(tipo_selecionado == "TECNOMETAL")
-            {
-                if (this.marca_sel != null)
-                {
-                    this.txt_quantidade.IsEnabled = true;
-                    this.txt_codigo.Text = this.marca_sel.Marca;
-                    this.txt_comprimento.Text = this.marca_sel.Comprimento.ToString();
-                    this.txt_descricao.Text = this.marca_sel.Mercadoria;
-                    this.txt_destino.Text = "TECNOMETAL";
-                    this.txt_quantidade.Text = this.marca_sel.Quantidade.ToString();
-                    this.bt_peca_selecionar.Content = this.marca_sel.ToString();
-                }
-            }
-            else
-            {
-                this.txt_codigo.IsEnabled = true;
-                this.txt_descricao.IsEnabled = true;
-                this.txt_destino.IsEnabled = true;
-                this.txt_comprimento.IsEnabled = true;
             }
         }
 
@@ -244,7 +248,6 @@ namespace Ferramentas_DLM.Menus
             set_titulo_peca_selecionar();
       
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             double qtd = Conexoes.Utilz.Double(this.txt_quantidade.Text);
@@ -269,98 +272,23 @@ namespace Ferramentas_DLM.Menus
                 return;
             }
 
-            if (tipo_selecionado == "RMA")
-            {
-                if (rma_sel == null) { Conexoes.Utilz.Alerta("Selecione uma peça antes de continuar."); return; };
-
-                if (!rma_sel.MultiploOk(qtd))
-                {
-                    Conexoes.Utilz.Alerta($"Quantidade digitada [{qtd}] não é múltipla da quantidade padrão da peça: {rma_sel.Multiplo}");
-                    return;
-                }
-
-            }
-            else if (tipo_selecionado == "RME")
-            {
-                if (rme_sel == null) { Conexoes.Utilz.Alerta("Selecione uma peça antes de continuar."); return; };
-
-                if (rme_sel.VARIAVEL)
-                {
-                    if (comp > rme_sel.COMP_MAX)
-                    {
-                        Conexoes.Utilz.Alerta($"Comprimento digitado [{comp}] é maior que o comprimento máximo da peça: {rme_sel.COMP_MAX}");
-                        return;
-                    }
-                    else if (comp < rme_sel.COMP_MIN)
-                    {
-                        Conexoes.Utilz.Alerta($"Comprimento digitado [{comp}] é menor que o comprimento mínimo da peça: {rme_sel.COMP_MIN}");
-                        return;
-                    }
-                }
-
-            }
-            else if (tipo_selecionado == "RMU")
-            {
-                if (rmu_sel == null) { Conexoes.Utilz.Alerta("Selecione uma peça antes de continuar."); return; };
-
-            }
-            else if (tipo_selecionado == "RMT")
-            {
-                if (rmt_sel == null) { Conexoes.Utilz.Alerta("Selecione uma peça antes de continuar."); return; };
-
-            }
-
-            if (tipo_selecionado != "RMA" && !Conexoes.Utilz.E_Multiplo(qtd, 1))
-            {
-                Conexoes.Utilz.Alerta("Quantidade inválida. Deve ser um número inteiro.");
-                return;
-            }
 
 
-            int id = 0;
 
 
-            if (tipo_selecionado == "RMA")
-            {
-                Conexoes.RMA mm = new Conexoes.RMA(rma_sel, qtd);
-                id = mm.id_db;
-            }
-            else if (tipo_selecionado == "RME")
-            {
-                Conexoes.RME mm = new Conexoes.RME(rme_sel);
-                if (mm.VARIAVEL)
-                {
-                    mm.COMP = comp;
-                }
-                mm.Quantidade = (int)qtd;
-                id = mm.id_db;
-            }
-            else if (tipo_selecionado == "RMU")
-            {
-                Conexoes.RMU mm = new Conexoes.RMU(rmu_sel);
-                if (mm.VARIAVEL)
-                {
-                    mm.COMP = comp;
-                }
-                mm.Quantidade = (int)qtd;
-                id = mm.id_db;
-            }
-            else if (tipo_selecionado == "RMT")
-            {
-                Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, Conexoes.DBases.GetBobinaDummy());
-                mm.Qtd = (int)qtd;
-                id = mm.id_telha;
-            }
+
+
+           
 
 
 
             this.Visibility = Visibility.Collapsed;
             bool cancelado = false;
             Hashtable att = new Hashtable();
-            att.Add("N", this.txt_sequencial.Text);
+            att.Add("N", this.txt_prefix.Text + this.txt_sequencial.Text);
             att.Add("FAMILIA", this.familia.Text);
             att.Add("TIPO", this.tipo_selecionado);
-            att.Add("COMP", comp.ToString().Replace(",", ""));
+            att.Add("COMP", comprimento.ToString().Replace(",", ""));
             att.Add("CODIGO", txt_codigo.Text);
             att.Add("ID", id);
             att.Add("DESC", txt_descricao.Text);
@@ -375,6 +303,13 @@ namespace Ferramentas_DLM.Menus
                     Blocos.Inserir(CAD.acDoc, arquivo, origem, escala, 0, att);
                     origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
                 }
+            }
+
+            var sequencial = Conexoes.Utilz.Int(txt_sequencial.Text);
+
+            if (sequencial > 0)
+            {
+                txt_sequencial.Text = (sequencial + 1).ToString();
             }
 
             this.Visibility = Visibility.Visible;
@@ -413,6 +348,46 @@ namespace Ferramentas_DLM.Menus
             this.Visibility = Visibility.Visible;
         }
 
-     
+        private void atualiza_nome(object sender, TextChangedEventArgs e)
+        {
+            double qtd = Conexoes.Utilz.Double(this.txt_quantidade.Text);
+            double comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
+
+            if (tipo_selecionado == "RMA" && rma_sel!=null)
+            {
+                Conexoes.RMA mm = new Conexoes.RMA(rma_sel, qtd);
+                id = mm.id_db;
+            }
+            else if (tipo_selecionado == "RME" && rme_sel!=null)
+            {
+                Conexoes.RME mm = new Conexoes.RME(rme_sel);
+                if (mm.VARIAVEL)
+                {
+                    mm.COMP = comprimento;
+                }
+                mm.Quantidade = (int)qtd;
+                id = mm.id_db;
+                txt_codigo.Text = mm.CODIGOFIM;
+
+            }
+            else if (tipo_selecionado == "RMU" && rmu_sel!=null)
+            {
+                Conexoes.RMU mm = new Conexoes.RMU(rmu_sel);
+                if (mm.VARIAVEL)
+                {
+                    mm.COMP = comprimento;
+                }
+                mm.Quantidade = (int)qtd;
+                id = mm.id_db;
+                txt_codigo.Text = mm.CODIGOFIM;
+            }
+            else if (tipo_selecionado == "RMT" && rmt_sel!=null)
+            {
+                Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, Conexoes.DBases.GetBobinaDummy());
+                mm.Qtd = (int)qtd;
+                id = mm.id_telha;
+                txt_codigo.Text = mm.NomeFim;
+            }
+        }
     }
 }

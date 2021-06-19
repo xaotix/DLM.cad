@@ -4,6 +4,8 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoeditorInput;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,6 +53,61 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
+
+
+
+
+        public static string DLL_Local { get; set; } = @"C:\Medabil\Ferramentas_DLM\Ferramentas_DLM.dll";
+        public static string DLL_Rede { get; set; } = @"\\10.54.0.4\BancoDeDados\Lisps\Ferramentas_DLM\FLS\C#'Medabil'Ferramentas_DLM'\Ferramentas_DLM.dll";
+        public static string App_Atualizar { get; set; } = @"\\10.54.0.4\BancoDeDados\Lisps\Ferramentas_DLM\Updater.exe";
+
+        public static string PastaPlugin
+        {
+            get
+            {
+                return Conexoes.Utilz.getPasta(DLL_Local);
+            }
+        }
+        public static List<string> Changelog
+        {
+            get
+            {
+                return Conexoes.Utilz.Arquivo.Ler(PastaPlugin + "Changelog.txt");
+            }
+        }
+
+        public static void Versionamento()
+        {
+            if(Changelog.Count>0)
+            {
+            Conexoes.Utilz.JanelaTexto(string.Join("\n", Changelog),"Informações do Aplicativo");
+            }
+        }
+
+        public static void VerificarVersao()
+        {
+            var arq_local = new Conexoes.Arquivo(DLL_Local);
+            var arq_rede = new Conexoes.Arquivo(DLL_Rede);
+
+            if(!File.Exists(DLL_Rede))
+            {
+                Conexoes.Utilz.Alerta($"Arquivo de atualização {DLL_Rede}\nEntre em contato com suporte: daniel.maciel@medabil.com.br");
+            }
+
+
+            if(!arq_local.E_Igual(arq_rede.Endereco))
+            {
+              if(Conexoes.Utilz.Pergunta("A versão instalada do Plugin em sua máquina está desatualizada. Deseja atualizar? Se clicar em sim, todas as instâncias do CAD serão fechadas."))
+                {
+                    if(!File.Exists(App_Atualizar))
+                    {
+                        Conexoes.Utilz.Alerta($"Arquivo de atualização {App_Atualizar}\nEntre em contato com suporte: daniel.maciel@medabil.com.br");
+                    }
+                    Conexoes.Utilz.Abrir(App_Atualizar);
+                }
+            }
+        }
+
         public static string LineType_Eixos { get; set; } = "DASHDOT";
         public static string LineType_ByLayer { get; set; } = "BYLAYER";
         public static string RaizApp { get; set; } =@"C:\Medabil\Ferramentas_DLM\";

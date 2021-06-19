@@ -279,11 +279,12 @@ namespace Ferramentas_DLM
                         {
                             Point3d pcentro = new Point3d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152), p1.Z);
                             Hashtable bl = new Hashtable();
-                            foreach (var obj in p.Atributos.Celulas)
-                            {
-                                bl.Add(obj.Coluna, obj.Valor);
-                            }
-                            bl.Add("N", p.Numero);
+                            //foreach (var obj in p.Atributos.Celulas)
+                            //{
+                            //    bl.Add(obj.Coluna, obj.Valor);
+                            //}
+                           
+                            bl.Add("N", p.Atributos.Get("N").valor);
                             bl.Add("FAMILIA", p.Familia);
                             bl.Add("TIPO", p.Tipo);
                             bl.Add("COMP", p.Comprimento);
@@ -292,7 +293,6 @@ namespace Ferramentas_DLM
                             bl.Add("QTD", p.Quantidade);
 
                             Blocos.Inserir(acDoc, p.Nome_Bloco, pcentro, escala * .8, 0, bl);
-                            hp.Add("N", " ");
 
                         }
                         else

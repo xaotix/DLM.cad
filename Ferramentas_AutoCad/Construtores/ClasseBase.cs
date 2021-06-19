@@ -26,12 +26,6 @@ namespace Ferramentas_DLM
     [Serializable]
     public class ClasseBase
     {
-
-
-
-
-      
-
         public List<BlockReference> GetBlocosPrancha(string nome = "")
         {
             List<BlockReference> blocos = new List<BlockReference>();
@@ -981,8 +975,6 @@ namespace Ferramentas_DLM
         }
 
         #endregion
-
-
         public double Getescala()
         {
             return acCurDb.Dimscale;
@@ -1006,7 +998,6 @@ namespace Ferramentas_DLM
             ClonarBloco(bloco, posicao);
             Apagar(new List<Entity> { bloco });
         }
-
         public void ClonarBloco(BlockReference bloco, Point3d posicao)
         {
             var atributos = Atributos.GetLinha(bloco);
@@ -1018,7 +1009,6 @@ namespace Ferramentas_DLM
             }
             Blocos.Inserir(CAD.acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, pp);
         }
-
         public void AddBarra()
         {
             AddMensagem("\n=====================================================================\n");
@@ -1070,7 +1060,6 @@ namespace Ferramentas_DLM
                 }
             }
         }
-
         public PromptSelectionResult SelecionarObjetos(Tipo_Selecao tipo = Tipo_Selecao.Tudo)
         {
             PromptSelectionOptions pp = new PromptSelectionOptions();
@@ -1160,16 +1149,6 @@ namespace Ferramentas_DLM
 
             return acSSPrompt;
         }
-
-
-
-
-
-        public ClasseBase()
-        {
-            SetUCSParaWorld();
-        }
-
         public void AbrePasta()
         {
             if(Directory.Exists(this.Pasta))
@@ -1181,6 +1160,11 @@ namespace Ferramentas_DLM
         public void SetLts(int valor = 10)
         {
             var st = editor.Command("LTSCALE", valor, "");
+        }
+        public ClasseBase()
+        {
+            Constantes.VerificarVersao();
+            SetUCSParaWorld();
         }
     }
 }

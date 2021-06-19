@@ -10,6 +10,7 @@
              MinHeight="450"
              MinWidth="450"
              Width="450" 
+         Title="Medabil CAD v.1.0.2"
              WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="NoResize" Closing="Window_Closing">
     <Window.Resources>
         <Style TargetType="{x:Type RadioButton}">
@@ -274,6 +275,7 @@
                     <Button Content="Mercadorias"  Click="mercadorias"/>
                     <Button Content="Materiais"  Click="materiais"/>
                     <Button Content="Tratamentos"  Click="tratamentos"/>
+                    <Button Content="Sobre"  Click="abre_versionamento"/>
                 </StackPanel>
             </ScrollViewer>
         </TabItem>

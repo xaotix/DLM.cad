@@ -654,11 +654,11 @@ namespace Ferramentas_DLM
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
                             if (npc.Nome.StartsWith("PECA_INDICACAO"))
                             {
-                                var blcs = npc.Agrupar(new List<string> { "CODIGO", "Nº" }, npc.Nome_Bloco);
+                                var blcs = npc.Agrupar(new List<string> { "CODIGO", "N" }, npc.Nome_Bloco);
                                 foreach (var bl in blcs)
                                 {
                                     bl.SetDescPorAtributo("DESC");
-                                    bl.SetNumeroPorAtributo("Nº");
+                                    bl.SetNumeroPorAtributo("N");
                                     bl.SetDestinoPorAtributo("DESTINO");
                                     bl.SetQtdPorAtributo("QTD");
                                     bl.SetFamiliaPorAtributo("FAMILIA");
@@ -677,7 +677,7 @@ namespace Ferramentas_DLM
                                     att.Add("DESTINO", tipo_selecionado);
                                  */
                             }
-                            if (npc.Nome == Constantes.Bloco_3D_Montagem_Info)
+                            else if (npc.Nome == Constantes.Bloco_3D_Montagem_Info)
                             {
                                 if (opt.Pecas_TecnoMetal)
                                 {
@@ -739,16 +739,27 @@ namespace Ferramentas_DLM
                     if(opt.Textos)
                     {
 
-                        foreach (var s in this.GetMtexts().GroupBy(x => x.Text.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n"," ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", "").Replace(")","")))
+                        foreach (var s in this.GetMtexts().GroupBy(x => x.Text
+                        .TrimStart()
+                        .TrimEnd()
+                        .Replace("*", " ")
+                        .Replace("@"," ")
+                        .Replace(","," ")
+                        .Replace("(", " ")
+                        .Replace(")", " ")
+                        .Replace("\r", " ")
+                        .Replace("\t", " ")
+                        .Replace("\n"," ")
+                        .Split(' ')[0]))
                         {
 
-                            var st = s.Key.Split(' ')[0].ToUpper();
+      
 
                             bool nao_adicionar = false;
                             List<string> ignorar = Constantes.Ignorar();
                             foreach(var ign in ignorar)
                             {
-                                if(st.Contains(ign))
+                                if(s.Key.Contains(ign))
                                 {
                                     nao_adicionar = true;
                                     break;
@@ -765,7 +776,7 @@ namespace Ferramentas_DLM
                             pecas.Add(npc);
 
                         }
-                        foreach (var s in this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", "").Replace(")", "")))
+                        foreach (var s in this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")))
                         {
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTags(new List<DB.Celula> { new DB.Celula("VALOR", x.TextString) })).ToList());
                             pecas.Add(npc);
@@ -2197,7 +2208,7 @@ namespace Ferramentas_DLM
                             Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Chapa, escala, posicao);
                         }
 
-                        if (pa.GerarCam == Opcao.Sim)
+                        if (Conexoes.Utilz.Pergunta("Gerar CAM?"))
                         {
                             string destino = this.Pasta;
                             if (this.E_Tecnometal(false))
@@ -2231,7 +2242,7 @@ namespace Ferramentas_DLM
                                 pcam.Cabecalho.Marca = pa.Marca;
                                 pcam.Nota = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
                                 pcam.Gerar();
-                                Conexoes.Utilz.Abrir(destino);
+                                Conexoes.Utilz.Abrir(arquivo);
 
                             }
                         }

@@ -42,6 +42,7 @@ namespace Ferramentas_DLM
         {
             if(this.IsLoaded)
             {
+                this.Update(Comandos.TecnoMetal);
                 this.Visibility = Visibility.Visible;
             }
             else
@@ -124,6 +125,8 @@ namespace Ferramentas_DLM
 
             try
             {
+
+                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
                 TecnoMetal = tecnoMetal;
                 this.combo_mercadoria.ItemsSource = TecnoMetal.GetMercadorias();
                 this.combo_material.ItemsSource = TecnoMetal.GetMateriais();
@@ -765,6 +768,11 @@ namespace Ferramentas_DLM
         {
             this.Visibility = Visibility.Collapsed;
             Comandos.criarlayersPadrao();
+        }
+
+        private void abre_versionamento(object sender, RoutedEventArgs e)
+        {
+            Constantes.Versionamento();
         }
     }
 }

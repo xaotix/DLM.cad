@@ -9,6 +9,7 @@
             WindowStartupLocation="CenterScreen"
         MinWidth="475"
         MinHeight="325"
+        Title="Medabil CAD v.1.0.2"
              Width="475" Height="325">
     <Window.Resources>
         <Style TargetType="{x:Type RadioButton}">
@@ -211,16 +212,16 @@
                         <Button Content="[...]" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Name="bt_peca_selecionar" Click="peca_selecionar_Click"></Button>
 
                         <Label Grid.Row="2" Grid.Column="0" Content="Código:"></Label>
-                        <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="txt_codigo" MaxLength="9"></TextBox>
+                        <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="txt_codigo" MaxLength="13"></TextBox>
 
                         <Label Grid.Row="2" Grid.Column="2" Content="Destino:"></Label>
                         <TextBox Text="" Grid.Row="2" Grid.Column="3" Name="txt_destino" MaxLength="10"></TextBox>
 
                         <Label Grid.Row="3" Grid.Column="0" Content="Qtd.:"></Label>
-                        <TextBox Text="{Binding qtd}" Grid.Row="3" Grid.Column="1" Name="txt_quantidade" MaxLength="4"></TextBox>
+                        <TextBox Text="{Binding qtd}" Grid.Row="3" Grid.Column="1" TextChanged="atualiza_nome" Name="txt_quantidade" MaxLength="4"></TextBox>
 
                         <Label Grid.Row="3" Grid.Column="2" Content="Comp.:"></Label>
-                        <TextBox Text="{Binding comp}" Grid.Row="3" Grid.Column="3" Name="txt_comprimento" MaxLength="5"></TextBox>
+                        <TextBox Text="{Binding comp}" Grid.Row="3" TextChanged="atualiza_nome" Grid.Column="3" Name="txt_comprimento" MaxLength="5"></TextBox>
 
                         <Label Grid.Row="4" Grid.Column="0" Content="Desc.:"></Label>
                         <TextBox Text="" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="txt_descricao" MaxLength="25"></TextBox>
@@ -229,8 +230,8 @@
                         <Label Grid.Row="5" Grid.Column="0" Content="Ficha:"></Label>
                         <TextBox Text="FICHA 01" Grid.Row="5" Grid.Column="1" Name="ficha" MaxLength="15" CharacterCasing="Upper"></TextBox>
 
-                        <Label Grid.Row="5" Grid.Column="2" Content="Família:"></Label>
-                        <TextBox Text="PEÇA" Grid.Row="5" Grid.Column="3" Name="familia" MaxLength="25" CharacterCasing="Upper"></TextBox>
+                        <Label Grid.Row="5" Grid.Column="2" Content="Tabela:"></Label>
+                        <TextBox Text="PEÇAS" Grid.Row="5" Grid.Column="3" Name="familia" MaxLength="25" CharacterCasing="Upper"></TextBox>
 
                       
                     </Grid>
@@ -284,6 +285,9 @@
             </Grid.ColumnDefinitions>
             <ComboBox Name="combo_lista_blocos" SelectionChanged="set_imagem" Grid.ColumnSpan="2"></ComboBox>
             <Image Name="caixa_imagem" Grid.Row="1" Margin="5" Grid.ColumnSpan="2"/>
+
+            <Label HorizontalAlignment="Right"  Grid.Row="2" Grid.Column="0" Content="Prefix:"></Label>
+            <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="txt_prefix" MaxLength="1" CharacterCasing="Upper"></TextBox>
 
             <Label HorizontalAlignment="Right"  Grid.Row="3" Grid.Column="0" Content="Sequencial:"></Label>
             <TextBox Text="{Binding sequencial}" Grid.Row="3" Grid.Column="1" Name="txt_sequencial" MaxLength="3" CharacterCasing="Upper"></TextBox>

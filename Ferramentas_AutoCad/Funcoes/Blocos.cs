@@ -100,8 +100,11 @@ namespace Ferramentas_DLM
                     s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_TecnoMetal_Simbologias, nome + ".dwg"); ;
                 }
 
-
+                if(s.Count==0)
+                {
                 s = Conexoes.Utilz.GetArquivos(Constantes.Raiz_Blocos_Indicacao, nome + ".dwg");
+
+                }
 
                 if (s.Count == 0)
                 {

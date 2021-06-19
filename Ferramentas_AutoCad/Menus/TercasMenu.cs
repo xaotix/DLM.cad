@@ -15,6 +15,7 @@ namespace Ferramentas_DLM
         public TercasMenu()
         {
             InitializeComponent();
+            this.Text = $"xPurlin V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
         }
         public string acao { get; set; } = "";
         public int id_terca { get; set; } = 1763;

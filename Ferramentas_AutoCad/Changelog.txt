@@ -1,0 +1,9 @@
+V 1.1
+Correções:
+> Erros ao quantificar peças com textos de quantidade
+> Não adicionava a quantidade no bloco da indicação da tabela
+> Fatal error ao gerar tabela com blocos de indicação
+> Não encontrava os blocos de posições para marcar
+> Adicionado um verificador de versão
+> Não estava inserindo cotas.
+> Várias correções no menu de indicação de peças na montagem

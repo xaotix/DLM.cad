@@ -17,7 +17,7 @@ namespace Ferramentas_DLM
         {
             this.mm = mm;
             InitializeComponent();
-
+            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
             opcoes.SelectedObject = this.mm;
             getvars(this.mm);
 
@@ -54,7 +54,7 @@ namespace Ferramentas_DLM
 
         private void Tela_Load(object sender, EventArgs e)
         {
-            this.Text = "Medabil Cotagem " + " v.1.0.2 - 07/02/2020";
+         //   this.Text = "Medabil Cotagem " + " v.1.0.2 - 07/02/2020";
         }
 
         private void Tela_FormClosing(object sender, FormClosingEventArgs e)

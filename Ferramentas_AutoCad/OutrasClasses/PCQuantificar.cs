@@ -62,8 +62,6 @@ namespace Ferramentas_DLM
                     var blks = s.ToList();
                     PCQuantificar nn = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.Split('|')[0],"", novo_nome_bloco, blks);
                     retorno.Add(nn);
-                  
-                    
                 }
             }
 
@@ -180,11 +178,12 @@ namespace Ferramentas_DLM
 
                 double qtd = 0;
 
-                foreach(var att in atts)
+                foreach (var att in atts)
                 {
-                    double qtd_pc = 0;
-                    var strn = att
-                        .Replace(this.Nome, "")
+                    double qtd_pc = 1;
+
+                    var strn = att.ToUpper()
+                        .Replace(this.Nome.ToUpper(), "")
                         .Replace("("," ")
                         .Replace(")"," ")
                         .Replace("X"," ")

@@ -29,6 +29,7 @@ namespace Ferramentas_DLM.Menus
             original = pecas;
             filtro.AddRange(pecas);
             InitializeComponent();
+            this.Title = $"Gerar Tabela (Editor) V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
             this.Update();
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
