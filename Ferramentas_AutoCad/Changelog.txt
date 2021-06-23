@@ -1,3 +1,7 @@
+V 1.2
+Correções:
+> Ler os CAMs desmembrados ao gerar DXF
+> Bug que tentava abrir os DXF
 V 1.1
 Correções:
 > Erros ao quantificar peças com textos de quantidade
@@ -7,3 +11,4 @@ Correções:
 > Adicionado um verificador de versão
 > Não estava inserindo cotas.
 > Várias correções no menu de indicação de peças na montagem
+

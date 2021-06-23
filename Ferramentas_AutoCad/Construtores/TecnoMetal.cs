@@ -259,7 +259,7 @@ namespace Ferramentas_DLM
                                 return;
                             }
                             string nome = "";
-                            if (extensao.ToUpper().EndsWith(".DXF"))
+                            if (extensao.ToUpper().EndsWith("DXF"))
                             {
                                 nome = "Model";
                             }
@@ -1123,6 +1123,9 @@ namespace Ferramentas_DLM
             {
                 this.GetSubEtapa().GetPacote().SetStatus(true);
                 cams = this.GetSubEtapa().GetPacote().GetCAMsNaoRM();
+                var subs = cams.SelectMany(x => x.Filhos);
+                cams.AddRange(subs);
+                
                //cams = Conexoes.Utilz.SelecionarObjetos(new List<DLMCam.ReadCam>(), cams);
             }
 

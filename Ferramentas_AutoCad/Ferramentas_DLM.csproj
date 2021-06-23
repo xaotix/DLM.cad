@@ -299,9 +299,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>
-			start Xcopy /y /r  "C:\Medabil\Ferramentas_DLM\*.*" "C:\Program Files\Autodesk\AutoCAD 2012 - English\"
-			PAUSE
-		</PostBuildEvent>
+    <PostBuildEvent>start Xcopy /y /r  "C:\Medabil\Ferramentas_DLM\*.*" "C:\Program Files\Autodesk\AutoCAD 2012 - English\"
+PAUSE</PostBuildEvent>
   </PropertyGroup>
 </Project>
