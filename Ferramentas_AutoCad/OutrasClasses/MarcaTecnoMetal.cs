@@ -101,6 +101,7 @@ namespace Ferramentas_DLM
         }
 
         public string Marca { get; private set; } = "";
+        public string SAP { get; private set; } = "";
         public string Tratamento { get; private set; } = "";
         public string Posicao { get; private set; } = "";
         public double Quantidade { get; private set; } = 1;
@@ -188,6 +189,7 @@ namespace Ferramentas_DLM
                         return this.SubItens[0].Perfil;
                     }
                 }
+               
                 return _Perfil;
             }
             private set
@@ -195,6 +197,26 @@ namespace Ferramentas_DLM
                 _Perfil = value;
             }
         }
+
+        public string Descricao
+        {
+            get
+            {
+                string retorno = Perfil;
+                 if (retorno == "")
+                {
+                    retorno =
+                          "Ch. " + this.Linha.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
+                          " x " + this.Linha.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "") +
+                          " x " + this.Linha.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "");
+
+
+                }
+
+                return retorno + " x " + Math.Round(this.Comprimento);
+            }
+        }
+
         public string NomeBloco { get; private set; } = "";
         public string Prancha { get; private set; } = "";
         public string Material { get; private set; } = "";
@@ -229,6 +251,7 @@ namespace Ferramentas_DLM
             this.Mercadoria = l.Get(Constantes.ATT_MER).ToString();
             this.Material = l.Get(Constantes.ATT_MAT).ToString();
             this.Tratamento = l.Get(Constantes.ATT_FIC).ToString();
+            this.SAP = l.Get(Constantes.ATT_SAP).ToString();
 
             this._PesoUnit = l.Get(Constantes.ATT_PES).Double();
             this._Superficie = l.Get(Constantes.ATT_SUP).Double();
@@ -246,6 +269,7 @@ namespace Ferramentas_DLM
             this.Perfil = m.Perfil;
             this._PesoUnit = m.PesoUnit;
             this.Posicao = m.Posicao;
+            this.SAP = m.SAP;
             this.Prancha = m.Prancha;
             this.Quantidade = posicoes_iguais.Sum(x => x.Quantidade);
             this._Superficie = m.Superficie;

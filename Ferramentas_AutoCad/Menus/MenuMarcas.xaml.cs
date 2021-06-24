@@ -154,12 +154,14 @@ namespace Ferramentas_DLM
         public int Sufix_Count { get; set; } = 1;
         public void Update(TecnoMetal tecnoMetal)
         {
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            var ms = MenuMarcas.TecnoMetal.GetMarcas(ref erros).ToList();
+            var pos = ms.SelectMany(x => x.GetPosicoes()).ToList();
+
             MenuMarcas.TecnoMetal = tecnoMetal;
             this.seleciona_marca_composta.Visibility = Visibility.Visible;
-            this.seleciona_marca_composta.ItemsSource = MenuMarcas.TecnoMetal.GetMarcasCompostas();
+            this.seleciona_marca_composta.ItemsSource = ms.FindAll(x=> x.Tipo_Marca == Tipo_Marca.MarcaComposta);
 
-            var ms = MenuMarcas.TecnoMetal.GetMarcas().ToList();
-            var pos = ms.SelectMany(x => x.GetPosicoes()).ToList();
             this.Sufix_Count = ms.Count + pos.Count +1;
 
         
@@ -246,7 +248,8 @@ namespace Ferramentas_DLM
                 Conexoes.Utilz.Alerta("Valor escala inválido.");
                 return;
             }
-            var ms = MenuMarcas.TecnoMetal.GetMarcas().ToList();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            var ms = MenuMarcas.TecnoMetal.GetMarcas(ref erros).ToList();
             var pos = ms.SelectMany(x => x.GetPosicoes()).ToList();
 
             var qtd_double = Conexoes.Utilz.Double(this.quantidade.Text);

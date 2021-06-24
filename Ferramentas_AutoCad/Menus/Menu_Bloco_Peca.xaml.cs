@@ -239,7 +239,8 @@ namespace Ferramentas_DLM.Menus
             }
             else if(tipo_selecionado == "TECNOMETAL")
             {
-                marcas_tecnometal = this.TecnoMetal.GetMarcasPranchas();
+                List<Conexoes.Report> erros = new List<Conexoes.Report>();
+                marcas_tecnometal = this.TecnoMetal.GetMarcasPranchas(ref erros);
                 if (marcas_tecnometal.Count > 0)
                 {
                     this.marca_sel = Conexoes.Utilz.SelecionarObjeto(marcas_tecnometal, null, "Selecione");

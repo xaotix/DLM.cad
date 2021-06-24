@@ -364,36 +364,36 @@ namespace Ferramentas_DLM
                     Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (fator_escala * 20.4), p0.Z);
                     int seq = 1;
-                    foreach(var pc in pecas)
+                    foreach(var Marca in pecas)
                     {
 
 
-                        foreach (var pos in pc)
+                        foreach (var Pos in Marca)
                         {
-                            string descricao = pos.Get(Constantes.ATT_MER).valor;
-                            if(pos.Get(Constantes.ATT_POS).valor != "")
+                            string descricao = Pos.Get(Constantes.ATT_MER).valor;
+                            if(Pos.Get(Constantes.ATT_POS).valor != "")
                             {
-                                descricao = pos.Get(Constantes.ATT_PER).valor;
+                                descricao = Pos.Get(Constantes.ATT_PER).valor;
                                 if (descricao == "")
                                 {
                                     descricao =
-                                        "Ch. " + pos.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
-                                        " x " + pos.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "") +
-                                        " x " + pos.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "");
+                                        "Ch. " + Pos.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
+                                        " x " + Pos.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "") +
+                                        " x " + Pos.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "");
                                 }
                             }
 
-                            var tipo = pos.Get(Constantes.ATT_REC).ToString();
+                            var tipo = Pos.Get(Constantes.ATT_REC).ToString();
                             
                             Hashtable hp = new Hashtable();
-                            hp.Add("MARCA", tipo == Constantes.ATT_REC_MARCA?pos.Get(Constantes.ATT_MAR): pos.Get(Constantes.ATT_POS));
-                            hp.Add("QTD", pos.Get(Constantes.ATT_QTD));
+                            hp.Add("MARCA", tipo == Constantes.ATT_REC_MARCA?Pos.Get(Constantes.ATT_MAR): Pos.Get(Constantes.ATT_POS));
+                            hp.Add("QTD", Pos.Get(Constantes.ATT_QTD));
                             hp.Add("DESC", descricao );
-                            hp.Add("MATERIAL", pos.Get(Constantes.ATT_MAT));
-                            hp.Add("SAP", pos.Get(Constantes.ATT_SAP));
-                            hp.Add("PESO_UNIT", Math.Round(pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
-                            hp.Add("PESO_TOT", Math.Round(pos.Get(Constantes.ATT_PES).Double() /1000 * pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str).Replace(",", ""));
-                            hp.Add("FICHA", pos.Get(Constantes.ATT_FIC));
+                            hp.Add("MATERIAL", Pos.Get(Constantes.ATT_MAT));
+                            hp.Add("SAP", Pos.Get(Constantes.ATT_SAP));
+                            hp.Add("PESO_UNIT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
+                            hp.Add("PESO_TOT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000 * Pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str).Replace(",", ""));
+                            hp.Add("FICHA", Pos.Get(Constantes.ATT_FIC));
 
                             Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);
                             p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
@@ -403,6 +403,82 @@ namespace Ferramentas_DLM
                         p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
                     }
                    
+                }
+            }
+            return new Point3d(x0, y0, 0);
+
+        }
+
+
+        public static Point3d TecnoMetal(List<MarcaTecnoMetal> pecas_tecnometal, Point3d p0, double mover_direita = 0, double escala = 1)
+        {
+            double x0 = 0;
+            double y0 = 0;
+            if (pecas_tecnometal.Count > 0)
+            {
+                //preguiça de ajustar os blocos da tabela, mantive um fator de escala
+                double fator_escala = 1.25 * escala;
+                bool cancelado = false;
+
+                if (mover_direita != 0)
+                {
+                    p0 = new Point3d(p0.X + (mover_direita), p0.Y, p0.Z);
+                }
+
+                if (!cancelado)
+                {
+                    x0 = p0.X;
+                    y0 = p0.Y;
+                    int decimais = 4;
+                    string dec_str = "N4";
+
+
+                    double total_superficie = pecas_tecnometal.Sum(x=>x.Superficie  * x.Quantidade);
+                    double total_peso = pecas_tecnometal.Sum(x=>x.PesoUnit * x.Quantidade);
+
+
+                    total_peso = Math.Round(total_peso / 1000, decimais);
+                    total_superficie = Math.Round(total_superficie, decimais);
+
+                    Hashtable ht = new Hashtable();
+                    ht.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
+                    ht.Add("SUPERFICIE_TOTAL", total_superficie.ToString("N1").Replace(",", "") + " m²");
+                    Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
+                    p0 = new Point3d(p0.X, p0.Y - (fator_escala * 20.4), p0.Z);
+                    foreach (var Marca in pecas_tecnometal)
+                    {
+
+                        Hashtable mp = new Hashtable();
+                        mp.Add("MARCA", Marca.Marca);
+                        mp.Add("QTD", Marca.Quantidade);
+                        mp.Add("DESC", Marca.Mercadoria);
+                        mp.Add("MATERIAL", Marca.Material);
+                        mp.Add("SAP", Marca.SAP);
+                        mp.Add("PESO_UNIT", Math.Round(Marca.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
+                        mp.Add("PESO_TOT", Math.Round(Marca.PesoUnit * Marca.Quantidade / 1000 , decimais).ToString(dec_str).Replace(",", ""));
+                        mp.Add("FICHA", Marca.Tratamento);
+
+                        Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, mp);
+                        p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
+                        foreach (var Pos in Marca.GetPosicoes())
+                        {
+                            Hashtable hp = new Hashtable();
+                            hp.Add("MARCA", Pos.Posicao);
+                            hp.Add("QTD", Math.Round(Pos.Quantidade * Marca.Quantidade,decimais).ToString().Replace(",","."));
+                            hp.Add("DESC", Pos.Descricao);
+                            hp.Add("MATERIAL", Pos.Material);
+                            hp.Add("SAP", Pos.SAP);
+                            hp.Add("PESO_UNIT", Math.Round(Pos.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
+                            hp.Add("PESO_TOT", Math.Round(Pos.PesoUnit/1000 * Pos.Quantidade, decimais).ToString(dec_str).Replace(",", ""));
+                            hp.Add("FICHA", Pos.Tratamento);
+
+                            Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);
+                            p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
+                        }
+                        Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
+                        p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
+                    }
+
                 }
             }
             return new Point3d(x0, y0, 0);

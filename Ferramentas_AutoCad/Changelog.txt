@@ -1,3 +1,7 @@
+V 1.2.1
+> Corrigido erro que dava ao tentar marcar
+> Adicionado verificação antes de gerar tabela
+> Lógica da tabela revisada, quantitativos ajustados conforme padrão tecnometal e padronizada com o mesmo sistema da marcação
 V 1.2
 Correções:
 > Ler os CAMs desmembrados ao gerar DXF

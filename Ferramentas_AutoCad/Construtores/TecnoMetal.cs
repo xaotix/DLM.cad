@@ -16,9 +16,9 @@ namespace Ferramentas_DLM
     public class TecnoMetal : ClasseBase
     {
 
-        public List<MarcaTecnoMetal> Getposicoes()
+        public List<MarcaTecnoMetal> Getposicoes(ref List<Conexoes.Report> erros, bool update)
         {
-            var marcas = GetMarcas();
+            var marcas = GetMarcas(ref erros);
             var pos = marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao).Select(x => x.First()).ToList();
             return pos;
         }
@@ -26,7 +26,8 @@ namespace Ferramentas_DLM
         {
             List<Conexoes.Filete> retorno = new List<Conexoes.Filete>();
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            var pos = Getposicoes();
+          
+            var pos = Getposicoes(ref erros, true);
             var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLMCam.Familia.Soldado).ToList();
 
             var montar_desmembrado = pos.FindAll(y =>
@@ -1030,60 +1031,58 @@ namespace Ferramentas_DLM
             Alerta("Finalizado", MessageBoxIcon.Information);
         }
 
-        public List<MarcaTecnoMetal> GetMarcas(DB.Tabela pcs = null)
+        public List<MarcaTecnoMetal> GetMarcas(ref List<Conexoes.Report> erros, DB.Tabela pcs = null)
         {
-            
-            List<MarcaTecnoMetal> Retorno = new List<MarcaTecnoMetal>();
+            var _Marcas = new List<MarcaTecnoMetal>();
 
             List<MarcaTecnoMetal> mm = new List<MarcaTecnoMetal>();
 
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+
             if (pcs == null)
             {
-            pcs = GetPecas(ref erros, false);
+                pcs = GetPecas(ref erros, true);
             }
 
-            foreach(var pc in pcs.Linhas)
+            foreach (var pc in pcs.Linhas)
             {
                 mm.Add(new MarcaTecnoMetal(pc));
             }
 
             var ms = mm.Select(x => x.Marca).Distinct().ToList();
 
-            foreach(var m in ms)
+            foreach (var m in ms)
             {
                 var iguais = mm.FindAll(x => x.Marca == m);
 
                 var marcas = iguais.FindAll(x => x.Posicao == "");
                 var posicoes = iguais.FindAll(x => x.Posicao != "");
 
-                if(marcas.Count==1)
+                if (marcas.Count == 1)
                 {
                     var marca = marcas[0];
                     marca.SubItens.AddRange(posicoes);
-                    foreach(var pos in posicoes)
+                    foreach (var pos in posicoes)
                     {
                         pos.Pai = marca;
                     }
 
 
-                    Retorno.Add(marca);
+                    _Marcas.Add(marca);
                 }
-                else
+                else if(marcas.Count>1)
                 {
                     erros.Add(new Conexoes.Report("Marcas duplicadas", $" {marcas[0].Prancha} - M: {m}"));
-                    return new List<MarcaTecnoMetal>();
                 }
-
             }
 
 
-            return Retorno;
+
+            return _Marcas;
 
         }
-        public List<MarcaTecnoMetal> GetMarcasCompostas()
+        public List<MarcaTecnoMetal> GetMarcasCompostas(ref List<Conexoes.Report> erros, bool update)
         {
-            return this.GetMarcas().FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).ToList();
+            return this.GetMarcas(ref erros).FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).ToList();
         }
         private Conexoes.SubEtapaTecnoMetal _subetapa { get; set; }
         private Conexoes.ObraTecnoMetal _obra { get; set; }
@@ -1147,32 +1146,37 @@ namespace Ferramentas_DLM
 
             }
         }
-
-        public void InserirTabela()
+        public void InserirTabela(Point3d? pt =null)
         {
 
             bool cancelado = false;
-            var pt = Utilidades.PedirPonto3D("Clique na origem", out cancelado);
+            if(pt==null)
+            {
+                pt = Utilidades.PedirPonto3D("Clique na origem", out cancelado);
+            }
+
             if (!cancelado)
             {
                 List<Conexoes.Report> erros = new List<Conexoes.Report>();
-                var pcs = GetPecas(ref erros);
-                Conexoes.Utilz.ShowReports(erros);
-                if (pcs.Linhas.Count > 0 && erros.Count==0)
+                var pcs = GetMarcas(ref erros);
+                if(pcs.Count > 0)
                 {
-                    Tabelas.TecnoMetal(pcs.Linhas, pt);
+                    if (erros.Count == 0)
+                    {
+                        Tabelas.TecnoMetal(pcs, (Point3d)pt, -186.47);
+                    }
+                    else
+                    {
+                        Conexoes.Utilz.ShowReports(erros);
+                    }
                 }
-
             }
         }
         public void ApagarTabelaAuto()
         {
             IrLayout();
             ZoomExtend();
-            Point3d pt = new Point3d();
-            bool gerar_tabela = false;
-            List<BlockReference> blocos = new List<BlockReference>();
-            CleanTabela(ref pt, ref gerar_tabela, ref blocos);
+            CleanTabela();
         }
         public void InserirTabelaAuto(ref List<Conexoes.Report> erros)
         {
@@ -1182,22 +1186,13 @@ namespace Ferramentas_DLM
             DB.Tabela marcas = new DB.Tabela();
             DB.Tabela posicoes = new DB.Tabela();
 
-            Point3d pt = new Point3d();
-            bool gerar_tabela = false;
-            List<BlockReference> blocos = new List<BlockReference>();
 
-            CleanTabela(ref pt, ref gerar_tabela, ref blocos);
 
-            if (gerar_tabela)
+            Point3d? pt  = CleanTabela();
+
+            if (pt!=null)
             {
-                List<Conexoes.Report> err = new List<Conexoes.Report>();
-                var pcs = GetPecas(ref err);
-                erros.AddRange(err);
-
-                if (pcs.Linhas.Count > 0 && err.Count == 0)
-                {
-                    Tabelas.TecnoMetal(pcs.Linhas, pt, -186.47);
-                }
+                InserirTabela(pt);
             }
 
 
@@ -1213,8 +1208,10 @@ namespace Ferramentas_DLM
 
         }
 
-        private void CleanTabela(ref Point3d origem, ref bool gerar_tabela, ref List<BlockReference> blocos)
+        private Point3d? CleanTabela()
         {
+            Point3d? retorno = null;
+            List<BlockReference> blocos = new List<BlockReference>();
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
@@ -1268,8 +1265,8 @@ namespace Ferramentas_DLM
                 foreach (var s in selo)
                 {
                     var pts = Utilidades.GetContorno(s, acTrans);
-                    origem = new Point3d(pts.Max(x => x.X) - 7.01, pts.Max(x => x.Y) - 7.01, 0);
-                    gerar_tabela = true;
+                    retorno = new Point3d(pts.Max(x => x.X) - 7.01, pts.Max(x => x.Y) - 7.01, 0);
+             
                     break;
                 }
 
@@ -1285,6 +1282,8 @@ namespace Ferramentas_DLM
 
 
             }
+
+            return retorno;
         }
 
         public void PreencheSelo(bool limpar = false)
@@ -1293,7 +1292,9 @@ namespace Ferramentas_DLM
             IrLayout();
             ZoomExtend();
 
-            var marcas = GetMarcas();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+
+            var marcas = GetMarcas(ref erros);
 
             var nomes_PECAS = marcas.Select(x => x.Marca).Distinct().ToList();
 
@@ -1465,27 +1466,28 @@ namespace Ferramentas_DLM
 
             }
 
-
+            DB.Tabela retorno = new DB.Tabela();
             if (converter_padrao_dbf)
             {
-                return ConverterParaDBF(ref erros ,marcas, posicoes);
+                retorno = ConverterParaDBF(ref erros ,marcas, posicoes);
             }
             else
             {
-                var lista = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
-                return lista;
+                retorno = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
             }
+
+   
+
+            return retorno;
         }
-        public List<MarcaTecnoMetal> GetMarcasPranchas()
+        public List<MarcaTecnoMetal> GetMarcasPranchas(ref List<Conexoes.Report> erros)
         {
             if(!this.E_Tecnometal())
             {
                 return new List<MarcaTecnoMetal>();
             }
-            List<MarcaTecnoMetal> retorno = new List<MarcaTecnoMetal>();
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
             var pcs = GetPecasPranchas(ref erros);
-            return GetMarcas(pcs);
+            return GetMarcas(ref erros,pcs);
         }
         public DB.Tabela GetPecasPranchas(ref List<Conexoes.Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
         {
@@ -1672,8 +1674,17 @@ namespace Ferramentas_DLM
                 if (m.Count() == 1)
                 {
 
-                    var p_simples = m[0].Clonar();
+
                     var m_simples = m[0].Clonar();
+
+                    var marca = new MarcaTecnoMetal(m_simples);
+                    if(marca.Tipo_Marca == Tipo_Marca.MarcaComposta)
+                    {
+                        erros.Add(new Conexoes.Report("Marca composta sem posições", marca.Marca, Conexoes.TipoReport.Crítico));
+                        continue;
+                    }
+
+                    var p_simples = m[0].Clonar();
 
                     m_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_MARCA);
                     m_simples.Set(Constantes.ATT_POS, "");
@@ -1796,7 +1807,7 @@ namespace Ferramentas_DLM
                 return new DB.Tabela();
             }
 
-            var marcas = GetMarcas(lista_pecas);
+            var marcas = GetMarcas(ref erros, lista_pecas);
             w.somaProgresso();
 
 
@@ -2052,7 +2063,8 @@ namespace Ferramentas_DLM
         }
         public string PromptMarca(string prefix = "ARR-")
         {
-            var marcas = this.GetMarcas();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            var marcas = this.GetMarcas(ref erros);
             var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count +1;
             retentar:
             var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", "Nome da marca", prefix + nnn.ToString().PadLeft(2,'0'), false, "", false, 12).ToUpper().Replace(" ","");
@@ -2592,6 +2604,7 @@ namespace Ferramentas_DLM
         }
         public MarcaTecnoMetal InserirMarcaComposta(double escala)
         {
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
             this.SetEscala(escala);
             bool cancelado = true;
             var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
@@ -2616,7 +2629,7 @@ namespace Ferramentas_DLM
                             Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
                          
 
-                            return this.GetMarcasCompostas().Find(x=>x.Marca == nome);
+                            return this.GetMarcasCompostas(ref erros,true).Find(x=>x.Marca == nome);
                         }
                     }
                 }

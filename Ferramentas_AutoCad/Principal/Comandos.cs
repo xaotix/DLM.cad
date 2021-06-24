@@ -440,6 +440,7 @@ namespace Ferramentas_DLM
             TecnoMetal pp = new TecnoMetal();
             pp.InserirTabela();
         }
+
         [CommandMethod("tabelatecnometalauto")]
         public static void tabelatecnometalauto()
         {
@@ -627,7 +628,6 @@ namespace Ferramentas_DLM
         public static void teste()
         {
             TecnoMetal pp = new TecnoMetal();
-            pp.GetMarcas();
         }
 
         [CommandMethod("marcar")]
