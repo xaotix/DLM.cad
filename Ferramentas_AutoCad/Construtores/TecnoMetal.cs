@@ -1076,6 +1076,17 @@ namespace Ferramentas_DLM
             }
 
 
+            var posp = _Marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao);
+
+            foreach(var p in posp)
+            {
+                var hashes = p.ToList().GroupBy(x => x.GetInfo()).ToList();
+                if(hashes.Count>1)
+                {
+                    erros.Add(new Conexoes.Report($"{p.Key} => Posição com divergências", string.Join("\n",hashes.Select(x=>x.Key)), Conexoes.TipoReport.Crítico));
+                }
+            }
+
 
             return _Marcas;
 
@@ -2267,7 +2278,7 @@ namespace Ferramentas_DLM
 
             }
         }
-        public void InserirChapa(double escala, string marca = "", string posicao = "", string material =null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null)
+        public void InserirChapa(double escala, string marca = "", string posicao = "", string material =null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null, Conexoes.Bobina bobina = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2293,28 +2304,32 @@ namespace Ferramentas_DLM
                 }
                 if (espessura != null)
                 {
-                    Conexoes.Bobina bobina = Conexoes.Utilz.Clonar(Conexoes.DBases.GetBobinaDummy());
                     bool chapa_fina = espessura.GetChapa_Fina();
-                    if (chapa_fina)
+                    if (bobina==null)
                     {
-
-                        bobina = PromptBobina(espessura);
-                        ficha = "SEM PINTURA";
-                    }
-                    else
-                    {
-                        if (material == null)
+                        bobina = Conexoes.Utilz.Clonar(Conexoes.DBases.GetBobinaDummy());
+                 
+                        if (chapa_fina)
                         {
-                            material = PromptMaterial();
-                        }
-                        bobina.Espessura = espessura.valor;
-                        bobina.Material = material;
-                        if (ficha == null)
-                        {
-                            ficha = PromptFicha();
-                        }
 
+                            bobina = PromptBobina(espessura);
+                            ficha = "SEM PINTURA";
+                        }
+                        else
+                        {
+                            if (material == null)
+                            {
+                                material = PromptMaterial();
+                            }
+                            bobina.Espessura = espessura.valor;
+                            bobina.Material = material;
+                            if (ficha == null)
+                            {
+                                ficha = PromptFicha();
+                            }
+                        }
                     }
+                   
 
 
                     if (mercadoria == null && posicao == "")

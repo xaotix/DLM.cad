@@ -9,6 +9,25 @@ namespace Ferramentas_DLM
 {
     public class MarcaTecnoMetal
     {
+        public string GetInfo()
+        {
+            string retorno = $"" +
+                $"\nComprimento >{this.Comprimento}" +
+                $"\nDescrição >{this.Descricao}" +
+                $"\nEspessura >{this.Espessura}" +
+                $"\nLargura >{this.Largura}" +
+                $"\nMaterial >{this.Material}" +
+                $"\nMercadoria >{this.Mercadoria}" +
+                $"\nBloco >{this.NomeBloco}" +
+                $"\nPerfil >{this.Perfil}" +
+                //$"\nPrancha >{this.Prancha}" +
+                $"\nSAP >{this.SAP}" +
+                $"\nTip. Blk >{this.Tipo_Bloco}" +
+                $"\nTipo M >{this.Tipo_Marca}" +
+                $"\nTrat >{this.Tratamento}";
+
+            return retorno;
+        }
         public MarcaTecnoMetal Pai { get; set; }
         public override string ToString()
         {
@@ -113,7 +132,7 @@ namespace Ferramentas_DLM
                 {
                     return this.SubItens[0].Comprimento;
                 }
-                return _Comprimento;
+                return Math.Round(_Comprimento,1);
             }
             private set
             {
@@ -127,9 +146,9 @@ namespace Ferramentas_DLM
             {
                 if (this.SubItens.Count > 0 && Tipo_Marca == Tipo_Marca.MarcaSimples)
                 {
-                    return this.SubItens[0].Largura;
+                    return Math.Round(this.SubItens[0].Largura,1);
                 }
-                return _Largura;
+                return Math.Round(_Largura,1);
             }
             private set
             {
@@ -144,7 +163,7 @@ namespace Ferramentas_DLM
                 {
                     return this.SubItens[0].Espessura;
                 }
-                return _Espessura;
+                return Math.Round(_Espessura,2);
             }
             private set
             {
@@ -256,6 +275,8 @@ namespace Ferramentas_DLM
             this._PesoUnit = l.Get(Constantes.ATT_PES).Double();
             this._Superficie = l.Get(Constantes.ATT_SUP).Double();
         }
+
+        public List<MarcaTecnoMetal> Posicoes_Iguais { get; set; } = new List<MarcaTecnoMetal>();
         public MarcaTecnoMetal(List<MarcaTecnoMetal> posicoes_iguais)
         {
             var m = posicoes_iguais[0];
@@ -265,16 +286,18 @@ namespace Ferramentas_DLM
             this.Largura = m.Largura;
             this.Linha = m.Linha;
             this.Mercadoria = m.Mercadoria;
+            this.Material = m.Material;
+            this.Tratamento = m.Tratamento;
             this.NomeBloco = m.NomeBloco;
             this.Perfil = m.Perfil;
-            this._PesoUnit = m.PesoUnit;
             this.Posicao = m.Posicao;
             this.SAP = m.SAP;
+            this._PesoUnit = m.PesoUnit;
             this.Prancha = m.Prancha;
             this.Quantidade = posicoes_iguais.Sum(x => x.Quantidade);
             this._Superficie = m.Superficie;
             this.Linha = m.Linha;
-
+            this.Posicoes_Iguais = posicoes_iguais;
         }
     }
 

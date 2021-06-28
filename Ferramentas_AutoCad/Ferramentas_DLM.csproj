@@ -90,10 +90,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\DataGridFilterLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="DB, Version=3.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\DLLS\DB.dll</HintPath>
-    </Reference>
     <Reference Include="DLMCam, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\DLMCam.dll</HintPath>
@@ -299,7 +295,6 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>start Xcopy /y /r  "C:\Medabil\Ferramentas_DLM\*.*" "C:\Program Files\Autodesk\AutoCAD 2012 - English\"
-PAUSE</PostBuildEvent>
+    <PostBuildEvent>xcopy /k /d /Y  /E /H /C /I "$(OutDir)*.*" "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -155,7 +155,7 @@ namespace Ferramentas_DLM
             this.Espessura = bobina.Espessura;
             this.Material = bobina.Material;
             this.Comprimento = comprimento;
-            this.Cor_1 = bobina.cor2str;
+            this.Cor_1 = bobina.cor1str;
             this.Cor_2 = bobina.cor2str;
             this.SAP = bobina.SAP;
             this.Dobras = dobras.Count;

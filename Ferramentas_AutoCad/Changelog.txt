@@ -1,3 +1,5 @@
+V 1.2.2
+> Corrigido erro que não gravava o material na tabela do tecnometal
 V 1.2.1
 > Corrigido erro que dava ao tentar marcar
 > Adicionado verificação antes de gerar tabela

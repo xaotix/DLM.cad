@@ -415,7 +415,7 @@ namespace Ferramentas_DLM
                     }
                     else if (sel2 == "Vista")
                     {
-                        MenuMarcas.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
+                        MenuMarcas.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria, MenuMarcas.db_bobina);
                     }
                     break;
                 case Tipo_Bloco._:
