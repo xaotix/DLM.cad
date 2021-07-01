@@ -671,19 +671,19 @@ namespace Ferramentas_DLM
 
 
 
-        [CommandMethod("mercadorias")]
+        [CommandMethod("mercadorias21")]
         public  static void mercadorias()
         {
             TecnoMetal p = new TecnoMetal();
             p.Mercadorias();
         }
-        [CommandMethod("materiais")]
+        [CommandMethod("materiais21")]
         public static void materiais()
         {
             TecnoMetal p = new TecnoMetal();
             p.Materiais();
         }
-        [CommandMethod("tratamentos")]
+        [CommandMethod("tratamentos21")]
         public static void tratamentos()
         {
             TecnoMetal p = new TecnoMetal();
