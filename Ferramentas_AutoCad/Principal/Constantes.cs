@@ -168,9 +168,15 @@ namespace Ferramentas_DLM
             }
             return _cts;
         }
-        public static List<string> GetArquivosMlStyles()
+
+        private static EstilosML _estilosML { get; set; }
+        public static EstilosML GetArquivosMlStyles()
         {
-            return Conexoes.Utilz.GetArquivos(Raiz_MlStyles, "*.mln");
+            if(_estilosML==null)
+            {
+                _estilosML = new EstilosML();
+            }
+            return _estilosML;
         }
         public static string Tabela_Correntes_Titulo { get; set; } = Raiz_Blocos_Listagem + @"CORRENTES_TITULO.dwg";
         public static string Tabela_Correntes { get; set; } = Raiz_Blocos_Listagem + @"CORRENTES.dwg";

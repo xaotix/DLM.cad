@@ -26,7 +26,7 @@ using Autodesk.AutoCAD.PlottingServices;
 
 namespace Ferramentas_DLM
 {
-    public static class Utilidades 
+    public static class Utilidades
     {
         #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
         //isso daqui está aqui só por causa do Leader.
@@ -49,11 +49,11 @@ namespace Ferramentas_DLM
             {
                 var pt2 = new Coordenada(pp0).Mover(angulo + 45, escala * multiplicador).GetPoint();
 
-                if(pedir_ponto)
+                if (pedir_ponto)
                 {
                     bool cancelado = false;
                     var pt0 = Utilidades.PedirPonto3D("Selecione o segundo ponto", pp0, out cancelado);
-                    if(!cancelado)
+                    if (!cancelado)
                     {
                         pt2 = pt0;
                     }
@@ -66,7 +66,7 @@ namespace Ferramentas_DLM
             catch (System.Exception ex)
             {
 
-                Alerta($"{ex.Message}\n{ex.StackTrace}");
+                Conexoes.Utilz.Alerta($"{ex.Message}\n{ex.StackTrace}");
             }
             return pp0;
         }
@@ -74,77 +74,77 @@ namespace Ferramentas_DLM
         {
             using (DocumentLock docLock = acDoc.LockDocument())
             {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-
-                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
-
-                // Create the leader with annotation
-                using (Leader acLdr = new Leader())
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    acLdr.AppendVertex(origem);
-                    acLdr.AppendVertex(pt2);
-                    acLdr.HasArrowHead = true;
+                    BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
+                    BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                    acLdr.TextStyleId = acCurDb.Textstyle;
-
-                    // Add the new object to Model space and the transaction
-                    var id = acBlkTblRec.AppendEntity(acLdr);
-                    acTrans.AddNewlyCreatedDBObject(acLdr, true);
-
-                    // Attach the annotation after the leader object is added
-                    if (texto.Length > 0)
+                    // Create the leader with annotation
+                    using (Leader acLdr = new Leader())
                     {
-                        using (MText acMText = new MText())
+                        acLdr.AppendVertex(origem);
+                        acLdr.AppendVertex(pt2);
+                        acLdr.HasArrowHead = true;
+
+
+                        acLdr.TextStyleId = acCurDb.Textstyle;
+
+                        // Add the new object to Model space and the transaction
+                        var id = acBlkTblRec.AppendEntity(acLdr);
+                        acTrans.AddNewlyCreatedDBObject(acLdr, true);
+
+                        // Attach the annotation after the leader object is added
+                        if (texto.Length > 0)
                         {
-                            acMText.Contents = texto;
-                            acMText.Location = acLdr.EndPoint;
-                            acMText.TextStyleId = acCurDb.Textstyle;
-                            double tam = escala;
-
-                            if (tam > 0)
+                            using (MText acMText = new MText())
                             {
-                                acMText.TextHeight = tam;
+                                acMText.Contents = texto;
+                                acMText.Location = acLdr.EndPoint;
+                                acMText.TextStyleId = acCurDb.Textstyle;
+                                double tam = escala;
+
+                                if (tam > 0)
+                                {
+                                    acMText.TextHeight = tam;
+                                }
+
+                                acMText.Color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Cyan);
+                                acMText.UseBackgroundColor = false;
+                                acMText.BackgroundFill = true;
+                                acMText.BackgroundFillColor = Color.FromColorIndex(ColorMethod.ByAci, 1);
+                                if (Math.Cos(acLdr.GetFirstDerivative(acLdr.EndParam).AngleOnPlane(new Plane())) >= 0.0)
+                                    acMText.Attachment = AttachmentPoint.MiddleLeft;
+                                else
+                                    acMText.Attachment = AttachmentPoint.MiddleRight;
+                                // Add the new object to Model space and the transaction
+                                var textId = acBlkTblRec.AppendEntity(acMText);
+                                acTrans.AddNewlyCreatedDBObject(acMText, true);
+
+
+                                //essa função nao está funcionando no CAD 2012
+                                //acLdr.UpgradeOpen();
+                                //acLdr.Annotation = id;
+                                //acLdr.EvaluateLeader();
+
+                                //alternativa
+                                try
+                                {
+                                    Autodesk.AutoCAD.Runtime.ErrorStatus es = attachAnnotation(acLdr.UnmanagedObject, ref textId);
+                                    acLdr.EvaluateLeader();
+                                }
+                                catch (System.Exception)
+                                {
+
+                                }
+
+
                             }
-
-                            acMText.Color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Cyan);
-                            acMText.UseBackgroundColor = false;
-                            acMText.BackgroundFill = true;
-                            acMText.BackgroundFillColor = Color.FromColorIndex(ColorMethod.ByAci, 1);
-                            if (Math.Cos(acLdr.GetFirstDerivative(acLdr.EndParam).AngleOnPlane(new Plane())) >= 0.0)
-                                acMText.Attachment = AttachmentPoint.MiddleLeft;
-                            else
-                                acMText.Attachment = AttachmentPoint.MiddleRight;
-                            // Add the new object to Model space and the transaction
-                            var textId = acBlkTblRec.AppendEntity(acMText);
-                            acTrans.AddNewlyCreatedDBObject(acMText, true);
-
-
-                            //essa função nao está funcionando no CAD 2012
-                            //acLdr.UpgradeOpen();
-                            //acLdr.Annotation = id;
-                            //acLdr.EvaluateLeader();
-
-                            //alternativa
-                            try
-                            {
-                                Autodesk.AutoCAD.Runtime.ErrorStatus es = attachAnnotation(acLdr.UnmanagedObject, ref textId);
-                                acLdr.EvaluateLeader();
-                            }
-                            catch (System.Exception)
-                            {
-
-                            }
-      
-
                         }
-                    }
 
+                    }
+                    acTrans.Commit();
                 }
-                acTrans.Commit();
-            }
             }
         }
         public static List<Layout> GetLayouts()
@@ -180,72 +180,66 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
-        public static List<MlineStyle> GetMLineStyles()
-        {
-            List<MlineStyle> retorno = new List<MlineStyle>();
-            using (DocumentLock docLock = acDoc.LockDocument())
-            {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                {
-                    DBDictionary lays = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForWrite) as DBDictionary;
 
-                    foreach (DBDictionaryEntry item in lays)
-                    {
-                        MlineStyle acLyrTblRec;
-                        acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForRead) as MlineStyle;
-
-                        if (acLyrTblRec != null)
-                        {
-                            retorno.Add(acLyrTblRec);
-                        }
-                    }
-                    acTrans.Abort();
-                }
-            }
-            return retorno;
-        }
         public static List<Viewport> GetViewports(string setLayerPadrao = "")
         {
             List<Viewport> retorno = new List<Viewport>();
-            using (DocumentLock docLock = acDoc.LockDocument())
+
+            try
             {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (DocumentLock docLock = acDoc.LockDocument())
                 {
-                    DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
-
-                    foreach (DBDictionaryEntry item in lays)
+                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                     {
-                        Layout acLyrTblRec;
-                        acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
+                        DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
 
-                        if (acLyrTblRec != null)
+                        foreach (DBDictionaryEntry item in lays)
                         {
-                            //retorno.Add(acLyrTblRec);
+                            Layout acLyrTblRec;
+                            acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
 
-
-                            var views = acLyrTblRec.GetViewports();
-                            foreach (ObjectId view in views)
+                            if (acLyrTblRec != null)
                             {
-                                Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
-                                if (vp != null)
-                                {
-                                    retorno.Add(vp);
-                                    if (setLayerPadrao != "")
-                                    {
-                                        vp.Layer = setLayerPadrao;
-                                    }
-                                }
-                            }
+                                //retorno.Add(acLyrTblRec);
 
+
+                                var views = acLyrTblRec.GetViewports();
+                                foreach (ObjectId view in views)
+                                {
+                                    try
+                                    {
+                                        Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
+                                        if (vp != null)
+                                        {
+                                            retorno.Add(vp);
+                                            if (setLayerPadrao != "")
+                                            {
+                                                vp.Layer = setLayerPadrao;
+                                            }
+                                        }
+                                    }
+                                    catch (System.Exception)
+                                    {
+
+                                    }
+   
+                                }
+
+                            }
                         }
+                        acTrans.Commit();
                     }
-                    acTrans.Commit();
                 }
             }
+            catch (System.Exception)
+            {
+
+            }
+
             return retorno;
         }
 
-        
+
         public static void ListarQuantidadeBlocos()
         {
             var doc = Application.DocumentManager.MdiActiveDocument;
@@ -376,7 +370,7 @@ namespace Ferramentas_DLM
                 var nome = b.Name.ToUpper();
                 foreach (var s in nomes)
                 {
-                    if(exato)
+                    if (exato)
                     {
                         if (nome.ToUpper() == s.ToUpper())
                         {
@@ -400,7 +394,7 @@ namespace Ferramentas_DLM
         public static List<LineSegment3d> GetSegmentos3D(Polyline pl, SegmentType type = SegmentType.Line)
         {
             List<LineSegment3d> segmentos = new List<LineSegment3d>();
-            for (int i = 0; i < pl.NumberOfVertices-1; i++)
+            for (int i = 0; i < pl.NumberOfVertices - 1; i++)
             {
                 try
                 {
@@ -415,9 +409,9 @@ namespace Ferramentas_DLM
                 }
                 catch (System.Exception ex)
                 {
-                    Alerta(i  +"\n" + ex.Message + "\n" + ex.StackTrace);
+                    Conexoes.Utilz.Alerta(i + "\n" + ex.Message + "\n" + ex.StackTrace);
                 }
-              
+
             }
             return segmentos;
         }
@@ -439,7 +433,7 @@ namespace Ferramentas_DLM
                 }
                 catch (System.Exception ex)
                 {
-                    Alerta(i + "\n" + ex.Message + "\n" + ex.StackTrace);
+                    Conexoes.Utilz.Alerta(i + "\n" + ex.Message + "\n" + ex.StackTrace);
                 }
 
             }
@@ -456,9 +450,9 @@ namespace Ferramentas_DLM
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
                     DBDictionary mlineDic =
-                        (DBDictionary)acTrans.GetObject(acCurDb.MLStyleDictionaryId,OpenMode.ForRead);
+                        (DBDictionary)acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead);
 
-                    MlineStyle acLyrTblRec = acTrans.GetObject(mlineDic.GetAt(nome),OpenMode.ForWrite) as MlineStyle;
+                    MlineStyle acLyrTblRec = acTrans.GetObject(mlineDic.GetAt(nome), OpenMode.ForWrite) as MlineStyle;
 
 
                     acTrans.Commit();
@@ -471,7 +465,7 @@ namespace Ferramentas_DLM
             }
 
             return null;
-           
+
         }
         public static List<Point2d> GetVertices(Polyline lwp)
         {
@@ -489,15 +483,15 @@ namespace Ferramentas_DLM
         }
         public static void GetInfo(Polyline lwp, out double comprimento, out double largura, out double area, out double perimetro)
         {
-           
+
             var vertices = GetVertices(lwp);
             comprimento = 0;
             largura = 0;
             area = lwp.Area;
             perimetro = lwp.Length;
-           
 
-            if(vertices.Count>0)
+
+            if (vertices.Count > 0)
             {
                 var xmin = vertices.Min(x => x.X);
                 var xmax = vertices.Max(x => x.X);
@@ -514,47 +508,17 @@ namespace Ferramentas_DLM
         }
 
 
-        public static void GetCoordenadas(Mline s, out Point3d p1, out Point3d p2)
-        {
-            List<Point3d> lista = new List<Point3d>();
-            p1 = new Point3d();
-            p2 = new Point3d();
-            for (int i = 0; i < s.NumberOfVertices; i++)
-            {
-                var t = s.VertexAt(i);
-                lista.Add(t);
-            }
-            if (lista.Count > 1)
-            {
-                p1 = lista.OrderBy(x => x.X).First();
-                p2 = lista.OrderBy(x => x.X).Last();
 
-                if(lista.Select(x=>Math.Round(x.X)).Distinct().ToList().Count == 1)
-                {
-                    //maior Y está mais pra cima
-                    p1 = lista.OrderBy(x => x.Y).Last();
-                    p2 = lista.OrderBy(x => x.Y).First();
-                }
-            }
-            else if(lista.Count==1)
-            {
-                p1 = lista[0];
-                p2 = lista[0];
-            }
-        }
-        public static List<CTerca> MlinesPassando(Point3d de, Point3d ate, List<CTerca> LS, bool somente_dentro = false, bool dentro_do_eixo = false)
-        {
-            return MlinesPassando(de, ate, LS.Select(x => x as CCorrente).ToList(), somente_dentro, dentro_do_eixo).Select(x => x as CTerca).ToList();
-        }
-        public static List<CCorrente> MlinesPassando(Point3d de, Point3d ate, List<CCorrente> LS, bool somente_dentro = false, bool dentro_do_eixo = false)
-        {
-            List<CCorrente> retorno = new List<CCorrente>();
-            foreach (var s in LS)
-            {
-                Point3d p1 = s.p0.GetPoint();
-                Point3d p2 = s.p1.GetPoint();
 
-              
+        public static List<ObjetoMultiline> MlinesPassando(Point3d de, Point3d ate, List<ObjetoMultiline> LS, bool somente_dentro = false, bool dentro_do_eixo = false)
+        {
+            List<ObjetoMultiline> retorno = new List<ObjetoMultiline>();
+            foreach (var corrente in LS)
+            {
+                Point3d p1 = corrente.Inicio.GetPoint();
+                Point3d p2 = corrente.Fim.GetPoint();
+
+
                 if (!somente_dentro)
                 {
                     if (
@@ -565,21 +529,21 @@ namespace Ferramentas_DLM
                                      | (p1.X <= de.X && p2.X <= ate.X && p2.X > de.X) //se a direita está dentro
                                         )
                     {
-                        retorno.Add(s);
+                        retorno.Add(corrente);
                     }
                 }
-                else if(somente_dentro && !dentro_do_eixo)
+                else if (somente_dentro && !dentro_do_eixo)
                 {
                     if (p1.X >= de.X && p2.X <= ate.X) //se os dois lados estão dentro
                     {
-                        retorno.Add(s);
+                        retorno.Add(corrente);
                     }
                 }
                 else if (somente_dentro && dentro_do_eixo)
                 {
                     if (p1.X > de.X && p2.X < ate.X) //se os dois lados estão somente dentro
                     {
-                        retorno.Add(s);
+                        retorno.Add(corrente);
                     }
                 }
 
@@ -604,12 +568,12 @@ namespace Ferramentas_DLM
             foreach (var s in LS)
             {
                 Point3d p1, p2, centro;
-                double angulo, comprimento;
-                GetCoordenadas(s, out p1, out p2, out angulo, out comprimento, out centro);
+                double angulo, comprimento, largura;
+                GetCoordenadas(s, out p1, out p2, out angulo, out comprimento, out centro, out largura);
 
-                if(somente_vertical)
+                if (somente_vertical)
                 {
-                    if(angulo>=85 && angulo <=95)
+                    if (angulo >= 85 && angulo <= 95)
                     {
 
                     }
@@ -651,15 +615,16 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-        public static void GetCoordenadas(Entity s, out Point3d p1, out Point3d p2, out double angulo, out double comprimento, out Point3d centro)
+        public static void GetCoordenadas(Entity s, out Point3d p1, out Point3d p2, out double angulo, out double comprimento, out Point3d centro, out double largura)
         {
             p1 = new Point3d();
             p2 = new Point3d();
             centro = new Point3d();
             comprimento = 0;
+            largura = 0;
             if (s is Mline)
             {
-                GetCoordenadas(s as Mline, out p1, out p2);
+                Multiline.GetOrigens(s as Mline, out p1, out p2, out largura);
                 comprimento = Calculos.Trigonometria.Distancia(p1.X, p1.Y, p2.X, p2.Y);
             }
             else if (s is Line)
@@ -675,15 +640,16 @@ namespace Ferramentas_DLM
                 p1 = l.StartPoint;
                 p2 = l.EndPoint;
                 comprimento = l.Length;
+                largura = ((double)l.LineWeight);
             }
 
-            angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(p1.X, p1.Y, p1.Z), new Calculos.Ponto3D(p2.X, p2.Y, p2.Z))),2);
+            angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(p1.X, p1.Y, p1.Z), new Calculos.Ponto3D(p2.X, p2.Y, p2.Z))), 2);
             if (angulo > 180)
             {
                 angulo = angulo - 180;
             }
             Coordenada pp = new Coordenada(p1);
-            
+
             centro = pp.GetCentro(new Coordenada(p2)).GetPoint();
 
 
@@ -703,7 +669,7 @@ namespace Ferramentas_DLM
                 }
                 double comp = Math.Abs(s.StartPoint.X - s.EndPoint.X);
 
-                if ((angulo >= 175 | angulo <= 5)&& comp>=comp_min)
+                if ((angulo >= 175 | angulo <= 5) && comp >= comp_min)
                 {
                     retorno.Add(s);
                 }
@@ -750,7 +716,7 @@ namespace Ferramentas_DLM
         public static List<RotatedDimension> CotasVerticais(List<Entity> LS, double comp_min = 100)
         {
             List<RotatedDimension> retorno = new List<RotatedDimension>();
-            foreach (var s in LS.FindAll(x=>x is RotatedDimension).Select(x=> x as RotatedDimension))
+            foreach (var s in LS.FindAll(x => x is RotatedDimension).Select(x => x as RotatedDimension))
             {
                 var angulo = Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(s.XLine1Point.X, s.XLine1Point.Y, 0), new Calculos.Ponto3D(s.XLine2Point.X, s.XLine2Point.Y, 0)));
                 if (angulo >= 180)
@@ -773,7 +739,7 @@ namespace Ferramentas_DLM
             ie = new Point3d();
             id = new Point3d();
             var pts = entities.SelectMany(x => GetCoordenadas(x)).ToList();
-            if(pts.Count>0)
+            if (pts.Count > 0)
             {
                 se = new Point3d(pts.Min(x => x.X), pts.Max(x => x.Y), 0);
                 sd = new Point3d(pts.Max(x => x.X), pts.Max(x => x.Y), 0);
@@ -797,15 +763,15 @@ namespace Ferramentas_DLM
         public static Xline GetXlineMaisProxima(Entity objeto, List<Xline> xlines, double tolerancia)
         {
             Xline retorno = new Xline();
-   
+
             double distancia = -1;
             var coords = GetCoordenadas(objeto);
             if (coords.Count > 0)
             {
-            
 
 
-                foreach(var p in xlines)
+
+                foreach (var p in xlines)
                 {
                     var p1 = new Coordenada(coords.First());
                     var ang = Angulo.Get(p);
@@ -815,10 +781,10 @@ namespace Ferramentas_DLM
                     var a2 = new Coordenada(p.BasePoint).Mover(ang, 10000);
 
 
-                   
 
 
-                    using (Line ll =new Line(p1.GetPoint(),p2.GetPoint()))
+
+                    using (Line ll = new Line(p1.GetPoint(), p2.GetPoint()))
                     {
                         Point3dCollection pts3D = new Point3dCollection();
                         //Get the intersection Points between line 1 and line 2
@@ -852,7 +818,7 @@ namespace Ferramentas_DLM
                         }
                     }
 
-                 
+
 
                     //foreach (Point3d pt in pts)
                     //{
@@ -883,30 +849,30 @@ namespace Ferramentas_DLM
             }
             AddMensagem("\nXline Menor distância: " + distancia);
             AddMensagem("\nXline tolerância: " + tolerancia);
-            if (distancia<0)
+            if (distancia < 0)
             {
                 retorno = null;
             }
-            if(distancia>tolerancia)
+            if (distancia > tolerancia)
             {
                 retorno = null;
             }
-                return retorno;
+            return retorno;
         }
         public static List<Xline> GetXlinesProximas(Entity objeto, List<Xline> xlines, double tolerancia)
         {
             List<Xline> retorno = new List<Xline>();
 
             var coords = GetCoordenadas(objeto);
-            if(coords.Count>0)
+            if (coords.Count > 0)
             {
                 var min = new Coordenada(new Point3d(coords.Min(x => x.X), coords.Min(x => x.Y), 0));
                 var max = new Coordenada(new Point3d(coords.Max(x => x.X), coords.Max(x => x.Y), 0));
-                foreach(var p in xlines)
+                foreach (var p in xlines)
                 {
                     double angulo = Angulo.Get(p);
                     var norm = Angulo.Normalizar(angulo);
-                    double dist1=0, dist2=0; 
+                    double dist1 = 0, dist2 = 0;
                     if (norm == 0 | norm == 180)
                     {
                         dist1 = new Coordenada(min).DistanciaX(p.BasePoint);
@@ -915,13 +881,13 @@ namespace Ferramentas_DLM
 
 
 
-                   
+
 
                     Coordenada pmin = new Coordenada(min).Mover(angulo, dist1);
                     Coordenada pmax = new Coordenada(min).Mover(angulo, dist2);
                     double ds1 = min.Distancia(pmin);
                     double ds2 = max.Distancia(pmax);
-                   
+
                     if (ds1 <= tolerancia | ds2 <= tolerancia)
                     {
                         retorno.Add(p);
@@ -937,7 +903,7 @@ namespace Ferramentas_DLM
         {
             List<Point3d> retorno = new List<Point3d>();
 
-            if(objeto is Line)
+            if (objeto is Line)
             {
                 var p = (objeto as Line);
                 retorno.Add(p.StartPoint);
@@ -965,7 +931,8 @@ namespace Ferramentas_DLM
                 var p = (objeto as Mline);
                 Point3d p1;
                 Point3d p2;
-                GetCoordenadas(p, out p1, out p2);
+                double largura = 0;
+                Multiline.GetOrigens(p, out p1, out p2, out largura);
                 retorno.Add(p1);
                 retorno.Add(p1);
             }
@@ -1012,64 +979,6 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-        public static List<Mline> MlinesVerticais(List<Mline> LS, double comp_min = 100)
-        {
-            List<Mline> retorno = new List<Mline>();
-            foreach (var s in LS)
-            {
-                List<Point3d> lista = new List<Point3d>();
-                for (int i = 0; i < s.NumberOfVertices; i++)
-                {
-                    var t = s.VertexAt(i);
-                    lista.Add(t);
-                }
-                if (lista.Count > 1)
-                {
-                    var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))),2);
-                    var comp = Math.Abs(Calculos.Trigonometria.Distancia(lista.Max(x=>x.X),lista.Max(x=>x.Y),lista.Min(x=>x.X),lista.Min(x=>x.Y)));
-                    if (angulo >= 180)
-                    {
-                        angulo = angulo - 180;
-                    }
-
-                    if ((angulo >= 85 && angulo <= 95) && comp >= comp_min)
-                    {
-                        retorno.Add(s);
-                    }
-                }
-
-            }
-            return retorno;
-        }
-        public static List<Mline> MlinesHorizontais(List<Mline> LS, double comp_min = 100)
-        {
-            List<Mline> retorno = new List<Mline>();
-            foreach (var s in LS)
-            {
-                List<Point3d> lista = new List<Point3d>();
-                for (int i = 0; i < s.NumberOfVertices; i++)
-                {
-                    var t = s.VertexAt(i);
-                    lista.Add(t);
-                }
-                if (lista.Count > 1)
-                {
-                    var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))),2);
-                    var comp = lista.Max(x => x.X) - lista.Min(x => x.X);
-                    if (angulo >= 180)
-                    {
-                        angulo = angulo - 180;
-                    }
-
-                    if ((angulo >= 175 | angulo <= 5) && comp >= comp_min)
-                    {
-                        retorno.Add(s);
-                    }
-                }
-
-            }
-            return retorno;
-        }
         public static List<Polyline> PolylinesHorizontais(List<Polyline> LS, double comp_min = 100)
         {
             List<Polyline> retorno = new List<Polyline>();
@@ -1090,96 +999,11 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
-        public static bool DesenharMLine(string estilo, List<Point3d> pontos)
-        {
-
-            var mlst = GetMLineStyles().Find(x => x.Name.ToUpper() == estilo.ToUpper());
-
-            if(mlst==null)
-            {
-                var arquivo = Constantes.GetArquivosMlStyles().Find(x => Conexoes.Utilz.getNome(x).ToUpper() == estilo.ToUpper());
-                var nome = Conexoes.Utilz.getNome(arquivo);
-                if (arquivo != null)
-                {
-                    /*tive que copiar o arquivo pra raiz do CAD, pq se não ele não aceita.*/
-                    var destino = System.Environment.CurrentDirectory + $@"\{nome}.mln";
-                    Conexoes.Utilz.Copiar(arquivo, destino,false);
-                    try
-                    {
-                        if(File.Exists(destino))
-                        {
-                            using (Transaction tr = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                            {
-                                CAD.acCurDb.LoadMlineStyleFile(nome, destino);
-
-                                tr.Commit();
-                            }
-                        }
-                        else
-                        {
-                            Alerta($"Abortado\n Foi tentado copiar o arquivo {nome} para \n{destino} e não foi possível. \nContacte suporte.");
-                            return false;
-                        }
-   
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show($"Erro tentando carregar a MLStyle {estilo}\n\n{ex.Message}\n{ex.StackTrace}");
-                        return false;
-                    }
-                }
-                mlst = GetMLineStyles().Find(x => x.Name.ToUpper() == estilo.ToUpper());
-
-            }
 
 
-            try
-            {
-
-                if (mlst != null)
-                {
-                    using (Transaction tr = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                    {
-                        //get the mline style
-                        Mline line = new Mline();
-                        //get the current mline style
-                        line.Style = mlst.ObjectId;
-                        line.Normal = Vector3d.ZAxis;
-                        foreach (var pt in pontos)
-                        {
-                            line.AppendSegment(pt);
-                        }
-
-                        //open modelpace
-                        ObjectId ModelSpaceId = SymbolUtilityServices.GetBlockModelSpaceId(acCurDb);
-                        BlockTableRecord acBlkTblRec = tr.GetObject(ModelSpaceId, OpenMode.ForWrite) as BlockTableRecord;
-
-                        acBlkTblRec.AppendEntity(line);
-
-                        tr.AddNewlyCreatedDBObject(line, true);
-
-                        tr.Commit();
-
-                    }
-                }
-                else
-                {
-                    Alerta($"Não foi possível carregar o arquivo de MLStyle: {estilo}");
-                    return false;
-                }
-
-            }
-            catch (System.Exception ex)
-            {
-
-                Alerta($"Abortado.\n\nErro ao tentar inserir a MLine: \n{ex.Message}\n\n{ex.StackTrace}");
-                return false;
-            }
-
-            return true;
 
 
-        }
+
 
 
         public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
@@ -1226,13 +1050,10 @@ namespace Ferramentas_DLM
         {
             Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage(Mensagem);
         }
-        public static void Alerta(string mensagem, string titulo = "Atenção!", System.Windows.Forms.MessageBoxIcon Icone = System.Windows.Forms.MessageBoxIcon.Information)
-        {
-            System.Windows.Forms.MessageBox.Show(mensagem,titulo, System.Windows.Forms.MessageBoxButtons.OK, Icone);
-        }
 
 
-        public static double GetSuperficieM2(double espessura_mm, double area_mm2,  double perimetro_mm, int decimais = 4)
+
+        public static double GetSuperficieM2(double espessura_mm, double area_mm2, double perimetro_mm, int decimais = 4)
         {
             return Math.Round(((area_mm2 * 2) + (perimetro_mm * espessura_mm)) / 1000 / 1000, decimais);
         }
@@ -1246,7 +1067,7 @@ namespace Ferramentas_DLM
         public static Point3d PedirPonto3D(string pergunta, out bool cancelado)
         {
             cancelado = false;
-            return PedirPonto3D(pergunta, new Point3d(), out cancelado,false);
+            return PedirPonto3D(pergunta, new Point3d(), out cancelado, false);
         }
         public static Point3d PedirPonto3D(string pergunta, Point3d origem, out bool cancelado, bool tem_origem = true)
         {
@@ -1255,13 +1076,13 @@ namespace Ferramentas_DLM
             PromptPointOptions pPtOpts = new PromptPointOptions("");
 
             pPtOpts.Message = "\n" + pergunta;
-            if(tem_origem)
+            if (tem_origem)
             {
                 pPtOpts.UseBasePoint = true;
                 pPtOpts.BasePoint = origem;
             }
             pPtRes = acDoc.Editor.GetPoint(pPtOpts);
- 
+
             Point3d ptStart = pPtRes.Value;
 
             if (pPtRes.Status == PromptStatus.Cancel)
@@ -1277,10 +1098,10 @@ namespace Ferramentas_DLM
         public static List<Point3d> PedirPontos3D(string pergunta = "Selecione as origens")
         {
             List<Point3d> retorno = new List<Point3d>();
-          bool cancelado = false;
+            bool cancelado = false;
             while (!cancelado)
             {
-                var pt = PedirPonto3D(pergunta, retorno.Count > 0 ? retorno.Last() : new Point3d(), out cancelado, retorno.Count>0);
+                var pt = PedirPonto3D(pergunta, retorno.Count > 0 ? retorno.Last() : new Point3d(), out cancelado, retorno.Count > 0);
                 if (!cancelado)
                 {
                     retorno.Add(pt);
@@ -1316,12 +1137,6 @@ namespace Ferramentas_DLM
 
         }
 
-
-
-
-
-
-
         public static System.Collections.Generic.List<ObjectId> getLayoutIds(Database db)
         {
             System.Collections.Generic.List<ObjectId> layoutIds =
@@ -1339,5 +1154,95 @@ namespace Ferramentas_DLM
             }
             return layoutIds;
         }
+
+
+        public static void LimparDesenho()
+        {
+            Utilidades.Purge();
+            editor.Command("AUDIT", "Y", "");
+            editor.Command("_.-scalelistedit", "_R", "_Y", "_E","");
+        }
+        public static int Purge(Database acCurDb = null)
+        {
+            int idCount = 0;
+            if(acCurDb == null)
+            {
+                acCurDb = CAD.acCurDb;
+            }
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                // Create the list of objects to "purge"
+                ObjectIdCollection idsToPurge = new ObjectIdCollection();
+
+                // Add all the Registered Application names
+                RegAppTable rat = (RegAppTable)acTrans.GetObject(acCurDb.RegAppTableId, OpenMode.ForRead);
+                foreach (ObjectId raId in rat)
+                {
+                    if (raId.IsValid)
+                    {
+                        idsToPurge.Add(raId);
+                    }
+                }
+
+
+                // Call the Purge function to filter the list
+                acCurDb.Purge(idsToPurge);
+
+                CAD.editor.WriteMessage("\nObjetos que foram eliminados com o purge: ");
+
+
+                // Erase each of the objects we've been
+                // allowed to
+                foreach (ObjectId id in idsToPurge)
+                {
+                    DBObject obj = acTrans.GetObject(id, OpenMode.ForWrite);
+
+                    RegAppTableRecord ratr = obj as RegAppTableRecord;
+                    if (ratr != null)
+                    {
+                        CAD.editor.WriteMessage("\"{0}\" ", ratr.Name);
+                    }
+                    obj.Erase();
+                }
+
+                idCount = idsToPurge.Count;
+                acTrans.Commit();
+            }
+            return idCount;
+        }
+
+
+
+
+        public static string Gettipo(RME pc)
+        {
+            if (pc != null)
+            {
+                return pc.TIPO.Contains("Z") ? "Z" : "C";
+            }
+            return "";
+        }
+        public static string Getsecao(RME pc)
+        {
+            if (pc != null)
+            {
+                return pc.GetCadastroRME().SECAO.ToString().Replace(",", ".");
+            }
+            return "";
+        }
+        public static  string Getespessura(RME pc)
+        {
+            if (pc != null)
+            {
+                return pc.ESP.ToString("N2").Replace(",", ".");
+            }
+            return "";
+        }
+
+        public static RME SelecionarPurlin()
+        {
+            return Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTercas(), null, "Selecione");
+        }
     }
 }
+

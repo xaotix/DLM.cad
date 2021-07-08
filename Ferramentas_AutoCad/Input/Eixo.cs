@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,7 +69,12 @@ namespace Ferramentas_DLM
                 return 0;
             }
         }
-       
+
+
+        [DisplayName("Transpasse")]
+        public double Transpasse { get; set; } = 337;
+
+
 
         public BlockReference Bloco { get; set; }
         public Line Linha { get; set; }
@@ -115,6 +121,21 @@ namespace Ferramentas_DLM
         {
             return _eixos.FindAll(x=>x.Sentido== Sentido.Vertical);
         }
+
+        public List<VaoObra> GetVaosObraVerticais()
+        {
+            List<VaoObra> retorno = new List<VaoObra>();
+            var verticais = GetEixosVerticais();
+            if(verticais.Count>1)
+            {
+                for (int i = 1; i < verticais.Count; i++)
+                {
+                    VaoObra pp = new VaoObra(verticais[i - 1], verticais[i]);
+                    retorno.Add(pp);
+                }
+            }
+            return retorno;
+        }
         public List<Eixo> GetEixosHorizontais()
         {
             return _eixos.FindAll(x => x.Sentido == Sentido.Horizontal);
@@ -131,17 +152,27 @@ namespace Ferramentas_DLM
         public void Add(Sentido Sentido, double Vao, BlockReference bloco, Line line)
         {
 
-            string Nome = "?";
+            string Nome = "";
             if(bloco!=null)
             {
                 var atributos = Atributos.GetLinha(bloco);
-                Nome = atributos.Get("Eixo").valor;
+                var nomes = atributos.Celulas.FindAll(x=>x.Coluna.ToUpper().Contains("EIXO")).Select(x=>x.Valor).Distinct().ToList().FindAll(x=>x.Replace(" ","")!="").ToList();
+
+                if(nomes.Count>0)
+                {
+                    Nome = nomes[0];
+                }
                 if (Nome == "") { Nome = atributos.Get("Nome").valor; };
                 var preenchidos = atributos.Celulas.FindAll(x => x.Valor.Replace(" ", "") != "");
                 if (Nome == "" && preenchidos.Count > 0)
                 {
                     Nome = preenchidos[0].Valor;
                 }
+            }
+
+            if(Nome=="")
+            {
+                Nome = "???";
             }
        
             var neixo = new Eixo(Sentido, Nome, Vao);

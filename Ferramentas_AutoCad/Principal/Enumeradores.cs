@@ -77,4 +77,11 @@ namespace Ferramentas_DLM
         Grossa,
         Tudo,
     }
+    public enum Tipo_Multiline
+    {
+        Purlin,
+        Corrente,
+        Tirante,
+        Desconhecido,
+    }
 }

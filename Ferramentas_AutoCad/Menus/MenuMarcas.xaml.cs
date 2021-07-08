@@ -777,5 +777,11 @@ namespace Ferramentas_DLM
         {
             Constantes.Versionamento();
         }
+
+        private void rodar_macros(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Comandos.rodarmacros();
+        }
     }
 }

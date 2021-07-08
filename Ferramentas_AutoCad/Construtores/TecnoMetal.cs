@@ -138,7 +138,7 @@ namespace Ferramentas_DLM
             }
             else
             {
-                Alerta("Nenhum perfil soldado encontrado no desenho.");
+                Conexoes.Utilz.Alerta("Nenhum perfil soldado encontrado no desenho.");
             }
 
 
@@ -148,8 +148,9 @@ namespace Ferramentas_DLM
 
             return retorno;
         }
-        public void GerarPDF(List<Conexoes.Arquivo> arquivos =null, bool gerar_dxf = false)
+        public void GerarPDF(List<Conexoes.Arquivo> arqs =null, bool gerar_dxf = false)
         {
+            List<Conexoes.Arquivo> arquivos = new List<Conexoes.Arquivo>();
             int pranchas_por_page_setup = 50;
             string config_layout = "PDF-A3-PAISAGEM";
             string config_model = "PDF_A3_PAISAGEM";
@@ -157,24 +158,31 @@ namespace Ferramentas_DLM
 
             if(!File.Exists(arquivo_dwg))
             {
-                Alerta($"Abortado.\nArquivo de pagesetup não encontrado: {arquivo_dwg}");
+                Conexoes.Utilz.Alerta($"Abortado.\nArquivo de pagesetup não encontrado: {arquivo_dwg}");
                 return;
             }
 
 
 
-            if(arquivos==null)
+            if(arqs==null)
             {
-                arquivos = this.SelecionarDWGs(true);
-                if (arquivos.Count == 0)
-                {
-                    return;
-                }
+                arqs = this.SelecionarDWGs(true);
+          
             }
+            else
+            {
+                arquivos.AddRange(arqs);
+            }
+
 
             if (gerar_dxf)
             {
-                GerarDXFs();
+                arquivos.AddRange(GerarDXFs());
+            }
+
+            if (arquivos.Count == 0)
+            {
+                return;
             }
 
             Conexoes.Wait w;
@@ -197,7 +205,7 @@ namespace Ferramentas_DLM
             }
             catch (System.Exception ex)
             {
-                Alerta(ex.Message);
+                Conexoes.Utilz.Alerta(ex.Message);
                 return;
             }
 
@@ -232,7 +240,7 @@ namespace Ferramentas_DLM
 
 
             List<string> arquivos_dsd = new List<string>();
-            w.SetProgresso(1, arquivos.Count, $"Gerando Pacote {c}/{pacotes.Count}");
+            w.SetProgresso(1, arquivos.Count, $"Gerando PDF (Pacote) {c}/{pacotes.Count}");
             foreach (var pacote in pacotes)
             {
                 string arquivo_dsd = pasta_dsd + $@"\Plotagem_{c}.dsd";
@@ -264,7 +272,7 @@ namespace Ferramentas_DLM
                             {
                                 nome = "Model";
                             }
-                           else if (arquivo.Endereco.ToUpper() == this.Arquivo.ToUpper())
+                           else if (arquivo.Endereco.ToUpper() == this.Endereco.ToUpper())
                             {
 
 
@@ -302,7 +310,7 @@ namespace Ferramentas_DLM
                         }
                         catch (System.Exception ex)
                         {
-                            Alerta($"Erro ao tentar ler o arquivo {arquivo} \n\n{ex.Message}\n{ex.StackTrace}");
+                            Conexoes.Utilz.Alerta($"Erro ao tentar ler o arquivo {arquivo} \n\n{ex.Message}\n{ex.StackTrace}");
                         }
 
 
@@ -351,7 +359,7 @@ namespace Ferramentas_DLM
                 }
                 catch (Exception ex)
                 {
-                    Alerta(ex.Message + "\n" + ex.StackTrace);
+                    Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
                 }
                 c++;
             }
@@ -377,7 +385,7 @@ namespace Ferramentas_DLM
 
 
             w.Close();
-            Alerta("Plotagem finalizada!");
+            Conexoes.Utilz.Alerta("Plotagem finalizada!","Finalizado", System.Windows.MessageBoxImage.Information);
 
 
         }
@@ -401,7 +409,7 @@ namespace Ferramentas_DLM
             List<PCQuantificar> pecas = this.Quantificar(false,false,false,false,true);
             if(pecas.Count==0)
             {
-                Alerta($"Nenhuma peça mapeável encontrada na seleção.");
+                Conexoes.Utilz.Alerta($"Nenhuma peça mapeável encontrada na seleção.");
                 return seq;
             }
             List<PCQuantificar> tirantes = new List<PCQuantificar>();
@@ -458,7 +466,7 @@ namespace Ferramentas_DLM
             {
                 if (perfis_mapeaveis.Count == 0)
                 {
-                    Alerta($"Não foi possível carregar o arquivo de configuração de contraventos. Contacte suporte. \n{Constantes.Arquivo_CTV}");
+                    Conexoes.Utilz.Alerta($"Não foi possível carregar o arquivo de configuração de contraventos. Contacte suporte. \n{Constantes.Arquivo_CTV}");
 
                     return seq;
                 }
@@ -929,9 +937,19 @@ namespace Ferramentas_DLM
 
             if (Arquivos.Count == 0)
             {
-                Alerta("Nenhuma prancha DWG selecionada.");
+                Conexoes.Utilz.Alerta("Nenhuma prancha DWG selecionada.");
                 return;
             }
+
+
+            var arquivos_abertos = Arquivos.FindAll(x => x.EstaAberto).FindAll(x => x.Endereco.ToUpper() != this.Endereco.ToUpper());
+
+            if(arquivos_abertos.Count>0)
+            {
+                Conexoes.Utilz.Alerta($"Há {arquivos_abertos.Count} abertos. Feche os arquivos para poder continuar: {string.Join(",",arquivos_abertos.Select(x=>x.Nome))}");
+                return;
+            }
+
 
             ConfiguracaoMacro cfg = new ConfiguracaoMacro();
             bool status = false;
@@ -940,9 +958,11 @@ namespace Ferramentas_DLM
             if (!status) { return; }
 
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
+
+
             if (cfg.GerarDBF)
             {
-                var s = GerarDBF(ref erros,cfg.AtualizarCams, null, Arquivos);
+                var s = GerarDBF(ref erros, cfg.AtualizarCams, null, Arquivos);
             }
 
             if(erros.Count>0)
@@ -952,20 +972,29 @@ namespace Ferramentas_DLM
             }
 
 
-            
 
 
+            if (cfg.GerarTabela | cfg.AjustarMViews | cfg.AjustarLTS | cfg.PreencheSelos | cfg.LimparDesenhos)
+            {
             Conexoes.Wait w = new Conexoes.Wait(Arquivos.Count);
             w.Show();
-
-
-
 
             foreach (var drawing in Arquivos)
             {
 
-                if (drawing.Endereco.ToUpper() == this.Arquivo.ToUpper())
+                Document docToWorkOn = CAD.acDoc;
+
+                if (drawing.Endereco.ToUpper() != this.Endereco.ToUpper())
                 {
+                    docToWorkOn = CAD.documentManager.Open(drawing.Endereco, false);
+
+                }
+
+                IrLayout();
+
+                using (docToWorkOn.LockDocument())
+                {
+                    
                     if (cfg.GerarTabela)
                     {
                         InserirTabelaAuto(ref erros);
@@ -985,50 +1014,54 @@ namespace Ferramentas_DLM
                     {
                         PreencheSelo();
                     }
+
+                    if(cfg.LimparDesenhos)
+                    {
+                        Utilidades.LimparDesenho();
+                    }
+                }
+
+                if (drawing.Endereco.ToUpper() == this.Endereco.ToUpper())
+                {
+                    CAD.editor.Command("qsave", "");
+                    //using (docToWorkOn.LockDocument())
+                    //{
+                    //    Autodesk.AutoCAD.DatabaseServices.DwgVersion tVersion = Autodesk.AutoCAD.DatabaseServices.DwgVersion.Current;
+                    //    docToWorkOn.Database.SaveAs(drawing.Endereco, tVersion);
+                    //}
                 }
                 else
                 {
-                    Document docToWorkOn = CAD.documentManager.Open(drawing.Endereco, false);
 
-                    using (docToWorkOn.LockDocument())
-                    {
-                        if (cfg.GerarTabela)
-                        {
-                            InserirTabelaAuto(ref erros);
-                        }
-
-                        if(cfg.AjustarMViews)
-                        {
-                            SetViewport();
-                        }
-
-                        if (cfg.AjustarLTS)
-                        {
-                            SetLts();
-                        }
-
-                        if (cfg.PreencheSelos)
-                        {
-                            PreencheSelo();
-                        }
-                    }
                     docToWorkOn.CloseAndSave(drawing.Endereco);
                 }
-                w.somaProgresso(drawing.Endereco);
+
+
+
+                w.somaProgresso("1/3 - Rodando macros " + drawing.Nome);
             }
             w.Close();
+
+            }
 
 
             if (cfg.Gerar_PDFs)
             {
-                this.GerarPDF(null, cfg.DXFs_de_CAMs);
+                this.GerarPDF(Arquivos, cfg.DXFs_de_CAMs);
             }
             else if(cfg.DXFs_de_CAMs)
             {
                 this.GerarDXFs();
             }
 
-            Alerta("Finalizado", MessageBoxIcon.Information);
+
+            if (erros.Count > 0)
+            {
+                Conexoes.Utilz.ShowReports(erros);
+                return;
+            }
+
+            Conexoes.Utilz.Alerta("Finalizado","", System.Windows.MessageBoxImage.Information);
         }
 
         public List<MarcaTecnoMetal> GetMarcas(ref List<Conexoes.Report> erros, DB.Tabela pcs = null)
@@ -1124,16 +1157,22 @@ namespace Ferramentas_DLM
         }
 
 
-        public void GerarDXFs(List<DLMCam.ReadCam> cams = null)
+        public List<Conexoes.Arquivo> GerarDXFs(List<DLMCam.ReadCam> camsext = null)
         {
-            if (!E_Tecnometal()) { return; }
+            List<DLMCam.ReadCam> cams = new List<DLMCam.ReadCam>();
 
 
-            if(cams==null)
+            if (!E_Tecnometal()) { return new List<Conexoes.Arquivo>(); }
+
+
+            if(camsext == null)
             {
                 this.GetSubEtapa().GetPacote().SetStatus(true);
-                cams = this.GetSubEtapa().GetPacote().GetCAMsNaoRM();
-                var subs = cams.SelectMany(x => x.Filhos);
+                var cms = this.GetSubEtapa().GetPacote().GetCAMsNaoRM();
+
+                
+                var subs = cams.SelectMany(x => x.Filhos).ToList();
+                cams.AddRange(cms);
                 cams.AddRange(subs);
                 
                //cams = Conexoes.Utilz.SelecionarObjetos(new List<DLMCam.ReadCam>(), cams);
@@ -1141,13 +1180,13 @@ namespace Ferramentas_DLM
 
             if(cams.Count>0)
             {
-                var dxfs = cams.Select(x => x.Pasta + x.Nome + ".dxf").ToList();
-                Conexoes.Wait w = new Conexoes.Wait(dxfs.Count, "Apagando dxfs...");
+                var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
+                Conexoes.Wait w = new Conexoes.Wait(dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM}");
                 w.Show();
 
                 foreach(var s in dxfs)
                 {
-                    Conexoes.Utilz.Apagar(s);
+                    Conexoes.Utilz.Apagar(s.Endereco);
                     w.somaProgresso();
                 }
                 w.Close();
@@ -1156,6 +1195,7 @@ namespace Ferramentas_DLM
                 Conexoes.Utilz.GerarDXF(cams.Select(x => new Conexoes.Arquivo(x.Arquivo)).ToList());
 
             }
+            return this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
         }
         public void InserirTabela(Point3d? pt =null)
         {
@@ -1226,7 +1266,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
-                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
+                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<Line> linhas = new List<Line>();
@@ -1315,7 +1355,7 @@ namespace Ferramentas_DLM
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
 
-                    var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
+                    var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
 
                     BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                     BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
@@ -1397,7 +1437,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public DB.Linha GetLinha(BlockReference bloco,  string arquivo, string nome, string ultima_edicao, Database acCurDb = null)
+        public DB.Linha GetLinha(BlockReference bloco,  string arquivo, string nome, string ultima_edicao, bool somente_visiveis = true, Database acCurDb = null)
         {
             try
             {
@@ -1405,7 +1445,7 @@ namespace Ferramentas_DLM
                 {
                     acCurDb = CAD.acCurDb;
                 }
-                var att = Atributos.GetLinha(bloco, acCurDb);
+                var att = Atributos.GetLinha(bloco,somente_visiveis, acCurDb);
                 att.Add(Constantes.ATT_ARQ, arquivo);
                 if (this.E_Tecnometal(false))
                 {
@@ -1446,7 +1486,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
 
-                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Arquivo).ToString("dd/MM/yyyy");
+                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
                 List<BlockReference> blocos = new List<BlockReference>();
@@ -1467,12 +1507,12 @@ namespace Ferramentas_DLM
 
                 foreach (var m in ms)
                 {
-                    marcas.Linhas.Add(GetLinha(m, this.Arquivo, this.Nome, ultima_edicao));
+                    marcas.Linhas.Add(GetLinha(m, this.Endereco, this.Nome, ultima_edicao,false));
                 }
 
                 foreach (var m in pos)
                 {
-                    posicoes.Linhas.Add(GetLinha(m, this.Arquivo, this.Nome, ultima_edicao));
+                    posicoes.Linhas.Add(GetLinha(m, this.Endereco, this.Nome, ultima_edicao,false));
                 }
 
             }
@@ -1567,12 +1607,12 @@ namespace Ferramentas_DLM
 
                                 foreach (var m in ms)
                                 {
-                                    marcas.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao, acTmpDb));
+                                    marcas.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao,false, acTmpDb));
                                 }
 
                                 foreach (var m in pos)
                                 {
-                                    posicoes.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao, acTmpDb));
+                                    posicoes.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao, false, acTmpDb));
                                 }
 
                             }
@@ -1850,7 +1890,7 @@ namespace Ferramentas_DLM
                 foreach (var pos in posicoes_grp)
                 {
                     var cam = cams.Find(x => x.Nome.ToUpper() == pos.Key.ToUpper());
-                    var p0 = pos.ToList()[0];
+                    var p0 = pos.First();
 
 
 
@@ -1865,6 +1905,8 @@ namespace Ferramentas_DLM
                         cam.Material = p0.Material;
                         cam.Tratamento = p0.Tratamento;
                         cam.Prancha = cam.Etapa;
+                        cam.Peso = p0.PesoUnit;
+
                         if(cam.Mercadoria=="")
                         {
                             cam.Mercadoria = "POSICAO";
@@ -2038,7 +2080,7 @@ namespace Ferramentas_DLM
                     var pl = pols[0];
                     if (!pl.Closed)
                     {
-                        Alerta("Polyline inválida. Somente polylines fechadas representando o contorno da chapa.");
+                        Conexoes.Utilz.Alerta("Polyline inválida. Somente polylines fechadas representando o contorno da chapa.");
                         return;
                     }
                     Utilidades.GetInfo(pl, out comprimento, out largura, out area, out perimetro);
@@ -2140,7 +2182,7 @@ namespace Ferramentas_DLM
 
                 if (pl.Closed)
                 {
-                    Alerta("Polyline inválida. Somente polylines abertas representando o corte da chapa.");
+                    Conexoes.Utilz.Alerta("Polyline inválida. Somente polylines abertas representando o corte da chapa.");
                     return;
                 }
 

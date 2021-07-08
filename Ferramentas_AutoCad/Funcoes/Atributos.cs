@@ -93,7 +93,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        public static BlocoTags GetLinha(BlockReference bloco, Database acCurDb = null)
+        public static BlocoTags GetLinha(BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
         {
 
             BlocoTags retorno = new BlocoTags();
@@ -105,7 +105,7 @@ namespace Ferramentas_DLM
                 acCurDb = CAD.acCurDb;
             }
 
-            var pai = Blocos.GetPai(bloco, acCurDb);
+
 
 
             using (DocumentLock acLckDoc = acDoc.LockDocument())
@@ -118,27 +118,16 @@ namespace Ferramentas_DLM
                     foreach (ObjectId objID in attCol)
                     {
                         AttributeReference acAttRef = acTrans.GetObject(objID, OpenMode.ForRead) as AttributeReference;
-                       
-                        if(!acAttRef.Visible)
-                        {
 
-                        }
-                        if(pai!=null)
+                        if (!acAttRef.Visible && somente_visiveis)
                         {
-                            if (!acAttRef.Visible && pai.IsDynamicBlock)
-                            {
-                                /*é pra evitar de puxar os dados de atributos ocultos das sets do bloco dinamico*/
-                            }
-                            else
-                            {
-                                retorno.Add(acAttRef.Tag, acAttRef.TextString);
-                            }
+                            /*é pra evitar de puxar os dados de atributos ocultos das sets do bloco dinamico*/
                         }
                         else
                         {
                             retorno.Add(acAttRef.Tag, acAttRef.TextString);
                         }
-                       
+
                     }
 
 

@@ -18,6 +18,25 @@ namespace Ferramentas_DLM
 {
     public static class Blocos
     {
+        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1.05)
+        {
+            List<BlockReference> blks = new List<BlockReference>();
+            foreach (var blk in blocos)
+            {
+                var d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt1)));
+                var d2 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt2)));
+
+                var scfactor = blk.ScaleFactors.X;
+
+                var dmin = Math.Round(Math.Abs(tolerancia * scfactor));
+
+                if (d1 <= dmin | d2 <= dmin)
+                {
+                    blks.Add(blk);
+                }
+            }
+            return blks;
+        }
         public static void Criar(string nome, List<Entity> Objetos, Point3d origem)
         {
             string nome_fim = nome;
@@ -74,7 +93,7 @@ namespace Ferramentas_DLM
             }
             catch (System.Exception ex)
             {
-                Utilidades.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
             }
 
         }
@@ -123,7 +142,7 @@ namespace Ferramentas_DLM
                 }
                 if (s.Count == 0)
                 {
-                    Utilidades.Alerta($"Bloco não encontrado:{nome}", "Operação abortada");
+                    Conexoes.Utilz.Alerta($"Bloco não encontrado:{nome}", "Operação abortada");
                     return;
                 }
                 else
@@ -135,7 +154,7 @@ namespace Ferramentas_DLM
 
             if (!File.Exists(endereco))
             {
-                Utilidades.Alerta($"Bloco não encontrado\n! {endereco}");
+                Conexoes.Utilz.Alerta($"Bloco não encontrado\n! {endereco}");
                 return;
             }
 
@@ -304,7 +323,7 @@ namespace Ferramentas_DLM
             }
             catch (System.Exception ex)
             {
-                Utilidades.Alerta($"Algo de errado aconteceu ao tentar inserir o bloco {endereco}\n\n" +
+                Conexoes.Utilz.Alerta($"Algo de errado aconteceu ao tentar inserir o bloco {endereco}\n\n" +
                     $"{ex.Message}\n" +
                     $"{ex.StackTrace}");
                 return;
@@ -362,7 +381,7 @@ namespace Ferramentas_DLM
             }
             catch (System.Exception ex)
             {
-                Utilidades.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
 
             }
         }
@@ -430,7 +449,7 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    Utilidades.Alerta("Não implementado.");
+                    Conexoes.Utilz.Alerta("Não implementado.");
                     return;
                 }
 
@@ -445,7 +464,7 @@ namespace Ferramentas_DLM
             }
             catch (System.Exception ex)
             {
-                Utilidades.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
             }
 
         }
@@ -494,7 +513,7 @@ namespace Ferramentas_DLM
             }
             catch (System.Exception ex)
             {
-                Utilidades.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
             }
 
         }
@@ -541,7 +560,7 @@ namespace Ferramentas_DLM
             }
             catch (System.Exception ex)
             {
-                Utilidades.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
             }
 
         }
@@ -555,7 +574,7 @@ namespace Ferramentas_DLM
                 {
                     if (perfil.Nome == "")
                     {
-                        Utilidades.Alerta("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.TipoPerfil + "\nCadastre o perfil no tecnometal e tente novamente.");
+                        Conexoes.Utilz.Alerta("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.TipoPerfil + "\nCadastre o perfil no tecnometal e tente novamente.");
                     }
                     else
                     {
@@ -571,7 +590,7 @@ namespace Ferramentas_DLM
             }
             else
             {
-                Utilidades.Alerta("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.TipoPerfil);
+                Conexoes.Utilz.Alerta("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.TipoPerfil);
             }
         }
 

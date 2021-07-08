@@ -15,15 +15,18 @@ namespace Ferramentas_DLM
         public bool PreencheSelos { get; set; } = false;
 
         [DisplayName("Gerar DBF")]
-        public bool GerarDBF { get; set; } = true;
+        public bool GerarDBF { get; set; } = false;
 
         [DisplayName("Atualizar CAMs")]
-        public bool AtualizarCams { get; set; } = true;
+        public bool AtualizarCams { get; set; } = false;
         [DisplayName("Ajustar Lts")]
-        public bool AjustarLTS { get; set; } = true;
+        public bool AjustarLTS { get; set; } = false;
+
+        [DisplayName("Limpar desenhos")]
+        public bool LimparDesenhos { get; set; } = false;
 
         [DisplayName("Ajustar MViews")]
-        public bool AjustarMViews { get; set; } = true;
+        public bool AjustarMViews { get; set; } = false;
 
         [DisplayName("Gerar DXF de CAMs")]
         public bool DXFs_de_CAMs { get; set; } = false;

@@ -65,11 +65,11 @@
             this.button11 = new System.Windows.Forms.Button();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.button16 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.button16 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ofsset_apoio)).BeginInit();
@@ -563,6 +563,18 @@
             this.tabPage3.Text = "Extração";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // button16
+            // 
+            this.button16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button16.Location = new System.Drawing.Point(6, 65);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(340, 23);
+            this.button16.TabIndex = 2;
+            this.button16.Text = "Gerar Croqui";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
+            // 
             // button5
             // 
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -571,7 +583,7 @@
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(341, 23);
             this.button5.TabIndex = 1;
-            this.button5.Text = "Inserir Tabela";
+            this.button5.Text = "Marcar e Inserir Tabela";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
@@ -583,7 +595,7 @@
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(340, 23);
             this.button6.TabIndex = 1;
-            this.button6.Text = "Inserir Tabela e Exportar RM";
+            this.button6.Text = "Marcar, Inserir Tabela e Exportar RM";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
@@ -607,18 +619,6 @@
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(460, 437);
             this.propertyGrid1.TabIndex = 0;
-            // 
-            // button16
-            // 
-            this.button16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button16.Location = new System.Drawing.Point(6, 65);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(340, 23);
-            this.button16.TabIndex = 2;
-            this.button16.Text = "Gerar Croqui";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.button16_Click);
             // 
             // TercasMenu
             // 

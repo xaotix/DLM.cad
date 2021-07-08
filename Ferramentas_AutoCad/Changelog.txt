@@ -1,3 +1,9 @@
+
+Suporte: daniel.maciel@medabil.com.br
+
+V 1.2.3
+> Adicionado função "rodarmacros" e "limpardesenho"
+> Atualizar CAMs grava o peso da DBF no CAM
 V 1.2.2
 > Corrigido erro que não gravava o material na tabela do tecnometal
 V 1.2.1

@@ -24,24 +24,24 @@ namespace Ferramentas_DLM
 
             if (correntes_mlstyles.Items.Count==0&& mapeia_correntes.Checked)
             {
-                Utilidades.Alerta("Não é possivel mapear as correntes sem ter um estilo de MLinha");
+                Conexoes.Utilz.Alerta("Não é possivel mapear as correntes sem ter um estilo de MLinha");
                 return;
             }
 
             if (tirantes_mlstyles.Items.Count== 0 &&  mapeia_tirantes.Checked)
             {
-                Utilidades.Alerta("Não é possivel mapear os tirantes sem ter um estilo de MLinha");
+                Conexoes.Utilz.Alerta("Não é possivel mapear os tirantes sem ter um estilo de MLinha");
                 return;
             }
 
             if (tercas_mlstyles.Items.Count == 0 && mapeia_tercas.Checked)
             {
-                Utilidades.Alerta("Não é possivel mapear os tercas sem ter um estilo de MLinha");
+                Conexoes.Utilz.Alerta("Não é possivel mapear os tercas sem ter um estilo de MLinha");
                 return;
             }
             if (furos_manuais_layer.Text == "" && mapeia_furos_manuais.Checked)
             {
-                Utilidades.Alerta("Não é possivel mapear os furos manuais sem definir uma layer padrão");
+                Conexoes.Utilz.Alerta("Não é possivel mapear os furos manuais sem definir uma layer padrão");
                 return;
             }
 
@@ -107,8 +107,8 @@ namespace Ferramentas_DLM
 
         private void button9_Click(object sender, EventArgs e)
         {
-            var s = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTercas(),null,"Selecione");
-            if(s!=null)
+            var s = Utilidades.SelecionarPurlin();
+            if (s!=null)
             {
                 this.id_terca = s.id_db;
                 this.terca.Text = s.TIPO;

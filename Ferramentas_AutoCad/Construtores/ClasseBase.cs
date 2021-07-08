@@ -130,7 +130,7 @@ namespace Ferramentas_DLM
             {
                 if (mensagem)
                 {
-                    Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.S&G)" +
+                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.S&G)" +
                    $"\nPasta atual: {this.Pasta}");
                 }
 
@@ -147,7 +147,7 @@ namespace Ferramentas_DLM
             {
                 if (mensagem)
                 {
-                    Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                    $"\nPasta atual: {this.Pasta}");
                 }
 
@@ -236,6 +236,10 @@ namespace Ferramentas_DLM
        [DisplayName("Layer Blocos")]
         public string LayerBlocos { get; set; } = "BLOCOS";
 
+        [Category("Eixos")]
+        [DisplayName("Distancia Mínima")]
+        public double DistanciaMinimaEixos { get; set; } = 250;
+
         [Category("Configuração")]
         [DisplayName("Pasta Arquivo")]
         public string Pasta
@@ -259,7 +263,7 @@ namespace Ferramentas_DLM
                 return Conexoes.Utilz.getNome(acDoc.Name).ToUpper().Replace(".DWG","");
             }
         }
-        public string Arquivo
+        public string Endereco
         {
             get
             {
@@ -432,10 +436,7 @@ namespace Ferramentas_DLM
 
 
 
-        public void Alerta(string mensagem, System.Windows.Forms.MessageBoxIcon icone = System.Windows.Forms.MessageBoxIcon.Error)
-        {
-            Utilidades.Alerta(mensagem,"Atenção!", icone);
-        }
+
         public void Comando(params object[] comando)
         {
             Extensoes.Command(acDoc.Editor, comando);
@@ -882,66 +883,67 @@ namespace Ferramentas_DLM
         public GradeEixos GetEixos()
         {
             GradeEixos retorno = new GradeEixos();
-            double tolerancia = 100;
-            var blocos = GetBlocosEixos().OrderBy(x=> new Coordenada(x.Position).Distancia(new Point3d())).ToList();
+            double tolerancia = 1.05;
+            var blocos = GetBlocosEixos().OrderBy(x=> x.Position.DistanceTo(new Point3d())).ToList();
    
             
             
             /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
-            var HORIS = Getlinhas_Horizontais().FindAll(x => x.Layer.ToUpper().Contains("EIXO") && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
-            var VERTS = Getlinhas_Verticais().FindAll(x => x.Layer.ToUpper().Contains("EIXO") && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+            var HORIS1 = Getlinhas_Horizontais().FindAll(x => x.Layer.ToUpper().Contains("EIXO") && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+            var VERTS1 = Getlinhas_Verticais().FindAll(x => x.Layer.ToUpper().Contains("EIXO") && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
 
-            
+            List<Line> HORIS = Linha.GetLinhas(HORIS1, this.DistanciaMinimaEixos, Sentido.Horizontal);
+            List<Line> VERTS = Linha.GetLinhas(VERTS1, this.DistanciaMinimaEixos, Sentido.Vertical);
 
-            if (HORIS.Count > 0)
+            /*organiza por comprimento e pega as linhas maiores*/
+            //HORIS1 = HORIS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
+            //VERTS1 = VERTS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
+
+
+            if (HORIS.Count > 1)
             {
-                var linhas = HORIS.GroupBy(x => Math.Round(x.StartPoint.Y)).Select(x => x.First()).ToList();
-
-                for (int i = 0; i < linhas.Count; i++)
+                for (int i = 0; i < HORIS.Count; i++)
                 {
-                    var L = linhas[i];
+                    var L = HORIS[i];
                     double dist = 0;
                     if (retorno.GetEixosHorizontais().Count > 0)
                     {
-                        dist = Math.Round(Math.Abs(linhas[i].StartPoint.X - retorno.GetEixosHorizontais().Last().Linha.StartPoint.Y));
+                        dist = Math.Round(Math.Abs(HORIS[(int)i].StartPoint.Y - retorno.GetEixosHorizontais().Last().Linha.StartPoint.Y));
                     }
 
                     var pt1 = L.StartPoint.X > L.EndPoint.X ? L.StartPoint : L.EndPoint;
                     var pt2 = L.StartPoint.X < L.EndPoint.X ? L.StartPoint : L.EndPoint;
 
-                    var blks = blocos.FindAll(x =>
-                    Math.Abs(new Coordenada(x.Position).Distancia(pt1)) <= tolerancia
-                    |
-                    Math.Abs(new Coordenada(x.Position).Distancia(pt2)) <= tolerancia
-                    );
 
-                    if (blks.Count > 0)
+                    List<BlockReference> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, tolerancia);
+                    //var blks = blocos.FindAll(x =>
+                    //Math.Abs(x.Position.DistanceTo(pt1)) <= tolerancia * x.ScaleFactors.X
+                    //|
+                    //Math.Abs(x.Position.DistanceTo(pt2)) <= tolerancia * x.ScaleFactors.X
+                    //);
+
+                    if (blks.Count >=1)
                     {
                         retorno.Add(Sentido.Horizontal, dist, blks[0], L);
                     }
                     else
                     {
-
+                        //retorno.Add(Sentido.Horizontal, dist, null, L);
                     }
-                    if (blks.Count > 1)
-                    {
 
-                    }
                 }
             }
 
 
-            if (VERTS.Count>0)
+            if (VERTS.Count>1)
             {
-                var linhas = VERTS.GroupBy(x => Math.Round(x.StartPoint.X)).Select(x=>x.First()).ToList();
-
-                for (int i = 0; i < linhas.Count; i++)
+                for (int i = 0; i < VERTS.Count; i++)
                 {
-                    var L = linhas[i];
+                    var L = VERTS[i];
                     double dist = 0;
                     if (retorno.GetEixosVerticais().Count>0)
                     {
-                        dist = Math.Round(Math.Abs(linhas[i].StartPoint.X - retorno.GetEixosVerticais().Last().Linha.StartPoint.X));
+                        dist = Math.Round(Math.Abs(VERTS[i].StartPoint.X - retorno.GetEixosVerticais().Last().Linha.StartPoint.X));
                     }
 
                     var pt1 = L.StartPoint.Y> L.EndPoint.Y?L.StartPoint:L.EndPoint;
@@ -949,24 +951,24 @@ namespace Ferramentas_DLM
 
                     var pts = blocos.Select(x => new List<double> { new Coordenada(x.Position).Distancia(pt1), new Coordenada(x.Position).Distancia(pt2) }).ToList();
 
-                    var blks = blocos.FindAll(x => 
-                    Math.Abs(new Coordenada(x.Position).Distancia(pt1)) <= tolerancia 
-                    |
-                    Math.Abs(new Coordenada(x.Position).Distancia(pt2)) <= tolerancia
-                    );
 
-                    if (blks.Count > 0)
+                    List<BlockReference> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, tolerancia);
+                    //var blks = blocos.FindAll(x => 
+                    //Math.Abs(new Coordenada(x.Position).Distancia(pt1)) <= tolerancia * x.ScaleFactors.X
+                    //|
+                    //Math.Abs(new Coordenada(x.Position).Distancia(pt2)) <= tolerancia * x.ScaleFactors.X
+                    //);
+
+
+                    if (blks.Count >= 1)
                     {
                         retorno.Add(Sentido.Vertical, dist, blks[0], L);
                     }
                     else
                     {
-                        retorno.Add(Sentido.Vertical, dist,null, L);
+                       //retorno.Add(Sentido.Vertical, dist,null, L);
                     }
-                    if (blks.Count > 1)
-                    {
-
-                    }
+                  
                 }
             }
 
@@ -1135,16 +1137,10 @@ namespace Ferramentas_DLM
                         }
                         catch (System.Exception ex)
                         {
-                            Alerta($"{ex.Message}\n{ex.StackTrace}");
+                            Conexoes.Utilz.Alerta($"{ex.Message}\n{ex.StackTrace}");
                         }
-
                     }
-
                 }
-                //var tps = selecoes.GroupBy(x => x.GetType().ToString()).Select(x => x.First()).ToList();
-
-                //AddMensagem("\nTipos de objetos selecionados:\n" + string.Join("\n", tps));
-                
             }
 
             return acSSPrompt;

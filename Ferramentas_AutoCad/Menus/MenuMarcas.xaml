@@ -342,7 +342,8 @@
                     <Button Content="Gerar DBF"  Click="gerar_dbf"/>
                     <Button Content="Gerar PDFs Etapa"  Click="gerar_pdf"/>
                     <Button Content="Gerar DXFs de CAMs" Click="gerar_dxf_cams"/>
-
+                    <!--<Button Content="Liberação (DBF, DXF de CAM, PDF)" Click="rodar_macros"/>-->
+                   
                     <Separator></Separator>
                     <Button Content="Preenche Selo" Click="preenche_selo"/>
                     <Button Content="Limpar Selo" Click="limpa_selo"/>

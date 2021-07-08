@@ -137,14 +137,19 @@ namespace Ferramentas_DLM
         [CommandMethod("desenharmline")]
         public static void desenharmline()
         {
-            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().Select(x=> Conexoes.Utilz.getNome(x)).ToList(), null);
+            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
             if(estilo!=null)
             {
-                var pts = Utilidades.PedirPontos3D();
-                if (pts.Count > 0)
+                var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
+                if (ml!=null)
                 {
-                    Utilidades.DesenharMLine(estilo, pts);
+                    var pts = Utilidades.PedirPontos3D();
+                    if (pts.Count > 0)
+                    {
+                        Multiline.DesenharMLine(estilo, ml.Arquivo, pts);
+                    }
                 }
+
             }
 
         }
@@ -153,31 +158,14 @@ namespace Ferramentas_DLM
         [CommandMethod("substituirpolylinepormultiline")]
         public static void substituirpolylinepormultiline()
         {
-            ClasseBase pp = new ClasseBase();
-            var s = pp.SelecionarObjetos();
-            if(s.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) { return; }
-
-            var polylines = pp.Getpolylinhas();
-
-            if(polylines.Count == 0) { return; }
-
-            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().Select(x => Conexoes.Utilz.getNome(x)).ToList(), null);
-            if (estilo != null)
-            {
-
-               foreach(var p in polylines)
-                {
-                    FLayer.Set(p.Layer);
-                   if(Utilidades.DesenharMLine(estilo,new List<Point3d> { p.StartPoint, p.EndPoint}))
-                    {
-                        pp.Apagar(p);
-                    }
-                }
-
-            }
+            Multiline.MudarPolyline();
 
         }
-
+        [CommandMethod("mudarmultiline")]
+        public static void mudarmultiline()
+        {
+            Multiline.MudarMultiline();
+        }
 
 
         [CommandMethod("purlin")]
@@ -232,10 +220,7 @@ namespace Ferramentas_DLM
                 var pc = Conexoes.DBases.GetBancoRM().GetRME(p.id_terca);
                 if (pc != null)
                 {
-                    p.id_terca = mm.id_terca;
-                    p.secao = pc.GetCadastroRME().SECAO.ToString();
-                    p.tipo = pc.TIPO.Contains("Z") ? "Z" : "C";
-                    p.espessura = pc.ESP.ToString("N2").Replace(",", ".");
+                    p.SetTerca(mm.id_terca);
                 }
             }
 
@@ -301,7 +286,7 @@ namespace Ferramentas_DLM
             }
             else if (mm.acao == "gerarcroqui")
             {
-                p.InserirCroquis_Purlin();
+                p.GerarCroquis();
             }
         }
       
@@ -698,12 +683,7 @@ namespace Ferramentas_DLM
             p.CriarLayersPadrao();
         }
 
-        ////[CommandMethod("3dmercadorias")]
-        ////public void mercadorias3d()
-        ////{
-        ////    TecnoMetal p = new TecnoMetal();
-        ////    p.Mercadorias3d();
-        ////}
+
 
         [CommandMethod("gerardxf")]
         public static void gerardxf()
@@ -780,6 +760,12 @@ namespace Ferramentas_DLM
         }
 
 
+        [CommandMethod("limpardesenho")]
+        public static void limpardesenho()
+        {
+            Utilidades.LimparDesenho();
+            
+        }
 
 
     }

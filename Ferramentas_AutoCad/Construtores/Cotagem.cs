@@ -1837,7 +1837,7 @@ namespace Ferramentas_DLM
             catch (System.Exception ex)
             {
 
-                Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
             }
 
         }
