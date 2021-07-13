@@ -215,14 +215,9 @@ namespace Ferramentas_DLM
             p.CorrenteMLStyles = mm.correntes_mlstyles.Items.Cast<string>().ToList();
 
 
-            if (mm.id_terca != 1763)
-            {
-                var pc = Conexoes.DBases.GetBancoRM().GetRME(p.id_terca);
-                if (pc != null)
-                {
-                    p.SetTerca(mm.id_terca);
-                }
-            }
+            p.SetTerca(mm.id_terca);
+            p.SetCorrente(mm.id_corrente);
+            p.SetTirante(mm.id_tirante);
 
             if (mm.acao == "perfil")
             {
@@ -701,7 +696,7 @@ namespace Ferramentas_DLM
         [CommandMethod("testeeixos")]
         public static void testeeixos()
         {
-            ClasseBase p = new ClasseBase();
+            CADPurlin p = new CADPurlin();
             p.SelecionarObjetos();
             var eixos = p.GetEixos();
         }

@@ -161,12 +161,14 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClassesBase\ObjetoMultiline.cs" />
-    <Compile Include="ClassesBase\VaoObra.cs" />
+    <Compile Include="ClassesInput\ObjetoPurlin.cs" />
+    <Compile Include="ClassesInput\GradeEixos.cs" />
+    <Compile Include="ClassesInput\VaoObra.cs" />
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />
     <Compile Include="Funcoes\Linha.cs" />
     <Compile Include="Funcoes\Multiline.cs" />
-    <Compile Include="Input\Eixo.cs" />
+    <Compile Include="ClassesInput\Eixo.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

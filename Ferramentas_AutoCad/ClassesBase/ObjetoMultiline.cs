@@ -1,13 +1,10 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using System.Collections.Generic;
 
 namespace Ferramentas_DLM
 {
     public class ObjetoMultiline
     {
-        public double TranspasseInicial { get; set; } = 0;
-        public double TranspasseFinal { get; set; } = 0;
         public Tipo_Multiline Tipo { get; private set; } = Tipo_Multiline.Desconhecido;
         public double Largura { get; private set; } = 0;
         public bool Mapeado { get; set; } = false;
@@ -15,8 +12,8 @@ namespace Ferramentas_DLM
         {
             return "p0: " + Inicio + " / p1: " + Fim + " comprimento: " + comprimento + " angulo: " + angulo;
         }
-        public Mline mline { get; set; }
-        public double comprimento { get; set; } = 0;
+        public Mline mline { get; private set; }
+        public double comprimento { get; private set; } = 0;
         public Coordenada Inicio { get; private set; }
         public Coordenada Fim { get; private set; }
         public Coordenada centro { get; private set; }
@@ -67,64 +64,6 @@ namespace Ferramentas_DLM
             this.Inicio = new Coordenada(p0);
             this.Fim = new Coordenada(p1);
             this.Largura = largura;
-        }
-    }
-
-    public class PontoPurlin
-    {
-
-        public string PurlinPadrao
-        {
-            get
-            {
-                if (this.GetPecaPurlin() != null)
-                {
-                    return this.GetPecaPurlin().PERFIL;
-                }
-
-                return "???";
-            }
-        }
-
-        private Conexoes.RME _pecaRME { get; set; }
-        public Conexoes.RME GetPecaPurlin()
-        {
-            if (_pecaRME == null)
-            {
-                _pecaRME = Conexoes.DBases.GetBancoRM().GetRME(this.id_terca);
-            }
-            return _pecaRME;
-        }
-
-        public void SetPurlin(int id)
-        {
-            this.id_terca = id;
-            this._pecaRME = null;
-        }
-        public VaoObra Vao { get; set; }
-        public List<double> Correntes { get; set; } = new List<double>();
-        public List<double> FurosManuais { get; set; } = new List<double>();
-        public int id_terca { get; set; } = 0;
-        public double TRE { get; set; } = 0;
-        public double TRD { get; set; } = 0;
-        public int Numero { get; set; } = 0;
-
-        public double Comprimento
-        {
-            get
-            {
-                return this.TRE + this.TRD + this.Vao.Vao;
-            }
-        }
-        public Point3d CentroBloco { get; set; }
-        public ObjetoMultiline Multiline { get; set; }
-        public PontoPurlin(ObjetoMultiline multiline, Point3d origem, int numero, VaoObra vao)
-        {
-            this.Multiline = multiline;
-            this.CentroBloco = origem;
-            this.Numero = numero;
-            this.Vao = vao;
-            this.id_terca = vao.id_terca;
         }
     }
 }

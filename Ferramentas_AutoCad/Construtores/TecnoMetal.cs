@@ -676,7 +676,7 @@ namespace Ferramentas_DLM
                                 pecas.AddRange(blcs);
                                 /*
                                  *             Hashtable att = new Hashtable();
-                                    att.Add("Nº", this.numero.Text);
+                                    att.Add("N", this.numero.Text);
                                     att.Add("FAMILIA", this.familia.Text);
                                     att.Add("TIPO", this.peca_selecionar.Content);
                                     att.Add("COMP", comp.ToString().Replace(",",""));

@@ -15,10 +15,13 @@ namespace Ferramentas_DLM
         public TercasMenu()
         {
             InitializeComponent();
+            //Conexoes.DBases.GetBancoRM().GetTercas();
             this.Text = $"xPurlin V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
         }
         public string acao { get; set; } = "";
         public int id_terca { get; set; } = 1763;
+        public int id_corrente { get; set; } = 27;
+        public int id_tirante { get; set; } = 1407;
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -107,7 +110,7 @@ namespace Ferramentas_DLM
 
         private void button9_Click(object sender, EventArgs e)
         {
-            var s = Utilidades.SelecionarPurlin();
+            var s = Utilidades.SelecionarPurlin(null);
             if (s!=null)
             {
                 this.id_terca = s.id_db;
@@ -162,6 +165,26 @@ namespace Ferramentas_DLM
         {
             acao = "gerarcroqui";
             this.Close();
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            var s = Utilidades.SelecionarCorrente();
+            if (s != null)
+            {
+                this.id_corrente = s.id_db;
+                this.corrente.Text = s.COD_DB;
+            }
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            var s = Utilidades.SelecionarTirante();
+            if (s != null)
+            {
+                this.id_tirante = s.id_db;
+                this.tirante.Text = s.COD_DB;
+            }
         }
     }
 }

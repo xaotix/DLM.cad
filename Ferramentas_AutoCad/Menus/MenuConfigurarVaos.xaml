@@ -5,31 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Ferramentas_DLM.Menus"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" WindowStartupLocation="CenterScreen" Topmost="True">
+        FontSize="10"
+            Width="850" Height="550" WindowStartupLocation="CenterScreen" Topmost="True">
     <Window.Resources>
         <Style TargetType="{x:Type RadioButton}">
-            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Margin" Value="1"/>
         </Style>
-        <Style TargetType="{x:Type DataGridRowHeader}">
-            <Setter Property="MinWidth" Value="35"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
-                        <Border Margin="0" BorderThickness="1,0,1,1">
-                            <Image Width="16" Height="16" Source="{Binding Imagem}" ToolTip="{Binding}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="DarkGray"/>
-        </Style>
+
         <Style TargetType="{x:Type GroupBox}">
             <Setter Property="BorderBrush" Value="DarkGray"/>
-            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Margin" Value="1"/>
         </Style>
         <Style TargetType="{x:Type TextBox}">
-            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Margin" Value="1"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="DarkGray"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -52,93 +40,77 @@
             </Style.Triggers>
         </Style>
         <Style TargetType="{x:Type Expander}">
-            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Margin" Value="1"/>
             <Setter Property="Background">
                 <Setter.Value>
-                    <SolidColorBrush Color="LightBlue" Opacity="0.2"/>
+                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
                 </Setter.Value>
 
             </Setter>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="DarkGray"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
 
         </Style>
         <Style TargetType="{x:Type Button}">
-            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Margin" Value="1"/>
             <Setter Property="Background">
                 <Setter.Value>
-                    <SolidColorBrush Color="LightBlue" Opacity="0.2"/>
+                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
                 </Setter.Value>
             </Setter>
-            <Setter Property="BorderBrush" Value="DarkGray"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="2"/>
         </Style>
         <Style TargetType="{x:Type ComboBox}">
-            <Setter Property="Margin" Value="2"/>
-            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="Background">
                 <Setter.Value>
-                    <SolidColorBrush Color="LightBlue" Opacity="0.2"/>
+                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
                 </Setter.Value>
             </Setter>
         </Style>
         <Style TargetType="{x:Type Label}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Margin" Value="1"/>
         </Style>
-        <Style TargetType="{x:Type Border}">
-            <Setter Property="BorderBrush" Value="DarkGray"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
+
         <Style TargetType="{x:Type Separator}">
-            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
         <Style TargetType="{x:Type DataGrid}">
-            <Setter Property="AlternatingRowBackground">
+            <!--<Setter Property="AlternatingRowBackground">
                 <Setter.Value>
-                    <SolidColorBrush Color="LightBlue" Opacity="0.2"/>
+                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
                 </Setter.Value>
-            </Setter>
+            </Setter>-->
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="VerticalGridLinesBrush" Value="LightGray"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
+            <Setter Property="VerticalGridLinesBrush" Value="Transparent"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
         </Style>
         <Style TargetType="{x:Type Button}" x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}">
             <Setter Property="Background">
                 <Setter.Value>
-                    <SolidColorBrush Color="LightBlue" Opacity="0.2"/>
+                    <SolidColorBrush Color="Transparent"/>
                 </Setter.Value>
             </Setter>
+            <Setter Property="Margin" Value="1"/>
             <Setter Property="BorderBrush" Value="LightGray"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
-        <Style TargetType="{x:Type DataGridColumnHeader}">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Background">
-                <Setter.Value>
-                    <SolidColorBrush Color="LightBlue" Opacity="0.5"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="BorderBrush" Value="LightGray"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="0"/>
 
-        </Style>
         <Style TargetType="{x:Type DataGridCell}">
 
-            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Margin" Value="0"/>
-            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Padding" Value="1"/>
             <Setter Property="Foreground" Value="Black"/>
 
 
@@ -146,7 +118,7 @@
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background">
                         <Setter.Value>
-                            <SolidColorBrush Color="Black" Opacity="0.2"/>
+                            <SolidColorBrush Color="Transparent" Opacity="0.2"/>
                         </Setter.Value>
                     </Setter>
                     <Setter Property="Foreground" Value="Black"/>
@@ -160,126 +132,167 @@
             <Setter Property="Margin" Value="2"/>
         </Style>
         <Style TargetType="{x:Type DataGridRow}">
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="Margin" Value="-1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="1"/>
-            <Setter Property="MinHeight" Value="20"/>
+            <Setter Property="Padding" Value="0"/>
         </Style>
     </Window.Resources>
-    <TabControl>
-        <TabItem Header="Vãos">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="35"/>
-                </Grid.RowDefinitions>
-                <DataGrid x:Name="ListaVaos"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="35"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer HorizontalScrollBarVisibility="Visible">
+            <StackPanel Margin="15" Width="3000">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="55"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DataGrid x:Name="ListaHeader"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   IsReadOnly="True"
                   CanUserDeleteRows="False"
-                          HeadersVisibility="None"
-                  >
-                    <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="LayoutTransform">
-                                <Setter.Value>
-                                    <TransformGroup>
-                                        <RotateTransform Angle="90"/>
-                                    </TransformGroup>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </DataGrid.ColumnHeaderStyle>
-                    <DataGrid.LayoutTransform>
-                        <TransformGroup>
-                            <RotateTransform Angle="-90"/>
-                        </TransformGroup>
-                    </DataGrid.LayoutTransform>
-                    <DataGrid.Columns>
+                          HeadersVisibility="None">
+                        <DataGrid.LayoutTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="-90"/>
+                            </TransformGroup>
+                        </DataGrid.LayoutTransform>
+                        <DataGrid.Columns>
 
-                        <DataGridTemplateColumn Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.LayoutTransform>
-                                            <TransformGroup>
-                                                <RotateTransform Angle="90"/>
-                                            </TransformGroup>
-                                        </Grid.LayoutTransform>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                       <Label Content="{Binding Esquerda.Nome}" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                                        <Grid Grid.Column="1">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="auto"></RowDefinition>
-                                                <RowDefinition Height="auto"></RowDefinition>
-                                                <RowDefinition Height="auto"></RowDefinition>
-                                                <RowDefinition Height="*"></RowDefinition>
-                                            </Grid.RowDefinitions>
-                                            <Label Content="{Binding Vao}" HorizontalAlignment="Center"/>
+                            <DataGridTemplateColumn>
 
-                                            <GroupBox Header="Editar vão" Grid.Row="1">
-                                                <Grid Grid.Row="1">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="75"></ColumnDefinition>
-                                                        <ColumnDefinition Width="*"></ColumnDefinition>
-                                                        <ColumnDefinition Width="75"></ColumnDefinition>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Button Grid.Column="0" Content="{Binding Esquerda.Transpasse}" BorderThickness="0" ToolTip="Editar..." Click="set_tre" />
-                                                    <Button Grid.Column="1" Content="{Binding PurlinPadrao}" BorderThickness="0" ToolTip="Editar..." Click="set_purlin" />
-                                                    <Button Grid.Column="2" Content="{Binding Direita.Transpasse}" BorderThickness="0" ToolTip="Editar..."  Click="set_trd" />
-                                                </Grid>
-                                            </GroupBox>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid Width="200" Height="50">
+                                            <Grid.LayoutTransform>
+                                                <TransformGroup>
+                                                    <RotateTransform Angle="90"/>
+                                                </TransformGroup>
+                                            </Grid.LayoutTransform>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
 
+                                            <Button   Content="{Binding Vao}" BorderThickness="0" ToolTip="Editar Purlins do vão..." Click="set_purlin" Grid.Row="0" Grid.Column="1" />
 
-                                            <GroupBox Header="Editar Purlins" Grid.Row="10">
-                                                <DataGrid ItemsSource="{Binding Purlins}" Grid.Row="10" AutoGenerateColumns="False" HeadersVisibility="None">
-                                                    <DataGrid.Columns>
-                                                        <DataGridTemplateColumn Width="*">
-                                                            <DataGridTemplateColumn.CellTemplate>
-                                                                <DataTemplate>
-                                                                    <Grid>
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition Width="75"></ColumnDefinition>
-                                                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                                                            <ColumnDefinition Width="75"></ColumnDefinition>
-                                                                        </Grid.ColumnDefinitions>
-                                                                        <Button Grid.Column="0" Content="{Binding TRE}" BorderThickness="0" ToolTip="Editar..."  Click="set_tre" />
-                                                                        <Button Grid.Column="1" Content="{Binding PurlinPadrao}" BorderThickness="0" ToolTip="Editar..."  Click="set_purlin" />
-                                                                        <Button Grid.Column="2" Content="{Binding TRD}" BorderThickness="0" ToolTip="Editar..."  Click="set_trd" />
-                                                                    </Grid>
-                                                                </DataTemplate>
-                                                            </DataGridTemplateColumn.CellTemplate>
-                                                        </DataGridTemplateColumn>
-                                                    </DataGrid.Columns>
-                                                </DataGrid>
-                                            </GroupBox>
+                                            <Border Width="50"  Grid.Column="0" Background="Black" BorderBrush="Magenta" BorderThickness="1" CornerRadius="25" Visibility="{Binding LE_Visivel}" >
+                                                <Label FontSize="15" Foreground="Cyan" Content="{Binding Esquerda.Nome}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            </Border>
+
+                                            <Border Width="50"  Grid.Column="2" Background="Black" BorderBrush="Magenta" BorderThickness="1" CornerRadius="25" Visibility="{Binding LD_Visivel}">
+                                                <Label FontSize="15" Foreground="Cyan" Content="{Binding Direita.Nome}" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            </Border>
                                         </Grid>
-                                        <Label Content="{Binding Direita.Nome}" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-           
-                              
-                                    </Grid>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
 
-                    </DataGrid.Columns>
-                </DataGrid>
-                <WrapPanel Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1">
-                    <Button FontSize="15" Margin="2" Content="Cancelar" Click="Button_Click"></Button>
-                    <Button FontSize="15" Margin="2" Content="_Inserir"  Click="Button_Click_1"></Button>
-                </WrapPanel>
-            </Grid>
-        </TabItem>
-        <TabItem Header="Teste">
-            <ScrollViewer HorizontalScrollBarVisibility="Visible">
-            <Grid x:Name="grid_principal"></Grid>
-            </ScrollViewer>
-        </TabItem>
-    </TabControl>
+
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid
+                        Margin="22.5,5,0,0"
+                        Grid.Row="1"
+                        x:Name="ListaVaos"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  CanUserDeleteRows="False"
+                          HeadersVisibility="None">
+                        <DataGrid.LayoutTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="-90"/>
+                            </TransformGroup>
+                        </DataGrid.LayoutTransform>
+                        <DataGrid.Columns>
+
+                            <DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+
+                                        <Border BorderBrush="Magenta" BorderThickness="1,0,1,0">
+                                            <Border.LayoutTransform>
+                                                <TransformGroup>
+                                                    <RotateTransform Angle="90"/>
+                                                </TransformGroup>
+                                            </Border.LayoutTransform>
+                                            <DataGrid
+                                              
+                                                HorizontalAlignment="Center"  Grid.ColumnSpan="3" ItemsSource="{Binding PurlinsDummy}" Grid.Row="10" AutoGenerateColumns="False" HeadersVisibility="None">
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Grid  Width="200">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="auto"/>
+                                                                        <RowDefinition Height="auto"/>
+                                                                    </Grid.RowDefinitions>
+                                                                <Border IsEnabled="{Binding Considerar}" BorderBrush="Black" >
+                                                                        <Grid >
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="auto"/>
+                                                                            <RowDefinition Height="auto"/>
+                                                                            <RowDefinition Height="150"/>
+                                                                        </Grid.RowDefinitions>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="45"/>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                            <ColumnDefinition Width="45"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                            <Button Background="{Binding Cor}" Foreground="Black"  Content="{Binding TRE}" ToolTip="Editar Transpasse..." Click="set_tre"   Grid.Row="0" Grid.Column="0"  Margin="-2,0,-2,0" />
+                                                                            <Button Background="{Binding Cor}" Foreground="Black"   Content="{Binding PurlinPadrao}" ToolTip="Editar..."  Click="set_purlin" Grid.Column="1" BorderThickness="1" BorderBrush="Black" Margin="0" />
+                                                                            <Button Background="{Binding Cor}" Foreground="Black" Content="{Binding TRD}" ToolTip="Editar Transpasse..." Click="set_trd" Grid.Row="0" Grid.Column="2" Margin="-2,0,-2,0" />
+                                                                        <Grid Grid.Row="1" Grid.Column="1">
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="35"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                                <ColumnDefinition Width="35"/>
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <TextBox Grid.Row="1" Text="{Binding FBE}"  MaxLength="4"  />
+                                                                            <Label VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" Content="FB"></Label>
+                                                                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding FBD}" MaxLength="4"/>
+                                                                        </Grid>
+                                                                            <Label  HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding DistBaixo}" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
+                                                                                <Label.LayoutTransform>
+                                                                                    <TransformGroup>
+                                                                                        <RotateTransform Angle="-90"/>
+                                                                                    </TransformGroup>
+                                                                                </Label.LayoutTransform>
+                                                                            </Label>
+                                                                            
+                                                                        </Grid>
+                                                                </Border>
+                                                                   
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+
+                                        </Border>
+
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+        <WrapPanel Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1">
+            <Button FontSize="15" Margin="2" Content="Cancelar" Click="Button_Click"></Button>
+            <Button FontSize="15" Margin="2" Content="_Inserir"  Click="Button_Click_1"></Button>
+        </WrapPanel>
+    </Grid>
 </Window>

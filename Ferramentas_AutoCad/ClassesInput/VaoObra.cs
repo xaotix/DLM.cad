@@ -5,38 +5,81 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Ferramentas_DLM
 {
     public class VaoObra
     {
+        private List<ObjetoPurlin> _purlins = new List<ObjetoPurlin>();
+        private List<ObjetoPurlin> _purlinsDummy = new List<ObjetoPurlin>();
+
+        public Visibility LE_Visivel
+        {
+            get
+            {
+                return Visibility.Visible;
+            }
+        }
+        public Visibility LD_Visivel
+        {
+            get
+            {
+                if (this.Tipo == Tipo_Vao.Borda_Direito)
+                {
+                    return Visibility.Visible;
+                }
+                return Visibility.Collapsed;
+            }
+        }
+        public Tipo_Vao Tipo { get; private set; } = Tipo_Vao.Intermediario;
+        public override string ToString()
+        {
+            return $"[{this.Esquerda.Nome}] - {this.Vao } - [{this.Direita.Nome}]";
+        }
+        public CADPurlin CADPurlin { get; set; }
         [Category("Purlin")]
         [DisplayName("id")]
         [ReadOnly(true)]
         public int id_terca { get; set; } = 1763;
 
-        public List<ObjetoMultiline> GetMLPurlins(CADPurlin cADPurlin)
+
+        public List<ObjetoPurlin> GetPurlins()
         {
-            return Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, cADPurlin.GetMultLinePurlins());
-        }
-        public List<ObjetoMultiline> GetMLCorrentes(CADPurlin cADPurlin)
-        {
-            return Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, cADPurlin.GetMultLinesCorrentes(),true,true);
+            return _purlins;
         }
 
-        public List<PontoPurlin> Purlins { get; set; } = new List<PontoPurlin>();
-        public int CalcularPurlins(CADPurlin CADPurlin, ref int c)
+        private void SetPurlins(List<ObjetoPurlin> value)
         {
+            _purlins = IndexarLista(value);
+        }
+        public List<ObjetoPurlin> PurlinsDummy
+        {
+            get
+            {
+                return _purlinsDummy;
+            }
+        }
+
+        public void SetPurlinsDummy(List<ObjetoPurlin> value)
+        {
+            _purlinsDummy = IndexarLista(value);
+        }
+
+        public int MapearPurlins()
+        {
+            int c = 1;
             double ToleranciaPasse = 2;
             var CentroX = this.CentroX;
 
-            this.Purlins.Clear();
+            this._purlins.Clear();
 
             if (Vao >= CADPurlin.VaoMinimo && Vao <= CADPurlin.VaoMaximo)
             {
 
-                var purlins = GetMLPurlins(CADPurlin);
-                var correntes = GetMLCorrentes(CADPurlin);
+                var purlins = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetMultLinePurlins());
+                var correntes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetMultLinesCorrentes(), true);
+
                 CADPurlin.AddMensagem("\n" + correntes.Count + " correntes encontradas");
                 CADPurlin.AddMensagem("\n" + purlins.Count + " correntes encontradas");
 
@@ -46,8 +89,8 @@ namespace Ferramentas_DLM
                 {
                     CADPurlin.AddBarra();
                     CADPurlin.AddMensagem("\nMapeando Purlin...");
-                    double TRE = Esquerda.Transpasse;
-                    double TRD = Direita.Transpasse;
+                    double TRE = CADPurlin.TranspassePadrao;
+                    double TRD = CADPurlin.TranspassePadrao;
                     Point3d p_esq = purlin.Inicio.GetPoint();
                     Point3d p_dir = purlin.Fim.GetPoint();
 
@@ -155,30 +198,24 @@ namespace Ferramentas_DLM
                         if (comp > CADPurlin.PurlinBalancoMax)
                         {
 
-                            PontoPurlin pp = new PontoPurlin(purlin, origembloco, c,this);
-                            pp.Correntes.AddRange(cre);
+                            ObjetoPurlin pp = new ObjetoPurlin(purlin, origembloco, c, this);
+                            pp.FurosCorrentes.AddRange(cre);
                             pp.FurosManuais.AddRange(furos_m_esq);
                             pp.TRE = TRE;
                             pp.TRD = TRD;
                             c++;
 
-                            this.Purlins.Add(pp);
-                            //c = AddBlocoPurlin(c, id_terca, Vao, Esquerda.Transpasse, Direita.Transpasse, origembloco, cre, new List<double>(), furos_m_esq, new List<double>());
+                            this._purlins.Add(pp);
                         }
                     }
 
                     purlin.Mapeado = true;
                 }
 
-                if(this.Purlins.Count>0)
-                {
-                    var TREs = this.Purlins.Select(x => x.TRE).Distinct().ToList();
-                    var TRDs = this.Purlins.Select(x => x.TRD).Distinct().ToList();
-                    this.Esquerda.Transpasse = TREs.Max();
-                    this.Direita.Transpasse = TRDs.Max();
-                }
 
-               
+
+                this.SetPurlins(IndexarLista(_purlins));
+
             }
 
             CADPurlin.AddBarra();
@@ -186,34 +223,103 @@ namespace Ferramentas_DLM
             return c;
         }
 
-        public string PurlinPadrao
+        private List<ObjetoPurlin> IndexarLista(List<ObjetoPurlin> pts)
         {
-            get
+            var Retorno = pts.OrderByDescending(x => x.Y).ToList();
+
+            for (int i = 0; i < Retorno.Count; i++)
             {
-                if(this.GetPecaPurlin()!=null)
+                if (i < Retorno.Count - 1)
                 {
-                    return this.GetPecaPurlin().PERFIL;
+                    Retorno[i].PurlinEmBaixo = Retorno[i + 1];
                 }
 
-                return "???";
+                if (i > 0)
+                {
+                    Retorno[i].PurlinEmCima = Retorno[i - 1];
+                }
             }
+
+            return Retorno;
         }
 
-        private Conexoes.RME _pecaRME { get; set; }
-        public Conexoes.RME GetPecaPurlin()
+
+        private List<ObjetoTirante> _tirantes { get; set; }
+        public List<ObjetoTirante> GetTirantes(bool update = false)
         {
-            if (_pecaRME == null)
+           
+            if(_tirantes==null| update)
             {
-                _pecaRME = Conexoes.DBases.GetBancoRM().GetRME(this.id_terca);
+                int c = 1;
+                _tirantes = new List<ObjetoTirante>();
+
+                var tirantes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetLinhasTirantes(), true,300);
+
+                foreach (var ml in tirantes)
+                {
+
+                    ObjetoTirante pp = new ObjetoTirante(ml, c, this);
+                    c++;
+                }
             }
-            return _pecaRME;
+
+
+
+            return _tirantes;
         }
 
-        public void SetPurlin(int id)
+        private List<ObjetoCorrente> _correntes { get; set; }
+        public List<ObjetoCorrente> GetCorrentes()
         {
-            this.id_terca = id;
-            this._pecaRME = null;
+            if(_correntes==null)
+            {
+                int c = 1;
+                _correntes = new List<ObjetoCorrente>();
+                var correntes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetMultLinesCorrentes(), true);
+                var purlins = this.GetPurlins();
+                foreach (var cr in correntes)
+                {
+
+
+
+                    if (purlins.Count > 1)
+                    {
+                        for (int i = 1; i < purlins.Count; i++)
+                        {
+                            var pur1 = purlins[i - 1];
+                            var pur2 = purlins[i];
+                            double comp = Math.Abs(Math.Round(pur2.Multiline.centro.Y - pur1.Multiline.centro.Y));
+                            var centro = pur1.Multiline.centro.GetCentro(pur2.Multiline.centro);
+                            centro = new Coordenada(cr.minx, centro.Y, 0);
+                            if (comp >= this.CADPurlin.CorrenteCompMin)
+                            {
+
+                                ObjetoCorrente pp = new ObjetoCorrente(cr, centro.GetPoint(),c, this);
+                                pp.PurlinEmCima = pur1;
+                                pp.PurlinEmBaixo = pur2;
+                                c++;
+
+                                _correntes.Add(pp);
+
+                                //Conexoes.Macros.Corrente p = new Conexoes.Macros.Corrente();
+                                //p.Vao = comp;
+                                //p.Descontar = this.CADPurlin.CorrenteDescontar;
+                                //p.Objeto = cr;
+                                //p.SetFixacao(this.CADPurlin.CorrenteFixador);
+                                //var diagonal = this.CADPurlin.GetCorrentePadrao();
+                                //if (diagonal != null)
+                                //{
+                                //    p.SetDiagonal(diagonal);
+                                //}
+                            }
+                        }
+                    }
+                }
+            }
+            return _correntes;
         }
+
+
 
         [Browsable(false)]
         public Eixo Esquerda { get; private set; } = new Eixo();
@@ -235,10 +341,14 @@ namespace Ferramentas_DLM
                 return Esquerda.Xmin + (Vao / 2);
             }
         }
-        public VaoObra(Eixo esquerda, Eixo direita)
+        public VaoObra(Eixo esquerda, Eixo direita, CADPurlin cADPurlin, Tipo_Vao tipo)
         {
             this.Esquerda = esquerda;
             this.Direita = direita;
+            this.CADPurlin = cADPurlin;
+            this.Tipo = tipo;
+
+            MapearPurlins();
         }
     }
 }

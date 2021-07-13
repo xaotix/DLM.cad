@@ -510,36 +510,34 @@ namespace Ferramentas_DLM
 
 
 
-        public static List<ObjetoMultiline> MlinesPassando(Point3d de, Point3d ate, List<ObjetoMultiline> LS, bool somente_dentro = false, bool dentro_do_eixo = false)
+        public static List<ObjetoMultiline> MlinesPassando(Point3d de, Point3d ate, List<ObjetoMultiline> LS,  bool dentro_do_eixo = false, double tol_X = 0)
         {
             List<ObjetoMultiline> retorno = new List<ObjetoMultiline>();
+
+            Point3d nde = new Point3d(de.X - tol_X, de.Y, de.Z);
+            Point3d nate = new Point3d(ate.X + tol_X, ate.Y, ate.Z);
+
             foreach (var corrente in LS)
             {
                 Point3d p1 = corrente.Inicio.GetPoint();
+                
                 Point3d p2 = corrente.Fim.GetPoint();
 
 
-                if (!somente_dentro)
+                if (!dentro_do_eixo)
                 {
                     if (
-                                        (p1.X <= de.X && p2.X >= ate.X) //se passa
-                                     | (p1.X >= de.X && p2.X <= ate.X) //se os dois lados estão dentro
+                       (p1.X <= de.X && p2.X >= ate.X) //se passa
+                    | (p1.X >= de.X && p2.X <= ate.X) //se os dois lados estão dentro
 
-                                     | (p1.X >= de.X && p2.X >= ate.X && p1.X < ate.X) //se a esquerda está dentro
-                                     | (p1.X <= de.X && p2.X <= ate.X && p2.X > de.X) //se a direita está dentro
+                    | (p1.X >= de.X && p2.X >= ate.X && p1.X < ate.X) //se a esquerda está dentro
+                    | (p1.X <= de.X && p2.X <= ate.X && p2.X > de.X) //se a direita está dentro
                                         )
                     {
                         retorno.Add(corrente);
                     }
                 }
-                else if (somente_dentro && !dentro_do_eixo)
-                {
-                    if (p1.X >= de.X && p2.X <= ate.X) //se os dois lados estão dentro
-                    {
-                        retorno.Add(corrente);
-                    }
-                }
-                else if (somente_dentro && dentro_do_eixo)
+                else if (dentro_do_eixo)
                 {
                     if (p1.X > de.X && p2.X < ate.X) //se os dois lados estão somente dentro
                     {
@@ -1213,12 +1211,19 @@ namespace Ferramentas_DLM
 
 
 
-
+        public static string GetDescricao(RME pc)
+        {
+            if(pc!=null)
+            {
+                return Gettipo(pc) + Getsecao(pc) + " #" + pc.ESP.ToString("N2") +  (pc.GetMATERIAIS().FindAll(x=> x.Contains("ZINC")).Count>0?" ZINC":" 350");
+            }
+            return "";
+        }
         public static string Gettipo(RME pc)
         {
             if (pc != null)
             {
-                return pc.TIPO.Contains("Z") ? "Z" : "C";
+                return pc.PERFIL.Contains("PADRAOZ") ? "Z" : "C";
             }
             return "";
         }
@@ -1239,9 +1244,28 @@ namespace Ferramentas_DLM
             return "";
         }
 
-        public static RME SelecionarPurlin()
+        public static RME SelecionarPurlin(RME purlin)
         {
-            return Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTercas(), null, "Selecione");
+            List<RME> parecidas = new List<RME>();
+            if(purlin ==null)
+            {
+                parecidas = Conexoes.DBases.GetBancoRM().GetTercas();
+            }
+            else
+            {
+            parecidas = Conexoes.DBases.GetBancoRM().GetTercas().FindAll(x => Utilidades.Gettipo(x) == Utilidades.Gettipo(purlin) && Utilidades.Getsecao(x) == Utilidades.Getsecao(purlin));
+
+            }
+            return Conexoes.Utilz.SelecionarObjeto(parecidas, null, "Selecione");
+        }
+
+        public static RME SelecionarCorrente()
+        {
+            return Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetDLDs(), null, "Selecione");
+        }
+        public static RME SelecionarTirante()
+        {
+            return Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTirantes(), null, "Selecione");
         }
     }
 }

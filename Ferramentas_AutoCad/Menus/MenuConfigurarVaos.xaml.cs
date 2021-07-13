@@ -25,8 +25,7 @@ namespace Ferramentas_DLM.Menus
         {
             this.vaos = vaos;
             InitializeComponent();
-            this.ListaVaos.ItemsSource = this.vaos;
-
+            this.Update();
 
 
         }
@@ -52,25 +51,9 @@ namespace Ferramentas_DLM.Menus
         private void set_tre(object sender, RoutedEventArgs e)
         {
             var ss = ((FrameworkElement)sender).DataContext;
-            if(ss is VaoObra)
+            if (ss is ObjetoPurlin)
             {
-                VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
-                if (sel != null)
-                {
-                    bool status = false;
-                    var novovao = Conexoes.Utilz.Prompt(sel.Esquerda.Transpasse, out status);
-
-                    if (status)
-                    {
-                        sel.Esquerda.Transpasse = novovao;
-                        Update();
-                    }
-                    return;
-                }
-            }
-            else if(ss is PontoPurlin)
-            {
-                PontoPurlin sel = ((FrameworkElement)sender).DataContext as PontoPurlin;
+                ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
                     bool status = false;
@@ -79,42 +62,31 @@ namespace Ferramentas_DLM.Menus
                     if (status)
                     {
                         sel.TRE = novovao;
+
+                        sel.PurlinEsquerda.TRD = novovao;
                         Update();
                     }
                     return;
                 }
             }
-           
+
         }
 
         private void Update()
         {
             this.ListaVaos.ItemsSource = null;
+            this.ListaHeader.ItemsSource = null;
+
             this.ListaVaos.ItemsSource = this.vaos;
+            this.ListaHeader.ItemsSource = this.vaos;
         }
 
         private void set_trd(object sender, RoutedEventArgs e)
         {
             var ss = ((FrameworkElement)sender).DataContext;
-            if (ss is VaoObra)
+            if (ss is ObjetoPurlin)
             {
-                VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
-                if (sel != null)
-                {
-                    bool status = false;
-                    var novovao = Conexoes.Utilz.Prompt(sel.Direita.Transpasse, out status);
-
-                    if (status)
-                    {
-                        sel.Direita.Transpasse = novovao;
-                        Update();
-                    }
-                    return;
-                }
-            }
-            else if (ss is PontoPurlin)
-            {
-                PontoPurlin sel = ((FrameworkElement)sender).DataContext as PontoPurlin;
+                ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
                     bool status = false;
@@ -123,6 +95,7 @@ namespace Ferramentas_DLM.Menus
                     if (status)
                     {
                         sel.TRD = novovao;
+                        sel.PurlinDireita.TRE = novovao;
                         Update();
                     }
                     return;
@@ -139,23 +112,27 @@ namespace Ferramentas_DLM.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarPurlin();
+                    var purlin = Utilidades.SelecionarPurlin(sel.CADPurlin.GetPecaPurlin());
                     if (purlin != null)
                     {
-                        sel.SetPurlin(purlin.id_db);
+                        foreach(var p in sel.GetPurlins())
+                        {
+                        p.SetPeca(purlin.id_db);
+
+                        }
                         Update();
                     }
                 }
             }
-            else if(ss is PontoPurlin)
+            else if(ss is ObjetoPurlin)
             {
-                PontoPurlin sel = ((FrameworkElement)sender).DataContext as PontoPurlin;
+                ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarPurlin();
+                    var purlin = Utilidades.SelecionarPurlin(sel.GetPeca());
                     if (purlin != null)
                     {
-                        sel.SetPurlin(purlin.id_db);
+                        sel.SetPeca(purlin.id_db);
                         Update();
                     }
                 }

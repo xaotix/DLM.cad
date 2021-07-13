@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace Ferramentas_DLM
 {
+    public enum Tipo_Vao
+    {
+        Intermediario,
+        Borda_Esquerdo,
+        Borda_Direito,
+    }
     public enum Sentido
     {
         Horizontal,
         Vertical,
     }
-    public enum TipoVista
+    public enum Tipo_Vista
     {
         Planta,
         Corte,
