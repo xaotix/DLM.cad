@@ -15,7 +15,7 @@ namespace Ferramentas_DLM
         public TercasMenu()
         {
             InitializeComponent();
-            //Conexoes.DBases.GetBancoRM().GetTercas();
+            Conexoes.DBases.GetBancoRM().GetTercas();
             this.Text = $"xPurlin V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
         }
         public string acao { get; set; } = "";

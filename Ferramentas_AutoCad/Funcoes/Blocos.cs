@@ -18,6 +18,21 @@ namespace Ferramentas_DLM
 {
     public static class Blocos
     {
+        public static void IndicacaoPeca(string Bloco, string CODIGO,string COMP,  Point3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME", string ID = "", string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
+        {
+            Hashtable att = new Hashtable();
+            att.Add("N", N);
+            att.Add("FAMILIA", FAMILIA);
+            att.Add("TIPO", TIPO);
+            att.Add("COMP", COMP);
+            att.Add("CODIGO", CODIGO);
+            att.Add("ID", ID);
+            att.Add("DESC", DESC);
+            att.Add("DESTINO", DESTINO);
+            att.Add("QTD", QTD);
+
+            Inserir(CAD.acDoc, Bloco, origem, escala, rotacao, att);
+        }
         public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1.05)
         {
             List<BlockReference> blks = new List<BlockReference>();

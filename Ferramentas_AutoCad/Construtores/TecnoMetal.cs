@@ -1880,7 +1880,47 @@ namespace Ferramentas_DLM
             erros.AddRange(marcas_elemento_unit.FindAll(x => !x.Marca.ToUpper().EndsWith("_A")).Select(x => new Conexoes.Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", Conexoes.TipoReport.Crítico)));
             erros.AddRange(posicoes_elem_unit.FindAll(x => !x.Posicao.ToUpper().EndsWith("_A")).Select(x => new Conexoes.Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", Conexoes.TipoReport.Crítico)));
 
-                  
+
+            erros.AddRange(marcas.GroupBy(x => x.Marca).ToList().FindAll(x => x.Count() > 1).Select(x => new Conexoes.Report("Mesma marca em pranchas diferentes.", $"Marca: {x.Key} nas pranchas: {string.Join("\n", x.Select(y => y.Prancha))}", Conexoes.TipoReport.Crítico)));
+            erros.AddRange(marcas.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Marca.Replace("-","").Replace("_","")) | x.Marca.Contains(" ")).Select(x => x.Marca).Distinct().ToList().Select(x => new Conexoes.Report("Nome de marca com caracteres inválidos.", $"Marca: {x}", Conexoes.TipoReport.Crítico)));
+            erros.AddRange(posicoes.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Posicao.Replace("-","").Replace("_","")) | x.Marca.Contains(" ") | x.Marca.Replace(" ","").Length==0).Select(x=>"M: " + x.Marca + "Pos: " + x.Posicao).Distinct().ToList().Select(x => new Conexoes.Report("Nome de posição com caracteres inválidos ou em branco.", $"{x}", Conexoes.TipoReport.Crítico)));
+
+
+            var ppos = posicoes.GroupBy(x => x.Posicao);
+
+            foreach (var p in ppos)
+            {
+                var pos1 = p.ToList();
+                var pos_perfis = pos1.GroupBy(x => x.Perfil).ToList();
+                var pos_larguras = pos1.GroupBy(x => x.Largura).ToList();
+                var pos_materiais = pos1.GroupBy(x => x.Material).ToList();
+                var pos_sap = pos1.GroupBy(x => x.SAP).ToList();
+
+                if (pos_perfis.Count > 1)
+                {
+                    erros.AddRange(pos_perfis.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Perfil: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                }
+
+                if (pos_larguras.Count > 1)
+                {
+                    erros.AddRange(pos_larguras.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Largura: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                }
+
+                if (pos_materiais.Count > 1)
+                {
+                    erros.AddRange(pos_materiais.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Material: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                }
+
+
+                if (pos_sap.Count > 1)
+                {
+                    erros.AddRange(pos_sap.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> SAP: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                }
+            }
+        
+            erros.AddRange(posicoes.FindAll(x => x.Posicao.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Conexoes.Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", Conexoes.TipoReport.Crítico)));
+            erros.AddRange(marcas.FindAll(x => x.Marca.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Conexoes.Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", Conexoes.TipoReport.Crítico)));
+
 
             w.somaProgresso();
             if(atualizar_cams)

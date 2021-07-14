@@ -41,9 +41,15 @@
             this.mapeia_correntes = new System.Windows.Forms.CheckBox();
             this.mapeia_tirantes = new System.Windows.Forms.CheckBox();
             this.mapeia_furos_manuais = new System.Windows.Forms.CheckBox();
+            this.button18 = new System.Windows.Forms.Button();
+            this.button17 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.furos_manuais_layer = new System.Windows.Forms.ComboBox();
+            this.tirante = new System.Windows.Forms.Label();
+            this.corrente = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.ficha_de_pintura = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.terca = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -70,12 +76,6 @@
             this.button6 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.label4 = new System.Windows.Forms.Label();
-            this.corrente = new System.Windows.Forms.Label();
-            this.button17 = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tirante = new System.Windows.Forms.Label();
-            this.button18 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ofsset_apoio)).BeginInit();
@@ -260,6 +260,28 @@
             this.mapeia_furos_manuais.Text = "Mapear furações manuais. Layer:";
             this.mapeia_furos_manuais.UseVisualStyleBackColor = true;
             // 
+            // button18
+            // 
+            this.button18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button18.Location = new System.Drawing.Point(457, 173);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(33, 23);
+            this.button18.TabIndex = 6;
+            this.button18.Text = "...";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.button18_Click);
+            // 
+            // button17
+            // 
+            this.button17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button17.Location = new System.Drawing.Point(457, 144);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(33, 23);
+            this.button17.TabIndex = 6;
+            this.button17.Text = "...";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
+            // 
             // button9
             // 
             this.button9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -281,6 +303,33 @@
             this.furos_manuais_layer.Name = "furos_manuais_layer";
             this.furos_manuais_layer.Size = new System.Drawing.Size(280, 21);
             this.furos_manuais_layer.TabIndex = 5;
+            // 
+            // tirante
+            // 
+            this.tirante.AutoSize = true;
+            this.tirante.Location = new System.Drawing.Point(141, 178);
+            this.tirante.Name = "tirante";
+            this.tirante.Size = new System.Drawing.Size(53, 13);
+            this.tirante.TabIndex = 4;
+            this.tirante.Text = "03TR$C$";
+            // 
+            // corrente
+            // 
+            this.corrente.AutoSize = true;
+            this.corrente.Location = new System.Drawing.Point(141, 149);
+            this.corrente.Name = "corrente";
+            this.corrente.Size = new System.Drawing.Size(55, 13);
+            this.corrente.TabIndex = 4;
+            this.corrente.Text = "DLDA$C$";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(18, 178);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Tirante Padrão:";
             // 
             // ficha_de_pintura
             // 
@@ -304,6 +353,15 @@
             this.ficha_de_pintura.Name = "ficha_de_pintura";
             this.ficha_de_pintura.Size = new System.Drawing.Size(346, 21);
             this.ficha_de_pintura.TabIndex = 5;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(18, 149);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(87, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Corrente Padrão:";
             // 
             // terca
             // 
@@ -617,7 +675,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(474, 449);
+            this.tabPage4.Size = new System.Drawing.Size(498, 524);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Opções Avançadas";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -631,64 +689,6 @@
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(460, 437);
             this.propertyGrid1.TabIndex = 0;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(18, 149);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(87, 13);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Corrente Padrão:";
-            // 
-            // corrente
-            // 
-            this.corrente.AutoSize = true;
-            this.corrente.Location = new System.Drawing.Point(141, 149);
-            this.corrente.Name = "corrente";
-            this.corrente.Size = new System.Drawing.Size(55, 13);
-            this.corrente.TabIndex = 4;
-            this.corrente.Text = "DLDA$C$";
-            // 
-            // button17
-            // 
-            this.button17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button17.Location = new System.Drawing.Point(457, 144);
-            this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(33, 23);
-            this.button17.TabIndex = 6;
-            this.button17.Text = "...";
-            this.button17.UseVisualStyleBackColor = true;
-            this.button17.Click += new System.EventHandler(this.button17_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(18, 178);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Tirante Padrão:";
-            // 
-            // tirante
-            // 
-            this.tirante.AutoSize = true;
-            this.tirante.Location = new System.Drawing.Point(141, 178);
-            this.tirante.Name = "tirante";
-            this.tirante.Size = new System.Drawing.Size(53, 13);
-            this.tirante.TabIndex = 4;
-            this.tirante.Text = "03TR$C$";
-            // 
-            // button18
-            // 
-            this.button18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button18.Location = new System.Drawing.Point(457, 173);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(33, 23);
-            this.button18.TabIndex = 6;
-            this.button18.Text = "...";
-            this.button18.UseVisualStyleBackColor = true;
-            this.button18.Click += new System.EventHandler(this.button18_Click);
             // 
             // TercasMenu
             // 

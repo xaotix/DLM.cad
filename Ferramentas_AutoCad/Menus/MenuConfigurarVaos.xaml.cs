@@ -112,12 +112,12 @@ namespace Ferramentas_DLM.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarPurlin(sel.CADPurlin.GetPecaPurlin());
+                    var purlin = Utilidades.SelecionarPurlin(sel.CADPurlin.GetPurlinPadrao());
                     if (purlin != null)
                     {
                         foreach(var p in sel.GetPurlins())
                         {
-                        p.SetPeca(purlin.id_db);
+                        p.SetPeca(purlin);
 
                         }
                         Update();
@@ -132,7 +132,7 @@ namespace Ferramentas_DLM.Menus
                     var purlin = Utilidades.SelecionarPurlin(sel.GetPeca());
                     if (purlin != null)
                     {
-                        sel.SetPeca(purlin.id_db);
+                        sel.SetPeca(purlin);
                         Update();
                     }
                 }
@@ -150,6 +150,150 @@ namespace Ferramentas_DLM.Menus
         {
             this.confirmado = true;
             this.Close();
+        }
+
+        private void set_corrente(object sender, RoutedEventArgs e)
+        {
+            var ss = ((FrameworkElement)sender).DataContext;
+
+            if (ss is VaoObra)
+            {
+                VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
+                if (sel != null)
+                {
+                    var purlin = Utilidades.SelecionarCorrente();
+                    if (purlin != null)
+                    {
+                        foreach (var p in sel.GetCorrentes())
+                        {
+                            p.SetPeca(purlin);
+
+                        }
+                        Update();
+                    }
+                }
+            }
+            else if (ss is ObjetoCorrente)
+            {
+                ObjetoCorrente sel = ((FrameworkElement)sender).DataContext as ObjetoCorrente;
+                if (sel != null)
+                {
+                    var purlin = Utilidades.SelecionarCorrente();
+                    if (purlin != null)
+                    {
+                        sel.SetPeca(purlin);
+                        Update();
+                    }
+                }
+            }
+        }
+
+        private void set_tirante(object sender, RoutedEventArgs e)
+        {
+            var ss = ((FrameworkElement)sender).DataContext;
+
+            if (ss is VaoObra)
+            {
+                VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
+                if (sel != null)
+                {
+                    var purlin = Utilidades.SelecionarTirante();
+                    if (purlin != null)
+                    {
+                        foreach (var p in sel.GetTirantes())
+                        {
+                            p.SetPeca(purlin);
+
+                        }
+                        Update();
+                    }
+                }
+            }
+            else if (ss is ObjetoTirante)
+            {
+                ObjetoTirante sel = ((FrameworkElement)sender).DataContext as ObjetoTirante;
+                if (sel != null)
+                {
+                    var purlin = Utilidades.SelecionarTirante();
+                    if (purlin != null)
+                    {
+                        sel.SetPeca(purlin);
+                        Update();
+                    }
+                }
+            }
+        }
+
+        private void set_fbd(object sender, RoutedEventArgs e)
+        {
+            var ss = ((FrameworkElement)sender).DataContext;
+
+            if (ss is VaoObra)
+            {
+                VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
+                if (sel != null)
+                {
+                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace",8);
+                    if (purlin != null)
+                    {
+                        foreach (var p in sel.GetPurlins())
+                        {
+                            p.FBD = purlin;
+
+                        }
+                        Update();
+                    }
+                }
+            }
+            else if (ss is ObjetoPurlin)
+            {
+                ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
+                if (sel != null)
+                {
+                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace", 8);
+                    if (purlin != null)
+                    {
+                        sel.FBD = purlin;
+                        Update();
+                    }
+                }
+            }
+        }
+
+        private void set_fbe(object sender, RoutedEventArgs e)
+        {
+            var ss = ((FrameworkElement)sender).DataContext;
+
+            if (ss is VaoObra)
+            {
+                VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
+                if (sel != null)
+                {
+                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace", 8);
+                    if (purlin != null)
+                    {
+                        foreach (var p in sel.GetPurlins())
+                        {
+                            p.FBE = purlin;
+
+                        }
+                        Update();
+                    }
+                }
+            }
+            else if (ss is ObjetoPurlin)
+            {
+                ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
+                if (sel != null)
+                {
+                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace", 8);
+                    if (purlin != null)
+                    {
+                        sel.FBE = purlin;
+                        Update();
+                    }
+                }
+            }
         }
     }
 }

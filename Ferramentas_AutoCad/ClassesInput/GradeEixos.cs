@@ -72,6 +72,8 @@ namespace Ferramentas_DLM
                     v.SetPurlinsDummy(pts);
                 }
 
+
+                /*vincula as purlins procurando pontos nos vãos ao lado com a mesma coordenada Y*/
                 for (int i = 0; i < _vaos_verticais.Count; i++)
                 {
                     for (int a = 0; a < _vaos_verticais[i].PurlinsDummy.Count; a++)
@@ -89,13 +91,14 @@ namespace Ferramentas_DLM
                         }
                     }
                 }
-
+                /*mapeia os tirantes e as correntes*/
                 for (int i = 0; i < _vaos_verticais.Count; i++)
                 {
                     _vaos_verticais[i].GetTirantes();
                     _vaos_verticais[i].GetCorrentes();
                 }
 
+    
 
             }
 

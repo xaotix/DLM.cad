@@ -313,6 +313,8 @@ namespace Ferramentas_DLM
 
         public static string Bloco_3D_Montagem_Tecnometal { get; set; } = "3D_INFOM";
         public static string Bloco_3D_Montagem_Info { get; set; } = "3D_INFOTEXT";
+        public static string Bloco_PECA_INDICACAO_DIR { get; set; } = "PECA_INDICACAO_DIR";
+        public static string Bloco_PECA_INDICACAO_ESQ { get; set; } = "PECA_INDICACAO_ESQ";
 
         /// <summary>
         /// Subconjunto<br/>

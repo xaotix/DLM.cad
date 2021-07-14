@@ -163,6 +163,18 @@ namespace Ferramentas_DLM
             this._tirante_padrao = null;
         }
 
+        public void LimparBlocos()
+        {
+            var sel = SelecionarObjetos();
+            if (sel.Status == PromptStatus.OK)
+            {
+                List<BlockReference> apagar = new List<BlockReference>();
+                apagar.AddRange(this.Getblocos_correntes());
+                apagar.AddRange(this.Getblocos_tercas());
+                apagar.AddRange(this.Getblocos_tirantes());
+                Apagar(apagar.Select(x=> x as Entity).ToList());
+            }
+        }
         public void Mapear()
         {
             var sel = SelecionarObjetos();
@@ -233,7 +245,7 @@ namespace Ferramentas_DLM
                         {
                             //adiciona as purlins pequenas fora do vão.
                             //essa parte precisa emplementar melhor para mapear furos manuais e correntes.
-                            c = AddBlocoPurlin(c, this.id_terca, Math.Round(s.comprimento), 0, 0, s.centro.GetPoint(), new List<double>(), new List<double>());
+                            AddBlocoPurlin("", this.id_terca, Math.Round(s.comprimento), 0, 0, s.centro.GetPoint(), new List<double>(), new List<double>());
                         }
                     }
 
@@ -578,7 +590,16 @@ namespace Ferramentas_DLM
                 {
                     if (p.Comprimento > this.PurlinBalancoMax)
                     {
-                        AddBlocoPurlin(p.Numero, p.id_peca, vao.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
+                        AddBlocoPurlin(p.Letra, p.id_peca, vao.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
+                        if(p.FBD.Length>0)
+                        {
+                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_ESQ, p.FBD, "", p.Origem_Direita,"FLANGE BRACE",this.Getescala());
+                        }
+
+                        if (p.FBE.Length > 0)
+                        {
+                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_DIR, p.FBE, "", p.Origem_Esquerda, "FLANGE BRACE", this.Getescala());
+                        }
                     }
                 }
             }
@@ -587,7 +608,7 @@ namespace Ferramentas_DLM
             {
                 foreach (var p in vao.GetCorrentes())
                 {
-                    AddBlocoCorrente(p.Numero, p.CentroBloco, p.EntrePurlin, p.Descontar, p.GetPeca().COD_DB, p.Suporte);
+                    AddBlocoCorrente(p.Letra, p.CentroBloco, p.EntrePurlin, p.Descontar, p.GetPeca().COD_DB, p.Suporte);
                 }
             }
 
@@ -595,7 +616,7 @@ namespace Ferramentas_DLM
             {
                 foreach (var p in vao.GetTirantes())
                 {
-                    AddBlocoTirante(p.Numero, p.CentroBloco, Math.Round(p.Multiline.comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
+                    AddBlocoTirante(p.Letra, p.CentroBloco, Math.Round(p.Multiline.comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
                 }
             }
 
@@ -630,7 +651,7 @@ namespace Ferramentas_DLM
 
             return ht;
         }
-        public int AddBlocoPurlin(int c, int id_purlin, double VAO, double TRE, double TRD, Point3d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
+        public void AddBlocoPurlin(string c, int id_purlin, double VAO, double TRE, double TRD, Point3d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
         {
             Conexoes.RME pc = Conexoes.DBases.GetBancoRM().GetRME(id_purlin);
             //AddMensagem("Origem: " + centro + "\n");
@@ -638,7 +659,7 @@ namespace Ferramentas_DLM
 
             AddMensagem("\n" + Correntes_Esq.Count + " correntes esquerdas");
 
-            ht.Add("N", Conexoes.Utilz.getLetra(c));
+            ht.Add("N", c);
             ht.Add("CRD", "");
             ht.Add("CRE", string.Join(";", Correntes_Esq));
             ht.Add("AD", this.OffsetApoio.ToString());
@@ -661,23 +682,18 @@ namespace Ferramentas_DLM
             ht.Add("ESP", Utilidades.Getespessura(pc));
 
             //quando a purlin está deslocada.
-
-
             double comp_sem_transpasse = VAO + (TRE < 0 ? TRE : 0) + (TRD < 0 ? TRD : 0);
             //verifica se a purlin é maior que 150
             if (comp_sem_transpasse > 150)
             {
                 Blocos.Inserir(CAD.acDoc, Constantes.Incicacao_Tercas, origembloco, this.Getescala(), 0, ht);
-                c++;
             }
-
-            return c;
         }
-        public int AddBlocoTirante(int c,  Point3d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
+        public void AddBlocoTirante(string letra,  Point3d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
         {
             //AddMensagem("Origem: " + centro + "\n");
             Hashtable ht = new Hashtable();
-            ht.Add("N", Conexoes.Utilz.getLetra(c));
+            ht.Add("N", letra);
 
             ht.Add("COMP", Comp.ToString());
             ht.Add("OFFSET1", offset1.ToString());
@@ -688,29 +704,18 @@ namespace Ferramentas_DLM
             ht.Add("SFTB", sftb.ToString());
 
             Blocos.Inserir(CAD.acDoc, Constantes.Indicacao_Tirantes, origembloco, this.Getescala(), 0, ht);
-            c++;
-
-            return c;
         }
-
-
-
-        public int AddBlocoCorrente(int c, Point3d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
+        public void AddBlocoCorrente(string c, Point3d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
         {
             //AddMensagem("Origem: " + centro + "\n");
             Hashtable ht = new Hashtable();
-            ht.Add("N", Conexoes.Utilz.getLetra(c));
+            ht.Add("N", c);
             ht.Add("TIP", tip);
             ht.Add("DESC", desc.ToString());
             ht.Add("COMP", Comp.ToString());
             ht.Add("FIX", fix);
 
-
-
             Blocos.Inserir(CAD.acDoc, Constantes.Indicacao_Correntes, origembloco, this.Getescala(), 0, ht);
-            c++;
-
-            return c;
         }
         public List<Entity> LinhasFuros()
         {
@@ -802,7 +807,7 @@ namespace Ferramentas_DLM
 
             if(comprimento> this.PurlinCompMin)
             {
-                AddBlocoPurlin(0,this.id_terca, comprimento, 0, 0, p.GetCentro(pt2).GetPoint(), new List<double>(), new List<double>());
+                AddBlocoPurlin("",this.id_terca, comprimento, 0, 0, p.GetCentro(pt2).GetPoint(), new List<double>(), new List<double>());
             }
             else
             {
@@ -1405,14 +1410,7 @@ namespace Ferramentas_DLM
 
 
 
-        public Conexoes.RME GetPecaPurlin()
-        {
-            if (_purlin_padrao == null)
-            {
-                _purlin_padrao = Conexoes.DBases.GetBancoRM().GetRME(this.id_terca);
-            }
-            return _purlin_padrao;
-        }
+
         public void SetPurlin(int id)
         {
             this.id_terca = id;

@@ -292,6 +292,16 @@ namespace Ferramentas_DLM
             P.Mapear();
 
         }
+
+
+        [CommandMethod("limparpurlin")]
+        public static void limparpurlin()
+        {
+            CADPurlin p = new CADPurlin();
+            p.LimparBlocos();
+
+        }
+
         [CommandMethod("boneco")]
         public static void boneco()
         {

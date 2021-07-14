@@ -11,8 +11,8 @@ namespace Ferramentas_DLM
 {
     public class VaoObra
     {
-        private List<ObjetoPurlin> _purlins = new List<ObjetoPurlin>();
-        private List<ObjetoPurlin> _purlinsDummy = new List<ObjetoPurlin>();
+        private List<ObjetoPurlin> _purlins { get; set; } = new List<ObjetoPurlin>();
+        private List<ObjetoPurlin> _purlinsDummy { get; set; } = new List<ObjetoPurlin>();
 
         public Visibility LE_Visivel
         {
@@ -38,11 +38,6 @@ namespace Ferramentas_DLM
             return $"[{this.Esquerda.Nome}] - {this.Vao } - [{this.Direita.Nome}]";
         }
         public CADPurlin CADPurlin { get; set; }
-        [Category("Purlin")]
-        [DisplayName("id")]
-        [ReadOnly(true)]
-        public int id_terca { get; set; } = 1763;
-
 
         public List<ObjetoPurlin> GetPurlins()
         {
@@ -198,7 +193,7 @@ namespace Ferramentas_DLM
                         if (comp > CADPurlin.PurlinBalancoMax)
                         {
 
-                            ObjetoPurlin pp = new ObjetoPurlin(purlin, origembloco, c, this);
+                            ObjetoPurlin pp = new ObjetoPurlin(purlin, origembloco, this);
                             pp.FurosCorrentes.AddRange(cre);
                             pp.FurosManuais.AddRange(furos_m_esq);
                             pp.TRE = TRE;
@@ -259,6 +254,7 @@ namespace Ferramentas_DLM
                 {
 
                     ObjetoTirante pp = new ObjetoTirante(ml, c, this);
+                    _tirantes.Add(pp);
                     c++;
                 }
             }
@@ -294,8 +290,9 @@ namespace Ferramentas_DLM
                             if (comp >= this.CADPurlin.CorrenteCompMin)
                             {
 
-                                ObjetoCorrente pp = new ObjetoCorrente(cr, centro.GetPoint(),c, this);
+                                ObjetoCorrente pp = new ObjetoCorrente(cr, centro.GetPoint(),this);
                                 pp.PurlinEmCima = pur1;
+                                pur1.Correntes.Add(pp);
                                 pp.PurlinEmBaixo = pur2;
                                 c++;
 
@@ -349,6 +346,9 @@ namespace Ferramentas_DLM
             this.Tipo = tipo;
 
             MapearPurlins();
+
+            GetCorrentes();
+            GetTirantes();
         }
     }
 }

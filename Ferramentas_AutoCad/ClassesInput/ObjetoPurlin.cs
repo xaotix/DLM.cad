@@ -8,33 +8,13 @@ namespace Ferramentas_DLM
 {
     public class ObjetoPurlin : ObjetoBase
     {
+        public Point3d Origem_Esquerda { get; private set; } = new Point3d();
+        public Point3d Origem_Direita { get; private set; } = new Point3d();
+        public List<ObjetoCorrente> Correntes { get; set; } = new List<ObjetoCorrente>();
 
-        public List<ObjetoCorrente> Correntes
-        {
-            get
-            {
-                return this.Vao.GetCorrentes().FindAll(x => PurlinEmCima == this);
-            }
-        }
-        public SolidColorBrush Cor
-        {
-            get
-            {
-                if (this.GetPeca() != null)
-                {
-                    var o = this.GetPeca().GetCorEsp();
-                    o = o.Clone();
-                    o.Opacity = .5;
-                    return o;
-                }
 
-                SolidColorBrush pp = new SolidColorBrush(System.Windows.Media.Colors.Transparent);
-                return pp;
-            }
-        }
-
-        public double FBE { get; set; } = 0;
-        public double FBD { get; set; } = 0;
+        public string FBE { get; set; } = "";
+        public string FBD { get; set; } = "";
         public double TRE { get; set; } = 0;
         public double TRD { get; set; } = 0;
         public List<double> FurosCorrentes { get; set; } = new List<double>();
@@ -101,13 +81,15 @@ namespace Ferramentas_DLM
             }
         }
 
-        public ObjetoPurlin(ObjetoMultiline multiline, Point3d origem, int numero, VaoObra vao)
+        public ObjetoPurlin(ObjetoMultiline multiline, Point3d origem,VaoObra vao)
         {
             this.Multiline = multiline;
             this.CentroBloco = origem;
-            this.Numero = numero;
             this.Vao = vao;
-            this.id_peca = vao.id_terca;
+            this.SetPeca(vao.CADPurlin.GetPurlinPadrao());
+
+            this.Origem_Direita = new Point3d(this.Vao.Direita.Origem.X, this.CentroBloco.Y, 0);
+            this.Origem_Esquerda = new Point3d(this.Vao.Esquerda.Origem.X, this.CentroBloco.Y, 0);
         }
 
         public ObjetoPurlin(Point3d origem, VaoObra vao)
@@ -169,15 +151,17 @@ namespace Ferramentas_DLM
             }
         }
 
-        public ObjetoCorrente(ObjetoMultiline multiline, Point3d centro, int numero, VaoObra vao)
+        public ObjetoCorrente(ObjetoMultiline multiline, Point3d centro,  VaoObra vao)
         {
             this.Multiline = multiline;
             this.CentroBloco = centro;
-            this.Numero = numero;
+
             this.Vao = vao;
             this.Descontar = vao.CADPurlin.CorrenteDescontar;
             this.id_peca = vao.CADPurlin.id_corrente;
             this.Suporte = vao.CADPurlin.CorrenteSuporte;
+
+            this.SetPeca(vao.CADPurlin.GetCorrentePadrao());
         }
     }
 
@@ -223,11 +207,44 @@ namespace Ferramentas_DLM
             this.Offset = vao.CADPurlin.TirantesOffSet;
 
             this.Suporte = vao.CADPurlin.TirantesSuporte;
+            this.SetPeca(vao.CADPurlin.GetTirantePadrao());
         }
     }
 
+    
     public class ObjetoBase
     {
+        private string _Letra { get; set; } = "";
+
+        public string Letra
+        {
+            get
+            {
+                if(this._Letra.Length>0)
+                {
+                    return _Letra;
+                }
+                return Conexoes.Utilz.getLetra(this.id);
+            }
+        }
+        public SolidColorBrush Cor
+        {
+            get
+            {
+                if (this.GetPeca() != null)
+                {
+                    var o = this.GetPeca().GetCorEsp();
+                    o = o.Clone();
+                    o.Opacity = .5;
+                    return o;
+                }
+
+                SolidColorBrush pp = new SolidColorBrush(System.Windows.Media.Colors.Transparent);
+                return pp;
+            }
+        }
+        public static int id_cont { get; set; } = 1;
+        public int id { get; private set; } = 0;
         public double Y
         {
             get
@@ -249,10 +266,10 @@ namespace Ferramentas_DLM
             }
             return _pecaRME;
         }
-        public void SetPeca(int id)
+        public void SetPeca(Conexoes.RME rm)
         {
-            this.id_peca = id;
-            this._pecaRME = null;
+            this.id_peca = rm.id_db;
+            this._pecaRME = rm;
         }
         public int id_peca { get; internal set; } = -1;
         public Visibility visivel
@@ -273,12 +290,13 @@ namespace Ferramentas_DLM
         public VaoObra Vao { get; set; }
         public ObjetoPurlin PurlinEmBaixo { get; internal set; }
         public ObjetoPurlin PurlinEmCima { get; internal set; }
-        public int Numero { get; set; } = 0;
-        public ObjetoBase(ObjetoMultiline multiline, Point3d origem, int numero, VaoObra vao)
+        //public int Numero { get; set; } = 0;
+        public ObjetoBase(ObjetoMultiline multiline, Point3d origem, VaoObra vao)
         {
             this.Multiline = multiline;
             this.CentroBloco = origem;
-            this.Numero = numero;
+            this.Vao = vao;
+
         }
         public ObjetoBase(Point3d origem, VaoObra vao)
         {
@@ -289,7 +307,8 @@ namespace Ferramentas_DLM
 
         public ObjetoBase()
         {
-
+            this.id = ObjetoBase.id_cont;
+            ObjetoBase.id_cont++;
         }
 
 
