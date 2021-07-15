@@ -7,6 +7,7 @@ namespace Ferramentas_DLM
 
     public class PCQuantificar
     {
+        public int id { get; set; } = 0;
         public List<PCQuantificar> Filhos_Ignorar { get; set; } = new List<PCQuantificar>();
         public string Nome_Bloco { get; set; } = "";
         public bool isbloco
@@ -108,7 +109,15 @@ namespace Ferramentas_DLM
             {
                 this.Comprimento = Conexoes.Utilz.Double(s);
             }
-        } 
+        }
+        public void SetIdPorAtributo(string tag)
+        {
+            var s = this.Atributos.Get(tag).ToString();
+            if (s != "")
+            {
+                this.id = Conexoes.Utilz.Int(s);
+            }
+        }
         public void SetPerfilPorAtributo(string tag)
         {
             var s = this.Atributos.Get(tag).ToString();

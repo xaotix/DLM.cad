@@ -1,10 +1,21 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Ferramentas_DLM
 {
     public class ObjetoMultiline
     {
+        public System.Windows.Shapes.Line GetCanvas(System.Windows.Point p0, double escala, double espessura, SolidColorBrush cor)
+        {
+            var p1 = new System.Windows.Point((this.Inicio.X - p0.X) * escala, (this.Inicio.Y - p0.Y) * escala);
+            var p2 = new System.Windows.Point((this.Fim.X - p0.X) * escala, (this.Fim.Y - p0.Y) * escala);
+            var l = Conexoes.FuncoesCanvas.Linha(p1, p2, cor, 0, Conexoes.FuncoesCanvas.TipoLinha.Continua, espessura);
+
+            return l;
+        }
         public Tipo_Multiline Tipo { get; private set; } = Tipo_Multiline.Desconhecido;
         public double Largura { get; private set; } = 0;
         public bool Mapeado { get; set; } = false;

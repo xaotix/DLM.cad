@@ -18,7 +18,7 @@ namespace Ferramentas_DLM
 {
     public static class Blocos
     {
-        public static void IndicacaoPeca(string Bloco, string CODIGO,string COMP,  Point3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME", string ID = "", string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
+        public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
         {
             Hashtable att = new Hashtable();
             att.Add("N", N);

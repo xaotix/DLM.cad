@@ -275,7 +275,7 @@ namespace Ferramentas_DLM
                     {
                         Hashtable hp = new Hashtable();
                         hp.Add("MARCA", p.Nome);
-                        if (p.Nome_Bloco.StartsWith("PECA_INDICACAO"))
+                        if (p.Nome_Bloco.StartsWith(Constantes.PC_Quantificar) && !p.Nome_Bloco.Contains("TEXTO"))
                         {
                             Point3d pcentro = new Point3d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152), p1.Z);
                             Hashtable bl = new Hashtable();

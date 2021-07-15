@@ -1,7 +1,9 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace Ferramentas_DLM
 {
@@ -124,6 +126,113 @@ namespace Ferramentas_DLM
             var neixo = new Eixo(Sentido, bloco, line, Vao);
             _eixos.Add(neixo);
         }
+
+
+        public List<UIElement> GetCanvasVertical(System.Windows.Controls.Canvas canvas)
+        {
+            canvas.Children.Clear();
+            List<UIElement> retorno = new List<UIElement>();
+            double escala = 1;
+            double tam_texto = 10;
+
+            double raio = tam_texto*2;
+            double esc_y = 750 / (Altura + (2*raio));
+            double esc_x = 1500 / Largura;
+
+            escala = esc_x> esc_y?esc_x:esc_y;
+
+            double espessura = 1;
+
+            double offset = 10/escala;
+
+
+            
+
+            Point p0 = new Point(Xmin + offset, Ymin + offset);
+
+            var eixos = GetEixosVerticais();
+            if(eixos.Count>1)
+            {
+                
+                retorno.AddRange(this.GetEixosVerticais().SelectMany(x => x.GetCanvas(p0, escala, espessura,raio,tam_texto*1.5)));
+                retorno.AddRange(this.CADPurlin.GetMultLinesCorrentes().Select(x => x.GetCanvas(p0, escala, espessura, Conexoes.FuncoesCanvas.Cores.Green)));
+                retorno.AddRange(this.CADPurlin.GetMultLinesTirantes().Select(x => x.GetCanvas(p0, escala, espessura, Conexoes.FuncoesCanvas.Cores.White)));
+                retorno.AddRange(this.CADPurlin.GetMultLinePurlins().Select(x => x.GetCanvas(p0, escala, espessura, Conexoes.FuncoesCanvas.Cores.Yellow)));
+            }
+
+
+            retorno.AddRange(this.GetVaosVerticais().SelectMany(x => x.GetCanvas(p0,escala,tam_texto)));
+
+            foreach(var c in retorno)
+            {
+                canvas.Children.Add(c);
+            }
+
+
+            canvas.Width = Math.Round(this.Largura * escala) + offset;
+            canvas.Height = Math.Round(this.Altura * escala) + offset;
+
+            return retorno;
+        }
+       public double Largura
+        {
+            get
+            {
+                return Math.Round(Math.Abs(XMax - Xmin));
+            }
+        }
+        public double Altura
+        {
+            get
+            {
+                return Math.Round(Math.Abs(Ymax - Ymin));
+            }
+        }
+        public double Xmin
+        {
+            get
+            {
+                if(this._eixos.Count>0)
+                {
+                    return this._eixos.Min(x => x.Xmin);
+                }
+                return 0;
+            }
+        }
+        public double Ymin
+        {
+            get
+            {
+                if (this._eixos.Count > 0)
+                {
+                    return this._eixos.Min(x => x.Ymin);
+                }
+                return 0;
+            }
+        }
+        public double Ymax
+        {
+            get
+            {
+                if (this._eixos.Count > 0)
+                {
+                    return this._eixos.Max(x => x.Ymax);
+                }
+                return 0;
+            }
+        }
+        public double XMax
+        {
+            get
+            {
+                if (this._eixos.Count > 0)
+                {
+                    return this._eixos.Max(x => x.Xmax);
+                }
+                return 0;
+            }
+        }
+
 
         public CADPurlin CADPurlin { get; private set; }
         public GradeEixos(CADPurlin cADPurlin)

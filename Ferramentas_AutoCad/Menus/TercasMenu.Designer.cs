@@ -299,9 +299,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.furos_manuais_layer.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.furos_manuais_layer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.furos_manuais_layer.Location = new System.Drawing.Point(198, 239);
+            this.furos_manuais_layer.Location = new System.Drawing.Point(219, 239);
             this.furos_manuais_layer.Name = "furos_manuais_layer";
-            this.furos_manuais_layer.Size = new System.Drawing.Size(280, 21);
+            this.furos_manuais_layer.Size = new System.Drawing.Size(259, 21);
             this.furos_manuais_layer.TabIndex = 5;
             // 
             // tirante

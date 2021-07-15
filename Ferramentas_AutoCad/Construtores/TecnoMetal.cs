@@ -661,7 +661,7 @@ namespace Ferramentas_DLM
                             var att = Atributos.GetLinha(s.First());
 
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
-                            if (npc.Nome.StartsWith("PECA_INDICACAO"))
+                            if (npc.Nome.StartsWith(Constantes.PC_Quantificar))
                             {
                                 var blcs = npc.Agrupar(new List<string> { "CODIGO", "N" }, npc.Nome_Bloco);
                                 foreach (var bl in blcs)
@@ -670,6 +670,7 @@ namespace Ferramentas_DLM
                                     bl.SetNumeroPorAtributo("N");
                                     bl.SetDestinoPorAtributo("DESTINO");
                                     bl.SetQtdPorAtributo("QTD");
+                                    bl.SetIdPorAtributo("ID");
                                     bl.SetFamiliaPorAtributo("FAMILIA");
                                 }
 

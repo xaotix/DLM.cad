@@ -8,13 +8,77 @@ namespace Ferramentas_DLM
 {
     public class ObjetoPurlin : ObjetoBase
     {
+
         public Point3d Origem_Esquerda { get; private set; } = new Point3d();
         public Point3d Origem_Direita { get; private set; } = new Point3d();
         public List<ObjetoCorrente> Correntes { get; set; } = new List<ObjetoCorrente>();
 
 
-        public string FBE { get; set; } = "";
-        public string FBD { get; set; } = "";
+        public double FBE_Comp
+        {
+            get
+            {
+                return _FBE_Comp;
+            }
+            set
+            {
+                _FBE_Comp = value;
+
+                if(value>0)
+                {
+                    var pc = this.Vao.CADPurlin.GetFlangeBracePadrao();
+                    if(pc!=null)
+                    {
+                        Conexoes.RME cc = new Conexoes.RME(pc);
+                        cc.COMP = value;
+                        FBE = cc.CODIGOFIM;
+                    }
+                    else
+                    {
+                        FBE = "???";
+                    }
+                }
+                else
+                {
+                    FBE = "";
+                }
+            }
+        }
+        private double _FBE_Comp { get; set; } = 0;
+        public double FBD_Comp
+        {
+            get
+            {
+                return _FBD_Comp;
+            }
+            set
+            {
+                _FBD_Comp = value;
+
+                if (value > 0)
+                {
+                    var pc = this.Vao.CADPurlin.GetFlangeBracePadrao();
+                    if (pc != null)
+                    {
+                        Conexoes.RME cc = new Conexoes.RME(pc);
+                        cc.COMP = value;
+                        FBD = cc.CODIGOFIM;
+                    }
+                    else
+                    {
+                        FBD = "???";
+                    }
+                }
+                else
+                {
+                    FBD = "";
+                }
+            }
+        }
+        private double _FBD_Comp { get; set; } = 0;
+
+        public string FBE { get; private set; } = "";
+        public string FBD { get; private set; } = "";
         public double TRE { get; set; } = 0;
         public double TRD { get; set; } = 0;
         public List<double> FurosCorrentes { get; set; } = new List<double>();
@@ -87,6 +151,8 @@ namespace Ferramentas_DLM
             this.CentroBloco = origem;
             this.Vao = vao;
             this.SetPeca(vao.CADPurlin.GetPurlinPadrao());
+
+            this.SetLetra(this.PurlinPadrao);
 
             this.Origem_Direita = new Point3d(this.Vao.Direita.Origem.X, this.CentroBloco.Y, 0);
             this.Origem_Esquerda = new Point3d(this.Vao.Esquerda.Origem.X, this.CentroBloco.Y, 0);
@@ -161,7 +227,14 @@ namespace Ferramentas_DLM
             this.id_peca = vao.CADPurlin.id_corrente;
             this.Suporte = vao.CADPurlin.CorrenteSuporte;
 
+
+
             this.SetPeca(vao.CADPurlin.GetCorrentePadrao());
+
+            if(this.GetPeca()!=null)
+            {
+              
+            }
         }
     }
 
@@ -214,6 +287,64 @@ namespace Ferramentas_DLM
     
     public class ObjetoBase
     {
+        private System.Windows.Controls.Border txt { get; set; }
+        public List<UIElement> GetCanvas(Point p0, double escala, double tam_texto)
+        {
+            List<UIElement> retorno = new List<UIElement>();
+            var pt = new System.Windows.Point((this.CentroBloco.X - p0.X) * escala, (this.CentroBloco.Y - p0.Y) * escala);
+            txt = Conexoes.FuncoesCanvas.Texto(this.Letra, pt, this.Cor.Clone(), tam_texto);
+            txt.MouseMove += Txt_MouseMove;
+            txt.MouseLeave += Txt_MouseLeave;
+            txt.MouseRightButtonUp += Txt_MouseRightButtonUp;
+            txt.MouseLeftButtonUp += Txt_MouseLeftButtonUp;
+           
+            retorno.Add(txt);
+
+            return retorno;
+        }
+
+        private void Txt_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+           if(this is ObjetoCorrente)
+            {
+
+            }
+           else if(this is ObjetoPurlin)
+            {
+
+            }
+           else if(this is ObjetoTirante)
+            {
+
+            }
+        }
+
+        private void Txt_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Conexoes.Utilz.Propriedades(this);
+        }
+
+        private void Txt_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Normalizar();
+
+        }
+
+        private void Normalizar()
+        {
+            Conexoes.FuncoesCanvas.SetCor(txt, this.Cor, Conexoes.FuncoesCanvas.Cores.Black);
+        }
+
+        private void Txt_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Destacar();
+        }
+
+        private void Destacar()
+        {
+            Conexoes.FuncoesCanvas.SetCor(txt, Conexoes.FuncoesCanvas.Cores.Black, Conexoes.FuncoesCanvas.Cores.Yellow);
+        }
+
         private string _Letra { get; set; } = "";
 
         public string Letra
@@ -266,10 +397,17 @@ namespace Ferramentas_DLM
             }
             return _pecaRME;
         }
+
+        public void SetLetra(string Nome)
+        {
+            this._Letra = Nome;
+        }
         public void SetPeca(Conexoes.RME rm)
         {
             this.id_peca = rm.id_db;
+
             this._pecaRME = rm;
+
         }
         public int id_peca { get; internal set; } = -1;
         public Visibility visivel

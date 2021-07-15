@@ -11,6 +11,18 @@ namespace Ferramentas_DLM
 {
     public class VaoObra
     {
+        public List<UIElement> GetCanvas(Point p0, double escala, double tam_texto)
+        {
+            List<UIElement> retorno = new List<UIElement>();
+            var pt = new System.Windows.Point((this.CentroX - p0.X) * escala, (this.Ymax - p0.Y) * escala);
+            retorno.Add(Conexoes.FuncoesCanvas.Label(pt, this.Vao.ToString(), tam_texto));
+
+            retorno.AddRange(this.GetTirantes().SelectMany(x => x.GetCanvas(p0,escala,tam_texto)));
+            retorno.AddRange(this.GetCorrentes().SelectMany(x => x.GetCanvas(p0,escala,tam_texto)));
+            retorno.AddRange(this.GetPurlins().SelectMany(x => x.GetCanvas(p0,escala,tam_texto)));
+
+            return retorno;
+        }
         private List<ObjetoPurlin> _purlins { get; set; } = new List<ObjetoPurlin>();
         private List<ObjetoPurlin> _purlinsDummy { get; set; } = new List<ObjetoPurlin>();
 
@@ -248,13 +260,16 @@ namespace Ferramentas_DLM
                 int c = 1;
                 _tirantes = new List<ObjetoTirante>();
 
-                var tirantes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetLinhasTirantes(), true,300);
+                var tirantes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetMultLinesTirantes(), true,300);
 
                 foreach (var ml in tirantes)
                 {
 
                     ObjetoTirante pp = new ObjetoTirante(ml, c, this);
+                    if(pp.Comprimento>0)
+                    {
                     _tirantes.Add(pp);
+                    }
                     c++;
                 }
             }
@@ -336,6 +351,17 @@ namespace Ferramentas_DLM
             get
             {
                 return Esquerda.Xmin + (Vao / 2);
+            }
+        }
+        public double Ymax
+        {
+            get
+            {
+                if(Esquerda==null| Direita==null)
+                {
+                    return 0;
+                }
+                return Esquerda.Ymax > Direita.Ymax ? Esquerda.Ymax : Direita.Ymax;
             }
         }
         public VaoObra(Eixo esquerda, Eixo direita, CADPurlin cADPurlin, Tipo_Vao tipo)

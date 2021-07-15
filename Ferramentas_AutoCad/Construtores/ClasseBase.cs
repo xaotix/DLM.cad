@@ -880,7 +880,34 @@ namespace Ferramentas_DLM
             return this.Getblocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO"));
         }
 
+        public List<PCQuantificar> GetBlocosIndicacaoPecas()
+        {
+            List<PCQuantificar> pcs = new List<PCQuantificar>();
+            var blocos = this.Getblocos().FindAll(x => x.Name.ToUpper().StartsWith(Constantes.PC_Quantificar)).GroupBy(x => x.Name);
 
+
+            foreach(var s in blocos)
+            {
+                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
+                if (npc.Nome.StartsWith("PECA_INDICACAO"))
+                {
+                    var blcs = npc.Agrupar(new List<string> { "CODIGO", "N" }, npc.Nome_Bloco);
+                    foreach (var bl in blcs)
+                    {
+                        bl.SetDescPorAtributo("DESC");
+                        bl.SetNumeroPorAtributo("N");
+                        bl.SetDestinoPorAtributo("DESTINO");
+                        bl.SetQtdPorAtributo("QTD");
+                        bl.SetIdPorAtributo("ID");
+                        bl.SetFamiliaPorAtributo("FAMILIA");
+                    }
+                    pcs.AddRange(blcs);
+                }
+            }
+
+            return pcs;
+    
+        }
 
         #endregion
         public double Getescala()

@@ -146,6 +146,9 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
+        <TabControl>
+            <TabItem Header="Editar">
+                
         <ScrollViewer HorizontalScrollBarVisibility="Visible">
             <StackPanel Margin="15" Width="30000" Height="30000">
                 <Grid>
@@ -311,6 +314,20 @@
                 </Grid>
             </StackPanel>
         </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Canvas">
+                <ScrollViewer Background="Black" HorizontalScrollBarVisibility="Visible">
+                    <Grid Margin="50">
+                        <Canvas x:Name="prancha" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Canvas.LayoutTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="-1" CenterX=".5" CenterY=".5" />
+                            </Canvas.LayoutTransform>
+                        </Canvas>
+                    </Grid>
+                </ScrollViewer>
+               
+            </TabItem>
+        </TabControl>
         <WrapPanel Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1">
             <Button FontSize="15" Margin="2" Content="Cancelar" Click="Button_Click"></Button>
             <Button FontSize="15" Margin="2" Content="_Inserir"  Click="Button_Click_1"></Button>

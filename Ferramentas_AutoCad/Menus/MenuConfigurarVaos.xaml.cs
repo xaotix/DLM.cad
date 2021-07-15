@@ -20,10 +20,12 @@ namespace Ferramentas_DLM.Menus
     /// </summary>
     public partial class MenuConfigurarVaos : Window
     {
+        GradeEixos grade { get; set; }
         List<VaoObra> vaos { get; set; } = new List<VaoObra>();
-        public MenuConfigurarVaos(List<VaoObra> vaos)
+        public MenuConfigurarVaos(GradeEixos grade)
         {
-            this.vaos = vaos;
+            this.grade = grade;
+            this.vaos = grade.GetVaosVerticais();
             InitializeComponent();
             this.Update();
 
@@ -79,6 +81,9 @@ namespace Ferramentas_DLM.Menus
 
             this.ListaVaos.ItemsSource = this.vaos;
             this.ListaHeader.ItemsSource = this.vaos;
+
+            this.prancha.Children.Clear();
+            var pp = grade.GetCanvasVertical(this.prancha);
         }
 
         private void set_trd(object sender, RoutedEventArgs e)
@@ -233,12 +238,13 @@ namespace Ferramentas_DLM.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace",8);
-                    if (purlin != null)
+                    bool status = false;
+                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    if (status)
                     {
                         foreach (var p in sel.GetPurlins())
                         {
-                            p.FBD = purlin;
+                            p.FBD_Comp = purlin;
 
                         }
                         Update();
@@ -250,10 +256,11 @@ namespace Ferramentas_DLM.Menus
                 ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace", 8);
-                    if (purlin != null)
+                    bool status = false;
+                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    if (status)
                     {
-                        sel.FBD = purlin;
+                        sel.FBD_Comp = purlin;
                         Update();
                     }
                 }
@@ -269,12 +276,13 @@ namespace Ferramentas_DLM.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace", 8);
-                    if (purlin != null)
+                    bool status = false;
+                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    if (status)
                     {
                         foreach (var p in sel.GetPurlins())
                         {
-                            p.FBE = purlin;
+                            p.FBE_Comp = purlin;
 
                         }
                         Update();
@@ -286,10 +294,11 @@ namespace Ferramentas_DLM.Menus
                 ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    var purlin = Conexoes.Utilz.Prompt("Digite o nome da Flange Brace", 8);
-                    if (purlin != null)
+                    bool status = false;
+                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    if (status)
                     {
-                        sel.FBE = purlin;
+                        sel.FBE_Comp = purlin;
                         Update();
                     }
                 }

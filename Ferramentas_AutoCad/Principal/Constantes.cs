@@ -199,8 +199,8 @@ namespace Ferramentas_DLM
 
         public static string Texto { get; set; } = Raiz_Blocos_Listagem + @"TEXTO.dwg";
 
-        
 
+        public static string PC_Quantificar { get; set; } = "PECA_INDICACAO";
         public static string BL_M_Composta { get; set; } = "M8_COM";
         public static string BL_M_PERF { get; set; } = "M8_PRO";
         public static string BL_M_CH { get; set; } = "M8_LAM";
@@ -290,7 +290,7 @@ namespace Ferramentas_DLM
         }
 
 
-        public static string Bloco_Indicacao_Texto { get; set; } = Raiz_Blocos_Indicacao + "PECA_INDICACAO_TEXTO.dwg";
+        public static string Bloco_Indicacao_Texto { get; set; } = Raiz_Blocos_Indicacao + Constantes.PC_Quantificar + "_TEXTO.dwg";
 
         public static string Marca_Composta { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_Composta}.dwg";
         public static string Marca_Perfil { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_PERF}.dwg";
@@ -313,8 +313,8 @@ namespace Ferramentas_DLM
 
         public static string Bloco_3D_Montagem_Tecnometal { get; set; } = "3D_INFOM";
         public static string Bloco_3D_Montagem_Info { get; set; } = "3D_INFOTEXT";
-        public static string Bloco_PECA_INDICACAO_DIR { get; set; } = "PECA_INDICACAO_DIR";
-        public static string Bloco_PECA_INDICACAO_ESQ { get; set; } = "PECA_INDICACAO_ESQ";
+        public static string Bloco_PECA_INDICACAO_DIR { get; set; } = Constantes.PC_Quantificar + "_DIR";
+        public static string Bloco_PECA_INDICACAO_ESQ { get; set; } = Constantes.PC_Quantificar + "_ESQ";
 
         /// <summary>
         /// Subconjunto<br/>

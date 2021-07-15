@@ -76,7 +76,8 @@ namespace Ferramentas_DLM
         [DisplayName("Offset Apoio")]
         public double OffsetApoio { get; set; } = 0;
 
-
+        [Browsable(false)]
+        public int id_flange_brace { get; set; } = 953;
 
         [Browsable(false)]
         public int id_terca { get; set; } = 1763;
@@ -115,9 +116,13 @@ namespace Ferramentas_DLM
         [Category("Correntes")]
         [DisplayName("Mapear")]
         public bool MapearCorrentes { get; set; } = true;
+        [Category("Peças Montagem")]
+        [DisplayName("Mapear")]
+        public bool Mapear_Pecas_Montagem { get; set; } = true;
         [Category("Purlin")]
         [DisplayName("Mapear")]
         public bool MapearTercas { get; set; } = true;
+        private Conexoes.RME _fb_padrao { get; set; }
         private Conexoes.RME _purlin_padrao { get; set; }
         private Conexoes.RME _corrente_padrao { get; set; }
         private Conexoes.RME _tirante_padrao { get; set; }
@@ -130,6 +135,14 @@ namespace Ferramentas_DLM
                 _purlin_padrao = Conexoes.DBases.GetBancoRM().GetRME(this.id_terca);
             }
             return _purlin_padrao;
+        }
+        public Conexoes.RME GetFlangeBracePadrao()
+        {
+            if (_fb_padrao == null)
+            {
+                _fb_padrao = Conexoes.DBases.GetBancoRM().GetRME(this.id_flange_brace);
+            }
+            return _fb_padrao;
         }
         public Conexoes.RME GetCorrentePadrao()
         {
@@ -205,7 +218,7 @@ namespace Ferramentas_DLM
 
 
 
-                    Menus.MenuConfigurarVaos mm = new Menus.MenuConfigurarVaos(verticais);
+                    Menus.MenuConfigurarVaos mm = new Menus.MenuConfigurarVaos(eixos);
                     mm.ShowDialog();
 
                     if (!mm.confirmado)
@@ -263,7 +276,7 @@ namespace Ferramentas_DLM
                     AddMensagem("\n" + this._mlines_verticais.Count.ToString() + " Mlines Verticais");
                     AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
                     AddBarra();
-                    AddMensagem("\n" + this.GetLinhasTirantes().Count + " Tirantes");
+                    AddMensagem("\n" + this.GetMultLinesTirantes().Count + " Tirantes");
                     AddMensagem("\n" + this.GetMultLinePurlins().Count.ToString() + " Purlins");
                     AddMensagem("\n" + this.GetMultLinesCorrentes().Count.ToString() + " Correntes");
                     AddBarra();
@@ -342,7 +355,7 @@ namespace Ferramentas_DLM
         }
 
         private List<ObjetoMultiline> _tirantes { get; set; } = null;
-        public List<ObjetoMultiline> GetLinhasTirantes( bool reset = false)
+        public List<ObjetoMultiline> GetMultLinesTirantes( bool reset = false)
         {
            if(_tirantes==null | reset)
             {
@@ -583,6 +596,7 @@ namespace Ferramentas_DLM
 
         private void InserirBlocos(VaoObra vao)
         {
+            var fb = this.GetFlangeBracePadrao();
 
             if (MapearTercas)
             {
@@ -591,14 +605,14 @@ namespace Ferramentas_DLM
                     if (p.Comprimento > this.PurlinBalancoMax)
                     {
                         AddBlocoPurlin(p.Letra, p.id_peca, vao.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
-                        if(p.FBD.Length>0)
+                        if(p.FBD_Comp>0 && fb!=null)
                         {
-                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_ESQ, p.FBD, "", p.Origem_Direita,"FLANGE BRACE",this.Getescala());
+                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_ESQ, p.FBD, p.FBD_Comp, this.id_flange_brace, p.Origem_Direita,"FLANGE BRACE",this.Getescala());
                         }
 
-                        if (p.FBE.Length > 0)
+                        if (p.FBE_Comp > 0 && fb != null)
                         {
-                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_DIR, p.FBE, "", p.Origem_Esquerda, "FLANGE BRACE", this.Getescala());
+                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_DIR, p.FBE, p.FBE_Comp, this.id_flange_brace, p.Origem_Esquerda, "FLANGE BRACE", this.Getescala());
                         }
                     }
                 }
@@ -1043,6 +1057,8 @@ namespace Ferramentas_DLM
                             mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
                         }
 
+                        
+
                         if (MapearCorrentes)
                         {
                             var correntes = this.Getblocos_correntes().Select(x => GetCorrente(x));
@@ -1053,6 +1069,26 @@ namespace Ferramentas_DLM
                             }
                             mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
                         }
+
+
+                        if(Mapear_Pecas_Montagem)
+                        {
+                            var pcs = this.GetBlocosIndicacaoPecas();
+
+                            foreach(var pcc in pcs)
+                            {
+                                
+                              
+
+                            }
+
+
+                            if(pcs.Count>0)
+                            {
+                               p = Tabelas.Pecas(pcs, true, new Point3d(p.X + (86.77 * Getescala()), p.Y, p.Z));
+                            }
+                        }
+
 
                         mm.RM_Macros.AddRange(ss.Select(x => new Conexoes.RME_Macro(x)));
                         if (exportar)
