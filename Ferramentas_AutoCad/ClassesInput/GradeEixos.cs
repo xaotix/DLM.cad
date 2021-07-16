@@ -128,6 +128,18 @@ namespace Ferramentas_DLM
         }
 
 
+        public System.Windows.Shapes.Line GetLinha(Line Linha, System.Windows.Point p0, double escala, double espessura)
+        {
+            /*linha do eixo*/
+            var p1 = new Point((Linha.StartPoint.X - p0.X) * escala, (Linha.StartPoint.Y - p0.Y) * escala);
+            var p2 = new Point((Linha.EndPoint.X - p0.X) * escala, (Linha.EndPoint.Y - p0.Y) * escala);
+          var cor =  Conexoes.Utilz.ColorToBrush(System.Drawing.Color.FromArgb(Linha.Color.Red, Linha.Color.Green, Linha.Color.Blue));
+            cor.Opacity = 0.5;
+            var l = Conexoes.FuncoesCanvas.Linha(p1, p2, cor, 0, Conexoes.FuncoesCanvas.TipoLinha.Continua, espessura);
+
+
+            return l;
+        }
         public List<UIElement> GetCanvasVertical(System.Windows.Controls.Canvas canvas)
         {
             canvas.Children.Clear();
@@ -139,16 +151,28 @@ namespace Ferramentas_DLM
             double esc_y = 750 / (Altura + (2*raio));
             double esc_x = 1500 / Largura;
 
-            escala = esc_x> esc_y?esc_x:esc_y;
+            escala = esc_x > esc_y ? esc_x : esc_y;
+            //escala = esc_x;
 
             double espessura = 1;
 
             double offset = 10/escala;
 
 
+            var ls = this.CADPurlin.GetEixos_Linhas();
+            var lss = this.CADPurlin.Getlinhas().FindAll(x=> ls.Find(y=> y.Id == x.Id) == null);
+
+
+
             
 
             Point p0 = new Point(Xmin + offset, Ymin + offset);
+
+            //foreach (var l in lss)
+            //{
+            //    var ln = GetLinha(l, p0, escala, espessura);
+            //    retorno.Add(ln);
+            //}
 
             var eixos = GetEixosVerticais();
             if(eixos.Count>1)
@@ -169,8 +193,8 @@ namespace Ferramentas_DLM
             }
 
 
-            canvas.Width = Math.Round(this.Largura * escala) + offset;
-            canvas.Height = Math.Round(this.Altura * escala) + offset;
+            canvas.Width = Math.Round(this.Largura * escala) + (offset*2);
+            canvas.Height = Math.Round(this.Altura * escala) + (offset*2);
 
             return retorno;
         }

@@ -29,6 +29,7 @@ namespace Ferramentas_DLM.Menus
             InitializeComponent();
             this.Update();
 
+            
 
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
@@ -76,14 +77,8 @@ namespace Ferramentas_DLM.Menus
 
         private void Update()
         {
-            this.ListaVaos.ItemsSource = null;
-            this.ListaHeader.ItemsSource = null;
-
-            this.ListaVaos.ItemsSource = this.vaos;
-            this.ListaHeader.ItemsSource = this.vaos;
-
-            this.prancha.Children.Clear();
-            var pp = grade.GetCanvasVertical(this.prancha);
+            var pp = grade.GetCanvasVertical(this.pranchazoom.GetCanvas());
+           
         }
 
         private void set_trd(object sender, RoutedEventArgs e)

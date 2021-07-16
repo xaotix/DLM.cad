@@ -252,20 +252,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        public string Nome
-        {
-            get
-            {
-                string nome = "";
-                var pc = this.GetPeca();
-                if (pc != null)
-                {
-                    pc.COMP = this.Comprimento;
-                    nome = pc.CODIGOFIM;
-                }
-                return nome;
-            }
-        }
+
 
         public string Suporte { get; set; } = "";
         public double Offset { get; set; } = 0;
@@ -284,9 +271,92 @@ namespace Ferramentas_DLM
         }
     }
 
-    
+    public enum Tipo_ObjetoBase
+    {
+        Purlin,
+        Corrente,
+        Tirante,
+        Base,
+    }
     public class ObjetoBase
     {
+        public override string ToString()
+        {
+            return this.Nome;
+        }
+        public double Espessura
+        {
+            get
+            {
+                if(this._pecaRME!=null)
+                {
+                    return this._pecaRME.ESP;
+                }
+                return 0;
+            }
+        }
+        public string Nome
+        {
+            get
+            {
+                string retorno = "";
+                if (Tipo == Tipo_ObjetoBase.Corrente)
+                {
+
+                    var s = this as ObjetoCorrente;
+                    var pc = this.GetPeca();
+                    if (pc != null)
+                    {
+                        pc.COMP = s.Comprimento;
+                        retorno = pc.CODIGOFIM;
+                    }
+                }
+                else if (Tipo == Tipo_ObjetoBase.Tirante)
+                {
+                    var s = this as ObjetoTirante;
+                    var pc = this.GetPeca();
+                    if (pc != null)
+                    {
+                        pc.COMP = s.Comprimento;
+                        retorno = pc.CODIGOFIM;
+                    }
+                }
+                else if (Tipo == Tipo_ObjetoBase.Purlin)
+                {
+                    var s = this as ObjetoPurlin;
+                    retorno = s.PurlinPadrao;
+                }
+                else retorno = "Base";
+
+                retorno = retorno + " #" + this.Espessura.ToString("N2");
+
+
+
+                return retorno;
+            }
+        }
+        public Tipo_ObjetoBase Tipo
+        {
+            get
+            {
+                if (this is ObjetoPurlin)
+                {
+                    return Tipo_ObjetoBase.Purlin;
+                }
+                else if (this is ObjetoTirante)
+                {
+                    return Tipo_ObjetoBase.Tirante;
+                }
+                else if (this is ObjetoCorrente)
+                {
+                    return Tipo_ObjetoBase.Corrente;
+                }
+                else
+                {
+                    return Tipo_ObjetoBase.Base;
+                }
+            }
+        }
         private System.Windows.Controls.Border txt { get; set; }
         public List<UIElement> GetCanvas(Point p0, double escala, double tam_texto)
         {
@@ -297,7 +367,8 @@ namespace Ferramentas_DLM
             txt.MouseLeave += Txt_MouseLeave;
             txt.MouseRightButtonUp += Txt_MouseRightButtonUp;
             txt.MouseLeftButtonUp += Txt_MouseLeftButtonUp;
-           
+            txt.ToolTip = this;
+
             retorno.Add(txt);
 
             return retorno;
