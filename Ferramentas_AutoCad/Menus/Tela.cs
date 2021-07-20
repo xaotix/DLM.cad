@@ -17,7 +17,7 @@ namespace Ferramentas_DLM
         {
             this.mm = mm;
             InitializeComponent();
-            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
+            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
             opcoes.SelectedObject = this.mm;
             getvars(this.mm);
 

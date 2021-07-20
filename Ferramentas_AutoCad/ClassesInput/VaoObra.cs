@@ -11,12 +11,22 @@ namespace Ferramentas_DLM
 {
     public class VaoObra
     {
+        public System.Windows.Controls.Button cota { get; set; }
         public List<UIElement> GetCanvas(Point p0, double escala, double tam_texto)
         {
             List<UIElement> retorno = new List<UIElement>();
-            var pt = new System.Windows.Point((this.CentroX - p0.X) * escala, (this.Ymax - p0.Y) * escala);
-            retorno.Add(Conexoes.FuncoesCanvas.Label(pt, this.Vao.ToString(), tam_texto));
 
+
+            /*Cotas*/
+            var pt = new System.Windows.Point((this.CentroX - p0.X) * escala, (this.Ymax - p0.Y) * escala);
+            cota = Conexoes.FuncoesCanvas.Botao(this.Vao.ToString(), pt, Conexoes.FuncoesCanvas.Cores.Cyan,  tam_texto);
+            cota.MouseEnter += Grade.evento_Botao_Sobre;
+            cota.MouseLeave += Grade.evento_Botao_Sai;
+            cota.ToolTip = this;
+            retorno.Add(cota);
+            
+
+            /*blocos*/
             retorno.AddRange(this.GetTirantes().SelectMany(x => x.GetCanvas(p0,escala,tam_texto)));
             retorno.AddRange(this.GetCorrentes().SelectMany(x => x.GetCanvas(p0,escala,tam_texto)));
             retorno.AddRange(this.GetPurlins().SelectMany(x => x.GetCanvas(p0,escala,tam_texto)));
@@ -90,8 +100,6 @@ namespace Ferramentas_DLM
                 CADPurlin.AddMensagem("\n" + correntes.Count + " correntes encontradas");
                 CADPurlin.AddMensagem("\n" + purlins.Count + " correntes encontradas");
 
-
-
                 foreach (var purlin in purlins)
                 {
                     CADPurlin.AddBarra();
@@ -109,13 +117,13 @@ namespace Ferramentas_DLM
                         TRD = Math.Round(p_dir.X - Direita.Xmin);
                     }
 
-                    if (p_dir.X < Direita.Xmin + 1500)
+                    if (p_dir.X < Direita.Xmin + this.CADPurlin.PurlinToleranciaXMapeamento)
                     {
                         //se a linha da purlin for menor que a soma do transpasse 
                         TRD = Math.Round(p_dir.X - Direita.Xmin);
                     }
 
-                    if (p_esq.X > Esquerda.Xmin - 1500)
+                    if (p_esq.X > Esquerda.Xmin - this.CADPurlin.PurlinToleranciaXMapeamento)
                     {
                         //se a linha da purlin for menor que a soma do transpasse
                         TRE = Math.Round(Esquerda.Xmin - p_esq.X);
@@ -161,13 +169,11 @@ namespace Ferramentas_DLM
                         crp0 = new Point3d(Math.Round(crp0.X), Math.Round(crp0.Y), 0);
                         crp1 = new Point3d(Math.Round(crp1.X), Math.Round(crp1.Y), 0);
 
-
                         //se está passando pela terça
                         if (crp0.Y + ToleranciaPasse + purlin.Largura >= centro.Y && crp1.Y - ToleranciaPasse - purlin.Largura <= centro.Y)
                         {
                             cre.Add(Math.Round(crp0.X - Esquerda.Xmin));
                         }
-
                     }
                     cre = cre.Distinct().ToList().OrderBy(x => x).ToList();
 
@@ -185,7 +191,6 @@ namespace Ferramentas_DLM
                             Utilidades.GetCoordenadas(ls, out crp0, out crp1, out angulo, out comprimento, out cc, out largura);
                             crp0 = new Point3d(Math.Round(crp0.X), Math.Round(crp0.Y), 0);
                             crp1 = new Point3d(Math.Round(crp1.X), Math.Round(crp1.Y), 0);
-
 
                             //se está passando pela terça
                             if (crp0.Y + 5 >= centro.Y && crp1.Y - 5 <= centro.Y)
@@ -260,7 +265,7 @@ namespace Ferramentas_DLM
                 int c = 1;
                 _tirantes = new List<ObjetoTirante>();
 
-                var tirantes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetMultLinesTirantes(), true,300);
+                var tirantes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetMultLinesTirantes(), true,this.CADPurlin.TirantesToleranciaXMapeamento);
 
                 foreach (var ml in tirantes)
                 {
@@ -286,7 +291,9 @@ namespace Ferramentas_DLM
             {
                 int c = 1;
                 _correntes = new List<ObjetoCorrente>();
-                var correntes = Utilidades.MlinesPassando(Esquerda.Origem, Direita.Origem, CADPurlin.GetMultLinesCorrentes(), true);
+                var pe = Esquerda.Origem;
+                var pd = Direita.Origem;
+                var correntes = Utilidades.MlinesPassando(pe, pd, CADPurlin.GetMultLinesCorrentes(), true);
                 var purlins = this.GetPurlins();
                 foreach (var cr in correntes)
                 {
@@ -302,7 +309,9 @@ namespace Ferramentas_DLM
                             double comp = Math.Abs(Math.Round(pur2.Multiline.centro.Y - pur1.Multiline.centro.Y));
                             var centro = pur1.Multiline.centro.GetCentro(pur2.Multiline.centro);
                             centro = new Coordenada(cr.minx, centro.Y, 0);
-                            if (comp >= this.CADPurlin.CorrenteCompMin)
+
+                            /*verifica se a corrente tem um comp min ok e se está dentro de 2 purlin*/
+                            if (comp >= this.CADPurlin.CorrenteCompMin && centro.X >= pur1.X1 && centro.X <= pur1.X2 && centro.X > pur2.X1 && centro.X <= pur2.X2)
                             {
 
                                 ObjetoCorrente pp = new ObjetoCorrente(cr, centro.GetPoint(),this);
@@ -313,16 +322,6 @@ namespace Ferramentas_DLM
 
                                 _correntes.Add(pp);
 
-                                //Conexoes.Macros.Corrente p = new Conexoes.Macros.Corrente();
-                                //p.Vao = comp;
-                                //p.Descontar = this.CADPurlin.CorrenteDescontar;
-                                //p.Objeto = cr;
-                                //p.SetFixacao(this.CADPurlin.CorrenteFixador);
-                                //var diagonal = this.CADPurlin.GetCorrentePadrao();
-                                //if (diagonal != null)
-                                //{
-                                //    p.SetDiagonal(diagonal);
-                                //}
                             }
                         }
                     }
@@ -364,8 +363,10 @@ namespace Ferramentas_DLM
                 return Esquerda.Ymax > Direita.Ymax ? Esquerda.Ymax : Direita.Ymax;
             }
         }
-        public VaoObra(Eixo esquerda, Eixo direita, CADPurlin cADPurlin, Tipo_Vao tipo)
+        public GradeEixos Grade { get; private set; }
+        public VaoObra(GradeEixos Grade ,Eixo esquerda, Eixo direita, CADPurlin cADPurlin, Tipo_Vao tipo)
         {
+            this.Grade = Grade;
             this.Esquerda = esquerda;
             this.Direita = direita;
             this.CADPurlin = cADPurlin;

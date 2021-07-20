@@ -321,9 +321,9 @@ namespace Ferramentas_DLM
                             Utils.SetUndoMark(true);
                             for (int i = 0; i < qtd; i++)
                             {
-                                Hashtable t = new Hashtable();
-                                t.Add("SAP", this.Codigo_Passarela);
-                                Blocos.Inserir(CAD.acDoc, Constantes.Peca_PASSARELA, p1, 1, 0, t);
+                                Hashtable tt = new Hashtable();
+                                tt.Add(Constantes.ATT_Cod_SAP, this.Codigo_Passarela);
+                                Blocos.Inserir(CAD.acDoc, Constantes.Peca_PASSARELA, p1, 1, 0, tt);
                                 if(angulo==90 | angulo == 270)
                                 {
                                     mov = vert;
@@ -595,9 +595,9 @@ namespace Ferramentas_DLM
         {
            
             Hashtable sftlh = new Hashtable();
-            sftlh.Add("SAP", Codigo_SFLH);
+            sftlh.Add(Constantes.ATT_Cod_SAP, Codigo_SFLH);
             Hashtable sftli = new Hashtable();
-            sftli.Add("SAP", Codigo_SFLI);
+            sftli.Add(Constantes.ATT_Cod_SAP, Codigo_SFLI);
             if (sequencia == 0)
             {
      
@@ -630,15 +630,15 @@ namespace Ferramentas_DLM
         private void AddBlocoTexto(double angulo, Point3d pp0, string nome, double offset, string sap)
         {
             var p1 = new Coordenada(pp0).Mover(angulo + 90, offset).GetPoint();
-            var ss = new Hashtable();
-            ss.Add("TEXTO", nome);
-            ss.Add("SAP", sap);
+            var ht = new Hashtable();
+            ht.Add(Constantes.ATT_Texto, nome);
+            ht.Add(Constantes.ATT_Cod_SAP, sap);
             if(angulo==90 | angulo == 270)
             {
                 //move pro lado quando é vertical
                 p1 = new Coordenada(pp0).Mover(angulo + 90, (Getescala() * 16)/2).GetPoint();
             }
-            Blocos.Inserir(CAD.acDoc, Constantes.Texto, p1, Getescala(), 0, ss );
+            Blocos.Inserir(CAD.acDoc, Constantes.BL_Texto, p1, Getescala(), 0, ht );
 
         }
         private void Ajustar(ref double angulo, ref double comp, Point3d p1, ref Point3d p2)
@@ -680,14 +680,14 @@ namespace Ferramentas_DLM
             .Select(x => x.First()).ToList();
             var atributos = blocos
             
-            .Select(x => Atributos.Get(x, "SAP").ToString()).Distinct().ToList();
+            .Select(x => Atributos.Get(x, Constantes.ATT_Cod_SAP).ToString()).Distinct().ToList();
 
             atributos = atributos.Distinct().ToList();
             if (blocos.Count>0)
             {
               foreach(var codigo in atributos)
                 {
-                    var pass = blocos.FindAll(x => Atributos.Get(x, "SAP").ToString() == codigo).ToList();
+                    var pass = blocos.FindAll(x => Atributos.Get(x, Constantes.ATT_Cod_SAP).ToString() == codigo).ToList();
                     retorno.Add(GetRMA(codigo, (double)pass.Count));
                     AddMensagem("\n " + codigo + " - " +  pass.Count + " x");
                 }

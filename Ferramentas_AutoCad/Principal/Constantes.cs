@@ -53,8 +53,34 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
-
-
+        public static bool Online { get; set; } = false;
+        public static string ATT_Corrente_Fixador { get; set; } = "FIX";
+        public static string ATT_Ficha_Pintura { get; set; } = "FICHA";
+        public static string ATT_Comprimento { get; set; } = "COMP";
+        public static string ATT_Codigo { get; set; } = "CODIGO";
+        public static string ATT_Texto { get; set; } = "TEXTO";
+        public static string ATT_RME { get; set; } = "RME";
+        public static string ATT_RMA { get; set; } = "RMA";
+        public static string ATT_RMU { get; set; } = "RMU";
+        public static string ATT_RMT { get; set; } = "RMT";
+        public static string ATT_TECNOMETAL { get; set; } = "TECNOMETAL";
+        public static string ATT_Espessura { get; set; } = "ESP";
+        public static string ATT_Secao { get; set; } = "ESP";
+        public static string ATT_N { get; set; } = "N";
+        public static string ATT_id { get; set; } = "ID";
+        public static string ATT_Tipo { get; set; } = "TIPO";
+        public static string ATT_Marca { get; set; } = "MARCA";
+        public static string ATT_Material { get; set; } = "MATERIAL";
+        public static string ATT_Familia { get; set; } = "FAMILIA";
+        public static string ATT_Quantidade { get; set; } ="QTD";
+        public static string ATT_Vao { get; set; } ="VAO";
+        public static string ATT_Transp_Esq { get; set; } ="TRE";
+        public static string ATT_Transp_Dir { get; set; } ="TRD";
+        public static string ATT_Descricao { get; set; } ="DESC";
+        public static string ATT_Cod_SAP { get; set; } = "SAP";
+        public static string ATT_Destino { get; set; } ="DESTINO";
+        public static string ATT_Perfil { get; set; } ="PERFIL";
+        public static string ATT_Peca { get; set; } ="PECA";
 
 
         public static string DLL_Local { get; set; } = @"C:\Medabil\Ferramentas_DLM\Ferramentas_DLM.dll";
@@ -86,8 +112,10 @@ namespace Ferramentas_DLM
 
         public static void VerificarVersao()
         {
+            if (!Constantes.Online) { return; }
             var arq_local = new Conexoes.Arquivo(DLL_Local);
             var arq_rede = new Conexoes.Arquivo(DLL_Rede);
+
 
             if(!File.Exists(DLL_Rede))
             {
@@ -112,7 +140,9 @@ namespace Ferramentas_DLM
         public static string LineType_ByLayer { get; set; } = "BYLAYER";
         public static string RaizApp { get; set; } =@"C:\Medabil\Ferramentas_DLM\";
         //public static string Raiz { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
-        public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
+
+        //public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
+        public static string Raiz { get; set; } = @"R:\";
         public static string Raiz_Blocos { get; set; } = Raiz + @"Blocos\";
         public static string Raiz_Blocos_A2 { get; set; } = Raiz_Blocos + @"SELO A2\";
         public static string Raiz_MlStyles { get; set; } = Raiz_Blocos + @"Multilines\";
@@ -197,7 +227,7 @@ namespace Ferramentas_DLM
         public static string Indicacao_Tirantes { get; set; } = Raiz_Blocos_Listagem + @"TIRANTE_INDICACAO.dwg";
         public static string Indicacao_Correntes { get; set; } = Raiz_Blocos_Listagem + @"CORRENTE_INDICACAO.dwg";
 
-        public static string Texto { get; set; } = Raiz_Blocos_Listagem + @"TEXTO.dwg";
+        public static string BL_Texto { get; set; } = Raiz_Blocos_Listagem + @"TEXTO.dwg";
 
 
         public static string PC_Quantificar { get; set; } = "PECA_INDICACAO";
@@ -290,7 +320,7 @@ namespace Ferramentas_DLM
         }
 
 
-        public static string Bloco_Indicacao_Texto { get; set; } = Raiz_Blocos_Indicacao + Constantes.PC_Quantificar + "_TEXTO.dwg";
+        public static string Bloco_Indicacao_Texto { get; set; } = $"{Raiz_Blocos_Indicacao}{Constantes.PC_Quantificar}_TEXTO.dwg";
 
         public static string Marca_Composta { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_Composta}.dwg";
         public static string Marca_Perfil { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_PERF}.dwg";

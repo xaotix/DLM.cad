@@ -23,7 +23,7 @@ namespace Ferramentas_DLM.Menus
         public SoldaComposicao()
         {
             InitializeComponent();
-            this.Title = $"Soldas de composição V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
+            this.Title = $"Soldas de composição V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
         {

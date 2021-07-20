@@ -29,7 +29,7 @@ namespace Ferramentas_DLM.Menus
             original = pecas;
             filtro.AddRange(pecas);
             InitializeComponent();
-            this.Title = $"Gerar Tabela (Editor) V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
+            this.Title = $"Gerar Tabela (Editor) V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
             this.Update();
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
@@ -65,7 +65,7 @@ namespace Ferramentas_DLM.Menus
 
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Descricao, 30);
+                string qtd = Conexoes.Utilz.Prompt(sel.Descricao,false, 30);
                 if (qtd != null && qtd != "")
                 {
                     sel.Nome = qtd;
@@ -165,7 +165,7 @@ namespace Ferramentas_DLM.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Descricao,30);
+                var qtd = Conexoes.Utilz.Prompt(sel.Descricao, false, 30);
                 if (qtd!=null && qtd!="")
                 {
                     sel.Descricao = qtd;
@@ -201,7 +201,7 @@ namespace Ferramentas_DLM.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Numero, 4);
+                var qtd = Conexoes.Utilz.Prompt(sel.Numero, false, 4);
                 if (qtd != null && qtd != "")
                 {
                     sel.Numero = qtd;
@@ -234,7 +234,7 @@ namespace Ferramentas_DLM.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Destino, 4);
+                var qtd = Conexoes.Utilz.Prompt(sel.Destino, false, 4);
                 if (qtd != null && qtd != "")
                 {
                     sel.Destino = qtd;
@@ -267,7 +267,7 @@ namespace Ferramentas_DLM.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Constantes.Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Destino, 4);
+                var qtd = Conexoes.Utilz.Prompt(sel.Destino, false, 4);
                 if (qtd != null && qtd != "")
                 {
                     sel.Destino = qtd;

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferramentas_DLM", "Ferramen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conexoes", "..\Conexoes\Conexoes.csproj", "{DEF82547-9FAB-457E-89BF-C10ED1DD9162}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZoomAndPan", "ZoomAndPan\ZoomAndPan.csproj", "{468ADEDE-6F5E-40C0-99C9-C6DAC4FAC934}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZoomAndPan", "..\ZoomAndPan\ZoomAndPan.csproj", "{468ADEDE-6F5E-40C0-99C9-C6DAC4FAC934}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

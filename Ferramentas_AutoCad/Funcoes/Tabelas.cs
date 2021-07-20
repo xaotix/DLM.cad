@@ -68,12 +68,12 @@ namespace Ferramentas_DLM
                     foreach (var p in purlins)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add("N", p.Sequencia.ToString().PadLeft(2, '0'));
-                        hp.Add("PERFIL", p.Nome);
-                        hp.Add("QTD", p.Quantidade.ToString().PadLeft(3,'0'));
-                        hp.Add("COMP", p.Comprimento.ToString().PadLeft(5,'0'));
-                        hp.Add("ESP", p.Espessura.ToString("N2").PadLeft(5, '0'));
-                        hp.Add("DESTINO", "RME");
+                        hp.Add(Constantes.ATT_N, p.Sequencia.ToString().PadLeft(2, '0'));
+                        hp.Add(Constantes.ATT_Perfil, p.Nome);
+                        hp.Add(Constantes.ATT_Quantidade, p.Quantidade.ToString().PadLeft(3,'0'));
+                        hp.Add(Constantes.ATT_Comprimento, p.Comprimento.ToString().PadLeft(5,'0'));
+                        hp.Add(Constantes.ATT_Espessura, p.Espessura.ToString("N2").PadLeft(5, '0'));
+                        hp.Add(Constantes.ATT_Destino, Constantes.ATT_RME);
                         Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                     }
@@ -97,18 +97,18 @@ namespace Ferramentas_DLM
 
                 x0 = p0.X;
                 y0 = p0.Y;
-                Hashtable ht = new Hashtable();
-                ht.Add("TITULO", "LISTA DE TIRANTES");
-                Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes_Titulo, p0, escala, 0, ht);
+                Hashtable htt = new Hashtable();
+                htt.Add("TITULO", "LISTA DE TIRANTES");
+                Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes_Titulo, p0, escala, 0, htt);
                 p0 = new Point3d(p0.X, p0.Y - (escala * 12.86), p0.Z);
                 foreach (var p in trs)
                 {
-                    Hashtable hp = new Hashtable();
-                    hp.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
-                    hp.Add("PECA", p.Marca);
-                    hp.Add("QTD", p.Qtd.ToString().PadLeft(3, '0'));
-                    hp.Add("COMP", p.Comprimento.ToString().PadLeft(5, '0'));
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes, p0, escala, 0, hp);
+                    Hashtable ht = new Hashtable();
+                    ht.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
+                    ht.Add(Constantes.ATT_Peca, p.Marca);
+                    ht.Add(Constantes.ATT_Quantidade, p.Qtd.ToString().PadLeft(3, '0'));
+                    ht.Add(Constantes.ATT_Comprimento, p.Comprimento.ToString().PadLeft(5, '0'));
+                    Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes, p0, escala, 0, ht);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                 }
             }
@@ -137,10 +137,10 @@ namespace Ferramentas_DLM
                 foreach (var p in trs)
                 {
                     Hashtable hp = new Hashtable();
-                    hp.Add("N", p.Sequencia);
-                    hp.Add("PERFIL", p.Marca);
-                    hp.Add("QTD", p.Qtd.ToString().PadLeft(3,'0'));
-                    hp.Add("VAO", p.Vao.ToString());
+                    hp.Add(Constantes.ATT_N, p.Sequencia);
+                    hp.Add(Constantes.ATT_Perfil, p.Marca);
+                    hp.Add(Constantes.ATT_Quantidade, p.Qtd.ToString().PadLeft(3,'0'));
+                    hp.Add(Constantes.ATT_Vao, p.Vao.ToString());
                     Blocos.Inserir(acDoc, Constantes.Tabela_Correntes, p0, escala, 0, hp);
                     p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                 }
@@ -174,12 +174,12 @@ namespace Ferramentas_DLM
                     foreach (var p in RMES)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add("N", seq.ToString().PadLeft(2, '0'));
-                        hp.Add("PERFIL", p.CODIGOFIM);
-                        hp.Add("QTD", p.Quantidade.ToString().PadLeft(3, '0'));
-                        hp.Add("COMP", p.COMP.ToString().PadLeft(5, '0'));
-                        hp.Add("ESP", p.ESP.ToString("N2").PadLeft(5, '0'));
-                        hp.Add("DESTINO", "RM");
+                        hp.Add(Constantes.ATT_N, seq.ToString().PadLeft(2, '0'));
+                        hp.Add(Constantes.ATT_Perfil, p.CODIGOFIM);
+                        hp.Add(Constantes.ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
+                        hp.Add(Constantes.ATT_Comprimento, p.COMP.ToString().PadLeft(5, '0'));
+                        hp.Add(Constantes.ATT_Espessura, p.ESP.ToString("N2").PadLeft(5, '0'));
+                        hp.Add(Constantes.ATT_Destino, "RM");
                         Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
@@ -214,13 +214,13 @@ namespace Ferramentas_DLM
                     int seq = 1;
                     foreach (var p in RMAS)
                     {
-                        Hashtable hp = new Hashtable();
-                        hp.Add("QTD", p.Quantidade);
-                        hp.Add("DESC", p.DESC);
-                        hp.Add("UNID", p.UNIDADE);
-                        hp.Add("SAP", p.SAP);
+                        Hashtable htt = new Hashtable();
+                        htt.Add(Constantes.ATT_Quantidade, p.Quantidade);
+                        htt.Add(Constantes.ATT_Descricao, p.DESC);
+                        htt.Add("UNID", p.UNIDADE);
+                        htt.Add(Constantes.ATT_Cod_SAP, p.SAP);
 
-                        Blocos.Inserir(acDoc, Constantes.Tabela_Almox, p0, escala, 0, hp);
+                        Blocos.Inserir(acDoc, Constantes.Tabela_Almox, p0, escala, 0, htt);
                         p0 = new Point3d(p0.X, p0.Y - (escala * 6.43), p0.Z);
                         seq++;
                     }
@@ -274,8 +274,8 @@ namespace Ferramentas_DLM
                     foreach (var p in linhas)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add("MARCA", p.Nome);
-                        if (p.Nome_Bloco.StartsWith(Constantes.PC_Quantificar) && !p.Nome_Bloco.Contains("TEXTO"))
+                        hp.Add(Constantes.ATT_Marca, p.Nome);
+                        if (p.Nome_Bloco.StartsWith(Constantes.PC_Quantificar) && !p.Nome_Bloco.Contains(Constantes.ATT_Texto))
                         {
                             Point3d pcentro = new Point3d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152), p1.Z);
                             Hashtable bl = new Hashtable();
@@ -284,23 +284,23 @@ namespace Ferramentas_DLM
                             //    bl.Add(obj.Coluna, obj.Valor);
                             //}
                            
-                            bl.Add("N", p.Atributos.Get("N").valor);
-                            bl.Add("FAMILIA", p.Familia);
-                            bl.Add("TIPO", p.Tipo);
-                            bl.Add("COMP", p.Comprimento);
-                            bl.Add("DESC", p.Descricao);
-                            bl.Add("DESTINO", p.Destino);
-                            bl.Add("QTD", p.Quantidade);
+                            bl.Add(Constantes.ATT_N, p.Atributos.Get(Constantes.ATT_N).valor);
+                            bl.Add(Constantes.ATT_Familia, p.Familia);
+                            bl.Add(Constantes.ATT_Tipo, p.Tipo);
+                            bl.Add(Constantes.ATT_Comprimento, p.Comprimento);
+                            bl.Add(Constantes.ATT_Descricao, p.Descricao);
+                            bl.Add(Constantes.ATT_Destino, p.Destino);
+                            bl.Add(Constantes.ATT_Quantidade, p.Quantidade);
 
                             Blocos.Inserir(acDoc, p.Nome_Bloco, pcentro, escala * .8, 0, bl);
 
                         }
                         else
                         {
-                            hp.Add("N", p.Numero);
+                            hp.Add(Constantes.ATT_N, p.Numero);
                         }
-                        hp.Add("QTD", p.Quantidade);
-                        hp.Add("DESTINO", p.Destino);
+                        hp.Add(Constantes.ATT_Quantidade, p.Quantidade);
+                        hp.Add(Constantes.ATT_Destino, p.Destino);
                         hp.Add("DESCRICAO", p.Descricao);
 
                         Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Linha, p1, escala, 0, hp);
@@ -336,7 +336,7 @@ namespace Ferramentas_DLM
                 {
                     x0 = p0.X;
                     y0 = p0.Y;
-                    Hashtable ht = new Hashtable();
+                    Hashtable htt = new Hashtable();
                     int decimais = 4;
                     string dec_str = "N4";
 
@@ -359,9 +359,9 @@ namespace Ferramentas_DLM
                     total_peso = Math.Round(total_peso/1000, decimais);
                     total_superficie = Math.Round(total_superficie, decimais);
 
-                    ht.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
-                    ht.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
+                    htt.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
+                    htt.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
+                    Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, htt);
                     p0 = new Point3d(p0.X, p0.Y - (fator_escala * 20.4), p0.Z);
                     int seq = 1;
                     foreach(var Marca in pecas)
@@ -385,17 +385,17 @@ namespace Ferramentas_DLM
 
                             var tipo = Pos.Get(Constantes.ATT_REC).ToString();
                             
-                            Hashtable hp = new Hashtable();
-                            hp.Add("MARCA", tipo == Constantes.ATT_REC_MARCA?Pos.Get(Constantes.ATT_MAR): Pos.Get(Constantes.ATT_POS));
-                            hp.Add("QTD", Pos.Get(Constantes.ATT_QTD));
-                            hp.Add("DESC", descricao );
-                            hp.Add("MATERIAL", Pos.Get(Constantes.ATT_MAT));
-                            hp.Add("SAP", Pos.Get(Constantes.ATT_SAP));
-                            hp.Add("PESO_UNIT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
-                            hp.Add("PESO_TOT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000 * Pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str).Replace(",", ""));
-                            hp.Add("FICHA", Pos.Get(Constantes.ATT_FIC));
+                            Hashtable ht = new Hashtable();
+                            ht.Add(Constantes.ATT_Marca, tipo == Constantes.ATT_REC_MARCA?Pos.Get(Constantes.ATT_MAR): Pos.Get(Constantes.ATT_POS));
+                            ht.Add(Constantes.ATT_Quantidade, Pos.Get(Constantes.ATT_QTD));
+                            ht.Add(Constantes.ATT_Descricao, descricao );
+                            ht.Add(Constantes.ATT_Material, Pos.Get(Constantes.ATT_MAT));
+                            ht.Add(Constantes.ATT_Cod_SAP, Pos.Get(Constantes.ATT_SAP));
+                            ht.Add("PESO_UNIT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
+                            ht.Add("PESO_TOT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000 * Pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str).Replace(",", ""));
+                            ht.Add(Constantes.ATT_Ficha_Pintura, Pos.Get(Constantes.ATT_FIC));
 
-                            Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);
+                            Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, ht);
                             p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
                             seq++;
                         }
@@ -449,28 +449,28 @@ namespace Ferramentas_DLM
                     {
 
                         Hashtable mp = new Hashtable();
-                        mp.Add("MARCA", Marca.Marca);
-                        mp.Add("QTD", Marca.Quantidade);
-                        mp.Add("DESC", Marca.Mercadoria);
-                        mp.Add("MATERIAL", Marca.Material);
-                        mp.Add("SAP", Marca.SAP);
+                        mp.Add(Constantes.ATT_Marca, Marca.Marca);
+                        mp.Add(Constantes.ATT_Quantidade, Marca.Quantidade);
+                        mp.Add(Constantes.ATT_Descricao, Marca.Mercadoria);
+                        mp.Add(Constantes.ATT_Material, Marca.Material);
+                        mp.Add(Constantes.ATT_Cod_SAP, Marca.SAP);
                         mp.Add("PESO_UNIT", Math.Round(Marca.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
                         mp.Add("PESO_TOT", Math.Round(Marca.PesoUnit * Marca.Quantidade / 1000 , decimais).ToString(dec_str).Replace(",", ""));
-                        mp.Add("FICHA", Marca.Tratamento);
+                        mp.Add(Constantes.ATT_Ficha_Pintura, Marca.Tratamento);
 
                         Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, mp);
                         p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);
                         foreach (var Pos in Marca.GetPosicoes())
                         {
                             Hashtable hp = new Hashtable();
-                            hp.Add("MARCA", Pos.Posicao);
-                            hp.Add("QTD", Math.Round(Pos.Quantidade * Marca.Quantidade,decimais).ToString().Replace(",","."));
-                            hp.Add("DESC", Pos.Descricao);
-                            hp.Add("MATERIAL", Pos.Material);
-                            hp.Add("SAP", Pos.SAP);
+                            hp.Add(Constantes.ATT_Marca, Pos.Posicao);
+                            hp.Add(Constantes.ATT_Quantidade, Math.Round(Pos.Quantidade * Marca.Quantidade,decimais).ToString().Replace(",","."));
+                            hp.Add(Constantes.ATT_Descricao, Pos.Descricao);
+                            hp.Add(Constantes.ATT_Material, Pos.Material);
+                            hp.Add(Constantes.ATT_Cod_SAP, Pos.SAP);
                             hp.Add("PESO_UNIT", Math.Round(Pos.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
                             hp.Add("PESO_TOT", Math.Round(Pos.PesoUnit/1000 * Pos.Quantidade, decimais).ToString(dec_str).Replace(",", ""));
-                            hp.Add("FICHA", Pos.Tratamento);
+                            hp.Add(Constantes.ATT_Ficha_Pintura, Pos.Tratamento);
 
                             Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);
                             p0 = new Point3d(p0.X, p0.Y - (fator_escala * 4.25), p0.Z);

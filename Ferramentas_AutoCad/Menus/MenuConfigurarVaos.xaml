@@ -13,135 +13,26 @@
 
         >
     <Window.Resources>
-        <Style TargetType="{x:Type RadioButton}">
-            <Setter Property="Margin" Value="1"/>
-        </Style>
 
-        <Style TargetType="{x:Type GroupBox}">
-            <Setter Property="BorderBrush" Value="DarkGray"/>
-            <Setter Property="Margin" Value="1"/>
-        </Style>
-        <Style TargetType="{x:Type TextBox}">
-            <Setter Property="Margin" Value="1"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="DarkGray"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="TextAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="CharacterCasing" Value="Upper"/>
-            <EventSetter Event="UIElement.GotFocus" Handler="seleciona_tudo"/>
-
-            <Setter Property="Padding" Value="2"/>
-            <Style.Triggers>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="Background">
-                        <Setter.Value>
-                            <SolidColorBrush Color="Yellow" Opacity="0.2"/>
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style TargetType="{x:Type Expander}">
-            <Setter Property="Margin" Value="1"/>
-            <Setter Property="Background">
-                <Setter.Value>
-                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
-                </Setter.Value>
-
-            </Setter>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-
-        </Style>
         <Style TargetType="{x:Type Button}">
-            <Setter Property="Margin" Value="1"/>
-            <Setter Property="Background">
-                <Setter.Value>
-                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="2"/>
-        </Style>
-        <Style TargetType="{x:Type ComboBox}">
-            <Setter Property="Margin" Value="1"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Background">
-                <Setter.Value>
-                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="{x:Type Label}">
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="1"/>
-        </Style>
-
-        <Style TargetType="{x:Type Separator}">
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="1"/>
-        </Style>
-        <Style TargetType="{x:Type DataGrid}">
-            <!--<Setter Property="AlternatingRowBackground">
-                <Setter.Value>
-                    <SolidColorBrush Color="Transparent" Opacity="0.2"/>
-                </Setter.Value>
-            </Setter>-->
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="VerticalGridLinesBrush" Value="Transparent"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
-        </Style>
-        <Style TargetType="{x:Type Button}" x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}">
-            <Setter Property="Background">
+            <Setter Property="Template">
                 <Setter.Value>
-                    <SolidColorBrush Color="Transparent"/>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding Foreground}" BorderThickness="1" CornerRadius="2" Padding="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Margin" Value="1"/>
-            <Setter Property="BorderBrush" Value="LightGray"/>
-            <Setter Property="BorderThickness" Value="1"/>
-        </Style>
-
-
-        <Style TargetType="{x:Type DataGridCell}">
-
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="Padding" Value="1"/>
-            <Setter Property="Foreground" Value="Black"/>
-
-
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background">
-                        <Setter.Value>
-                            <SolidColorBrush Color="Transparent" Opacity="0.2"/>
-                        </Setter.Value>
-                    </Setter>
-                    <Setter Property="Foreground" Value="Black"/>
+            <!--<Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
                 </Trigger>
-            </Style.Triggers>
+            </Style.Triggers>-->
+        </Style>
 
 
-        </Style>
-        <Style TargetType="{x:Type TextBlock}">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="2"/>
-        </Style>
-        <Style TargetType="{x:Type DataGridRow}">
-            <Setter Property="Margin" Value="-1"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="0"/>
-        </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -149,15 +40,15 @@
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
-        <zoom:ZoomAndPanControlView Name="pranchazoom">
+        <zoom:ZoomAndPanControlView Name="pranchazoom"/>
 
-        </zoom:ZoomAndPanControlView>
 
-       
+
+
 
         <WrapPanel Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1">
             <Button FontSize="15" Margin="2" Content="Cancelar" Click="Button_Click"></Button>
-            <Button FontSize="15" Margin="2" Content="_Inserir"  Click="Button_Click_1"></Button>
+            <Button FontSize="15" Margin="2" Content="Inserir"  Click="Button_Click_1"></Button>
         </WrapPanel>
     </Grid>
 </Window>

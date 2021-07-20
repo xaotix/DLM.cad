@@ -123,10 +123,10 @@ namespace Ferramentas_DLM
 
                             foreach(var pc in pcs)
                             {
-                                Hashtable tt = new Hashtable();
-                                tt.Add("MBPERFIL", pc);
-                                tt.Add("MBFILETE", filete.First().Filete_Minimo);
-                                Blocos.Inserir(CAD.acDoc, nome, origem.GetPoint(), 1, 0, tt);
+                                Hashtable ht = new Hashtable();
+                                ht.Add("MBPERFIL", pc);
+                                ht.Add("MBFILETE", filete.First().Filete_Minimo);
+                                Blocos.Inserir(CAD.acDoc, nome, origem.GetPoint(), 1, 0, ht);
 
                                 origem = origem.Mover(-largura, 0, 0);
                             }
@@ -532,15 +532,15 @@ namespace Ferramentas_DLM
                         {
                           
                             Hashtable att = new Hashtable();
-                            att.Add("N", numero);
-                            att.Add("FAMILIA", familia);
-                            att.Add("TIPO", "TECNOMETAL");
-                            att.Add("COMP", comp.Key);
-                            att.Add("CODIGO", codigo);
-                            att.Add("ID", 0);
-                            att.Add("DESC",string.Join(" ", descricao));
-                            att.Add("DESTINO", "RME");
-                            att.Add("QTD", 1 + s.Filhos.Count);
+                            att.Add(Constantes.ATT_N, numero);
+                            att.Add(Constantes.ATT_Familia, familia);
+                            att.Add(Constantes.ATT_Tipo, Constantes.ATT_TECNOMETAL);
+                            att.Add(Constantes.ATT_Comprimento, comp.Key);
+                            att.Add(Constantes.ATT_Codigo, codigo);
+                            att.Add(Constantes.ATT_id, 0);
+                            att.Add(Constantes.ATT_Descricao, string.Join(" ", descricao));
+                            att.Add(Constantes.ATT_Destino, Constantes.ATT_RME);
+                            att.Add(Constantes.ATT_Quantidade, 1 + s.Filhos.Count);
                             if(subs_bloco)
                             {
                             Blocos.Inserir(CAD.acDoc, arquivo_bloco, s.Bloco.Position, escala, 0, att);
@@ -562,12 +562,12 @@ namespace Ferramentas_DLM
                                 s.Numero = numero;
                                 s.Nome_Bloco = nome_bloco;
                                 s.Familia = familia;
-                                s.Destino = "RME";
+                                s.Destino = Constantes.ATT_RME;
                                 s.Perfil = perfil;
                                 Hashtable att = new Hashtable();
                                 //att.Add("LUN_PRO", comp);
                                 att.Add("MARK", codigo);
-                                att.Add("MAR_PEZ", codigo);
+                                att.Add(Constantes.ATT_MAR, codigo);
                                 Atributos.Set(s.Blocos.Select(x => x.Bloco).ToList().ToList(), acTrans, att);
                                 Atributos.Set(s.Filhos_Ignorar.SelectMany(x => x.Blocos).Select(x => x.Bloco).ToList().ToList(), acTrans, att);
                             }
@@ -602,18 +602,18 @@ namespace Ferramentas_DLM
                     {
                         w.somaProgresso();
 
-                        Hashtable att = new Hashtable();
-                        att.Add("N", pc.Numero);
-                        att.Add("FAMILIA", pc.Familia);
-                        att.Add("TIPO", "TECNOMETAL");
-                        att.Add("COMP", pc.Comprimento.ToString().Replace(",", ""));
-                        att.Add("CODIGO", pc.Nome);
-                        att.Add("ID", 0);
-                        att.Add("DESC", pc.Descricao);
-                        att.Add("DESTINO", pc.Destino);
-                        att.Add("QTD", 1 + s.Filhos.Count);
+                        Hashtable ht = new Hashtable();
+                        ht.Add(Constantes.ATT_N, pc.Numero);
+                        ht.Add(Constantes.ATT_Familia, pc.Familia);
+                        ht.Add(Constantes.ATT_Tipo, Constantes.ATT_TECNOMETAL);
+                        ht.Add(Constantes.ATT_Comprimento, pc.Comprimento.ToString().Replace(",", ""));
+                        ht.Add(Constantes.ATT_Codigo, pc.Nome);
+                        ht.Add(Constantes.ATT_id, 0);
+                        ht.Add(Constantes.ATT_Descricao, pc.Descricao);
+                        ht.Add(Constantes.ATT_Destino, pc.Destino);
+                        ht.Add(Constantes.ATT_Quantidade, 1 + s.Filhos.Count);
 
-                        Blocos.Inserir(CAD.acDoc, Constantes.BlocosIndicacao()[0], s.Bloco.Position, escala, 0, att);
+                        Blocos.Inserir(CAD.acDoc, Constantes.BlocosIndicacao()[0], s.Bloco.Position, escala, 0, ht);
                     }
 
                 }
@@ -663,29 +663,19 @@ namespace Ferramentas_DLM
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
                             if (npc.Nome.StartsWith(Constantes.PC_Quantificar))
                             {
-                                var blcs = npc.Agrupar(new List<string> { "CODIGO", "N" }, npc.Nome_Bloco);
+                                var blcs = npc.Agrupar(new List<string> { "CODIGO", Constantes.ATT_N }, npc.Nome_Bloco);
                                 foreach (var bl in blcs)
                                 {
-                                    bl.SetDescPorAtributo("DESC");
-                                    bl.SetNumeroPorAtributo("N");
+                                    bl.SetDescPorAtributo(Constantes.ATT_Descricao);
+                                    bl.SetNumeroPorAtributo(Constantes.ATT_N);
                                     bl.SetDestinoPorAtributo("DESTINO");
-                                    bl.SetQtdPorAtributo("QTD");
-                                    bl.SetIdPorAtributo("ID");
-                                    bl.SetFamiliaPorAtributo("FAMILIA");
+                                    bl.SetQtdPorAtributo(Constantes.ATT_Quantidade);
+                                    bl.SetIdPorAtributo(Constantes.ATT_id);
+                                    bl.SetFamiliaPorAtributo(Constantes.ATT_Familia);
                                 }
 
                                 pecas.AddRange(blcs);
-                                /*
-                                 *             Hashtable att = new Hashtable();
-                                    att.Add("N", this.numero.Text);
-                                    att.Add("FAMILIA", this.familia.Text);
-                                    att.Add("TIPO", this.peca_selecionar.Content);
-                                    att.Add("COMP", comp.ToString().Replace(",",""));
-                                    att.Add("CODIGO", codigo);
-                                    att.Add("ID", id);
-                                    att.Add("DESC", descricao);
-                                    att.Add("DESTINO", tipo_selecionado);
-                                 */
+
                             }
                             else if (npc.Nome == Constantes.Bloco_3D_Montagem_Info)
                             {
@@ -735,7 +725,7 @@ namespace Ferramentas_DLM
                                 {
                                     pf = p_filhos_infos[0];
                                 }
-                                PCQuantificar pc = new PCQuantificar(Tipo_Objeto.Bloco, bl.Key, pf.Descricao, p.Nome_Bloco, blocs.SelectMany(x=> x.Blocos).ToList(), "", pf.Perfil, "TECNOMETAL", pf.Perfil, pf.Material, pf.Comprimento);
+                                PCQuantificar pc = new PCQuantificar(Tipo_Objeto.Bloco, bl.Key, pf.Descricao, p.Nome_Bloco, blocs.SelectMany(x=> x.Blocos).ToList(), "", pf.Perfil, Constantes.ATT_TECNOMETAL, pf.Perfil, pf.Material, pf.Comprimento);
                                 pc.Descricao = pf.Descricao;
                                /*essa propriedade guarda os blocos que tem as sub-informações dos blocos no tecnometal*/
                                 pc.Filhos_Ignorar = p_filhos_infos;
@@ -926,7 +916,7 @@ namespace Ferramentas_DLM
         public void GerarDBF3D()
         {
             if (!E_Tecnometal3D()) { return; }
-            var st = editor.Command("TEC_ST3D2DBF", this.Nome, "t", "N", "N");
+            var st = editor.Command("TEC_ST3D2DBF", this.Nome, "t", Constantes.ATT_N, Constantes.ATT_N);
         }
         public void RodarMacros(List<Conexoes.Arquivo> Arquivos = null)
         {
@@ -1316,7 +1306,7 @@ namespace Ferramentas_DLM
                 var selo = Utilidades.Filtrar(blocos, new List<string> { "SELO" }, false);
                 foreach (var s in selo)
                 {
-                    var pts = Utilidades.GetContorno(s, acTrans);
+                    var pts = Blocos.GetContorno(s, acTrans);
                     retorno = new Point3d(pts.Max(x => x.X) - 7.01, pts.Max(x => x.Y) - 7.01, 0);
              
                     break;
@@ -1378,50 +1368,50 @@ namespace Ferramentas_DLM
 
                     foreach (var s in selo)
                     {
-                        Hashtable att = new Hashtable();
+                        Hashtable ht = new Hashtable();
 
                         if (limpar)
                         {
-                            att.Add("TIPO_DE_PROJETO", "");
-                            att.Add("TITULO_DA_PRANCHA", "");
-                            att.Add("TÍTULO_DA_PRANCHA", "");
-                            att.Add("OBRA", "");
-                            att.Add("PREDIO", "");
-                            att.Add("CLIENTE", "");
-                            att.Add("LOCAL", "");
-                            att.Add("PEDIDO", "");
-                            att.Add("ETAPA", "");
-                            att.Add("ESCALA", ""); ;
-                            att.Add("UNIDADE", "");
-                            att.Add("COORDENAÇÃO", "");
-                            att.Add("COORDENACAO", "");
-                            att.Add("PROJETO", "");
-                            att.Add("DESENHO", "");
-                            att.Add("RESPONSAVEL_TECNICO", "");
-                            att.Add("CREA", "");
+                            ht.Add("TIPO_DE_PROJETO", "");
+                            ht.Add("TITULO_DA_PRANCHA", "");
+                            ht.Add("TÍTULO_DA_PRANCHA", "");
+                            ht.Add("OBRA", "");
+                            ht.Add("PREDIO", "");
+                            ht.Add("CLIENTE", "");
+                            ht.Add("LOCAL", "");
+                            ht.Add("PEDIDO", "");
+                            ht.Add("ETAPA", "");
+                            ht.Add("ESCALA", ""); ;
+                            ht.Add("UNIDADE", "");
+                            ht.Add("COORDENAÇÃO", "");
+                            ht.Add("COORDENACAO", "");
+                            ht.Add("PROJETO", "");
+                            ht.Add("DESENHO", "");
+                            ht.Add("RESPONSAVEL_TECNICO", "");
+                            ht.Add("CREA", "");
                         }
                         else
                         {
-                            att.Add("TIPO_DE_PROJETO", this.Nome.Contains("-FA-") ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
-                            att.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x=>x.Marca.ToUpper()))}");
-                            att.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Marca.ToUpper()))}");
-                            att.Add("OBRA", this.GetObra().Descrição.ToUpper());
-                            att.Add("PREDIO", this.GetSubEtapa().Predio.ToUpper());
-                            att.Add("CLIENTE", this.GetObra().Cliente.ToUpper());
-                            att.Add("LOCAL", this.GetObra().Lugar.ToUpper());
-                            att.Add("PEDIDO", this.GetPedido().NomePedido.ToUpper());
-                            att.Add("ETAPA", this.GetSubEtapa().NomeEtapa.ToUpper());
-                            att.Add("ESCALA", "1/" + Math.Round(this.Getescala(), 1));
-                            att.Add("UNIDADE", "MILÍMETROS");
-                            att.Add("COORDENAÇÃO", this.GetSubEtapa().Coordenador.ToUpper());
-                            att.Add("COORDENACAO", this.GetSubEtapa().Coordenador.ToUpper());
-                            att.Add("PROJETO", this.GetSubEtapa().Projetista.ToUpper());
-                            att.Add("DESENHO", Conexoes.DBases.GetUserAtual().nome.ToUpper());
-                            att.Add("RESPONSAVEL_TECNICO", this.GetSubEtapa().Calculista.ToUpper());
-                            att.Add("CREA", this.GetSubEtapa().CalculistaCREA.ToUpper());
+                            ht.Add("TIPO_DE_PROJETO", this.Nome.Contains("-FA-") ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
+                            ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x=>x.Marca.ToUpper()))}");
+                            ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Marca.ToUpper()))}");
+                            ht.Add("OBRA", this.GetObra().Descrição.ToUpper());
+                            ht.Add("PREDIO", this.GetSubEtapa().Predio.ToUpper());
+                            ht.Add("CLIENTE", this.GetObra().Cliente.ToUpper());
+                            ht.Add("LOCAL", this.GetObra().Lugar.ToUpper());
+                            ht.Add("PEDIDO", this.GetPedido().NomePedido.ToUpper());
+                            ht.Add("ETAPA", this.GetSubEtapa().NomeEtapa.ToUpper());
+                            ht.Add("ESCALA", "1/" + Math.Round(this.Getescala(), 1));
+                            ht.Add("UNIDADE", "MILÍMETROS");
+                            ht.Add("COORDENAÇÃO", this.GetSubEtapa().Coordenador.ToUpper());
+                            ht.Add("COORDENACAO", this.GetSubEtapa().Coordenador.ToUpper());
+                            ht.Add("PROJETO", this.GetSubEtapa().Projetista.ToUpper());
+                            ht.Add("DESENHO", Conexoes.DBases.GetUserAtual().nome.ToUpper());
+                            ht.Add("RESPONSAVEL_TECNICO", this.GetSubEtapa().Calculista.ToUpper());
+                            ht.Add("CREA", this.GetSubEtapa().CalculistaCREA.ToUpper());
                         }
 
-                        Atributos.Set(s, acTrans, att);
+                        Atributos.Set(s, acTrans, ht);
 
                     }
 

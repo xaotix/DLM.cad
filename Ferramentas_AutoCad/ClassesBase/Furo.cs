@@ -73,7 +73,7 @@ namespace Ferramentas_DLM.Classes
             {
                 var tolerancia = atributos.Find(x => x[0].ToUpper().StartsWith("TOLE"));
 
-                double diametro = Conexoes.Utilz.Double(this.bloco.Name.Replace("M", "").Replace("N", ""));
+                double diametro = Conexoes.Utilz.Double(this.bloco.Name.Replace("M", "").Replace(Constantes.ATT_N, ""));
                 this.Diametro = diametro;
                 if (tolerancia != null)
                 {

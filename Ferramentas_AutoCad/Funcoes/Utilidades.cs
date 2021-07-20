@@ -513,9 +513,9 @@ namespace Ferramentas_DLM
         public static List<ObjetoMultiline> MlinesPassando(Point3d de, Point3d ate, List<ObjetoMultiline> LS,  bool dentro_do_eixo = false, double tol_X = 0)
         {
             List<ObjetoMultiline> retorno = new List<ObjetoMultiline>();
-
             Point3d nde = new Point3d(de.X - tol_X, de.Y, de.Z);
             Point3d nate = new Point3d(ate.X + tol_X, ate.Y, ate.Z);
+
 
             foreach (var corrente in LS)
             {
@@ -527,11 +527,11 @@ namespace Ferramentas_DLM
                 if (!dentro_do_eixo)
                 {
                     if (
-                       (p1.X <= de.X && p2.X >= ate.X) //se passa
-                    | (p1.X >= de.X && p2.X <= ate.X) //se os dois lados estão dentro
+                       (p1.X <= nde.X && p2.X >= nate.X) //se passa
+                    | (p1.X >= nde.X && p2.X <= nate.X) //se os dois lados estão dentro
 
-                    | (p1.X >= de.X && p2.X >= ate.X && p1.X < ate.X) //se a esquerda está dentro
-                    | (p1.X <= de.X && p2.X <= ate.X && p2.X > de.X) //se a direita está dentro
+                    | (p1.X >= nde.X && p2.X >= nate.X && p1.X < nate.X) //se a esquerda está dentro
+                    | (p1.X <= nde.X && p2.X <= nate.X && p2.X > nde.X) //se a direita está dentro
                                         )
                     {
                         retorno.Add(corrente);
@@ -539,7 +539,7 @@ namespace Ferramentas_DLM
                 }
                 else if (dentro_do_eixo)
                 {
-                    if (p1.X > de.X && p2.X < ate.X) //se os dois lados estão somente dentro
+                    if (p1.X > nde.X && p2.X < nate.X) //se os dois lados estão somente dentro
                     {
                         retorno.Add(corrente);
                     }
@@ -1004,44 +1004,7 @@ namespace Ferramentas_DLM
 
 
 
-        public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
-        {
-            List<Point3d> pts = new List<Point3d>();
-            BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
-            foreach (ObjectId id in acBlkTblRec)
-            {
 
-                var obj = tr.GetObject(id, OpenMode.ForRead);
-                if (obj is Line)
-                {
-                    var tt = obj as Line;
-                    Point3d p1 = tt.StartPoint.TransformBy(s.BlockTransform);
-                    Point3d p2 = tt.EndPoint.TransformBy(s.BlockTransform);
-                    pts.Add(p1);
-                    pts.Add(p2);
-                }
-                else if (obj is Polyline)
-                {
-                    var tt = obj as Polyline;
-                    int vn = tt.NumberOfVertices;
-                    for (int i = 0; i < vn; i++)
-
-                    {
-
-                        // Could also get the 3D point here
-
-                        Point3d pt = tt.GetPoint3dAt(i).TransformBy(s.BlockTransform);
-
-                        pts.Add(pt);
-
-                    }
-
-
-
-                }
-            }
-            return pts;
-        }
 
 
         public static void AddMensagem(string Mensagem)

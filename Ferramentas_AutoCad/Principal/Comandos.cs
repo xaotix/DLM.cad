@@ -202,7 +202,7 @@ namespace Ferramentas_DLM
             mm.ShowDialog();
 
             p.TranspassePadrao = (double)mm.transpasse_padrao.Value;
-            p.OffsetApoio = (double)mm.ofsset_apoio.Value;
+            p.OffsetApoio = (int)mm.ofsset_apoio.Value;
             p.FichaDePintura = mm.ficha_de_pintura.Text;
             p.MapeiaFurosManuais = mm.mapeia_furos_manuais.Checked;
             p.MapeiaFurosManuaisLayer = mm.furos_manuais_layer.Text;
@@ -708,7 +708,7 @@ namespace Ferramentas_DLM
         {
             CADPurlin p = new CADPurlin();
             p.SelecionarObjetos();
-            var eixos = p.GetEixos();
+            var eixos = p.GetGradeEixos();
         }
 
 

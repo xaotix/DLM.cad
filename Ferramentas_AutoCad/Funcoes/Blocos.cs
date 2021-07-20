@@ -18,36 +18,112 @@ namespace Ferramentas_DLM
 {
     public static class Blocos
     {
+        /// <summary>
+        ///Pega o contorno de blocos já escalonando. 
+        ///Suporta somente Polyline, Line e Circle
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="tr"></param>
+        /// <returns></returns>
+        public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
+        {
+            List<Point3d> pts = new List<Point3d>();
+            BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
+            foreach (ObjectId id in acBlkTblRec)
+            {
+
+                var obj = tr.GetObject(id, OpenMode.ForRead);
+                if (obj is Line)
+                {
+                    var tt = obj as Line;
+                    Point3d p1 = tt.StartPoint.TransformBy(s.BlockTransform);
+                    Point3d p2 = tt.EndPoint.TransformBy(s.BlockTransform);
+                    pts.Add(p1);
+                    pts.Add(p2);
+                }
+                else if (obj is Polyline)
+                {
+                    var tt = obj as Polyline;
+                    int vn = tt.NumberOfVertices;
+                    for (int i = 0; i < vn; i++)
+                    {
+                        Point3d pt = tt.GetPoint3dAt(i).TransformBy(s.BlockTransform);
+                        pts.Add(pt);
+                    }
+                }
+                else if(obj is Circle)
+                {
+                    var tt = obj as Circle;
+                    var center = tt.Center.TransformBy(s.BlockTransform);
+
+                    var raioy = tt.Radius * s.ScaleFactors.Y;
+                    var raiox = tt.Radius * s.ScaleFactors.X;
+
+
+                    /*centro*/
+                    pts.Add(new Point3d(center.X, center.Y, 0));
+
+                    /*bordas horizontais*/
+                    pts.Add(new Point3d(center.X + raiox, center.Y, 0));
+                    pts.Add(new Point3d(center.X - raiox, center.Y, 0));
+
+                    /*bordas verticais*/
+                    pts.Add(new Point3d(center.X , center.Y + raioy, 0));
+                    pts.Add(new Point3d(center.X , center.Y - raioy, 0));
+
+                }
+            }
+            return pts;
+        }
         public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
         {
-            Hashtable att = new Hashtable();
-            att.Add("N", N);
-            att.Add("FAMILIA", FAMILIA);
-            att.Add("TIPO", TIPO);
-            att.Add("COMP", COMP);
-            att.Add("CODIGO", CODIGO);
-            att.Add("ID", ID);
-            att.Add("DESC", DESC);
-            att.Add("DESTINO", DESTINO);
-            att.Add("QTD", QTD);
+            Hashtable ht = new Hashtable();
+            ht.Add(Constantes.ATT_N, N);
+            ht.Add(Constantes.ATT_Familia, FAMILIA);
+            ht.Add(Constantes.ATT_Tipo, TIPO);
+            ht.Add(Constantes.ATT_Comprimento, COMP);
+            ht.Add("CODIGO", CODIGO);
+            ht.Add(Constantes.ATT_id, ID);
+            ht.Add(Constantes.ATT_Descricao, DESC);
+            ht.Add(Constantes.ATT_Destino, DESTINO);
+            ht.Add(Constantes.ATT_Quantidade, QTD);
 
-            Inserir(CAD.acDoc, Bloco, origem, escala, rotacao, att);
+            Inserir(CAD.acDoc, Bloco, origem, escala, rotacao, ht);
         }
         public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1.05)
         {
             List<BlockReference> blks = new List<BlockReference>();
-            foreach (var blk in blocos)
+            using (var acTrans = acDoc.TransactionManager.StartOpenCloseTransaction())
             {
-                var d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt1)));
-                var d2 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt2)));
-
-                var scfactor = blk.ScaleFactors.X;
-
-                var dmin = Math.Round(Math.Abs(tolerancia * scfactor));
-
-                if (d1 <= dmin | d2 <= dmin)
+                foreach (var blk in blocos)
                 {
-                    blks.Add(blk);
+
+                    var d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt1)));
+                    var d2 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt2)));
+
+                    var scfactor = blk.ScaleFactors.X;
+
+                    var dmin = Math.Round(Math.Abs(tolerancia * scfactor));
+
+                    if (d1 <= dmin | d2 <= dmin)
+                    {
+                        blks.Add(blk);
+                        continue;
+                    }
+
+
+                    var pts = GetContorno(blk, acTrans);
+
+                    foreach(var pt in pts)
+                    {
+                        d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt)));
+                        if (d1 <= dmin)
+                        {
+                            blks.Add(blk);
+                            break;
+                        }
+                    }
+
                 }
             }
             return blks;

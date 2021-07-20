@@ -413,25 +413,10 @@
             this.ofsset_apoio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ofsset_apoio.Location = new System.Drawing.Point(142, 61);
-            this.ofsset_apoio.Maximum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.ofsset_apoio.Minimum = new decimal(new int[] {
-            11,
-            0,
-            0,
-            0});
             this.ofsset_apoio.Name = "ofsset_apoio";
             this.ofsset_apoio.Size = new System.Drawing.Size(346, 20);
             this.ofsset_apoio.TabIndex = 3;
             this.ofsset_apoio.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ofsset_apoio.Value = new decimal(new int[] {
-            11,
-            0,
-            0,
-            0});
             // 
             // transpasse_padrao
             // 

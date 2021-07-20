@@ -126,7 +126,7 @@ namespace Ferramentas_DLM
             try
             {
 
-                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local);
+                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
                 TecnoMetal = tecnoMetal;
                 this.combo_mercadoria.ItemsSource = TecnoMetal.GetMercadorias();
                 this.combo_material.ItemsSource = TecnoMetal.GetMateriais();

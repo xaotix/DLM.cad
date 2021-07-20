@@ -235,6 +235,12 @@ namespace Ferramentas_DLM
        [Category("Configuração")]
        [DisplayName("Layer Blocos")]
         public string LayerBlocos { get; set; } = "BLOCOS";
+        [Category("Configuração")]
+        [DisplayName("Layer Eixos")]
+        public string LayerEixos { get; set; } = "EIXO";
+        [Category("Configuração")]
+        [DisplayName("Descrição FB")]
+        public string DescFB { get; set; } = "FLANGE BRACE";
 
         [Category("Eixos")]
         [DisplayName("Distancia Mínima")]
@@ -872,7 +878,7 @@ namespace Ferramentas_DLM
 
         public List<BlockReference> Getblocostexto()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Texto));
+            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.BL_Texto));
         }
         public List<BlockReference> GetBlocosEixos()
         {
@@ -889,17 +895,17 @@ namespace Ferramentas_DLM
             foreach(var s in blocos)
             {
                 PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
-                if (npc.Nome.StartsWith("PECA_INDICACAO"))
+                if (npc.Nome.StartsWith(Constantes.PC_Quantificar))
                 {
-                    var blcs = npc.Agrupar(new List<string> { "CODIGO", "N" }, npc.Nome_Bloco);
+                    var blcs = npc.Agrupar(new List<string> { Constantes.ATT_Codigo, Constantes.ATT_N }, npc.Nome_Bloco);
                     foreach (var bl in blcs)
                     {
-                        bl.SetDescPorAtributo("DESC");
-                        bl.SetNumeroPorAtributo("N");
-                        bl.SetDestinoPorAtributo("DESTINO");
-                        bl.SetQtdPorAtributo("QTD");
-                        bl.SetIdPorAtributo("ID");
-                        bl.SetFamiliaPorAtributo("FAMILIA");
+                        bl.SetDescPorAtributo(Constantes.ATT_Descricao);
+                        bl.SetNumeroPorAtributo(Constantes.ATT_N);
+                        bl.SetDestinoPorAtributo(Constantes.ATT_Destino);
+                        bl.SetQtdPorAtributo(Constantes.ATT_Quantidade);
+                        bl.SetIdPorAtributo(Constantes.ATT_id);
+                        bl.SetFamiliaPorAtributo(Constantes.ATT_Familia);
                     }
                     pcs.AddRange(blcs);
                 }
@@ -937,12 +943,12 @@ namespace Ferramentas_DLM
         {
             var atributos = Atributos.GetLinha(bloco);
 
-            Hashtable pp = new Hashtable();
+            Hashtable ht = new Hashtable();
             foreach (var cel in atributos.Celulas)
             {
-                pp.Add(cel.Coluna, cel.Valor);
+                ht.Add(cel.Coluna, cel.Valor);
             }
-            Blocos.Inserir(CAD.acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, pp);
+            Blocos.Inserir(CAD.acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, ht);
         }
         public void AddBarra()
         {

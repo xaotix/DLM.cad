@@ -4,12 +4,17 @@ descobrir pra que servem os campos da DBF que deixo setado em branco, talvez uti
 
 Interface CAD
 
+
+===============================
+cad purlin
 Mapear
 	Purlin
 	Correntes
 	Tirantes
 	Suportes
 	Parafusos
+criar lógica para multilines sobrepostas
+criar opção para definir que bloco são os de eixos
 
 
 Agrupar em blocos ou grouping

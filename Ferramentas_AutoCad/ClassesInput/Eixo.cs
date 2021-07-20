@@ -86,7 +86,7 @@ namespace Ferramentas_DLM
             var c = Conexoes.FuncoesCanvas.Circulo(centro_circulo, raio, espessura, Conexoes.FuncoesCanvas.Cores.Red);
             retorno.Add(c);
 
-            var ptexto = Conexoes.FuncoesCanvas.Label(centro_circulo, this.Nome, tam_texto );
+            var ptexto = Conexoes.FuncoesCanvas.Label(this.Nome, centro_circulo, Conexoes.FuncoesCanvas.Cores.Cyan,  tam_texto );
             retorno.Add(ptexto);
             return retorno;
         }
