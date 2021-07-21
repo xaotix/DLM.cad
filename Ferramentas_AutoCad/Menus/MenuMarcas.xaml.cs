@@ -116,9 +116,9 @@ namespace Ferramentas_DLM
         public static Conexoes.TecnoMetal_Perfil db_perfil { get; set; }
         public static Conexoes.TecnoMetal_Perfil db_perfil_m2 { get; set; }
 
-        public static TecnoMetal TecnoMetal { get; set; }
+        public static CADTecnoMetal TecnoMetal { get; set; }
 
-        public MenuMarcas(TecnoMetal tecnoMetal)
+        public MenuMarcas(CADTecnoMetal tecnoMetal)
         {
 
             InitializeComponent();
@@ -131,7 +131,7 @@ namespace Ferramentas_DLM
                 this.combo_mercadoria.ItemsSource = TecnoMetal.GetMercadorias();
                 this.combo_material.ItemsSource = TecnoMetal.GetMateriais();
 
-                this.Escala = TecnoMetal.Getescala();
+                this.Escala = TecnoMetal.GetEscala();
 
                 combo_tipo_marca.ItemsSource = Conexoes.Utilz.GetLista_Enumeradores<Tipo_Bloco>().ToList().FindAll(x=> x!= Tipo_Bloco._ && x!= Tipo_Bloco.DUMMY);
 
@@ -152,7 +152,7 @@ namespace Ferramentas_DLM
         }
 
         public int Sufix_Count { get; set; } = 1;
-        public void Update(TecnoMetal tecnoMetal)
+        public void Update(CADTecnoMetal tecnoMetal)
         {
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             var ms = MenuMarcas.TecnoMetal.GetMarcas(ref erros).ToList();
@@ -441,7 +441,7 @@ namespace Ferramentas_DLM
 
             this.Visibility = Visibility.Collapsed;
             
-            var nova = MenuMarcas.TecnoMetal.InserirMarcaComposta(MenuMarcas.TecnoMetal.Getescala());
+            var nova = MenuMarcas.TecnoMetal.InserirMarcaComposta(MenuMarcas.TecnoMetal.GetEscala());
             if (nova != null)
             {
                 this.Update(MenuMarcas.TecnoMetal);

@@ -122,7 +122,7 @@ namespace Ferramentas_DLM
             Nome = "";
             if (bloco != null)
             {
-                var atributos = Atributos.GetLinha(this.Bloco);
+                var atributos = Atributos.GetBlocoTag(this.Bloco);
                 var nomes = atributos.Celulas.FindAll(x => x.Coluna.ToUpper().Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
 
                 if (nomes.Count > 0)

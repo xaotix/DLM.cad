@@ -21,14 +21,14 @@ namespace Ferramentas_DLM
         {
             return $"[{this.Tipo}] { this.Nome} - {this.Quantidade}x";
         }
-        public List<BlocoTags> Blocos { get; private set; } = new List<BlocoTags>();
+        public List<BlocoTag> Blocos { get; private set; } = new List<BlocoTag>();
 
         public List<string> GetAtributos()
         {
             var s = this.Blocos.SelectMany(x => x.Celulas).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
             return s;
         }
-        public BlocoTags Atributos
+        public BlocoTag Atributos
         {
             get
             {
@@ -36,7 +36,7 @@ namespace Ferramentas_DLM
                 {
                     return Blocos[0];
                 }
-                return new BlocoTags();
+                return new BlocoTag();
             }
         }
         public string Nome { get; set; } = "";
@@ -163,7 +163,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        public PCQuantificar(Tipo_Objeto Tipo, string nom, string desc, string nome_bloco,List<BlocoTags> objetos)
+        public PCQuantificar(Tipo_Objeto Tipo, string nom, string desc, string nome_bloco,List<BlocoTag> objetos)
         {
             this.Tipo = Tipo;
             this.Nome = nom;
@@ -222,7 +222,7 @@ namespace Ferramentas_DLM
                 this.Quantidade = qtd;
             }
         }
-        public PCQuantificar(Tipo_Objeto tipo, string nome, string desc, string nome_bloco, List<BlocoTags> blocos, string numero,  string familia = "", string destino = "",  string perfil = "", string material = "", double comprimento = 0 )
+        public PCQuantificar(Tipo_Objeto tipo, string nome, string desc, string nome_bloco, List<BlocoTag> blocos, string numero,  string familia = "", string destino = "",  string perfil = "", string material = "", double comprimento = 0 )
         {
             this.Comprimento = comprimento;
             this.Descricao = desc;

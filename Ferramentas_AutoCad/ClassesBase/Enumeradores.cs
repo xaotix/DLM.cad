@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace Ferramentas_DLM
 {
+    public enum Tipo_ObjetoBase
+    {
+        Purlin,
+        Corrente,
+        Tirante,
+        Base,
+    }
     public enum Tipo_Vao
     {
         Intermediario,

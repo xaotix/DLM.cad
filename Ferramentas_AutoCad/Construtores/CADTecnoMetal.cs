@@ -13,7 +13,7 @@ using static Ferramentas_DLM.CAD;
 
 namespace Ferramentas_DLM
 {
-    public class TecnoMetal : ClasseBase
+    public class CADTecnoMetal : CADBase
     {
 
         public List<MarcaTecnoMetal> Getposicoes(ref List<Conexoes.Report> erros, bool update)
@@ -477,8 +477,8 @@ namespace Ferramentas_DLM
                 Conexoes.Wait w = new Conexoes.Wait(tipos.Count);
                 w.Show();
 
-                List<BlocoTags> final = new List<BlocoTags>();
-                List<BlocoTags> desagrupado = new List<BlocoTags>();
+                List<BlocoTag> final = new List<BlocoTag>();
+                List<BlocoTag> desagrupado = new List<BlocoTag>();
                 foreach (var tipo_por_perfil in tipos)
                 {
                     w.somaProgresso();
@@ -496,7 +496,7 @@ namespace Ferramentas_DLM
 
                         var atuais = comp.ToList();
 
-                        List<BlocoTags> bl_agrupados = new List<BlocoTags>();
+                        List<BlocoTag> bl_agrupados = new List<BlocoTag>();
 
                         var blocos_atuais = atuais.SelectMany(x => x.Blocos).ToList();
                         desagrupado.AddRange(blocos_atuais);
@@ -651,16 +651,16 @@ namespace Ferramentas_DLM
                     if(opt.Blocos | opt.Pecas_TecnoMetal)
                     {
                         List<PCQuantificar> blocos_montagem_tecnometal = new List<PCQuantificar>();
-                        foreach (var s in this.Getblocos().FindAll(x => !
+                        foreach (var s in this.GetBlocos().FindAll(x => !
                          x.Name.Contains("*"))
                         .GroupBy(x => x.Name.ToUpper()
                         .Replace("SUPORTE_", "")
                         .Replace("SUPORTE ", "")
                         ))
                         {
-                            var att = Atributos.GetLinha(s.First());
+                            var att = Atributos.GetBlocoTag(s.First());
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetBlocoTag(x)).ToList());
                             if (npc.Nome.StartsWith(Constantes.PC_Quantificar))
                             {
                                 var blcs = npc.Agrupar(new List<string> { "CODIGO", Constantes.ATT_N }, npc.Nome_Bloco);
@@ -772,13 +772,13 @@ namespace Ferramentas_DLM
                             }
 
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,"",s.ToList().Select(x=> new BlocoTags(new List<DB.Celula> { new DB.Celula("VALOR", x.Text) })).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,"",s.ToList().Select(x=> new BlocoTag(new List<DB.Celula> { new DB.Celula("VALOR", x.Text) })).ToList());
                             pecas.Add(npc);
 
                         }
                         foreach (var s in this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")))
                         {
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTags(new List<DB.Celula> { new DB.Celula("VALOR", x.TextString) })).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTag(new List<DB.Celula> { new DB.Celula("VALOR", x.TextString) })).ToList());
                             pecas.Add(npc);
 
                         }
@@ -1401,7 +1401,7 @@ namespace Ferramentas_DLM
                             ht.Add("LOCAL", this.GetObra().Lugar.ToUpper());
                             ht.Add("PEDIDO", this.GetPedido().NomePedido.ToUpper());
                             ht.Add("ETAPA", this.GetSubEtapa().NomeEtapa.ToUpper());
-                            ht.Add("ESCALA", "1/" + Math.Round(this.Getescala(), 1));
+                            ht.Add("ESCALA", "1/" + Math.Round(this.GetEscala(), 1));
                             ht.Add("UNIDADE", "MILÍMETROS");
                             ht.Add("COORDENAÇÃO", this.GetSubEtapa().Coordenador.ToUpper());
                             ht.Add("COORDENACAO", this.GetSubEtapa().Coordenador.ToUpper());
@@ -1436,7 +1436,7 @@ namespace Ferramentas_DLM
                 {
                     acCurDb = CAD.acCurDb;
                 }
-                var att = Atributos.GetLinha(bloco,somente_visiveis, acCurDb);
+                var att = Atributos.GetBlocoTag(bloco,somente_visiveis, acCurDb);
                 att.Add(Constantes.ATT_ARQ, arquivo);
                 if (this.E_Tecnometal(false))
                 {
@@ -2105,7 +2105,7 @@ namespace Ferramentas_DLM
             if(opcao =="Polyline")
             {
                 var sel = SelecionarObjetos( Tipo_Selecao.Polyline);
-                var pols = this.Getpolylinhas();
+                var pols = this.GetPolyLines();
                 if (pols.Count > 0)
                 {
                     var pl = pols[0];
@@ -2203,7 +2203,7 @@ namespace Ferramentas_DLM
 
 
             SelecionarObjetos( Tipo_Selecao.Polyline);
-            var pols = this.Getpolylinhas();
+            var pols = this.GetPolyLines();
             if (pols.Count > 0)
             {
 
@@ -2290,7 +2290,7 @@ namespace Ferramentas_DLM
                     return;
                 }
 
-                Chapa_Dobrada pa = new Chapa_Dobrada(bobina, corte, comprimento, 0, angulos) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, DescontarDobras = !chapa_fina, Ficha = ficha, Quantidade = (int)quantidade ,Mercadoria = mercadoria };
+                ConfiguracaoChapa_Dobrada pa = new ConfiguracaoChapa_Dobrada(bobina, corte, comprimento, 0, angulos) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, DescontarDobras = !chapa_fina, Ficha = ficha, Quantidade = (int)quantidade ,Mercadoria = mercadoria };
                 //pa = Conexoes.Utilz.Propriedades(pa, out status);
                 if (pa.Comprimento > 0 && pa.Espessura > 0 && pa.Marca.Replace(" ", "") != "" && pa.Quantidade > 0)
                 {
@@ -2422,7 +2422,7 @@ namespace Ferramentas_DLM
                         {
                             material = bobina.Material;
                         }
-                        Chapa_Dobrada pa = new Chapa_Dobrada(bobina, largura, comprimento,area, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade, Mercadoria = mercadoria };
+                        ConfiguracaoChapa_Dobrada pa = new ConfiguracaoChapa_Dobrada(bobina, largura, comprimento,area, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade, Mercadoria = mercadoria };
 
                         var origem = Utilidades.PedirPonto3D("Selecione a origem", out status);
                         if (!status)
@@ -2732,7 +2732,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
+                var marcas = Utilidades.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if(marcas.Count>0)
                 {
@@ -2755,7 +2755,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
+                var marcas = Utilidades.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
                 {
@@ -2780,7 +2780,7 @@ namespace Ferramentas_DLM
 
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
 
-                var marcas = Utilidades.Filtrar(this.Getblocos(), Constantes.BlocosTecnoMetalMarcas);
+                var marcas = Utilidades.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
                 {
@@ -2797,7 +2797,7 @@ namespace Ferramentas_DLM
                 }
             }
         }
-        public TecnoMetal()
+        public CADTecnoMetal()
         {
         }
     }

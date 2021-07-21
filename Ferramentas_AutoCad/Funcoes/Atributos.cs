@@ -15,7 +15,6 @@ namespace Ferramentas_DLM
 {
    public static class Atributos
     {
-
         public static List<List<string>> GetStr(BlockReference bloco)
         {
             List<List<string>> retorno = new List<List<string>>();
@@ -92,11 +91,10 @@ namespace Ferramentas_DLM
                 }
             }
         }
-
-        public static BlocoTags GetLinha(BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
+        public static BlocoTag GetBlocoTag(BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
         {
 
-            BlocoTags retorno = new BlocoTags();
+            BlocoTag retorno = new BlocoTag();
 
             retorno.Bloco = bloco;
 
@@ -138,14 +136,10 @@ namespace Ferramentas_DLM
             retorno.Tabela = bloco.Name;
             return retorno;
         }
-        public static DB.Valor Get(BlockReference bloco, string atributo)
+        public static DB.Valor GetValor(BlockReference bloco, string atributo)
         {
-            var s = GetLinha(bloco);
+            var s = GetBlocoTag(bloco);
             return s.Get(atributo);
         }
-
-
-
-
     }
 }

@@ -11,7 +11,7 @@ using static Ferramentas_DLM.CAD;
 
 namespace Ferramentas_DLM
 {
-    public class Monitoramento :ClasseBase
+    public class CADMonitoramento :CADBase
     {
         public void MonitorarRotinas()
         {
@@ -62,7 +62,7 @@ namespace Ferramentas_DLM
         }
 
 
-        public Monitoramento()
+        public CADMonitoramento()
         {
             MonitorarRotinas();
         }

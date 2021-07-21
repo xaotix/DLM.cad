@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace Ferramentas_DLM
 {
-   public class BlocoTags: DB.Linha
+   public class BlocoTag: DB.Linha
     {
         public BlockReference Bloco { get; set; }
-        public BlocoTags()
+        public BlocoTag()
         {
 
         }
 
-        public List<BlocoTags> Filhos { get; set; } = new List<BlocoTags>();
+        public List<BlocoTag> Filhos { get; set; } = new List<BlocoTag>();
 
         public double GetAngulo()
         {
@@ -26,21 +26,30 @@ namespace Ferramentas_DLM
             }
             return 0;
         }
+
+        private Coordenada _coordenada { get; set; }
         public Coordenada GetCoordenada()
         {
-            if(Bloco==null)
+            if(_coordenada==null)
             {
-                return new Coordenada();
+                if (Bloco == null)
+                {
+                    return new Coordenada();
+                }
+                else
+                {
+                    _coordenada = new Coordenada(this.Bloco.Position, -1, Tipo_Coordenada.Bloco);
+                }
             }
-            else
-            {
-                return new Coordenada(this.Bloco.Position, -1, Tipo_Coordenada.Bloco);
-            }
+            return _coordenada;
+
         }
 
-        public BlocoTags(List<Celula> celulas) : base(celulas)
+        public BlocoTag(List<Celula> celulas) : base(celulas)
         {
             this.Celulas = celulas;
         }
+
+       
     }
 }

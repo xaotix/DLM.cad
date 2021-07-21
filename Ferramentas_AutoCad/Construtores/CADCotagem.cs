@@ -20,7 +20,7 @@ using Autodesk.AutoCAD.EditorInput;
 namespace Ferramentas_DLM
 {
     [Serializable]
-    public class Cotagem :ClasseBase
+    public class CADCotagem :CADBase
     {
      
 
@@ -28,17 +28,17 @@ namespace Ferramentas_DLM
 
         public List<Line> Getlinhas_perfil()
         {
-            return Getlinhas().FindAll(x => x.Layer == LayerLinhas && x.Length >= distancia_minima_X);
+            return GetLinhas().FindAll(x => x.Layer == LayerLinhas && x.Length >= distancia_minima_X);
         }
 
         public List<Line> Getlinhas_projecao()
         {
-            return Getlinhas().FindAll(x => x.Layer == LayerProjecao && x.Length >= distancia_minima_X && x.Length >= tam_minimo_projecao);
+            return GetLinhas().FindAll(x => x.Layer == LayerProjecao && x.Length >= distancia_minima_X && x.Length >= tam_minimo_projecao);
         }
 
         public List<BlockReference> Getfuros_vista()
         {
-            return Getblocos().FindAll(x =>
+            return GetBlocos().FindAll(x =>
                  x.Name.ToUpper() == "M8"
                 | x.Name.ToUpper() == "M10"
                 | x.Name.ToUpper() == "M12"
@@ -71,17 +71,17 @@ namespace Ferramentas_DLM
         }
         public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
-            return Getblocos().FindAll(x =>
+            return GetBlocos().FindAll(x =>
                  Constantes.BlocosTecnoMetalMarcas.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null |
                  Constantes.BlocosTecnoMetalPosicoes.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null 
                                     );
         }
         public List<BlockReference> GetFuros_corte()
         {
-            return Getblocos().FindAll(x => x.Name.ToUpper() == "MS");
+            return GetBlocos().FindAll(x => x.Name.ToUpper() == "MS");
         }
         #endregion
-        public void GetVars(Cotagem c)
+        public void GetVars(CADCotagem c)
         {
             this.acumuladas_baixo = c.acumuladas_baixo;
             this.acumuladas_cima = c.acumuladas_cima;
@@ -762,24 +762,24 @@ namespace Ferramentas_DLM
         [DisplayName("Projeção - Dist. Mínima Entre Furos")]
         public double linha_projecao_dist_min { get; set; } = 25;
 
-        public List<LinhaFuros> GetFurosPorDiam()
+        public List<LinhaBlocoFuro> GetFurosPorDiam()
         {
-            List<LinhaFuros> coordenadas = new List<LinhaFuros>();
-            var furos = this.Getfuros_vista().Select(x => new Furo(x)).ToList();
+            List<LinhaBlocoFuro> coordenadas = new List<LinhaBlocoFuro>();
+            var furos = this.Getfuros_vista().Select(x => new BlocoFuro(x)).ToList();
 
-            var ret = furos.GroupBy(x => x.GetNome()).Select(x => new LinhaFuros(x.ToList())).ToList();
+            var ret = furos.GroupBy(x => x.GetChave()).Select(x => new LinhaBlocoFuro(x.ToList())).ToList();
 
             return ret;
         }
 
-        public List<LinhaFuros> GetCoordenadasFurosProjecao()
+        public List<LinhaBlocoFuro> GetCoordenadasFurosProjecao()
         {
-            List<LinhaFuros> coordenadas = new List<LinhaFuros>();
+            List<LinhaBlocoFuro> coordenadas = new List<LinhaBlocoFuro>();
             var furos = this.Getfuros_vista();
             var ys = furos.Select(x => Math.Round(x.Position.Y)).Distinct().ToList().OrderBy(x => x).ToList();
             for (int i = 0; i < ys.Count; i++)
             {
-                coordenadas.Add(new LinhaFuros(furos.FindAll(x => Math.Round(x.Position.Y) == ys[i] | Math.Round(x.Position.Y)+1 == ys[i] | Math.Round(x.Position.Y)-1 == ys[i]).ToList(), ys[i]));
+                coordenadas.Add(new LinhaBlocoFuro(furos.FindAll(x => Math.Round(x.Position.Y) == ys[i] | Math.Round(x.Position.Y)+1 == ys[i] | Math.Round(x.Position.Y)-1 == ys[i]).ToList(), ys[i]));
             }
 
             return coordenadas;
@@ -815,7 +815,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                return Getescala() * dist0;
+                return GetEscala() * dist0;
             }
         }
         [XmlIgnore]
@@ -823,7 +823,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                return Getescala() * dist1;
+                return GetEscala() * dist1;
             }
         }
         [XmlIgnore]
@@ -831,7 +831,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                return Getescala() * dist2;
+                return GetEscala() * dist2;
             }
         }
 
@@ -1192,7 +1192,7 @@ namespace Ferramentas_DLM
         {
             Calcular_Cantos();
             AddBarra();
-            AddMensagem("\nEscala: " + Getescala());
+            AddMensagem("\nEscala: " + GetEscala());
             AddMensagem("\nDist0: " + dist0);
             AddMensagem("\nDist1: " + dist1);
             AddMensagem("\nDist2: " + dist2);
@@ -1211,7 +1211,7 @@ namespace Ferramentas_DLM
             AddMensagem("\nAltura: " + altura);
             AddMensagem("\nLargura: " + largura);
             AddBarra();
-            AddMensagem("\nLinhas:" + Getlinhas().Count);
+            AddMensagem("\nLinhas:" + GetLinhas().Count);
             AddMensagem("\nLinhas de perfil:" + Getlinhas_perfil().Count);
             AddMensagem("\nProjeções:" + Getlinhas_projecao().Count);
             AddBarra();
@@ -1222,7 +1222,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                return this.Getescala() * 4.2 * this.widthfactor ;
+                return this.GetEscala() * 4.2 * this.widthfactor ;
             }
         }
 
@@ -1613,7 +1613,7 @@ namespace Ferramentas_DLM
             double dist = Math.Abs(ponto.X - ordinate_anterior);
 
 
-            if (sequencia > 0 && dist < (Getescala() * 2.1) && sequencia != max_sequencia)
+            if (sequencia > 0 && dist < (GetEscala() * 2.1) && sequencia != max_sequencia)
             {
                 if (cota_anterior_movida)
                 {
@@ -1621,7 +1621,7 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    posicao = new Point3d(posicao.X + (2.2 * Getescala()), posicao.Y, posicao.Z);
+                    posicao = new Point3d(posicao.X + (2.2 * GetEscala()), posicao.Y, posicao.Z);
                     cota_anterior_movida = true;
                 }
             }
@@ -1702,9 +1702,9 @@ namespace Ferramentas_DLM
             }
 
             //limpa as cotas atuais
-             this.Apagar(this.Getcotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
+            Utilidades.Apagar(this.GetCotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
 
-                if (Getlinhas().Count == 0 | selecao.Status != PromptStatus.OK)
+                if (GetLinhas().Count == 0 | selecao.Status != PromptStatus.OK)
                 {
                     AddMensagem("\nNenhuma linha encontrada na seleção.\nÉ necessário selecionar uma peça de TecnoMetal.\nExploda a seleção antes de tentar cotar.");
                     return "";
@@ -1729,7 +1729,7 @@ namespace Ferramentas_DLM
 
                 if (marcas_ajusta_escala)
                 {
-                    UpdateEscala(this.GetBlocos_Marcas_Posicoes());
+                    Blocos.SetEscala(this.GetBlocos_Marcas_Posicoes(),this.GetEscala());
                 }
 
 
@@ -1788,8 +1788,7 @@ namespace Ferramentas_DLM
                 {
                     foreach (var s in this.GetFurosPorDiam())
                     {
-                        Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1 / 2).GetPoint(), s.Nome, size * this.Getescala());
-
+                        Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1 / 2).GetPoint(), s.Nome, size * this.GetEscala());
                     }
                 }
 

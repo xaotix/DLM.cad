@@ -12,8 +12,8 @@ namespace Ferramentas_DLM
 {
     public partial class Tela : Form
     {
-        public Cotagem mm { get; set; }
-        public Tela(Cotagem mm)
+        public CADCotagem mm { get; set; }
+        public Tela(CADCotagem mm)
         {
             this.mm = mm;
             InitializeComponent();
@@ -23,7 +23,7 @@ namespace Ferramentas_DLM
 
         }
 
-        private void getvars(Cotagem mm)
+        private void getvars(CADCotagem mm)
         {
             if (mm.tipo_desenho.StartsWith("V") | mm.tipo_desenho == "")
             {

@@ -90,44 +90,6 @@ namespace Ferramentas_DLM
 
             Inserir(CAD.acDoc, Bloco, origem, escala, rotacao, ht);
         }
-        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1.05)
-        {
-            List<BlockReference> blks = new List<BlockReference>();
-            using (var acTrans = acDoc.TransactionManager.StartOpenCloseTransaction())
-            {
-                foreach (var blk in blocos)
-                {
-
-                    var d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt1)));
-                    var d2 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt2)));
-
-                    var scfactor = blk.ScaleFactors.X;
-
-                    var dmin = Math.Round(Math.Abs(tolerancia * scfactor));
-
-                    if (d1 <= dmin | d2 <= dmin)
-                    {
-                        blks.Add(blk);
-                        continue;
-                    }
-
-
-                    var pts = GetContorno(blk, acTrans);
-
-                    foreach(var pt in pts)
-                    {
-                        d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt)));
-                        if (d1 <= dmin)
-                        {
-                            blks.Add(blk);
-                            break;
-                        }
-                    }
-
-                }
-            }
-            return blks;
-        }
         public static void Criar(string nome, List<Entity> Objetos, Point3d origem)
         {
             string nome_fim = nome;
@@ -166,7 +128,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
         public static void MarcaComposta(Point3d p0, string marca, double quantidade, string ficha, string mercadoria, double escala = 10)
         {
             try
@@ -188,8 +149,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
-
         public static void Inserir(Document acDoc, string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
         {
             string endereco = "";
@@ -476,7 +435,7 @@ namespace Ferramentas_DLM
 
             }
         }
-        public static void MarcaChapa(Point3d p0, Chapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao = "")
+        public static void MarcaChapa(Point3d p0, ConfiguracaoChapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao = "")
         {
             try
             {
@@ -559,7 +518,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
         public static void MarcaElemM2(Point3d p0, Conexoes.TecnoMetal_Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
@@ -608,8 +566,6 @@ namespace Ferramentas_DLM
             }
 
         }
-
-
         public static void MarcaElemUnitario(Point3d p0, RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
         {
             try
@@ -677,7 +633,7 @@ namespace Ferramentas_DLM
             }
             else if (cam.Familia == DLMCam.Familia.Chapa)
             {
-                MarcaChapa(origem, new Chapa_Dobrada(cam), Tipo_Bloco.Chapa, escala);
+                MarcaChapa(origem, new ConfiguracaoChapa_Dobrada(cam), Tipo_Bloco.Chapa, escala);
             }
             else
             {
@@ -724,6 +680,115 @@ namespace Ferramentas_DLM
                 return nt.Name;
             }
             return bloco.Name;
+        }
+        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1.05)
+        {
+            List<BlockReference> blks = new List<BlockReference>();
+            using (var acTrans = acDoc.TransactionManager.StartOpenCloseTransaction())
+            {
+                foreach (var blk in blocos)
+                {
+
+                    var d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt1)));
+                    var d2 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt2)));
+
+                    var scfactor = blk.ScaleFactors.X;
+
+                    var dmin = Math.Round(Math.Abs(tolerancia * scfactor));
+
+                    if (d1 <= dmin | d2 <= dmin)
+                    {
+                        blks.Add(blk);
+                        continue;
+                    }
+
+
+                    var pts = GetContorno(blk, acTrans);
+
+                    foreach(var pt in pts)
+                    {
+                        d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt)));
+                        if (d1 <= dmin)
+                        {
+                            blks.Add(blk);
+                            break;
+                        }
+                    }
+
+                }
+            }
+            return blks;
+        }
+        public static List<BlockReference> GetBlocosPrancha(string nome = "")
+        {
+            List<BlockReference> blocos = new List<BlockReference>();
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                foreach (ObjectId objId in acBlkTblRec)
+                {
+                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
+                    if (ent is BlockReference)
+                    {
+                        var s = ent as BlockReference;
+
+                        if (nome != "")
+                        {
+                            if (s.Name.Replace(" ", "").ToUpper() == nome.ToUpper().Replace(" ", ""))
+                            {
+                                blocos.Add(s);
+                            }
+                        }
+                        else
+                        {
+                            blocos.Add(s);
+                        }
+
+                    }
+                }
+
+
+
+            }
+            return blocos;
+        }
+        public static void Mover(BlockReference bloco, Point3d posicao)
+        {
+            Clonar(bloco, posicao);
+            Utilidades.Apagar(new List<Entity> { bloco });
+        }
+        public static void Clonar(BlockReference bloco, Point3d novaposicao)
+        {
+            var atributos = Atributos.GetBlocoTag(bloco);
+
+            Hashtable ht = new Hashtable();
+            foreach (var cel in atributos.Celulas)
+            {
+                ht.Add(cel.Coluna, cel.Valor);
+            }
+            Blocos.Inserir(CAD.acDoc, bloco.Name, novaposicao, bloco.ScaleFactors.X, bloco.Rotation, ht);
+        }
+        public static void SetEscala(List<BlockReference> blocos, double escala)
+        {
+            if (escala > 0)
+            {
+                using (acDoc.LockDocument())
+                {
+                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                    {
+                        foreach (var bl in blocos)
+                        {
+                            bl.TransformBy(Matrix3d.Scaling(escala / bl.ScaleFactors.X, bl.Position));
+                        }
+                        acTrans.Commit();
+                    }
+                    acDoc.Editor.Regen();
+                }
+            }
+
         }
 
     }

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Ferramentas_DLM
 {
-    public class Chapa_Dobrada
+    public class ConfiguracaoChapa_Dobrada
     {
         private double _Peso_Unitario { get; set; } = 0;
         private double _Area { get; set; } = 0;
@@ -149,7 +149,7 @@ namespace Ferramentas_DLM
         [ReadOnly(true)]
         public string SAP { get; set; } = "";
 
-        public Chapa_Dobrada(Conexoes.Bobina bobina, double corte, double comprimento, double area,List<double> dobras, string Descricao = "")
+        public ConfiguracaoChapa_Dobrada(Conexoes.Bobina bobina, double corte, double comprimento, double area,List<double> dobras, string Descricao = "")
         {
             this._Corte = Math.Round(corte);
             this.Espessura = bobina.Espessura;
@@ -168,7 +168,7 @@ namespace Ferramentas_DLM
         {
             this._Superficie = valor;
         }
-        public Chapa_Dobrada(Conexoes.Bobina bobina, double comprimento, double largura)
+        public ConfiguracaoChapa_Dobrada(Conexoes.Bobina bobina, double comprimento, double largura)
         {
             this._Corte = largura;
             this.Comprimento = comprimento;
@@ -182,7 +182,7 @@ namespace Ferramentas_DLM
             this.Comprimento = comprimento;
             this.Descricao = $"Ch #{this.Espessura.ToString("N2")}x{this.Largura.ToString("N0")}x{this.Comprimento.ToString("N0")}";
         }
-        public Chapa_Dobrada(DLMCam.ReadCam cam)
+        public ConfiguracaoChapa_Dobrada(DLMCam.ReadCam cam)
         {
             this.Comprimento = cam.Comprimento;
             this.Espessura = cam.Espessura;

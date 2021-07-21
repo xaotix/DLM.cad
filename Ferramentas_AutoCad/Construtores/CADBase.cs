@@ -24,45 +24,8 @@ using Autodesk.AutoCAD.PlottingServices;
 namespace Ferramentas_DLM
 {
     [Serializable]
-    public class ClasseBase
+    public class CADBase
     {
-        public List<BlockReference> GetBlocosPrancha(string nome = "")
-        {
-            List<BlockReference> blocos = new List<BlockReference>();
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
-                foreach (ObjectId objId in acBlkTblRec)
-                {
-                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
-                    if (ent is BlockReference)
-                    {
-                        var s = ent as BlockReference;
-
-                        if (nome != "")
-                        {
-                            if(s.Name.Replace(" ","").ToUpper() == nome.ToUpper().Replace(" ", ""))
-                            {
-                                blocos.Add(s);
-                            }
-                        }
-                        else
-                        {
-                        blocos.Add(s);
-                        }
-
-                    }
-                }
-
-
-
-            }
-            return blocos;
-        }
-
         public void ApagarCotas()
         {
             var sel = SelecionarObjetos(Tipo_Selecao.Dimensoes);
@@ -85,31 +48,9 @@ namespace Ferramentas_DLM
                 }
             }
 
-            Apagar(remover);
+            Utilidades.Apagar(remover);
 
 
-        }
-        public void Apagar(Entity ent)
-        {
-            Apagar(new List<Entity> { ent });
-        }
-        public void Apagar(List<Entity> entities)
-        {
-            if(entities.Count==0) { return; }
-            using (acDoc.LockDocument())
-            {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                {
-                    foreach (var b in entities)
-                    {
-                        Entity acEnt = acTrans.GetObject(b.ObjectId, OpenMode.ForWrite) as Entity;
-                        acEnt.Erase(true);
-                    }
-                    acTrans.Commit();
-
-                }
-                acDoc.Editor.Regen();
-            }
         }
         public  void SetViewport(bool block = true, string layer = "MV")
         {
@@ -158,40 +99,13 @@ namespace Ferramentas_DLM
                 return true;
             }
         }
-
-
         public void CriarLayersPadrao()
         {
             string nome = "LAYERS_PADRAO";
             
             Blocos.Inserir(CAD.acDoc, nome, new Point3d(), 0.001, 0, new Hashtable());
-            Apagar(GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
-
-
+            Utilidades.Apagar(Blocos.GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
         }
-
-        public void SelecionarTudoPrancha()
-        {
-            List<Entity> retorno = new List<Entity>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-                /*blocos*/
-                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
-                foreach (ObjectId objId in acBlkTblRec)
-                {
-                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
-                    retorno.Add(ent);
-                }
-
-              
-            }
-            selecoes.Clear();
-            selecoes.AddRange(retorno);
-        }
-
-
         public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
             var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg").Select(x=>new Conexoes.Arquivo(x)).ToList();
@@ -232,8 +146,10 @@ namespace Ferramentas_DLM
         {
             CAD.acadApp.ZoomExtents();
         }
-       [Category("Configuração")]
-       [DisplayName("Layer Blocos")]
+
+
+        [Category("Configuração")]
+        [DisplayName("Layer Blocos")]
         public string LayerBlocos { get; set; } = "BLOCOS";
         [Category("Configuração")]
         [DisplayName("Layer Eixos")]
@@ -246,7 +162,7 @@ namespace Ferramentas_DLM
         [DisplayName("Distancia Mínima")]
         public double DistanciaMinimaEixos { get; set; } = 250;
 
-        [Category("Configuração")]
+        [Category("Informações")]
         [DisplayName("Pasta Arquivo")]
         public string Pasta
         {
@@ -262,6 +178,8 @@ namespace Ferramentas_DLM
             }
         }
 
+        [Category("Informações")]
+        [DisplayName("Nome Arquivo")]
         public string Nome
         {
             get
@@ -269,6 +187,9 @@ namespace Ferramentas_DLM
                 return Conexoes.Utilz.getNome(acDoc.Name).ToUpper().Replace(".DWG","");
             }
         }
+
+        [Category("Informações")]
+        [DisplayName("Endereço")]
         public string Endereco
         {
             get
@@ -277,171 +198,15 @@ namespace Ferramentas_DLM
             }
         }
 
+        [Browsable(false)]
+        public List<Entity> selecoes { get; set; } = new List<Entity>();
 
-        public List<string> GetMLStyles()
-        {
-            List<string> estilos = new List<string>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                DBDictionary acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId,OpenMode.ForRead) as DBDictionary;
-
-                foreach (var acObjId in acLyrTbl)
-                {
-                    MlineStyle acLyrTblRec;
-                    acLyrTblRec = acTrans.GetObject(acObjId.Value, OpenMode.ForRead) as MlineStyle;
-
-                    estilos.Add(acLyrTblRec.Name);
-                }
-
-            }
-            return estilos;
-        }
        
         public void SetUCSParaWorld()
         {
             acDoc.Editor.CurrentUserCoordinateSystem = Matrix3d.Identity;
             acDoc.Editor.Regen();
         }
-        public void GetInfos()
-        {
-            string msg = "";
-            var selecao = editor.GetEntity("\nSelecione: ");
-            if (selecao.Status != PromptStatus.OK)
-                return;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                Entity obj = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
-
-                msg = string.Format("Propriedades de {0}:\n", selecao.GetType().Name);
-
-
-
-                msg += "\n\nPropriedades custom\n\n";
-
-                msg += RetornaCustomProperties(obj.ObjectId, editor);
-
-                var props = GetOPMProperties(obj.ObjectId);
-
-                foreach (var pair in props)
-                {
-                    msg += string.Format("\t{0} = {1}\n", pair.Key, pair.Value);
-
-                    if (Marshal.IsComObject(pair.Value))
-                        Marshal.ReleaseComObject(pair.Value);
-                }
-
-
-                msg += "\n\nPropriedades padrao\n\n";
-                PropertyInfo[] piArr = obj.GetType().GetProperties();
-                foreach (PropertyInfo pi in piArr)
-                {
-                    object value = null;
-                    try
-                    {
-                        value = pi.GetValue(obj, null);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        //if (ex.InnerException is Autodesk.AutoCAD.Runtime.Exception &&
-                        //    (ex.InnerException as Autodesk.AutoCAD.Runtime.Exception).ErrorStatus == Autodesk.AutoCAD.Runtime.ErrorStatus.NotApplicable)
-                        //    continue;
-                        //else
-                        //    throw;
-                        msg += string.Format("\t{0}: {1}\n", pi.Name, "Erro ao tentar ler: " + ex.Message);
-                    }
-
-                    msg += string.Format("\t{0}: {1}\n", pi.Name, value);
-                }
-
-
-
-                //AddMensagem("\n" + msg);
-            }
-
-
-
-            Conexoes.Utilz.JanelaTexto(msg, "Propriedades");
-        }
-
-        private string RetornaCustomProperties(ObjectId id, Editor ed)
-        {
-            string msg = "";
-            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
-
-            using (var acTrans = id.Database.TransactionManager.StartOpenCloseTransaction())
-            {
-                var dbObj = acTrans.GetObject(id, OpenMode.ForRead);
-                var types = new List<Type>();
-                types.Add(dbObj.GetType());
-                while (true)
-                {
-                    var type = types[0].BaseType;
-                    types.Insert(0, type);
-                    if (type == typeof(RXObject))
-                        break;
-                }
-                foreach (Type t in types)
-                {
-                   msg += ($"\n\n - {t.Name} -");
-                    foreach (var prop in t.GetProperties(flags))
-                    {
-                        msg += "\n" + prop.Name;
-                        try
-                        {
-                            msg += " = " + (prop.GetValue(dbObj, null));
-                        }
-                        catch (System.Exception e)
-                        {
-                            msg += (e.Message);
-                        }
-                    }
-                }
-                acTrans.Commit();
-            }
-
-            return msg;
-        }
-        public static IDictionary<string, object> GetOPMProperties(ObjectId id)
-        {
-            Dictionary<string, object> map = new Dictionary<string, object>();
-            IntPtr pUnk = ObjectPropertyManagerPropertyUtility.GetIUnknownFromObjectId(id);
-            if (pUnk != IntPtr.Zero)
-            {
-                using (CollectionVector properties = ObjectPropertyManagerProperties.GetProperties(id, false, false))
-                {
-                    int cnt = properties.Count();
-                    if (cnt != 0)
-                    {
-                        using (CategoryCollectable category = properties.Item(0) as CategoryCollectable)
-                        {
-                            CollectionVector props = category.Properties;
-                            int propCount = props.Count();
-                            for (int j = 0; j < propCount; j++)
-                            {
-                                using (PropertyCollectable prop = props.Item(j) as PropertyCollectable)
-                                {
-                                    if (prop == null)
-                                        continue;
-                                    object value = null;
-                                    if (prop.GetValue(pUnk, ref value) && value != null)
-                                    {
-                                        if (!map.ContainsKey(prop.Name))
-                                            map[prop.Name] = value;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                Marshal.Release(pUnk);
-            }
-            return map;
-        }
-
-
-
-
 
         public void Comando(params object[] comando)
         {
@@ -619,7 +384,6 @@ namespace Ferramentas_DLM
 
 
         #region Cotas
-
         public RotatedDimension AddCotaVertical(Coordenada inicio, Coordenada fim, string texto, Point3d posicao, bool dimtix =false, double tam = 0, bool juntar_cotas =false, bool ultima_cota =false)
         {
             RotatedDimension acRotDim;
@@ -768,69 +532,75 @@ namespace Ferramentas_DLM
 
             }
         }
-
         #endregion
 
 
         #region mapeamento de objetos a serem usados
-
-
-        public List<Line> GetEixos_Linhas()
+        public List<string> GetMLStyles()
         {
-            return Utilidades.LinhasVerticais(this.Getlinhas()).FindAll(x =>
+            List<string> estilos = new List<string>();
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                DBDictionary acLyrTbl;
+                acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead) as DBDictionary;
+
+                foreach (var acObjId in acLyrTbl)
+                {
+                    MlineStyle acLyrTblRec;
+                    acLyrTblRec = acTrans.GetObject(acObjId.Value, OpenMode.ForRead) as MlineStyle;
+
+                    estilos.Add(acLyrTblRec.Name);
+                }
+
+            }
+            return estilos;
+        }
+        public List<Line> GetLinhas_Eixos()
+        {
+            return Utilidades.LinhasVerticais(this.GetLinhas()).FindAll(x =>
                 (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) && 
                 (x.Layer.ToUpper().Contains("EIXO"))
                 ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.First()).OrderBy(x => x.StartPoint.X).ToList();
         }
-
-        public List<Polyline> GetEixos_PolyLines()
+        public List<Polyline> GetPolyLines_Eixos()
         {
-            return Utilidades.PolylinesVerticais(this.Getpolylinhas()).FindAll(x =>
+            return Utilidades.PolylinesVerticais(this.GetPolyLines()).FindAll(x =>
                 (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) &&
                 (x.Layer.ToUpper().Contains("EIXO"))
                 ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.First()).OrderBy(x => x.StartPoint.X).ToList();
         }
-        public List<Polyline> GetPolylinesVerticais(List<Polyline> polylines)
+        public List<Polyline> GetPolyLines_Verticais(List<Polyline> polylines)
         {
             return Utilidades.PolylinesVerticais(polylines);
         }
-        public List<Polyline> GetPolylinesHorizontais(List<Polyline> polylines)
+        public List<Polyline> GetPolyLines_Horizontais(List<Polyline> polylines)
         {
             return Utilidades.PolylinesHorizontais(polylines);
         }
         #endregion
 
-        public Point3d Centro(Point3d p1, Point3d p2)
-        {
-            return new Coordenada(p1).GetCentro(p2).GetPoint();
-        }
-        public Point3d Mover(Point3d p, double angulo, double distancia)
-        {
-            return new Coordenada(p).Mover(angulo, distancia).GetPoint();
-        }
+
         #region listas de itens selecionados
-        public List<Line> Getlinhas()
+        public List<Line> GetLinhas()
         {
             return selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList();
         }
-
-        public List<Line> Getlinhas_Verticais()
+        public List<Line> GetLinhas_Verticais()
         {
             
-            return Getlinhas().FindAll(x=> Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 90 | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 270).OrderBy(x => x.StartPoint.X).ToList();
+            return GetLinhas().FindAll(x=> Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 90 | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 270).OrderBy(x => x.StartPoint.X).ToList();
         }
-        public List<Line> Getlinhas_Horizontais()
+        public List<Line> GetLinhas_Horizontais()
         {
-            return Getlinhas().FindAll(x => 
+            return GetLinhas().FindAll(x => 
             Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 0 
             | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 360
             |  Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 180).OrderBy(x=>x.StartPoint.Y).ToList();
         }
-        public List<Polyline> Getpolylinhas()
+        public List<Polyline> GetPolyLines()
         {
             return selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).ToList();
         }
-
         public List<MText> GetMtexts()
         {
             return selecoes.FindAll(x => x is MText).Select(x => x as MText).ToList();
@@ -839,25 +609,19 @@ namespace Ferramentas_DLM
         {
             return selecoes.FindAll(x => x is Autodesk.AutoCAD.DatabaseServices.DBText).Select(x => x as DBText).ToList();
         }
-
-        public List<BlockReference> Getblocos()
+        public List<BlockReference> GetBlocos()
         {
             return selecoes.FindAll(x => x is BlockReference).Select(x => x as BlockReference).ToList();
         }
-        [Browsable(false)]
-        public List<Entity> selecoes { get; set; } = new List<Entity>();
-
-        public List<Mline> Getmultilines()
+        public List<Mline> GetMultilines()
         {
             return selecoes.FindAll(x => x is Mline).Select(x => x as Mline).ToList();
         }
-
-        public List<Xline> Getxlines()
+        public List<Xline> GetXlines()
         {
             return selecoes.FindAll(x => x is Xline).Select(x => x as Xline).ToList();
         }
-
-        public List<Entity> Getcotas()
+        public List<Entity> GetCotas()
         {
             return selecoes.FindAll(x =>
 
@@ -875,26 +639,20 @@ namespace Ferramentas_DLM
 
             );
         }
-
-        public List<BlockReference> Getblocostexto()
-        {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.BL_Texto));
-        }
-        public List<BlockReference> GetBlocosEixos()
+        public List<BlockReference> GetBlocos_Eixos()
         {
             /*pega blocos dinâmicos*/
-            return this.Getblocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO"));
+            return this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO"));
         }
-
-        public List<PCQuantificar> GetBlocosIndicacaoPecas()
+        public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
             List<PCQuantificar> pcs = new List<PCQuantificar>();
-            var blocos = this.Getblocos().FindAll(x => x.Name.ToUpper().StartsWith(Constantes.PC_Quantificar)).GroupBy(x => x.Name);
+            var blocos = this.GetBlocos().FindAll(x => x.Name.ToUpper().StartsWith(Constantes.PC_Quantificar)).GroupBy(x => x.Name);
 
 
             foreach(var s in blocos)
             {
-                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetLinha(x)).ToList());
+                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetBlocoTag(x)).ToList());
                 if (npc.Nome.StartsWith(Constantes.PC_Quantificar))
                 {
                     var blcs = npc.Agrupar(new List<string> { Constantes.ATT_Codigo, Constantes.ATT_N }, npc.Nome_Bloco);
@@ -916,7 +674,7 @@ namespace Ferramentas_DLM
         }
 
         #endregion
-        public double Getescala()
+        public double GetEscala()
         {
             return acCurDb.Dimscale;
         }
@@ -934,73 +692,14 @@ namespace Ferramentas_DLM
         {
             acDoc.Editor.WriteMessage(Mensagem);
         }
-        public void MoverBloco(BlockReference bloco, Point3d posicao, Transaction trans)
-        {
-            ClonarBloco(bloco, posicao);
-            Apagar(new List<Entity> { bloco });
-        }
-        public void ClonarBloco(BlockReference bloco, Point3d posicao)
-        {
-            var atributos = Atributos.GetLinha(bloco);
 
-            Hashtable ht = new Hashtable();
-            foreach (var cel in atributos.Celulas)
-            {
-                ht.Add(cel.Coluna, cel.Valor);
-            }
-            Blocos.Inserir(CAD.acDoc, bloco.Name, posicao, bloco.ScaleFactors.X, bloco.Rotation, ht);
-        }
         public void AddBarra()
         {
             AddMensagem("\n=====================================================================\n");
 
         }
-        public void UpdateEscala(List<BlockReference> blocos)
-        {
-            if (Getescala() > 0)
-            {
-                foreach (var bl in blocos)
-                {
-                    bl.TransformBy(Matrix3d.Scaling(Getescala() / bl.ScaleFactors.X, bl.Position));
-                }
-            }
 
-        }
-        public static void LimparCotas(OpenCloseTransaction acTrans, SelectionSet acSSet)
-        {
-            if (acTrans == null | acSSet == null)
-            {
-                return;
-            }
-            // Step through the objects in the selection set
-            foreach (SelectedObject acSSObj in acSSet)
-            {
-                // Check to make sure a valid SelectedObject object was returned
-                if (acSSObj != null)
-                {
-                    // Open the selected object for write
-                    Entity acEnt = acTrans.GetObject(acSSObj.ObjectId, OpenMode.ForWrite) as Entity;
 
-                    if (acEnt != null)
-                    {
-                        if (
-                            acEnt is AlignedDimension |
-                            acEnt is OrdinateDimension |
-                            acEnt is RadialDimension |
-                            acEnt is RotatedDimension |
-                            acEnt is MLeader |
-                            acEnt is MText |
-                            acEnt is DBText |
-                            acEnt is Dimension
-                            )
-                        {
-                            acEnt.Erase(true);
-                        }
-                       
-                    }
-                }
-            }
-        }
         public PromptSelectionResult SelecionarObjetos(Tipo_Selecao tipo = Tipo_Selecao.Tudo)
         {
             PromptSelectionOptions pp = new PromptSelectionOptions();
@@ -1096,7 +795,7 @@ namespace Ferramentas_DLM
         {
             var st = editor.Command("LTSCALE", valor, "");
         }
-        public ClasseBase()
+        public CADBase()
         {
             Constantes.VerificarVersao();
             SetUCSParaWorld();

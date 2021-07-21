@@ -18,7 +18,7 @@ using static Ferramentas_DLM.CAD;
 namespace Ferramentas_DLM
 {
     [Serializable]
-    public class Telhas : ClasseBase
+    public class CADTelhas : CADBase
     {
         public double MultiplicadorEscala { get; set; } = 15;
         public double SomarCaboDobraSFLH { get; set; } = 300;
@@ -55,22 +55,26 @@ namespace Ferramentas_DLM
 
         public List<BlockReference> Getpassarelas()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Peca_PASSARELA));
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Peca_PASSARELA));
         }
 
         public List<Entity> Getcotaslinhadevida()
         {
-            return this.Getcotas().FindAll(x => x.Layer == LayerLinhaDeVidaCotas | x.Layer == LayerLinhaDeVida);
+            return this.GetCotas().FindAll(x => x.Layer == LayerLinhaDeVidaCotas | x.Layer == LayerLinhaDeVida);
         }
 
         public List<Entity> GetCotasPassarelas()
         {
-            return this.Getcotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerLinhaDeVida);
+            return this.GetCotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerLinhaDeVida);
         }
 
         public List<Polyline> Getcabos()
         {
-            return this.Getpolylinhas().FindAll(x => x.Layer == LayerLinhaDeVida);
+            return this.GetPolyLines().FindAll(x => x.Layer == LayerLinhaDeVida);
+        }
+        public List<BlockReference> GetblocostextoLinhaDeVida()
+        {
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.BL_Texto));
         }
         public void ApagarLinhaDeVida()
         {
@@ -79,11 +83,11 @@ namespace Ferramentas_DLM
             list_apagar.AddRange(this.Getsflhs());
             list_apagar.AddRange(this.Getsflis());
             list_apagar.AddRange(this.Getcabos());
-            list_apagar.AddRange(this.Getblocostexto().FindAll(x => x.Layer == LayerLinhaDeVida));
-            list_apagar.AddRange(this.Getcotas().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
+            list_apagar.AddRange(this.GetblocostextoLinhaDeVida().FindAll(x => x.Layer == LayerLinhaDeVida));
+            list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
 
 
-            Apagar(list_apagar);
+            Utilidades.Apagar(list_apagar);
         }
         public void ApagarPassarelas()
         {
@@ -91,16 +95,16 @@ namespace Ferramentas_DLM
             SelecionarObjetos();
             List<Entity> list_apagar = new List<Entity>();
             list_apagar.AddRange(this.Getpassarelas());
-            list_apagar.AddRange(this.Getcotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
+            list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
 
 
-            Apagar(list_apagar);
+            Utilidades.Apagar(list_apagar);
 
         }
 
         public List<BlockReference> Getsflhs()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Peca_SFLH));
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Peca_SFLH));
         }
         public List<BlockReference> GetLinhasDeVida()
         {
@@ -111,7 +115,7 @@ namespace Ferramentas_DLM
         }
         public List<BlockReference> Getsflis()
         {
-            return this.Getblocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Peca_SFLI));
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Constantes.Peca_SFLI));
         }
 
         public void AlinharLinhaDeVida()
@@ -123,15 +127,15 @@ namespace Ferramentas_DLM
 
 
 
-                var xls = Getxlines();
+                var xls = GetXlines();
 
                 var sflis = Getsflis();
                 var sflhs = Getsflhs();
-                var textos = Getblocostexto();
+                var textos = GetblocostextoLinhaDeVida();
 
                 var cabos = Getcabos();
-                var cabos_verticais = GetPolylinesVerticais(cabos);
-                var cabos_horizontais = GetPolylinesHorizontais(cabos);
+                var cabos_verticais = GetPolyLines_Verticais(cabos);
+                var cabos_horizontais = GetPolyLines_Horizontais(cabos);
 
                 var cotas = Getcotaslinhadevida();
                 var cotas_verticais = Utilidades.CotasVerticais(cotas);
@@ -171,7 +175,7 @@ namespace Ferramentas_DLM
                         AddMensagem("\nNenhuma Xline encontrada. (SFLH) " + o.Position);
                         continue; }
                     var pos = new Point3d(o.Position.X, xl.BasePoint.Y, 0);
-                    MoverBloco(o, pos, acTrans);
+                    Blocos.Mover(o, pos);
 
                     var polis = Utilidades.GetPolylinesProximas(cabos, p0.GetPoint(), 100);
                       
@@ -223,12 +227,12 @@ namespace Ferramentas_DLM
                     var p1 = new Coordenada(pos);
                     var angulo = p0.Angulo(p1);
                     var dist = p0.Distancia(p1);
-                    var blocos_texto = Utilidades.GetBlocosProximos(textos, pos, Getescala() * 20);
+                    var blocos_texto = Utilidades.GetBlocosProximos(textos, pos, GetEscala() * 20);
                     foreach(var p in blocos_texto)
                     {
                         var p_texto = new Coordenada(p.Position);
                         var pxx = p_texto.Mover(angulo, dist);
-                        MoverBloco(p,pxx.GetPoint(),acTrans);
+                        Blocos.Mover(p,pxx.GetPoint());
                     }
                 }
                 Utils.SetUndoMark(false);
@@ -358,11 +362,11 @@ namespace Ferramentas_DLM
                                 var dist = Math.Round(d1.Distancia(d2));
                                 if (angulo == 90 | angulo == 270)
                                 {
-                                    AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, Getescala() * MultiplicadorEscala).GetPoint(), false, 0, false, false);
+                                    AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint(), false, 0, false, false);
                                 }
                                 else
                                 {
-                                    AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, Getescala() * MultiplicadorEscala).GetPoint(), false, 0, false, false);
+                                    AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint(), false, 0, false, false);
 
                                 }
                             }
@@ -531,11 +535,11 @@ namespace Ferramentas_DLM
                                 {
                                     if (angulo == 0 | angulo == 180)
                                     {
-                                        AddCotaHorizontal(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Mover(Centro(cotas[i], cotas[i + 1]), angulo - 90, Getescala() * 10), false, 0, false, false);
+                                        AddCotaHorizontal(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Utilidades.Mover(Utilidades.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
                                     }
                                     else
                                     {
-                                        AddCotaVertical(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Mover(Centro(cotas[i], cotas[i + 1]), angulo - 90, Getescala() * 10), false, 0, false, false);
+                                        AddCotaVertical(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Utilidades.Mover(Utilidades.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
 
                                     }
                                 }
@@ -543,11 +547,11 @@ namespace Ferramentas_DLM
                                 {
                                     if (angulo == 0 | angulo == 180)
                                     {
-                                        AddCotaHorizontal(new Coordenada(cotas.OrderBy(x => x.X).First()), new Coordenada(cotas.OrderBy(x => x.X).Last()), "", Mover(Centro(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last()), angulo - 90, Getescala() * MultiplicadorEscala), false, 0, false, false);
+                                        AddCotaHorizontal(new Coordenada(cotas.OrderBy(x => x.X).First()), new Coordenada(cotas.OrderBy(x => x.X).Last()), "", Utilidades.Mover(Utilidades.Centro(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
                                     }
                                     else
                                     {
-                                        AddCotaVertical(new Coordenada(cotas.OrderBy(x => x.Y).First()), new Coordenada(cotas.OrderBy(x => x.Y).Last()), "", Mover(Centro(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last()), angulo - 90, Getescala() * MultiplicadorEscala), false, 0, false, false);
+                                        AddCotaVertical(new Coordenada(cotas.OrderBy(x => x.Y).First()), new Coordenada(cotas.OrderBy(x => x.Y).Last()), "", Utilidades.Mover(Utilidades.Centro(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
 
                                     }
                                 }
@@ -602,13 +606,13 @@ namespace Ferramentas_DLM
             {
      
                 Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLH, p1, 1, 0, sftlh);
-                AddBlocoTexto(angulo, p1, SFLH, Getescala() * 5, "");
-                Utilidades.AddLeader(angulo, p1,this.Getescala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
+                AddBlocoTexto(angulo, p1, SFLH, GetEscala() * 5, "");
+                Utilidades.AddLeader(angulo, p1,this.GetEscala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
 
             }
             Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLH, p2, 1, 0, sftlh);
-            AddBlocoTexto(angulo, p2, SFLH, Getescala() * 5,"");
-            Utilidades.AddLeader(angulo, p2, this.Getescala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
+            AddBlocoTexto(angulo, p2, SFLH, GetEscala() * 5,"");
+            Utilidades.AddLeader(angulo, p2, this.GetEscala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
             int qtd_sfli = Conexoes.Utilz.Int(comp / this.DistMaxSFLI);
 
@@ -620,7 +624,7 @@ namespace Ferramentas_DLM
                 {
                     Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLI, pp0, 1, 0, sftli);
 
-                    AddBlocoTexto(angulo, pp0, SFLI, Getescala() * 5,"");
+                    AddBlocoTexto(angulo, pp0, SFLI, GetEscala() * 5,"");
                     cotas.Add(pp0);
                     pp0 = new Coordenada(pp0).Mover(angulo, espacos).GetPoint();
 
@@ -636,9 +640,9 @@ namespace Ferramentas_DLM
             if(angulo==90 | angulo == 270)
             {
                 //move pro lado quando é vertical
-                p1 = new Coordenada(pp0).Mover(angulo + 90, (Getescala() * 16)/2).GetPoint();
+                p1 = new Coordenada(pp0).Mover(angulo + 90, (GetEscala() * 16)/2).GetPoint();
             }
-            Blocos.Inserir(CAD.acDoc, Constantes.BL_Texto, p1, Getescala(), 0, ht );
+            Blocos.Inserir(CAD.acDoc, Constantes.BL_Texto, p1, GetEscala(), 0, ht );
 
         }
         private void Ajustar(ref double angulo, ref double comp, Point3d p1, ref Point3d p2)
@@ -680,14 +684,14 @@ namespace Ferramentas_DLM
             .Select(x => x.First()).ToList();
             var atributos = blocos
             
-            .Select(x => Atributos.Get(x, Constantes.ATT_Cod_SAP).ToString()).Distinct().ToList();
+            .Select(x => Atributos.GetValor(x, Constantes.ATT_Cod_SAP).ToString()).Distinct().ToList();
 
             atributos = atributos.Distinct().ToList();
             if (blocos.Count>0)
             {
               foreach(var codigo in atributos)
                 {
-                    var pass = blocos.FindAll(x => Atributos.Get(x, Constantes.ATT_Cod_SAP).ToString() == codigo).ToList();
+                    var pass = blocos.FindAll(x => Atributos.GetValor(x, Constantes.ATT_Cod_SAP).ToString() == codigo).ToList();
                     retorno.Add(GetRMA(codigo, (double)pass.Count));
                     AddMensagem("\n " + codigo + " - " +  pass.Count + " x");
                 }
@@ -749,7 +753,7 @@ namespace Ferramentas_DLM
             AddMensagem("\n" + codigo + " - " + pc.DESC + " Qtd>" + qtd);
             return pc;
         }
-        public Telhas()
+        public CADTelhas()
         {
 
         }

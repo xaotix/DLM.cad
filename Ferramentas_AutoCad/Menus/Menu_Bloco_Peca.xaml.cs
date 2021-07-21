@@ -40,15 +40,15 @@ namespace Ferramentas_DLM.Menus
 
         public MarcaTecnoMetal marca_sel { get; set; }
 
-        public TecnoMetal TecnoMetal { get; set; }
-        public Menu_Bloco_Peca(TecnoMetal tec)
+        public CADTecnoMetal TecnoMetal { get; set; }
+        public Menu_Bloco_Peca(CADTecnoMetal tec)
         {
             this.TecnoMetal = tec;
             InitializeComponent();
             this.DataContext = this;
             this.combo_lista_blocos.ItemsSource = Constantes.BlocosIndicacao().Select(x=>Conexoes.Utilz.getNome(x)).ToList();
             this.combo_tipo_de_peca.ItemsSource = new List<string> { Constantes.ATT_RMA, Constantes.ATT_RME, Constantes.ATT_RMU, Constantes.ATT_RMT, Constantes.ATT_TECNOMETAL, "DIGITAR" };
-            this.escala = this.TecnoMetal.Getescala();
+            this.escala = this.TecnoMetal.GetEscala();
 
             if(this.combo_lista_blocos.Items.Count>0)
             {

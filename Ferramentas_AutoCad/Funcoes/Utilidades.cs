@@ -23,6 +23,7 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using static Ferramentas_DLM.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
+using Autodesk.AutoCAD.Internal.PropertyInspector;
 
 namespace Ferramentas_DLM
 {
@@ -180,7 +181,25 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
+        public static List<Entity> SelecionarTudoPrancha()
+        {
+            List<Entity> retorno = new List<Entity>();
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
 
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                /*blocos*/
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                foreach (ObjectId objId in acBlkTblRec)
+                {
+                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
+                    retorno.Add(ent);
+                }
+
+
+            }
+            return retorno;
+        }
         public static List<Viewport> GetViewports(string setLayerPadrao = "")
         {
             List<Viewport> retorno = new List<Viewport>();
@@ -239,6 +258,15 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
+
+        public static Point3d Centro(Point3d p1, Point3d p2)
+        {
+            return new Coordenada(p1).GetCentro(p2).GetPoint();
+        }
+        public static Point3d Mover(Point3d p, double angulo, double distancia)
+        {
+            return new Coordenada(p).Mover(angulo, distancia).GetPoint();
+        }
 
         public static void ListarQuantidadeBlocos()
         {
@@ -508,6 +536,24 @@ namespace Ferramentas_DLM
         }
 
 
+        public static void Apagar(List<Entity> entities)
+        {
+            if (entities.Count == 0) { return; }
+            using (acDoc.LockDocument())
+            {
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                {
+                    foreach (var b in entities)
+                    {
+                        Entity acEnt = acTrans.GetObject(b.ObjectId, OpenMode.ForWrite) as Entity;
+                        acEnt.Erase(true);
+                    }
+                    acTrans.Commit();
+
+                }
+                acDoc.Editor.Regen();
+            }
+        }
 
 
         public static List<ObjetoMultiline> MlinesPassando(Point3d de, Point3d ate, List<ObjetoMultiline> LS,  bool dentro_do_eixo = false, double tol_X = 0)
@@ -1001,7 +1047,140 @@ namespace Ferramentas_DLM
 
 
 
+        public static void GetInfos()
+        {
+            string msg = "";
+            var selecao = editor.GetEntity("\nSelecione: ");
+            if (selecao.Status != PromptStatus.OK)
+                return;
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                Entity obj = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
 
+                msg = string.Format("Propriedades de {0}:\n", selecao.GetType().Name);
+
+
+
+                msg += "\n\nPropriedades custom\n\n";
+
+                msg += RetornaCustomProperties(obj.ObjectId, editor);
+
+                var props = GetOPMProperties(obj.ObjectId);
+
+                foreach (var pair in props)
+                {
+                    msg += string.Format("\t{0} = {1}\n", pair.Key, pair.Value);
+
+                    if (Marshal.IsComObject(pair.Value))
+                        Marshal.ReleaseComObject(pair.Value);
+                }
+
+
+                msg += "\n\nPropriedades padrao\n\n";
+                PropertyInfo[] piArr = obj.GetType().GetProperties();
+                foreach (PropertyInfo pi in piArr)
+                {
+                    object value = null;
+                    try
+                    {
+                        value = pi.GetValue(obj, null);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        //if (ex.InnerException is Autodesk.AutoCAD.Runtime.Exception &&
+                        //    (ex.InnerException as Autodesk.AutoCAD.Runtime.Exception).ErrorStatus == Autodesk.AutoCAD.Runtime.ErrorStatus.NotApplicable)
+                        //    continue;
+                        //else
+                        //    throw;
+                        msg += string.Format("\t{0}: {1}\n", pi.Name, "Erro ao tentar ler: " + ex.Message);
+                    }
+
+                    msg += string.Format("\t{0}: {1}\n", pi.Name, value);
+                }
+
+
+
+                //AddMensagem("\n" + msg);
+            }
+
+
+
+            Conexoes.Utilz.JanelaTexto(msg, "Propriedades");
+        }
+        public static IDictionary<string, object> GetOPMProperties(ObjectId id)
+        {
+            Dictionary<string, object> map = new Dictionary<string, object>();
+            IntPtr pUnk = ObjectPropertyManagerPropertyUtility.GetIUnknownFromObjectId(id);
+            if (pUnk != IntPtr.Zero)
+            {
+                using (CollectionVector properties = ObjectPropertyManagerProperties.GetProperties(id, false, false))
+                {
+                    int cnt = properties.Count();
+                    if (cnt != 0)
+                    {
+                        using (CategoryCollectable category = properties.Item(0) as CategoryCollectable)
+                        {
+                            CollectionVector props = category.Properties;
+                            int propCount = props.Count();
+                            for (int j = 0; j < propCount; j++)
+                            {
+                                using (PropertyCollectable prop = props.Item(j) as PropertyCollectable)
+                                {
+                                    if (prop == null)
+                                        continue;
+                                    object value = null;
+                                    if (prop.GetValue(pUnk, ref value) && value != null)
+                                    {
+                                        if (!map.ContainsKey(prop.Name))
+                                            map[prop.Name] = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Marshal.Release(pUnk);
+            }
+            return map;
+        }
+        private static string RetornaCustomProperties(ObjectId id, Editor ed)
+        {
+            string msg = "";
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+
+            using (var acTrans = id.Database.TransactionManager.StartOpenCloseTransaction())
+            {
+                var dbObj = acTrans.GetObject(id, OpenMode.ForRead);
+                var types = new List<Type>();
+                types.Add(dbObj.GetType());
+                while (true)
+                {
+                    var type = types[0].BaseType;
+                    types.Insert(0, type);
+                    if (type == typeof(RXObject))
+                        break;
+                }
+                foreach (Type t in types)
+                {
+                    msg += ($"\n\n - {t.Name} -");
+                    foreach (var prop in t.GetProperties(flags))
+                    {
+                        msg += "\n" + prop.Name;
+                        try
+                        {
+                            msg += " = " + (prop.GetValue(dbObj, null));
+                        }
+                        catch (System.Exception e)
+                        {
+                            msg += (e.Message);
+                        }
+                    }
+                }
+                acTrans.Commit();
+            }
+
+            return msg;
+        }
 
 
 

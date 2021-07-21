@@ -175,8 +175,8 @@ namespace Ferramentas_DLM
             double offset = this.CADPurlin.Canvas_Offset/escala;
 
 
-            var ls = this.CADPurlin.GetEixos_Linhas();
-            var lss = this.CADPurlin.Getlinhas().FindAll(x=> ls.Find(y=> y.Id == x.Id) == null);
+            var ls = this.CADPurlin.GetLinhas_Eixos();
+            var lss = this.CADPurlin.GetLinhas().FindAll(x=> ls.Find(y=> y.Id == x.Id) == null);
 
             var tam_txt_cotas =  this.CADPurlin.Canvas_Txt_Cotas * tam_texto;
 

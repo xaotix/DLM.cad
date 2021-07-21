@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Ferramentas_DLM.Classes
 {
-    public class LinhaFuros
+    public class LinhaBlocoFuro
     {
         public string Nome
         {
@@ -15,7 +15,7 @@ namespace Ferramentas_DLM.Classes
                 {
                     if(Furos.Count>0)
                     {
-                        var s = Furos.Select(x => x.GetNome()).Distinct().ToList();
+                        var s = Furos.Select(x => x.GetChave()).Distinct().ToList();
                         if(s.Count==1)
                         {
                             return s[0];
@@ -31,7 +31,7 @@ namespace Ferramentas_DLM.Classes
 
             }
         }
-        public List<Furo> Furos { get; set; }
+        public List<BlocoFuro> Furos { get; set; }
         public double Y { get; set; }
         public Coordenada Origem()
         {
@@ -47,7 +47,7 @@ namespace Ferramentas_DLM.Classes
             {
                 if(Furos.Count>0)
                 {
-                    return Furos.Min(x => x.Origem.X);
+                    return Furos.Min(x => x.GetCoordenada().X);
                 }
             }
             return 0;
@@ -58,27 +58,27 @@ namespace Ferramentas_DLM.Classes
             {
                 if (Furos.Count > 0)
                 {
-                    return Furos.Max(x => x.Origem.X);
+                    return Furos.Max(x => x.GetCoordenada().X);
                 }
             }
             return 0;
         }
-        public LinhaFuros(List<BlockReference> blocos, double Y)
+        public LinhaBlocoFuro(List<BlockReference> blocos, double Y)
         {
-            this.Furos = new List<Furo>();
+            this.Furos = new List<BlocoFuro>();
             this.Y = Y;
             foreach(var s in blocos)
             {
-                this.Furos.Add(new Furo(s));
+                this.Furos.Add(new BlocoFuro(s));
             }
         }
-        public LinhaFuros(List<Furo> furos)
+        public LinhaBlocoFuro(List<BlocoFuro> furos)
         {
             this.Y = 0;
             this.Furos = furos;
             if(this.Furos.Count>0)
             {
-                this.Y = this.Furos.Max(x => x.Origem.Y);
+                this.Y = this.Furos.Max(x => x.GetCoordenada().Y);
             }
         }
     }

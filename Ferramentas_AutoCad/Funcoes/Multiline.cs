@@ -16,11 +16,11 @@ namespace Ferramentas_DLM
     {
         public static void MudarPolyline()
         {
-            ClasseBase pp = new ClasseBase();
+            CADBase pp = new CADBase();
             var s = pp.SelecionarObjetos();
             if (s.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) { return; }
 
-            var polylines = pp.Getpolylinhas();
+            var polylines = pp.GetPolyLines();
 
             if (polylines.Count == 0) { return; }
 
@@ -30,14 +30,17 @@ namespace Ferramentas_DLM
                 var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
                 if(ml!=null)
                 {
+                    List<Entity> apagar = new List<Entity>();
                     foreach (var p in polylines)
                     {
                         FLayer.Set(p.Layer);
                         if (DesenharMLine(estilo,ml.Arquivo, new List<Point3d> { p.StartPoint, p.EndPoint }))
                         {
-                            pp.Apagar(p);
+                            apagar.Add(p);
                         }
                     }
+
+                    Utilidades.Apagar(apagar);
                 }
 
 
@@ -45,11 +48,11 @@ namespace Ferramentas_DLM
         }
         public static void MudarMultiline()
         {
-            ClasseBase pp = new ClasseBase();
+            CADBase pp = new CADBase();
             var s = pp.SelecionarObjetos();
             if (s.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) { return; }
 
-            var multiline = pp.Getmultilines();
+            var multiline = pp.GetMultilines();
 
             if (multiline.Count == 0) { return; }
 
@@ -68,26 +71,28 @@ namespace Ferramentas_DLM
             {
                 var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
 
-                if (ml!=null)
+                if (ml != null)
                 {
-                if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja trocar a Multiline [{estilo_subst}] da seleção por [{estilo}]?"))
-                {
-                    var mls = multiline.FindAll(x => x.Style == st.ObjectId);
-                    foreach (var p in mls)
+                    if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja trocar a Multiline [{estilo_subst}] da seleção por [{estilo}]?"))
                     {
-
-                        var pts = GetPontos(p);
-                        if (pts.Count > 1)
+                        var mls = multiline.FindAll(x => x.Style == st.ObjectId);
+                        List<Entity> apagar = new List<Entity>();
+                        foreach (var p in mls)
                         {
-                            FLayer.Set(p.Layer);
 
-                            if (DesenharMLine(estilo,ml.Arquivo, pts))
+                            var pts = GetPontos(p);
+                            if (pts.Count > 1)
                             {
-                                pp.Apagar(p);
+                                FLayer.Set(p.Layer);
+
+                                if (DesenharMLine(estilo, ml.Arquivo, pts))
+                                {
+                                    apagar.Add(p);
+                                }
                             }
                         }
+                        Utilidades.Apagar(apagar);
                     }
-                }
                 }
             }
         }

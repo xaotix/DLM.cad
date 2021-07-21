@@ -160,8 +160,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClassesBase\ObjetoMultiline.cs" />
-    <Compile Include="ClassesInput\ObjetoPurlin.cs" />
+    <Compile Include="ClassesObjetosMultiline\ObjetoBase.cs" />
+    <Compile Include="ClassesObjetosMultiline\ObjetoCorrente.cs" />
+    <Compile Include="ClassesObjetosMultiline\ObjetoMultiline.cs" />
+    <Compile Include="ClassesObjetosMultiline\ObjetoPurlin.cs" />
     <Compile Include="ClassesInput\GradeEixos.cs" />
     <Compile Include="ClassesInput\VaoObra.cs" />
     <Compile Include="Funcoes\FLayer.cs" />
@@ -169,9 +171,6 @@
     <Compile Include="Funcoes\Linha.cs" />
     <Compile Include="Funcoes\Multiline.cs" />
     <Compile Include="ClassesInput\Eixo.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Menus\MenuConfigurarVaos.xaml.cs">
       <DependentUpon>MenuConfigurarVaos.xaml</DependentUpon>
     </Compile>
@@ -187,18 +186,18 @@
     <Compile Include="Menus\SoldaComposicao.xaml.cs">
       <DependentUpon>SoldaComposicao.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ClassesBase\Chapa_Dobrada.cs" />
-    <Compile Include="Construtores\ClasseBase.cs" />
-    <Compile Include="Construtores\Monitoramento.cs" />
-    <Compile Include="Construtores\TecnoMetal.cs" />
+    <Compile Include="Configuracao\ConfiguracaoChapa_Dobrada.cs" />
+    <Compile Include="Construtores\CADBase.cs" />
+    <Compile Include="Construtores\CADMonitoramento.cs" />
+    <Compile Include="Construtores\CADTecnoMetal.cs" />
     <Compile Include="Extensoes\Lisp.cs" />
     <Compile Include="Funcoes\Angulo.cs" />
     <Compile Include="Funcoes\Blocos.cs" />
-    <Compile Include="ClassesBase\ConfiguracaoMacro.cs" />
-    <Compile Include="ClassesBase\ConfiguracaoQuantificar.cs" />
+    <Compile Include="Configuracao\ConfiguracaoMacro.cs" />
+    <Compile Include="Configuracao\ConfiguracaoQuantificar.cs" />
     <Compile Include="ClassesBase\Coordenada.cs" />
-    <Compile Include="Construtores\Cotagem.cs" />
-    <Compile Include="Construtores\Telhas.cs" />
+    <Compile Include="Construtores\CADCotagem.cs" />
+    <Compile Include="Construtores\CADTelhas.cs" />
     <Compile Include="Menus\CriarCAMs.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -206,16 +205,17 @@
       <DependentUpon>CriarCAMs.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensoes\Extensoes.cs" />
-    <Compile Include="ClassesBase\EstiloML.cs" />
-    <Compile Include="Principal\Comandos.cs" />
+    <Compile Include="ClassesObjetosMultiline\EstiloML.cs" />
+    <Compile Include="ClassesObjetosMultiline\ObjetoTirante.cs" />
+    <Compile Include="Funcoes\Comandos.cs" />
     <Compile Include="Funcoes\Atributos.cs" />
     <Compile Include="ClassesBase\CTV_de_para.cs" />
-    <Compile Include="ClassesBase\Furo.cs" />
-    <Compile Include="ClassesBase\LinhaFuros.cs" />
-    <Compile Include="ClassesBase\MarcaTecnoMetal.cs" />
+    <Compile Include="ClassesObjetosBloco\BlocoFuro.cs" />
+    <Compile Include="ClassesObjetosBloco\LinhaBlocoFuro.cs" />
+    <Compile Include="ClassesObjetosBloco\MarcaTecnoMetal.cs" />
     <Compile Include="ClassesBase\PCQuantificar.cs" />
-    <Compile Include="ClassesBase\BlocoTags.cs" />
-    <Compile Include="Principal\Enumeradores.cs" />
+    <Compile Include="ClassesObjetosBloco\BlocoTag.cs" />
+    <Compile Include="ClassesBase\Enumeradores.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Construtores\CADPurlin.cs" />
     <Compile Include="Funcoes\Tabelas.cs" />
@@ -232,7 +232,7 @@
       <DependentUpon>TercasMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Funcoes\Utilidades.cs" />
-    <Compile Include="Principal\Constantes.cs" />
+    <Compile Include="Funcoes\Constantes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -273,10 +273,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
