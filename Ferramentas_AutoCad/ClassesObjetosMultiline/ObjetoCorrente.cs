@@ -3,7 +3,7 @@ using System;
 
 namespace Ferramentas_DLM
 {
-    public class ObjetoCorrente :ObjetoBase
+    public class ObjetoCorrente :ObjetoMultiLineBase
     {
         public override string ToString()
         {

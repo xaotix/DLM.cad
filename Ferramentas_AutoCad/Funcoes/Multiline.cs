@@ -56,15 +56,21 @@ namespace Ferramentas_DLM
 
             if (multiline.Count == 0) { return; }
 
-            var estilos = pp.GetMLStyles();
+            var estilos = pp.GetMlineStyles(multiline).Select(x => x.Name).OrderBy(x => x).ToList();
 
+            if (estilos.Count == 0) { return; }
             var estilo_subst = Conexoes.Utilz.SelecionaCombo(estilos, null);
             if (estilo_subst == null)
             {
                 return;
             }
 
-            var st = Utilidades.GetEstilo(estilo_subst);
+            var st = pp.GetMlStyle(estilo_subst);
+
+            if(st==null)
+            {
+                return;
+            }
 
             var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
             if (estilo != null)
@@ -80,7 +86,7 @@ namespace Ferramentas_DLM
                         foreach (var p in mls)
                         {
 
-                            var pts = GetPontos(p);
+                            var pts = Utilidades.GetPontos(p);
                             if (pts.Count > 1)
                             {
                                 FLayer.Set(p.Layer);
@@ -141,28 +147,31 @@ namespace Ferramentas_DLM
 
                 if (mlst != null)
                 {
-                    using (Transaction tr = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                    using (DocumentLock docLock = acDoc.LockDocument())
                     {
-                        //get the mline style
-                        Mline line = new Mline();
-                        //get the current mline style
-                        line.Style = mlst.ObjectId;
-                        line.Normal = Vector3d.ZAxis;
-                        foreach (var pt in pontos)
+                        using (Transaction tr = acCurDb.TransactionManager.StartOpenCloseTransaction())
                         {
-                            line.AppendSegment(pt);
+                            //get the mline style
+                            Mline line = new Mline();
+                            //get the current mline style
+                            line.Style = mlst.ObjectId;
+                            line.Normal = Vector3d.ZAxis;
+                            foreach (var pt in pontos)
+                            {
+                                line.AppendSegment(pt);
+                            }
+
+                            //open modelpace
+                            ObjectId ModelSpaceId = SymbolUtilityServices.GetBlockModelSpaceId(acCurDb);
+                            BlockTableRecord acBlkTblRec = tr.GetObject(ModelSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+
+                            acBlkTblRec.AppendEntity(line);
+
+                            tr.AddNewlyCreatedDBObject(line, true);
+
+                            tr.Commit();
+
                         }
-
-                        //open modelpace
-                        ObjectId ModelSpaceId = SymbolUtilityServices.GetBlockModelSpaceId(acCurDb);
-                        BlockTableRecord acBlkTblRec = tr.GetObject(ModelSpaceId, OpenMode.ForWrite) as BlockTableRecord;
-
-                        acBlkTblRec.AppendEntity(line);
-
-                        tr.AddNewlyCreatedDBObject(line, true);
-
-                        tr.Commit();
-
                     }
                 }
                 else
@@ -213,7 +222,7 @@ namespace Ferramentas_DLM
             List<Mline> retorno = new List<Mline>();
             foreach (var s in LS)
             {
-                List<Point3d> lista = Multiline.GetPontos(s);
+                List<Point3d> lista = Utilidades.GetPontos(s);
                 if (lista.Count > 1)
                 {
                     var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
@@ -237,7 +246,7 @@ namespace Ferramentas_DLM
             List<Mline> retorno = new List<Mline>();
             foreach (var s in LS)
             {
-                List<Point3d> lista = Multiline.GetPontos(s);
+                List<Point3d> lista = Utilidades.GetPontos(s);
                 if (lista.Count > 1)
                 {
                     var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
@@ -258,7 +267,7 @@ namespace Ferramentas_DLM
         }
         public static void GetOrigens(Mline s, out Point3d p1, out Point3d p2, out double largura)
         {
-            List<Point3d> lista = Multiline.GetPontos(s);
+            List<Point3d> lista = Utilidades.GetPontos(s);
 
             /*tem q ver como ele trata quando a purlin tem mais de 2 vertices*/
             var pts = new List<Point3d>();
@@ -302,17 +311,6 @@ namespace Ferramentas_DLM
                 p2 = lista[0];
             }
         }
-        public static List<Point3d> GetPontos(Mline ml)
-        {
-            List<Point3d> retorno = new List<Point3d>();
 
-            for (int i = 0; i < ml.NumberOfVertices; i++)
-            {
-                var t = ml.VertexAt(i);
-                retorno.Add(t);
-            }
-
-            return retorno;
-        }
     }
 }

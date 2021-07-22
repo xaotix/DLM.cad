@@ -21,16 +21,11 @@ namespace Ferramentas_DLM.Menus
     public partial class MenuConfigurarVaos : Window
     {
         GradeEixos grade { get; set; }
-        List<VaoObra> vaos { get; set; } = new List<VaoObra>();
         public MenuConfigurarVaos(GradeEixos grade)
         {
             this.grade = grade;
-            this.vaos = grade.GetVaosVerticais();
             InitializeComponent();
             this.Update();
-
-            
-
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
         {
@@ -150,6 +145,7 @@ namespace Ferramentas_DLM.Menus
         {
             this.confirmado = true;
             this.Close();
+            Comandos.CADPurlin.Inserir(this.grade);
         }
 
         private void set_corrente(object sender, RoutedEventArgs e)

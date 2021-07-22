@@ -24,6 +24,7 @@ using static Ferramentas_DLM.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.Internal.PropertyInspector;
+using System.Windows;
 
 namespace Ferramentas_DLM
 {
@@ -483,13 +484,12 @@ namespace Ferramentas_DLM
                     MlineStyle acLyrTblRec = acTrans.GetObject(mlineDic.GetAt(nome), OpenMode.ForWrite) as MlineStyle;
 
 
-                    acTrans.Commit();
                     return acLyrTblRec;
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
             }
 
             return null;
@@ -1043,7 +1043,60 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
+        public static List<UIElement> GetCanvas(object obj, Point p0, double escala, Transaction tr, double opacidade)
+        {
+            var cor = Conexoes.FuncoesCanvas.Cores.White;
+            List<UIElement> retorno = new List<UIElement>();
+            if (obj is BlockReference)
+            {
+                var s = obj as BlockReference;
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
 
+                foreach (ObjectId id in acBlkTblRec)
+                {
+
+                    var obj1 = tr.GetObject(id, OpenMode.ForRead);
+
+                   var  ptss= Utilidades.GetPontosAgrupados(obj1,tr);
+
+                    cor = Utilidades.GetCor(obj1);
+
+                   foreach(var pts in ptss)
+                    {
+                        if (pts.Count > 1)
+                        {
+
+                            for (int i = 1; i < pts.Count; i++)
+                            {
+                                var p1 = new Coordenada(pts[i - 1].TransformBy(s.BlockTransform)).GetPoint2d();
+                                var p2 = new Coordenada(pts[i].TransformBy(s.BlockTransform)).GetPoint2d();
+                                p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
+                                p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
+                                retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                List<Point3d> pts = Utilidades.GetPontos(obj);
+                if (pts.Count > 1)
+                {
+                    cor = Utilidades.GetCor(obj);
+                    for (int i = 1; i < pts.Count; i++)
+                    {
+                        var p1 = new Coordenada(pts[i - 1]).GetPoint2d();
+                        var p2 = new Coordenada(pts[i]).GetPoint2d();
+                        p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
+                        p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
+                        cor.Opacity = opacidade;
+                        retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                    }
+                }
+            }
+            return retorno;
+        }
 
 
 
@@ -1352,6 +1405,156 @@ namespace Ferramentas_DLM
         }
 
 
+
+
+
+        public static List<Point3d> GetPontos(object obj)
+        {
+            List<Point3d> ptss = new List<Point3d>();
+            using (DocumentLock docLock = CAD.acDoc.LockDocument())
+            {
+                // Start a transaction
+                using (Transaction acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
+                {
+                   ptss.AddRange(GetPontosAgrupados(obj).SelectMany(x=>x));
+                }
+            }
+
+            return ptss;
+        }
+        /// <summary>
+        /// Retorna pontos dos vértices dos objetos
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="tr"></param>
+        /// <returns></returns>
+        public static List<List<Point3d>> GetPontosAgrupados(object obj, Transaction tr = null)
+        {
+            List<List<Point3d>> pts2 = new List<List<Point3d>>();
+            List<Point3d> pts = new List<Point3d>();
+            var cor = Conexoes.FuncoesCanvas.Cores.White;
+            if (obj is Line)
+            {
+                var tt = obj as Line;
+                cor = Utilidades.GetCor(tt.Color);
+                pts.Add(tt.StartPoint);
+                pts.Add(tt.EndPoint);
+            }
+            else if (obj is Polyline)
+            {
+                var tt = obj as Polyline;
+                for (int i = 0; i < tt.NumberOfVertices; i++)
+                {
+                    var t = tt.GetPoint3dAt(i);
+                    pts.Add(t);
+                }
+
+                if(tt.Closed && pts.Count>0)
+                {
+                    pts.Add(pts[0]);
+                }
+                cor = Utilidades.GetCor(tt.Color);
+            }
+            else if (obj is Circle)
+            {
+                var tt = obj as Circle;
+                cor = Utilidades.GetCor(tt.Color);
+                pts.AddRange(GetPontosCirculo(tt.Center, tt.Diameter, 16).Select(x=>x.GetPoint()));
+
+                if(pts.Count>0)
+                {
+                    pts.Add(pts[0]);
+                }
+
+
+            }
+            //else if (obj is Arc)
+            //{
+            //    var tt = obj as Arc;
+            //    cor = Utilidades.GetCor(tt.Color);
+            //    var center = new Coordenada(tt.Center);
+            //    var p1 = new Coordenada(tt.StartPoint);
+            //    var p2 = new Coordenada(tt.EndPoint);
+            //    pts.Add(p1.GetPoint());
+            //    pts.Add(center.GetPoint());
+            //    pts.Add(p2.GetPoint());
+            //}
+            else if (obj is Mline)
+            {
+                var tt = obj as Mline;
+                cor = Utilidades.GetCor(tt.Color);
+                for (int i = 0; i < tt.NumberOfVertices; i++)
+                {
+                    var t = tt.VertexAt(i);
+                    pts.Add(t);
+                }
+            }
+            else if (obj is BlockReference && tr!=null)
+            {
+                var s = obj as BlockReference;
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
+
+                foreach (ObjectId id in acBlkTblRec)
+                {
+                    var obj1 = tr.GetObject(id, OpenMode.ForRead);
+                    pts2.AddRange(Utilidades.GetPontosAgrupados(obj1, tr).Select(x => x.Select(y=>y.TransformBy(s.BlockTransform)).ToList()).ToList());
+                }
+            }
+            pts2.Add(pts);
+            return pts2;
+        }
+
+        public static System.Windows.Media.SolidColorBrush GetCor(object obj)
+        {
+            Color color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.White);
+
+            if(obj is Circle)
+            {
+                var tt = obj as Circle;
+                color = tt.Color;
+            }
+            else if (obj is Line)
+            {
+                var tt = obj as Line;
+                color = tt.Color;
+            }
+            else if (obj is Polyline)
+            {
+                var tt = obj as Polyline;
+                color = tt.Color;
+            }
+            else if (obj is Xline)
+            {
+                var tt = obj as Xline;
+                color = tt.Color;
+            }
+            else if (obj is Mline)
+            {
+                var tt = obj as Mline;
+                color = tt.Color;
+            }
+
+
+            var p = new  System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(color.ColorValue.R, color.ColorValue.G, color.ColorValue.B));
+
+            return p;
+        }
+        public static List<Coordenada> GetPontosCirculo(Point3d centro, double Diametro, int Num_Faces)
+        {
+            List<Point3d> retorno = new List<Point3d>();
+            double ang0 = (double)360 / (double)Num_Faces;
+            List<Coordenada> tamp = new List<Coordenada>();
+            double ang = ang0;
+            for (int i = 0; i < Num_Faces; i++)
+            {
+
+                Coordenada pt = new Coordenada(centro).Mover(ang, Diametro / 2);
+
+                ang = ang + ang0;
+                retorno.Add(pt.GetPoint());
+            }
+            return retorno.Select(x=> new Coordenada(x)).ToList();
+        }
 
         public static string GetDescricao(RME pc)
         {

@@ -536,31 +536,74 @@ namespace Ferramentas_DLM
 
 
         #region mapeamento de objetos a serem usados
-        public List<string> GetMLStyles()
+        private List<MlineStyle> _mlstylesObjs { get; set; }
+        private List<string> _mlstyles { get; set; }
+        public MlineStyle GetMlStyle(string nome)
         {
-            List<string> estilos = new List<string>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            var s = GetMLStyles();
+            if(_mlstylesObjs!=null)
             {
-                DBDictionary acLyrTbl;
-                acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead) as DBDictionary;
+                var retorno = _mlstylesObjs.Find(x => x.Name.ToUpper() == nome.ToUpper());
+                return retorno;
+            }
+            return null;
+        }
 
-                foreach (var acObjId in acLyrTbl)
+        public List<MlineStyle> GetMlineStyles(List<Mline> mlss)
+        {
+            List<MlineStyle> retorno = new List<MlineStyle>();
+            this.GetMLStyles();
+            if(this._mlstylesObjs!=null)
+            {
+                if(this._mlstylesObjs.Count>0)
                 {
-                    MlineStyle acLyrTblRec;
-                    acLyrTblRec = acTrans.GetObject(acObjId.Value, OpenMode.ForRead) as MlineStyle;
+                    var estilos = mlss.Select(x => x.Style).GroupBy(x => x).Select(x => x.First()).ToList();
+                    foreach (var estilo in estilos)
+                    {
+                        var igual = this._mlstylesObjs.Find(x => x.ObjectId == estilo);
+                        if(igual!=null)
+                        {
+                            retorno.Add(igual);
+                        }
 
-                    estilos.Add(acLyrTblRec.Name);
+                    }
                 }
 
             }
-            return estilos;
+
+
+            return retorno;
+        }
+        public List<string> GetMLStyles()
+        {
+            if(_mlstyles==null)
+            {
+                _mlstylesObjs = new List<MlineStyle>();
+                _mlstyles = new List<string>();
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                {
+                    DBDictionary acLyrTbl;
+                    acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead) as DBDictionary;
+
+                    foreach (var acObjId in acLyrTbl)
+                    {
+                        MlineStyle acLyrTblRec;
+                        acLyrTblRec = acTrans.GetObject(acObjId.Value, OpenMode.ForRead) as MlineStyle;
+                        _mlstylesObjs.Add(acLyrTblRec);
+                        _mlstyles.Add(acLyrTblRec.Name);
+                    }
+
+                }
+            }
+
+            return _mlstyles;
         }
         public List<Line> GetLinhas_Eixos()
         {
             return Utilidades.LinhasVerticais(this.GetLinhas()).FindAll(x =>
                 (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) && 
                 (x.Layer.ToUpper().Contains("EIXO"))
-                ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.First()).OrderBy(x => x.StartPoint.X).ToList();
+                ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.ToList().OrderByDescending(y=>y.Length)).Select(x=>x.First()).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<Polyline> GetPolyLines_Eixos()
         {
@@ -644,6 +687,12 @@ namespace Ferramentas_DLM
             /*pega blocos dinâmicos*/
             return this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO"));
         }
+        public List<BlocoTag> GetBlocos_Nivel()
+        {
+            /*pega blocos dinâmicos*/
+            return this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x=> new BlocoTag(x)).ToList();
+        }
+
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
             List<PCQuantificar> pcs = new List<PCQuantificar>();
@@ -698,7 +747,16 @@ namespace Ferramentas_DLM
             AddMensagem("\n=====================================================================\n");
 
         }
+        private List<string> _layers { get; set; }
 
+        public List<string> GetLayers()
+        {
+            if (_layers == null)
+            {
+                _layers = FLayer.Get();
+            }
+            return _layers;
+        }
 
         public PromptSelectionResult SelecionarObjetos(Tipo_Selecao tipo = Tipo_Selecao.Tudo)
         {
@@ -799,6 +857,8 @@ namespace Ferramentas_DLM
         {
             Constantes.VerificarVersao();
             SetUCSParaWorld();
+            GetLayers();
+            GetMLStyles();
         }
     }
 }

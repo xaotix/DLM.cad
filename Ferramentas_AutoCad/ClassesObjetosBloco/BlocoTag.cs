@@ -11,10 +11,6 @@ namespace Ferramentas_DLM
    public class BlocoTag: DB.Linha
     {
         public BlockReference Bloco { get; set; }
-        public BlocoTag()
-        {
-
-        }
 
         public List<BlocoTag> Filhos { get; set; } = new List<BlocoTag>();
 
@@ -44,12 +40,28 @@ namespace Ferramentas_DLM
             return _coordenada;
 
         }
+        public BlocoTag()
+        {
+
+        }
 
         public BlocoTag(List<Celula> celulas) : base(celulas)
         {
             this.Celulas = celulas;
         }
 
-       
+       public BlocoTag(BlockReference bloco)
+        {
+            Carregar(bloco);
+        }
+
+        public void Carregar(BlockReference bloco)
+        {
+            this.Bloco = bloco;
+            var bl = Atributos.GetBlocoTag(bloco);
+
+            this.Celulas = bl.Celulas;
+            this.Tabela = this.Bloco.BlockName;
+        }
     }
 }

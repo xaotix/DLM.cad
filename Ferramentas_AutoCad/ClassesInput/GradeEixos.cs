@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
@@ -9,40 +10,30 @@ namespace Ferramentas_DLM
 {
     public class GradeEixos
     {
+        private List<VaoObra> _vaos_verticais { get; set; }
+        private List<ObjetoPurlin> _purlins_sem_vao { get; set; }
+        private List<Eixo> _eixos { get; set; } = new List<Eixo>();
+
+        public Tipo_Vista Vista { get; private set; } = Tipo_Vista.Planta;
         public override string ToString()
         {
-            return $"Grade Eixos {GetComprimento()}x{GetLargura()}";
+            return $"Grade Eixos {GetComprimento()}x{GetAltura()}";
         }
-        public double GetComprimento()
-        {
-            if (this.GetEixosHorizontais().Count == 0) { return 0; }
-            return this.GetEixosHorizontais().Sum(x => x.Vao);
-        }
-        public double GetLargura()
-        {
-            if (this.GetEixosVerticais().Count == 0) { return 0; }
-            return this.GetEixosVerticais().Sum(x => x.Vao);
-        }
-        public Tipo_Vista Vista { get; private set; } = Tipo_Vista.Planta;
-        private List<Eixo> _eixos { get; set; } = new List<Eixo>();
+
+
         public List<Eixo> GetEixosVerticais()
         {
             return _eixos.FindAll(x=>x.Sentido== Sentido.Vertical);
         }
-
-        private List<VaoObra> _vaos_verticais { get; set; } = null;
-       
-
-        private List<ObjetoPurlin> _purlins_sem_vao { get; set; }
 
         public List<ObjetoPurlin> GetPurlinsSemVao()
         {
             if(_purlins_sem_vao==null)
             {
                 _purlins_sem_vao = new List<ObjetoPurlin>();
-                foreach (var s in this.CADPurlin.GetMultLinePurlins().FindAll(x => !x.Mapeado && x.comprimento >= this.CADPurlin.PurlinCompMin))
+                foreach (var s in this.CADPurlin.GetMultLinePurlins().FindAll(x => !x.Mapeado && x.Comprimento >= this.CADPurlin.PurlinCompMin))
                 {
-                    var vao = GetVaosVerticais().Find(x => x.Esquerda.Xmin >= s.centro.GetPoint().X && x.Direita.Xmax <= s.centro.X);
+                    var vao = GetVaosVerticais().Find(x => x.Esquerda.Xmin >= s.Centro.GetPoint().X && x.Direita.Xmax <= s.Centro.X);
 
                     if(vao==null &&  GetVaosVerticais().Count>0)
                     {
@@ -140,15 +131,7 @@ namespace Ferramentas_DLM
         {
             return _eixos.FindAll(x => x.Sentido == Sentido.Horizontal);
         }
-        public void Add(Sentido Sentido, string Nome, double Vao)
-        {
-            if(Nome.Replace(" ","") == "") { return; }
-            if(_eixos.Find(x=>x.Nome.ToUpper().Replace(" ","") == Nome.ToUpper().Replace(" ","")) != null) { return; }
-            if(Vao>0)
-            {
-                _eixos.Add(new Eixo(Sentido, Nome, Vao));
-            }
-        }
+
         public void Add(Sentido Sentido, double Vao, BlockReference bloco, Line line)
         {
             var neixo = new Eixo(Sentido, bloco, line, Vao);
@@ -163,9 +146,9 @@ namespace Ferramentas_DLM
             double tam_texto = this.CADPurlin.Canvas_Tam_Texto;
 
             double raio = tam_texto*2;
-            double esc_y = this.CADPurlin.Canvas_Altura / (Altura + (2*raio));
+            double esc_y = this.CADPurlin.Canvas_Altura / (GetAltura() + (2*raio));
       
-            double esc_x = this.CADPurlin.Canvas_Largura / Largura;
+            double esc_x = this.CADPurlin.Canvas_Largura / GetComprimento();
 
             escala = esc_x > esc_y ? esc_x : esc_y;
             //escala = esc_x;
@@ -182,13 +165,54 @@ namespace Ferramentas_DLM
 
             
 
-            Point p0 = new Point(Xmin + offset, Ymin + offset);
+            Point p0 = new Point(GetXmin() + offset, GetYmin() + offset);
+
+
+            List<UIElement> objetos = new List<UIElement>();
+            using (DocumentLock docLock = CAD.acDoc.LockDocument())
+            {
+                // Start a transaction
+                using (Transaction acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
+                {
+                    var objs = this.CADPurlin.GetObjetosNaoMapeados();
+                    foreach (var p in objs)
+                    {
+                        objetos.AddRange(Utilidades.GetCanvas(p, p0, escala,acTrans,0.5));
+                    }
+
+                }
+            }
+
+           foreach(var obj in objetos)
+            {
+                Conexoes.FuncoesCanvas.SetCor(obj, Conexoes.FuncoesCanvas.Cores.DarkGray);
+            }
+
+            retorno.AddRange(objetos);
 
             var eixos = GetEixosVerticais();
             if(eixos.Count>1)
             {
                 /*linhas de eixo*/
-                retorno.AddRange(this.GetEixosVerticais().SelectMany(x => x.GetCanvas(p0, escala, espessura,raio,tam_texto*1.5)));
+                var y = this.GetYmax();
+                var y2 = this.GetYmin();
+                foreach (var eixo in this.GetEixosVerticais())
+                {
+                    var x = eixo.Linha.StartPoint.X;
+                    /*linha do eixo*/
+                    var p1 = new Point((x - p0.X) * escala, (y - p0.Y) * escala);
+                    var p2 = new Point((x - p0.X) * escala, (y2 - p0.Y) * escala);
+                    var l = Conexoes.FuncoesCanvas.Linha(p1, p2, Conexoes.FuncoesCanvas.Cores.Magenta, 0, Conexoes.FuncoesCanvas.TipoLinha.Traco_Ponto, espessura);
+                    retorno.Add(l);
+
+                    /*bolota do eixo*/
+                    var centro_circulo = new Point((x - p0.X) * escala, (y - p0.Y + raio) * escala);
+                    var c = Conexoes.FuncoesCanvas.Circulo(centro_circulo, raio, espessura, Conexoes.FuncoesCanvas.Cores.Red);
+                    retorno.Add(c);
+
+                    var ptexto = Conexoes.FuncoesCanvas.Label(eixo.Nome, centro_circulo, Conexoes.FuncoesCanvas.Cores.Cyan, tam_texto);
+                    retorno.Add(ptexto);
+                }
 
                 /*correntes, tirantes e purlins (somente linhas*/
                 retorno.AddRange(this.CADPurlin.GetMultLinesCorrentes().Select(x => x.GetCanvas(p0, escala, espessura, Conexoes.FuncoesCanvas.Cores.Green)));
@@ -213,7 +237,7 @@ namespace Ferramentas_DLM
                             var pp = pps[i];
                             if(pp.DistBaixo>0)
                             {
-                                var pt = new System.Windows.Point((this.Xmin - p0.X) * escala, (pp.CentroBloco.Y- p0.Y - (pp.DistBaixo/2)) * escala);
+                                var pt = new System.Windows.Point((this.GetXmin() - p0.X) * escala, (pp.CentroBloco.Y- p0.Y - (pp.DistBaixo/2)) * escala);
                                 var cota = Conexoes.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, Conexoes.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
@@ -233,7 +257,7 @@ namespace Ferramentas_DLM
                             var pp = pps[i];
                             if (pp.DistBaixo > 0)
                             {
-                                var pt = new System.Windows.Point((this.XMax - p0.X + offset) * escala, (pp.CentroBloco.Y - p0.Y - (pp.DistBaixo / 2)) * escala);
+                                var pt = new System.Windows.Point((this.GetXMax() - p0.X + offset) * escala, (pp.CentroBloco.Y - p0.Y - (pp.DistBaixo / 2)) * escala);
                                 var cota = Conexoes.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, Conexoes.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
@@ -281,8 +305,24 @@ namespace Ferramentas_DLM
             }
 
 
+            var niveis = this.CADPurlin.GetBlocos_Nivel().OrderBy(x=>x.GetCoordenada().Y).ToList();
+
+            /*insere o nível*/
+            if(niveis.Count>0)
+            {
+                
+                var linha = Conexoes.FuncoesCanvas.Linha(
+                    new Point((this.GetXmin() - p0.X) * escala, (GetNivel() - p0.Y) * escala),
+                    new Point((this.GetXMax() - p0.X) * escala, (GetNivel() - p0.Y) * escala), 
+                    Conexoes.FuncoesCanvas.Cores.Blue);
+
+                retorno.Add(linha);
+            }
 
 
+
+
+             
 
 
             foreach (var c in retorno)
@@ -291,10 +331,22 @@ namespace Ferramentas_DLM
             }
 
 
-            canvas.Width = Math.Round(this.Largura * escala) + (offset*2);
-            canvas.Height = Math.Round(this.Altura * escala) + (offset*2);
+            canvas.Width = Math.Round(this.GetComprimento() * escala) + (offset*2);
+            canvas.Height = Math.Round(this.GetAltura() * escala) + (offset*2);
 
             return retorno;
+        }
+
+        public double GetNivel()
+        {
+            var niveis = this.CADPurlin.GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
+            if (niveis.Count > 0)
+            {
+                var nivel = niveis.Last().GetCoordenada().GetPoint();
+                return nivel.Y;
+            }
+
+            return GetYmin();
         }
 
         private void evento_purlin_edita_TRD(object sender, RoutedEventArgs e)
@@ -342,63 +394,50 @@ namespace Ferramentas_DLM
             Conexoes.FuncoesCanvas.SetCor(sender as UIElement, Conexoes.FuncoesCanvas.Cores.Black, Conexoes.FuncoesCanvas.Cores.Cyan);
         }
 
-        public double Largura
+        public double GetComprimento()
         {
-            get
-            {
-                return Math.Round(Math.Abs(XMax - Xmin));
-            }
+            return Math.Round(Math.Abs(GetXMax() - GetXmin()));
         }
-        public double Altura
+
+        public double GetAltura()
         {
-            get
-            {
-                return Math.Round(Math.Abs(Ymax - Ymin));
-            }
+            return Math.Round(Math.Abs(GetYmax() - GetYmin()));
         }
-        public double Xmin
+
+        public double GetXmin()
         {
-            get
+            if (this._eixos.Count > 0)
             {
-                if(this._eixos.Count>0)
-                {
-                    return this._eixos.Min(x => x.Xmin);
-                }
-                return 0;
+                return this._eixos.Min(x => x.Xmin);
             }
+            return 0;
         }
-        public double Ymin
+
+        public double GetYmin()
         {
-            get
+            if (this._eixos.Count > 0)
             {
-                if (this._eixos.Count > 0)
-                {
-                    return this._eixos.Min(x => x.Ymin);
-                }
-                return 0;
+                return this._eixos.Min(x => x.Ymin);
             }
+            return 0;
         }
-        public double Ymax
+
+        public double GetYmax()
         {
-            get
+            if (this._eixos.Count > 0)
             {
-                if (this._eixos.Count > 0)
-                {
-                    return this._eixos.Max(x => x.Ymax);
-                }
-                return 0;
+                return this._eixos.Max(x => x.Ymax);
             }
+            return 0;
         }
-        public double XMax
+
+        public double GetXMax()
         {
-            get
+            if (this._eixos.Count > 0)
             {
-                if (this._eixos.Count > 0)
-                {
-                    return this._eixos.Max(x => x.Xmax);
-                }
-                return 0;
+                return this._eixos.Max(x => x.Xmax);
             }
+            return 0;
         }
 
 

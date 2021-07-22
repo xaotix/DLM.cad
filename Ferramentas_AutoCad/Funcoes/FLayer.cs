@@ -162,17 +162,18 @@ namespace Ferramentas_DLM
         public static List<string> Get()
         {
             List<string> lstlay = new List<string>();
-
-            LayerTableRecord layer;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (DocumentLock docLock = acDoc.LockDocument())
             {
-                LayerTable lt = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
-                foreach (ObjectId layerId in lt)
+                LayerTableRecord layer;
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-                    layer = acTrans.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
-                    lstlay.Add(layer.Name);
+                    LayerTable lt = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
+                    foreach (ObjectId layerId in lt)
+                    {
+                        layer = acTrans.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
+                        lstlay.Add(layer.Name);
+                    }
                 }
-
             }
             return lstlay;
         }

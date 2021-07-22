@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace Ferramentas_DLM
 {
-
     public class PCQuantificar
     {
         public int id { get; set; } = 0;

@@ -36,24 +36,7 @@ namespace Ferramentas_DLM
         private List<ObjetoPurlin> _purlins { get; set; } = new List<ObjetoPurlin>();
         private List<ObjetoPurlin> _purlinsDummy { get; set; } = new List<ObjetoPurlin>();
 
-        public Visibility LE_Visivel
-        {
-            get
-            {
-                return Visibility.Visible;
-            }
-        }
-        public Visibility LD_Visivel
-        {
-            get
-            {
-                if (this.Tipo == Tipo_Vao.Borda_Direito)
-                {
-                    return Visibility.Visible;
-                }
-                return Visibility.Collapsed;
-            }
-        }
+
         public Tipo_Vao Tipo { get; private set; } = Tipo_Vao.Intermediario;
         public override string ToString()
         {
@@ -306,8 +289,8 @@ namespace Ferramentas_DLM
                         {
                             var pur1 = purlins[i - 1];
                             var pur2 = purlins[i];
-                            double comp = Math.Abs(Math.Round(pur2.Multiline.centro.Y - pur1.Multiline.centro.Y));
-                            var centro = pur1.Multiline.centro.GetCentro(pur2.Multiline.centro);
+                            double comp = Math.Abs(Math.Round(pur2.Multiline.Centro.Y - pur1.Multiline.Centro.Y));
+                            var centro = pur1.Multiline.Centro.GetCentro(pur2.Multiline.Centro);
                             centro = new Coordenada(cr.minx, centro.Y, 0);
 
                             /*verifica se a corrente tem um comp min ok e se está dentro de 2 purlin*/
@@ -315,8 +298,8 @@ namespace Ferramentas_DLM
                             {
 
                                 ObjetoCorrente pp = new ObjetoCorrente(cr, centro.GetPoint(),this);
-                                pp.PurlinEmCima = pur1;
                                 pur1.Correntes.Add(pp);
+                                pp.PurlinEmCima = pur1;
                                 pp.PurlinEmBaixo = pur2;
                                 c++;
 

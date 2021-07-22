@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace Ferramentas_DLM
 {
-    public class ObjetoBase: INotifyPropertyChanged
+    public class ObjetoMultiLineBase : INotifyPropertyChanged
     {
         public bool Objeto_Orfao
         {
@@ -34,7 +34,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                if(this._pecaRME!=null)
+                if (this._pecaRME != null)
                 {
                     return this._pecaRME.ESP;
                 }
@@ -165,12 +165,12 @@ namespace Ferramentas_DLM
 
             Conexoes.FuncoesCanvas.SetCor(botao, this.Cor, Conexoes.FuncoesCanvas.Cores.Black);
 
-            
+
         }
 
         private void Botao_Direito(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-           // Conexoes.Utilz.Propriedades(this);
+            // Conexoes.Utilz.Propriedades(this);
         }
 
         public void Botao_Sai(object sender, System.Windows.Input.MouseEventArgs e)
@@ -180,25 +180,16 @@ namespace Ferramentas_DLM
 
         public void Botao_Sobre(object sender, System.Windows.Input.MouseEventArgs e)
         {
+            var p = sender as UIElement;
             Conexoes.FuncoesCanvas.SetCor(sender as UIElement, Conexoes.FuncoesCanvas.Cores.Black, this.Cor);
+            Conexoes.FuncoesCanvas.TrazerPraFrente(p);
         }
 
         public string Letra
         {
             get
             {
-                switch (this.Tipo)
-                {
-                    case Tipo_ObjetoBase.Purlin:
-                        return "P" + this.id.ToString().PadLeft(3, '0');
-                    case Tipo_ObjetoBase.Corrente:
-                        return "C" + this.id.ToString().PadLeft(3, '0');
-                    case Tipo_ObjetoBase.Tirante:
-                        return "T" + this.id.ToString().PadLeft(3, '0');
-                    case Tipo_ObjetoBase.Base:
-                        return "B" + this.id.ToString().PadLeft(3, '0');
-                }
-                return this.id.ToString().PadLeft(4, '0');
+                return Conexoes.Utilz.getLetra(this.id);
             }
         }
 
@@ -228,7 +219,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        private Conexoes.RME _pecaRME { get;  set; }
+        private Conexoes.RME _pecaRME { get; set; }
         public Conexoes.RME GetPeca()
         {
             if (_pecaRME == null)
@@ -253,7 +244,7 @@ namespace Ferramentas_DLM
             this.NotifyPropertyChanged("id");
             this.NotifyPropertyChanged("Nome");
 
-            if(this.botao!=null)
+            if (this.botao != null)
             {
                 this.botao.Content = this.Letra;
             }
@@ -274,35 +265,28 @@ namespace Ferramentas_DLM
         }
         public Point3d CentroBloco { get; internal set; }
         public ObjetoMultiline Multiline { get; internal set; }
-        public bool Considerar { get; set; } =  true;
+        public bool Considerar { get; internal set; } = true;
         public VaoObra VaoObra { get; internal set; }
         public ObjetoPurlin PurlinEmBaixo { get; internal set; }
         public ObjetoPurlin PurlinEmCima { get; internal set; }
         public CADPurlin CADPurlin { get; internal set; }
-        //public int Numero { get; set; } = 0;
-        public ObjetoBase(ObjetoMultiline multiline, Point3d origem, VaoObra vao)
+        public ObjetoMultiLineBase(ObjetoMultiline multiline, Point3d origem, VaoObra vao)
         {
             this.Multiline = multiline;
             this.CentroBloco = origem;
             this.VaoObra = vao;
 
         }
-        public ObjetoBase(Point3d origem, VaoObra vao)
+        public ObjetoMultiLineBase(Point3d origem, VaoObra vao)
         {
             this.CentroBloco = origem;
             this.VaoObra = vao;
             this.Considerar = false;
         }
-
-        public ObjetoBase()
+        public ObjetoMultiLineBase()
         {
-            this.id = ObjetoBase.id_cont;
-            ObjetoBase.id_cont++;
+            this.id = ObjetoMultiLineBase.id_cont;
+            ObjetoMultiLineBase.id_cont++;
         }
-
-
     }
-
-
-
 }

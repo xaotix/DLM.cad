@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using static Ferramentas_DLM.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 namespace Ferramentas_DLM
 {
@@ -25,6 +26,7 @@ namespace Ferramentas_DLM
         /// <param name="s"></param>
         /// <param name="tr"></param>
         /// <returns></returns>
+        
         public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
         {
             List<Point3d> pts = new List<Point3d>();
@@ -72,9 +74,25 @@ namespace Ferramentas_DLM
                     pts.Add(new Point3d(center.X , center.Y - raioy, 0));
 
                 }
+                else if(obj is Arc)
+                {
+                    var tt = obj as Arc;
+                    var center = tt.Center.TransformBy(s.BlockTransform);
+                    var p1 = tt.StartPoint.TransformBy(s.BlockTransform);
+                    var p2 = tt.EndPoint.TransformBy(s.BlockTransform);
+                    pts.Add(p1);
+                    pts.Add(center);
+                    pts.Add(p2);
+
+                }
             }
             return pts;
         }
+
+
+
+
+
         public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
         {
             Hashtable ht = new Hashtable();
@@ -681,7 +699,7 @@ namespace Ferramentas_DLM
             }
             return bloco.Name;
         }
-        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1.05)
+        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1)
         {
             List<BlockReference> blks = new List<BlockReference>();
             using (var acTrans = acDoc.TransactionManager.StartOpenCloseTransaction())

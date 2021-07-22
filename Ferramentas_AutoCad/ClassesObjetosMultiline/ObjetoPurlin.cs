@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Ferramentas_DLM
 {
-    public class ObjetoPurlin : ObjetoBase
+    public class ObjetoPurlin : ObjetoMultiLineBase
     {
         public double Vao
         {
@@ -12,7 +12,7 @@ namespace Ferramentas_DLM
             {
                 if (this.Objeto_Orfao)
                 {
-                    return this.Multiline.comprimento;
+                    return Math.Round(this.Multiline.Comprimento);
                 }
                 else
                 {
@@ -160,7 +160,7 @@ namespace Ferramentas_DLM
             {
                 if(Objeto_Orfao)
                 {
-                    return this.Multiline.comprimento;
+                    return this.Multiline.Comprimento;
                 }
                 else
                 {
@@ -187,7 +187,7 @@ namespace Ferramentas_DLM
         {
             this.CADPurlin = cADPurlin;
             this.Multiline = multiline;
-            this.CentroBloco = multiline.centro.GetPoint();
+            this.CentroBloco = multiline.Centro.GetPoint();
             
             this.SetPeca(cADPurlin.GetPurlinPadrao());
 

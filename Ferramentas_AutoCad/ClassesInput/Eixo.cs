@@ -72,24 +72,7 @@ namespace Ferramentas_DLM
         }
 
 
-        public List<UIElement> GetCanvas(System.Windows.Point p0, double escala ,double espessura, double raio, double tam_texto)
-        {
-            List<UIElement> retorno = new List<UIElement>();
-            /*linha do eixo*/
-            var p1 = new Point((this.Linha.StartPoint.X - p0.X) * escala, (this.Linha.StartPoint.Y - p0.Y) * escala);
-            var p2 = new Point((this.Linha.EndPoint.X - p0.X) * escala, (this.Linha.EndPoint.Y - p0.Y) * escala);
-            var l = Conexoes.FuncoesCanvas.Linha(p1, p2, Conexoes.FuncoesCanvas.Cores.Magenta, 0, Conexoes.FuncoesCanvas.TipoLinha.Traco_Ponto, espessura);
-            retorno.Add(l);
 
-            /*bolota do eixo*/
-            var centro_circulo = new Point((Xmax - p0.X) *escala, (Ymax - p0.Y + raio) * escala);
-            var c = Conexoes.FuncoesCanvas.Circulo(centro_circulo, raio, espessura, Conexoes.FuncoesCanvas.Cores.Red);
-            retorno.Add(c);
-
-            var ptexto = Conexoes.FuncoesCanvas.Label(this.Nome, centro_circulo, Conexoes.FuncoesCanvas.Cores.Cyan,  tam_texto );
-            retorno.Add(ptexto);
-            return retorno;
-        }
 
 
         public BlockReference Bloco { get; private set; }

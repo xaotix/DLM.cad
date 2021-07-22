@@ -1,6 +1,6 @@
 ﻿namespace Ferramentas_DLM
 {
-    public class ObjetoTirante :ObjetoBase
+    public class ObjetoTirante :ObjetoMultiLineBase
     {
         public override string ToString()
         {
@@ -10,7 +10,7 @@
         {
             get
             {
-                return this.Multiline.comprimento +  2*Offset;
+                return this.Multiline.Comprimento +  2*Offset;
             }
         }
         public double Offset { get; set; } = 0;
@@ -20,7 +20,7 @@
             this.CADPurlin = vao.CADPurlin;
             this.id_peca = vao.CADPurlin.id_tirante;
             this.Multiline = multiline;
-            this.CentroBloco = multiline.centro.GetPoint();
+            this.CentroBloco = multiline.Centro.GetPoint();
             this.VaoObra = vao;
 
             this.Offset = vao.CADPurlin.TirantesOffSet;

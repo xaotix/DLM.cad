@@ -64,6 +64,8 @@ namespace Ferramentas_DLM
             }
         }
 
+        public static CADPurlin CADPurlin { get; private set; }
+
         [CommandMethod("listarcomandos")]
         public static void listarcomandos()
         {
@@ -168,121 +170,15 @@ namespace Ferramentas_DLM
         }
 
 
+
+
         [CommandMethod("purlin")]
         public static void purlin()
         {
-            CADPurlin p = new CADPurlin();
+            CADPurlin = new CADPurlin();
 
-            var estilos = p.GetMLStyles();
-            var layers = FLayer.Get();
-            TercasMenu mm = new TercasMenu();
-            mm.furos_manuais_layer.Items.AddRange(layers.ToArray());
-            mm.correntes_mlstyles.Items.AddRange(p.CorrenteMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
-            mm.tirantes_mlstyles.Items.AddRange(p.TirantesMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
-            mm.tercas_mlstyles.Items.AddRange(p.TercasMLStyles.FindAll(x => estilos.Find(y => y == x) != null).ToArray());
-
-
-
-            if (layers.Find(x => x == p.MapeiaFurosManuaisLayer) != null)
-            {
-                mm.furos_manuais_layer.Text = p.MapeiaFurosManuaisLayer;
-            }
-            else if(mm.furos_manuais_layer.Items.Count>0)
-            {
-                mm.furos_manuais_layer.SelectedIndex = 0;
-            }
-
-            if(mm.ficha_de_pintura.Items.Count>0)
-            {
-                mm.ficha_de_pintura.Text = "FICHA 01";
-            }
-
-
-            mm.propertyGrid1.SelectedObject = p;
-            mm.ShowDialog();
-
-            p.TranspassePadrao = (double)mm.transpasse_padrao.Value;
-            p.OffsetApoio = (int)mm.ofsset_apoio.Value;
-            p.FichaDePintura = mm.ficha_de_pintura.Text;
-            p.MapeiaFurosManuais = mm.mapeia_furos_manuais.Checked;
-            p.MapeiaFurosManuaisLayer = mm.furos_manuais_layer.Text;
-            p.MapearTirantes = mm.mapeia_tirantes.Checked;
-            p.MapearCorrentes = mm.mapeia_correntes.Checked;
-            p.MapearTercas = mm.mapeia_tercas.Checked;
-            
-            p.TercasMLStyles = mm.tercas_mlstyles.Items.Cast<string>().ToList();
-            p.TirantesMLStyles = mm.tirantes_mlstyles.Items.Cast<string>().ToList();
-            p.CorrenteMLStyles = mm.correntes_mlstyles.Items.Cast<string>().ToList();
-
-
-            p.SetTerca(mm.id_terca);
-            p.SetCorrente(mm.id_corrente);
-            p.SetTirante(mm.id_tirante);
-
-            if (mm.acao == "perfil")
-            {
-                p.SetPerfil();
-            }
-            else if (mm.acao == "mapear")
-            {
-                p.Mapear();
-            }
-            else if (mm.acao == "transpasse")
-            {
-                p.SetTranspasse();
-            }
-            else if (mm.acao == "ficha")
-            {
-                p.SetFicha();
-            }
-            else if (mm.acao == "tabela")
-            {
-                p.Exportar(true, false);
-            }
-            else if (mm.acao == "exportar")
-            {
-                p.Exportar();
-            }
-            else if (mm.acao == "fixacao")
-            {
-                p.SetSuporte();
-            }
-            else if (mm.acao == "ver")
-            {
-                p.Editar(true);
-            }
-            else if (mm.acao == "troca_corrente")
-            {
-                p.SetCorrente();
-            }
-            else if (mm.acao == "descontar_corrente")
-            {
-                p.SetCorrenteDescontar();
-            }
-            else if (mm.acao == "fixador_corrente")
-            {
-                p.SetCorrenteFixador();
-            }
-            else if (mm.acao == "excluir")
-            {
-                p.ExcluirBlocosMarcas();
-            }
-            else if (mm.acao == "marcacao_purlin")
-            {
-                p.PurlinManual();
-            }
-            else if (mm.acao == "purlin_edicao_completa")
-            {
-                p.EdicaoCompleta();
-            }
-            else if (mm.acao == "boneco")
-            {
-                p.GetBoneco_Purlin();
-            }
-            else if (mm.acao == "gerarcroqui")
-            {
-                p.GerarCroquis();
-            }
+            Menus.Purlin pp = new Menus.Purlin();
+            pp.Show();
         }
       
         [CommandMethod("mapeiapurlins")]
@@ -294,11 +190,18 @@ namespace Ferramentas_DLM
         }
 
 
-        [CommandMethod("limparpurlin")]
-        public static void limparpurlin()
+        [CommandMethod("ApagarBlocosPurlin")]
+        public static void ApagarBlocosPurlin()
         {
             CADPurlin p = new CADPurlin();
-            p.LimparBlocosPurlin();
+            p.ApagarBlocosPurlin();
+
+        }
+        [CommandMethod("apagarpurlins")]
+        public static void apagarpurlins()
+        {
+            CADPurlin p = new CADPurlin();
+            p.ApagarPurlins();
 
         }
 

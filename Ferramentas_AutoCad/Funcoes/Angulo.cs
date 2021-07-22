@@ -35,7 +35,7 @@ namespace Ferramentas_DLM
             }
             return false;
         }
-        public static double Get(LineSegment3d l1, LineSegment3d l2, Vector3d normal)
+        public static double GetSegmentos(LineSegment3d l1, LineSegment3d l2, Vector3d normal)
         {
             Vector3d v1 = l1.EndPoint - l1.StartPoint;
             Vector3d v2 = l2.EndPoint - l2.StartPoint;
@@ -66,7 +66,7 @@ namespace Ferramentas_DLM
 
                 for (int i = 1; i < segmentos3d.Count; i++)
                 {
-                    retorno.Add(Get(segmentos3d[i], segmentos3d[i - 1], pl.Normal));
+                    retorno.Add(GetSegmentos(segmentos3d[i], segmentos3d[i - 1], pl.Normal));
                 }
             }
 

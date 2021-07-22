@@ -253,28 +253,6 @@ namespace Ferramentas_DLM
         }
         public List<MarcaTecnoMetal> SubItens { get; private set; } = new List<MarcaTecnoMetal>();
         public DB.Linha Linha { get; set; } = new DB.Linha();
-        public MarcaTecnoMetal(DB.Linha l)
-        {
-            this.Linha = l;
-            this.Marca = l.Get(Constantes.ATT_MAR).ToString();
-            this.Posicao = l.Get(Constantes.ATT_POS).ToString();
-            this.Quantidade = l.Get(Constantes.ATT_QTD).Double();
-            this.NomeBloco = l.Get(Constantes.ATT_BLK).ToString();
-            this.Prancha = l.Get(Constantes.ATT_DWG).ToString();
-
-            this.Comprimento = l.Get(Constantes.ATT_CMP).Double();
-            this.Largura = l.Get(Constantes.ATT_LRG).Double();
-            this.Espessura = l.Get(Constantes.ATT_ESP).Double(2);
-            this.Perfil = l.Get(Constantes.ATT_PER).ToString();
-
-            this.Mercadoria = l.Get(Constantes.ATT_MER).ToString();
-            this.Material = l.Get(Constantes.ATT_MAT).ToString();
-            this.Tratamento = l.Get(Constantes.ATT_FIC).ToString();
-            this.SAP = l.Get(Constantes.ATT_SAP).ToString();
-
-            this._PesoUnit = l.Get(Constantes.ATT_PES).Double();
-            this._Superficie = l.Get(Constantes.ATT_SUP).Double();
-        }
 
         public List<MarcaTecnoMetal> Posicoes_Iguais { get; set; } = new List<MarcaTecnoMetal>();
         public MarcaTecnoMetal(List<MarcaTecnoMetal> posicoes_iguais)
@@ -298,6 +276,28 @@ namespace Ferramentas_DLM
             this._Superficie = m.Superficie;
             this.Linha = m.Linha;
             this.Posicoes_Iguais = posicoes_iguais;
+        }
+        public MarcaTecnoMetal(DB.Linha l)
+        {
+            this.Linha = l;
+            this.Marca = l.Get(Constantes.ATT_MAR).ToString();
+            this.Posicao = l.Get(Constantes.ATT_POS).ToString();
+            this.Quantidade = l.Get(Constantes.ATT_QTD).Double();
+            this.NomeBloco = l.Get(Constantes.ATT_BLK).ToString();
+            this.Prancha = l.Get(Constantes.ATT_DWG).ToString();
+
+            this.Comprimento = l.Get(Constantes.ATT_CMP).Double();
+            this.Largura = l.Get(Constantes.ATT_LRG).Double();
+            this.Espessura = l.Get(Constantes.ATT_ESP).Double(2);
+            this.Perfil = l.Get(Constantes.ATT_PER).ToString();
+
+            this.Mercadoria = l.Get(Constantes.ATT_MER).ToString();
+            this.Material = l.Get(Constantes.ATT_MAT).ToString();
+            this.Tratamento = l.Get(Constantes.ATT_FIC).ToString();
+            this.SAP = l.Get(Constantes.ATT_SAP).ToString();
+
+            this._PesoUnit = l.Get(Constantes.ATT_PES).Double();
+            this._Superficie = l.Get(Constantes.ATT_SUP).Double();
         }
     }
 

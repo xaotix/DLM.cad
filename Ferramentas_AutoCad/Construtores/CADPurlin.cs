@@ -149,11 +149,29 @@ namespace Ferramentas_DLM
         public List<string> TirantesMLStyles { get; set; } = new List<string> { "10MM" };
         [Category("Correntes")]
         [DisplayName("MLStyle")]
-        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3","CR"};
+        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3","CR", "CR2"};
+
+        public List<string> GetCorrentesMlStylesSelecao()
+        {
+            return CorrenteMLStyles.FindAll(x => GetMLStyles().Find(y => y.ToUpper() == x.ToUpper()) != null);
+        }
+        public List<string> GetTirantesMLStylesSelecao()
+        {
+            return TirantesMLStyles.FindAll(x => GetMLStyles().Find(y => y.ToUpper() == x.ToUpper()) != null);
+        }
+        public List<string> GetTercasMLStylesSelecao()
+        {
+            return TercasMLStyles.FindAll(x => GetMLStyles().Find(y => y.ToUpper() == x.ToUpper()) != null);
+        }
+
+        public List<MlineStyle> GetEstilosSelecao()
+        {
+          return this.GetMlineStyles(this.GetMultilines());
+        }
 
         [Category("Purlin")]
         [DisplayName("MLStyle")]
-        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360","TERCA" };
+        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360","TERCA", "TERCA1", "TERCA_SUP" };
         [Category("Tirantes")]
         [DisplayName("Mapear")]
         public bool MapearTirantes { get; set; } = true;
@@ -219,17 +237,35 @@ namespace Ferramentas_DLM
             this.id_tirante = id;
             this._tirante_padrao = null;
         }
+        public List<BlockReference> GetBlocosSecundariasIndicacao()
+        {
+            List<BlockReference> retorno = new List<BlockReference>();
+            retorno.AddRange(this.Getblocos_correntes());
+            retorno.AddRange(this.Getblocos_tercas());
+            retorno.AddRange(this.Getblocos_tirantes());
 
-        public void LimparBlocosPurlin()
+            return retorno;
+        }
+
+        public List<ObjetoMultiline> GetMLinesPurlin()
+        {
+            List<ObjetoMultiline> retorno = new List<ObjetoMultiline>();
+            retorno.AddRange(this.GetMultLinesTirantes());
+            retorno.AddRange(this.GetMultLinesCorrentes());
+            retorno.AddRange(this.GetMultLinePurlins());
+
+            return retorno;
+        }
+
+        public void ApagarBlocosPurlin()
         {
             var sel = SelecionarObjetos();
             if (sel.Status == PromptStatus.OK)
             {
-                List<BlockReference> apagar = new List<BlockReference>();
-                apagar.AddRange(this.Getblocos_correntes());
-                apagar.AddRange(this.Getblocos_tercas());
-                apagar.AddRange(this.Getblocos_tirantes());
-                Utilidades.Apagar(apagar.Select(x=> x as Entity).ToList());
+                
+                Utilidades.Apagar(GetBlocosSecundariasIndicacao().Select(x=> x as Entity).ToList());
+             
+
             }
         }
         public void Mapear()
@@ -237,9 +273,9 @@ namespace Ferramentas_DLM
             var sel = SelecionarObjetos();
             if (sel.Status == PromptStatus.OK)
             {
-                List<BlockReference> blocos_excluir = new List<BlockReference>();
+        
 
-                this._mlines_verticais = Multiline.GetVerticais(this.GetMultilines(), MultiLinesVerticaisCompMin);
+
 
 
                 int c = 1;
@@ -261,54 +297,58 @@ namespace Ferramentas_DLM
                 {
 
                     Menus.MenuConfigurarVaos mm = new Menus.MenuConfigurarVaos(eixos);
-                    mm.ShowDialog();
-
-                    if (!mm.confirmado)
-                    {
-                        return;
-                    }
-
-
-                    if (MapearTercas)
-                    {
-                        blocos_excluir.AddRange(this.Getblocos_tercas());
-                    }
-                    if (MapearTirantes)
-                    {
-                        blocos_excluir.AddRange(this.Getblocos_tirantes());
-                    }
-
-                    if (MapearCorrentes)
-                    {
-                        blocos_excluir.AddRange(this.Getblocos_correntes());
-                    }
-
-                    Utilidades.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
-
-
-
-                    for (int i = 0; i < verticais.Count; i++)
-                    {
-                        InserirBlocos(verticais[i]);
-                    }
-
-                    AddBarra();
-                    AddMensagem("\n" + blocos_excluir.Count.ToString() + " blocos encontrados excluídos");
-                    AddMensagem("\n" + this.GetLinhas_Eixos().Count.ToString() + " Linhas eixo encontradas");
-                    AddMensagem("\n" + this.GetPolyLines_Eixos().Count.ToString() + " PolyLinhas eixo encontradas");
-                    AddMensagem("\n" + this.GetMultilines().Count.ToString() + " Multilines encontradas");
-                    AddMensagem("\n" + this._mlines_verticais.Count.ToString() + " Mlines Verticais");
-                    AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
-                    AddBarra();
-                    AddMensagem("\n" + this.GetMultLinesTirantes().Count + " Tirantes");
-                    AddMensagem("\n" + this.GetMultLinePurlins().Count.ToString() + " Purlins");
-                    AddMensagem("\n" + this.GetMultLinesCorrentes().Count.ToString() + " Correntes");
-                    AddBarra();
+                    mm.Show();
                 }
+            }
+        }
+
+        public void Inserir(GradeEixos grade)
+        {
+            List<BlockReference> blocos_excluir = new List<BlockReference>();
+            var verticais = grade.GetVaosVerticais();
+            if (MapearTercas)
+            {
+                blocos_excluir.AddRange(this.Getblocos_tercas());
+            }
+            if (MapearTirantes)
+            {
+                blocos_excluir.AddRange(this.Getblocos_tirantes());
+            }
+
+            if (MapearCorrentes)
+            {
+                blocos_excluir.AddRange(this.Getblocos_correntes());
+            }
+
+            Utilidades.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
 
 
 
+            for (int i = 0; i < verticais.Count; i++)
+            {
+                InserirBlocos(verticais[i]);
+            }
 
+            AddBarra();
+            AddMensagem("\n" + blocos_excluir.Count.ToString() + " blocos encontrados excluídos");
+            AddMensagem("\n" + this.GetLinhas_Eixos().Count.ToString() + " Linhas eixo encontradas");
+            AddMensagem("\n" + this.GetPolyLines_Eixos().Count.ToString() + " PolyLinhas eixo encontradas");
+            AddMensagem("\n" + this.GetMultilines().Count.ToString() + " Multilines encontradas");
+            AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
+            AddBarra();
+            AddMensagem("\n" + this.GetMultLinesTirantes().Count + " Tirantes");
+            AddMensagem("\n" + this.GetMultLinePurlins().Count.ToString() + " Purlins");
+            AddMensagem("\n" + this.GetMultLinesCorrentes().Count.ToString() + " Correntes");
+            AddBarra();
+        }
+
+        public void ApagarPurlins()
+        {
+            var sel = SelecionarObjetos();
+            if (sel.Status == PromptStatus.OK)
+            {
+                Utilidades.Apagar(GetBlocosSecundariasIndicacao().Select(x => x as Entity).ToList());
+                Utilidades.Apagar(GetMLinesPurlin().Select(x => x.Mline as Entity).ToList());
             }
         }
 
@@ -316,9 +356,20 @@ namespace Ferramentas_DLM
 
 
 
+        public List<Entity> GetObjetosNaoMapeados()
+        {
+            List<Entity> blocos = new List<Entity>();
+            blocos.AddRange(this.selecoes);
+            blocos = blocos.FindAll(x=> this.GetBlocos().FindAll(w => w.Name.ToUpper().StartsWith(Constantes.PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
+            blocos = blocos.FindAll(x => this.GetBlocos_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetBlocosSecundariasIndicacao().Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetBlocos_Nivel().Select(y => y.Bloco).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetMultLinePurlins().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetMultLinesCorrentes().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetMultLinesTirantes().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
 
-
-
+            return blocos;
+        }
 
 
 
@@ -360,11 +411,9 @@ namespace Ferramentas_DLM
                 List<MlineStyle> estilos = new List<MlineStyle>();
                 foreach (var s in this.CorrenteMLStyles)
                 {
-                    var st = Utilidades.GetEstilo(s);
+                    var st = this.GetMlStyle(s);
                     if (st != null)
-                    {
                         estilos.Add(st);
-                    }
                 }
                 foreach (var l in lista)
                 {
@@ -390,11 +439,9 @@ namespace Ferramentas_DLM
                 List<MlineStyle> estilos = new List<MlineStyle>();
                 foreach (var s in this.TirantesMLStyles)
                 {
-                    var st = Utilidades.GetEstilo(s);
+                    var st = this.GetMlStyle(s);
                     if (st != null)
-                    {
                         estilos.Add(st);
-                    }
                 }
 
                 foreach (var l in lista)
@@ -421,8 +468,10 @@ namespace Ferramentas_DLM
                 List<MlineStyle> estilos = new List<MlineStyle>();
                 foreach (var s in this.TercasMLStyles)
                 {
-                    var st = Utilidades.GetEstilo(s);
-                    estilos.Add(st);
+                    var st = this.GetMlStyle(s);
+                   
+                    if(st!=null)
+                        estilos.Add(st);
                 }
 
                 foreach (var l in lista)
@@ -441,7 +490,7 @@ namespace Ferramentas_DLM
         }
 
 
-        private List<Mline> _mlines_verticais { get; set; } = new List<Mline>();
+
         public GradeEixos GetGradeEixos()
         {
             GradeEixos retorno = new GradeEixos(this);
@@ -479,11 +528,7 @@ namespace Ferramentas_DLM
 
 
                     List<BlockReference> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, this.Eitos_Tolerancia);
-                    //var blks = blocos.FindAll(x =>
-                    //Math.Abs(x.Position.DistanceTo(pt1)) <= tolerancia * x.ScaleFactors.X
-                    //|
-                    //Math.Abs(x.Position.DistanceTo(pt2)) <= tolerancia * x.ScaleFactors.X
-                    //);
+
 
                     if (blks.Count >= 1)
                     {
@@ -661,7 +706,7 @@ namespace Ferramentas_DLM
             {
                 foreach (var p in vao.GetTirantes())
                 {
-                    AddBlocoTirante(p.Letra, p.CentroBloco, Math.Round(p.Multiline.comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
+                    AddBlocoTirante(p.Letra, p.CentroBloco, Math.Round(p.Multiline.Comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
                 }
             }
 
