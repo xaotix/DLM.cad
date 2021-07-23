@@ -26,7 +26,7 @@ namespace Ferramentas_DLM
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Point3d p0 = new Point3d();
+            Point2d p0 = new Point2d();
             double escala = 10;
             double offset = 67;
 
@@ -69,14 +69,13 @@ namespace Ferramentas_DLM
                         if (c == 5)
                         {
                             //sobe uma linha, criando as marcas acima
-                            p0 = new Point3d(0, p0.Y + (escala * offset / 2), p0.Z);
+                            p0 = new Point2d(0, p0.Y + (escala * offset / 2));
                             c = 0;
                         }
 
-                        p0 = new Point3d(
+                        p0 = new Point2d(
                             p0.X + (escala * offset),
-                            p0.Y/* + (escala * offset)*/,
-                            p0.Z /*+ (escala * offset)*/
+                            p0.Y/* + (escala * offset)*/
                             );
                     }
                     else

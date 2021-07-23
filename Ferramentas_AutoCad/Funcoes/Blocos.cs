@@ -19,81 +19,84 @@ namespace Ferramentas_DLM
 {
     public static class Blocos
     {
-        /// <summary>
-        ///Pega o contorno de blocos já escalonando. 
-        ///Suporta somente Polyline, Line e Circle
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="tr"></param>
-        /// <returns></returns>
+        ///// <summary>
+        /////Pega o contorno de blocos já escalonando. 
+        /////Suporta somente Polyline, Line e Circle
+        ///// </summary>
+        ///// <param name="s"></param>
+        ///// <param name="tr"></param>
+        ///// <returns></returns>
         
-        public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
+        //public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
+        //{
+        //    List<Point3d> pts = new List<Point3d>();
+        //    BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
+        //    foreach (ObjectId id in acBlkTblRec)
+        //    {
+
+        //        var obj = tr.GetObject(id, OpenMode.ForRead);
+        //        if (obj is Line)
+        //        {
+        //            var tt = obj as Line;
+        //            Point3d p1 = tt.StartPoint.TransformBy(s.BlockTransform);
+        //            Point3d p2 = tt.EndPoint.TransformBy(s.BlockTransform);
+        //            pts.Add(p1);
+        //            pts.Add(p2);
+        //        }
+        //        else if (obj is Polyline)
+        //        {
+        //            var tt = obj as Polyline;
+        //            int vn = tt.NumberOfVertices;
+        //            for (int i = 0; i < vn; i++)
+        //            {
+        //                Point3d pt = tt.GetPoint3dAt(i).TransformBy(s.BlockTransform);
+        //                pts.Add(pt);
+        //            }
+        //        }
+        //        else if(obj is Circle)
+        //        {
+        //            var tt = obj as Circle;
+        //            var center = tt.Center.TransformBy(s.BlockTransform);
+
+        //            var raioy = tt.Radius * s.ScaleFactors.Y;
+        //            var raiox = tt.Radius * s.ScaleFactors.X;
+
+
+        //            /*centro*/
+        //            pts.Add(new Point3d(center.X, center.Y, 0));
+
+        //            /*bordas horizontais*/
+        //            pts.Add(new Point3d(center.X + raiox, center.Y, 0));
+        //            pts.Add(new Point3d(center.X - raiox, center.Y, 0));
+
+        //            /*bordas verticais*/
+        //            pts.Add(new Point3d(center.X , center.Y + raioy, 0));
+        //            pts.Add(new Point3d(center.X , center.Y - raioy, 0));
+
+        //        }
+        //        else if(obj is Arc)
+        //        {
+        //            var tt = obj as Arc;
+        //            var center = tt.Center.TransformBy(s.BlockTransform);
+        //            var p1 = tt.StartPoint.TransformBy(s.BlockTransform);
+        //            var p2 = tt.EndPoint.TransformBy(s.BlockTransform);
+        //            pts.Add(p1);
+        //            pts.Add(center);
+        //            pts.Add(p2);
+
+        //        }
+        //    }
+        //    return pts;
+        //}
+
+
+        public static void Inserir(Document acDoc, string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
         {
-            List<Point3d> pts = new List<Point3d>();
-            BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
-            foreach (ObjectId id in acBlkTblRec)
-            {
-
-                var obj = tr.GetObject(id, OpenMode.ForRead);
-                if (obj is Line)
-                {
-                    var tt = obj as Line;
-                    Point3d p1 = tt.StartPoint.TransformBy(s.BlockTransform);
-                    Point3d p2 = tt.EndPoint.TransformBy(s.BlockTransform);
-                    pts.Add(p1);
-                    pts.Add(p2);
-                }
-                else if (obj is Polyline)
-                {
-                    var tt = obj as Polyline;
-                    int vn = tt.NumberOfVertices;
-                    for (int i = 0; i < vn; i++)
-                    {
-                        Point3d pt = tt.GetPoint3dAt(i).TransformBy(s.BlockTransform);
-                        pts.Add(pt);
-                    }
-                }
-                else if(obj is Circle)
-                {
-                    var tt = obj as Circle;
-                    var center = tt.Center.TransformBy(s.BlockTransform);
-
-                    var raioy = tt.Radius * s.ScaleFactors.Y;
-                    var raiox = tt.Radius * s.ScaleFactors.X;
-
-
-                    /*centro*/
-                    pts.Add(new Point3d(center.X, center.Y, 0));
-
-                    /*bordas horizontais*/
-                    pts.Add(new Point3d(center.X + raiox, center.Y, 0));
-                    pts.Add(new Point3d(center.X - raiox, center.Y, 0));
-
-                    /*bordas verticais*/
-                    pts.Add(new Point3d(center.X , center.Y + raioy, 0));
-                    pts.Add(new Point3d(center.X , center.Y - raioy, 0));
-
-                }
-                else if(obj is Arc)
-                {
-                    var tt = obj as Arc;
-                    var center = tt.Center.TransformBy(s.BlockTransform);
-                    var p1 = tt.StartPoint.TransformBy(s.BlockTransform);
-                    var p2 = tt.EndPoint.TransformBy(s.BlockTransform);
-                    pts.Add(p1);
-                    pts.Add(center);
-                    pts.Add(p2);
-
-                }
-            }
-            return pts;
+            Inserir(acDoc, nome, new Point2d(origem.X, origem.Y), escala, rotacao, atributos);
         }
 
 
-
-
-
-        public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
+        public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point2d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
         {
             Hashtable ht = new Hashtable();
             ht.Add(Constantes.ATT_N, N);
@@ -146,7 +149,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void MarcaComposta(Point3d p0, string marca, double quantidade, string ficha, string mercadoria, double escala = 10)
+        public static void MarcaComposta(Point2d p0, string marca, double quantidade, string ficha, string mercadoria, double escala = 10)
         {
             try
             {
@@ -167,7 +170,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void Inserir(Document acDoc, string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
+        public static void Inserir(Document acDoc, string nome, Point2d origem, double escala, double rotacao, Hashtable atributos)
         {
             string endereco = "";
             if (File.Exists(nome))
@@ -245,7 +248,7 @@ namespace Ferramentas_DLM
                             //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
 
                             blkid = acBlkTbl[nomeBloco];
-                            BlockReference bref = new BlockReference(origem, blkid);
+                            BlockReference bref = new BlockReference(new Point3d(origem.X, origem.Y,0), blkid);
                             BlockTableRecord btr2 = (BlockTableRecord)acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite);
                             using (BlockTableRecord bdef = (BlockTableRecord)acTrans.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
                             {
@@ -319,13 +322,13 @@ namespace Ferramentas_DLM
 
                             using (BlockTableRecord btr = (BlockTableRecord)acCurDb.CurrentSpaceId.GetObject(OpenMode.ForWrite))
                             {
-                                using (BlockReference bref = new BlockReference(origem, blkid))
+                                using (BlockReference bref = new BlockReference(new Point3d(origem.X, origem.Y,0), blkid))
                                 {
                                     Matrix3d mat = Matrix3d.Identity;
                                     bref.TransformBy(mat);
                                     bref.ScaleFactors = new Scale3d(escala, escala, escala);
                                     bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
-                                    bref.Position = origem;
+                                    bref.Position = new Point3d(origem.X, origem.Y, 0);
                                     btr.AppendEntity(bref);
                                     acTrans.AddNewlyCreatedDBObject(bref, true);
 
@@ -398,7 +401,7 @@ namespace Ferramentas_DLM
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
         }
-        public static void MarcaPerfil(Point3d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
+        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -433,7 +436,7 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
+                    p0 = Ut.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
@@ -453,7 +456,7 @@ namespace Ferramentas_DLM
 
             }
         }
-        public static void MarcaChapa(Point3d p0, ConfiguracaoChapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao = "")
+        public static void MarcaChapa(Point2d p0, ConfiguracaoChapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao = "")
         {
             try
             {
@@ -524,7 +527,7 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
+                    p0 = Ut.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
@@ -536,7 +539,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void MarcaElemM2(Point3d p0, Conexoes.TecnoMetal_Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemM2(Point2d p0, Conexoes.TecnoMetal_Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -572,7 +575,7 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
+                    p0 = Ut.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
@@ -584,7 +587,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void MarcaElemUnitario(Point3d p0, RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemUnitario(Point2d p0, RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -617,7 +620,7 @@ namespace Ferramentas_DLM
 
                 if (posicao != "")
                 {
-                    p0 = Utilidades.AddLeader(0, p0, escala, "", 12, true);
+                    p0 = Ut.AddLeader(0, p0, escala, "", 12, true);
                 }
 
 
@@ -629,7 +632,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void CamToMarcaSimples(DLMCam.ReadCam cam, Point3d origem, double escala)
+        public static void CamToMarcaSimples(DLMCam.ReadCam cam, Point2d origem, double escala)
         {
 
             if (cam.Familia == DLMCam.Familia.Dobrado | cam.Familia == DLMCam.Familia.Laminado | cam.Familia == DLMCam.Familia.Soldado && !cam.Nome.Contains("_"))
@@ -699,34 +702,107 @@ namespace Ferramentas_DLM
             }
             return bloco.Name;
         }
-        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1)
+
+        public static List<Point2d> GetInterSeccao(BlockReference obj, Entity obj2)
         {
-            List<BlockReference> blks = new List<BlockReference>();
+            List<Point2d> ptss = new List<Point2d>();
+
+
+
+         
+            DBObjectCollection acDBObjColl = new DBObjectCollection();
+            obj.Explode(acDBObjColl);
+           
+            foreach (Entity acEnt in acDBObjColl)
+            {
+                try
+                {
+                    Point3dCollection pts = new Point3dCollection();
+                    acEnt.IntersectWith(obj, Autodesk.AutoCAD.DatabaseServices.Intersect.ExtendArgument, pts, new IntPtr(), new IntPtr());
+                    foreach (Point3d p in pts)
+                    {
+                        ptss.Add(new Point2d(p.X, p.Y));
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+
+            }
+
+
+            return ptss;
+        }
+
+        public static List<BlocoTag> GetBlocosProximos(List<BlocoTag> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1)
+        {
+            return GetBlocosProximos(blocos, new Point2d(pt1.X, pt1.Y), new Point2d(pt2.X, pt2.Y), tolerancia);
+        }
+
+        
+
+
+        public static List<BlocoTag> GetBlocosProximos(List<BlocoTag> blocos, Point2d pt1, Point2d pt2, double tolerancia = 1)
+        {
+            List<BlocoTag> blks = new List<BlocoTag>();
+
+
+            Line p = new Line();
+            p.StartPoint = new Point3d(pt1.X, pt1.Y,0);
+            p.EndPoint = new Point3d(pt2.X, pt2.Y,0);
+
+            //foreach(var b in blocos)
+            //{
+            //    var pts = GetInterSeccao(b, p);
+
+            //    foreach (var pt in pts)
+            //    {
+            //        var dist1 = Math.Abs(pt.GetDistanceTo(pt1));
+            //        var dist2 = Math.Abs(pt.GetDistanceTo(pt1));
+
+            //        if (dist1 <= tolerancia | dist2 <= tolerancia)
+            //        {
+            //            blks.Add(b);
+            //            break;
+            //        }
+            //    }
+            //}
+            //if(blks.Count>0)
+            //{
+            //return blks;
+            //}
+            
+
+
+
+
             using (var acTrans = acDoc.TransactionManager.StartOpenCloseTransaction())
             {
                 foreach (var blk in blocos)
                 {
 
-                    var d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt1)));
-                    var d2 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt2)));
+                    var d1 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(Ut.GetP3d(pt1))));
+                    var d2 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(Ut.GetP3d(pt2))));
 
-                    var scfactor = blk.ScaleFactors.X;
 
-                    var dmin = Math.Round(Math.Abs(tolerancia * scfactor));
 
-                    if (d1 <= dmin | d2 <= dmin)
+
+
+                    if (d1 <= tolerancia | d2 <= tolerancia)
                     {
                         blks.Add(blk);
                         continue;
                     }
 
 
-                    var pts = GetContorno(blk, acTrans);
+                    var pts = blk.GetContorno(acTrans);
 
-                    foreach(var pt in pts)
+                    foreach (var pt in pts)
                     {
-                        d1 = Math.Round(Math.Abs(blk.Position.DistanceTo(pt)));
-                        if (d1 <= dmin)
+                        d1 = Math.Round(Math.Abs(pt1.GetDistanceTo(pt)));
+                        d2 = Math.Round(Math.Abs(pt2.GetDistanceTo(pt)));
+                        if (d1 <= tolerancia | d2 <= tolerancia)
                         {
                             blks.Add(blk);
                             break;
@@ -773,12 +849,12 @@ namespace Ferramentas_DLM
             }
             return blocos;
         }
-        public static void Mover(BlockReference bloco, Point3d posicao)
+        public static void Mover(BlockReference bloco, Point2d posicao)
         {
             Clonar(bloco, posicao);
-            Utilidades.Apagar(new List<Entity> { bloco });
+            Ut.Apagar(new List<Entity> { bloco });
         }
-        public static void Clonar(BlockReference bloco, Point3d novaposicao)
+        public static void Clonar(BlockReference bloco, Point2d novaposicao)
         {
             var atributos = Atributos.GetBlocoTag(bloco);
 

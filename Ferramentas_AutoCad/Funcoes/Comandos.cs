@@ -71,7 +71,7 @@ namespace Ferramentas_DLM
         {
 
             Assembly asm = Assembly.GetExecutingAssembly();
-            List<string> comandos = Utilidades.listarcomandos(asm, false).ToList().OrderBy(x=>x).ToList();
+            List<string> comandos = Ut.listarcomandos(asm, false).ToList().OrderBy(x=>x).ToList();
 
             editor.WriteMessage("=== Lista de comandos ===\n");
             foreach (var s in comandos)
@@ -145,7 +145,7 @@ namespace Ferramentas_DLM
                 var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
                 if (ml!=null)
                 {
-                    var pts = Utilidades.PedirPontos3D();
+                    var pts = Ut.PedirPontos3D();
                     if (pts.Count > 0)
                     {
                         Multiline.DesenharMLine(estilo, ml.Arquivo, pts);
@@ -421,7 +421,7 @@ namespace Ferramentas_DLM
         [CommandMethod("listarquantidadeblocos")]
         public static void listarquantidadeblocos()
         {
-            Utilidades.ListarQuantidadeBlocos();
+            Ut.ListarQuantidadeBlocos();
         }
 
 
@@ -473,7 +473,7 @@ namespace Ferramentas_DLM
             if (arqs.Count > 0)
             {
                 bool cancelado = false;
-                var p0 = Utilidades.PedirPonto3D("\nSelecione a origem", out cancelado);
+                var p0 = Ut.PedirPonto2D("\nSelecione a origem", out cancelado);
                 var x0 = p0.X;
                 var y0 = p0.Y;
                 int c = 1;
@@ -486,11 +486,11 @@ namespace Ferramentas_DLM
                         DLMCam.ReadCam cam = new DLMCam.ReadCam(s);
                         Blocos.CamToMarcaSimples(cam, p0, Cotas.GetEscala());
 
-                        p0 = new Point3d(p0.X + offset, p0.Y, p0.Z);
+                        p0 = new Point2d(p0.X + offset, p0.Y);
 
                         if (c == 10)
                         {
-                            p0 = new Point3d(x0, p0.Y + (offset / 2), p0.Z);
+                            p0 = new Point2d(x0, p0.Y + (offset / 2));
                             c = 1;
                         }
                         c++;
@@ -602,7 +602,7 @@ namespace Ferramentas_DLM
         [CommandMethod("testeinterseccao")]
         public static void testeinterseccao()
         {
-            Utilidades.InterSectionPoint();
+            Ut.InterSectionPoint();
         }
 
 
@@ -671,7 +671,7 @@ namespace Ferramentas_DLM
         [CommandMethod("limpardesenho")]
         public static void limpardesenho()
         {
-            Utilidades.LimparDesenho();
+            Ut.LimparDesenho();
             
         }
 

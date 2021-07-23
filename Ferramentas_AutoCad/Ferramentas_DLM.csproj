@@ -162,7 +162,7 @@
     </Compile>
     <Compile Include="ClassesObjetosMultiline\ObjetoMultiLineBase.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoCorrente.cs" />
-    <Compile Include="ClassesObjetosMultiline\ObjetoMultiline.cs" />
+    <Compile Include="Construtores\CADMline.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoPurlin.cs" />
     <Compile Include="ClassesInput\GradeEixos.cs" />
     <Compile Include="ClassesInput\VaoObra.cs" />
@@ -234,7 +234,7 @@
     <Compile Include="Menus\TercasMenu.Designer.cs">
       <DependentUpon>TercasMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="Funcoes\Utilidades.cs" />
+    <Compile Include="Funcoes\Ut.cs" />
     <Compile Include="Funcoes\Constantes.cs" />
   </ItemGroup>
   <ItemGroup>

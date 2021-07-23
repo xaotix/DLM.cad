@@ -40,7 +40,7 @@ namespace Ferramentas_DLM
                         }
                     }
 
-                    Utilidades.Apagar(apagar);
+                    Ut.Apagar(apagar);
                 }
 
 
@@ -86,7 +86,7 @@ namespace Ferramentas_DLM
                         foreach (var p in mls)
                         {
 
-                            var pts = Utilidades.GetPontos(p);
+                            var pts = Ut.GetPontos(p);
                             if (pts.Count > 1)
                             {
                                 FLayer.Set(p.Layer);
@@ -97,7 +97,7 @@ namespace Ferramentas_DLM
                                 }
                             }
                         }
-                        Utilidades.Apagar(apagar);
+                        Ut.Apagar(apagar);
                     }
                 }
             }
@@ -222,7 +222,7 @@ namespace Ferramentas_DLM
             List<Mline> retorno = new List<Mline>();
             foreach (var s in LS)
             {
-                List<Point3d> lista = Utilidades.GetPontos(s);
+                List<Point3d> lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
                     var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
@@ -246,7 +246,7 @@ namespace Ferramentas_DLM
             List<Mline> retorno = new List<Mline>();
             foreach (var s in LS)
             {
-                List<Point3d> lista = Utilidades.GetPontos(s);
+                List<Point3d> lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
                     var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
@@ -267,7 +267,7 @@ namespace Ferramentas_DLM
         }
         public static void GetOrigens(Mline s, out Point3d p1, out Point3d p2, out double largura)
         {
-            List<Point3d> lista = Utilidades.GetPontos(s);
+            List<Point3d> lista = Ut.GetPontos(s);
 
             /*tem q ver como ele trata quando a purlin tem mais de 2 vertices*/
             var pts = new List<Point3d>();

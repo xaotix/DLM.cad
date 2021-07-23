@@ -1702,7 +1702,7 @@ namespace Ferramentas_DLM
             }
 
             //limpa as cotas atuais
-            Utilidades.Apagar(this.GetCotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
+            Ut.Apagar(this.GetCotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
 
                 if (GetLinhas().Count == 0 | selecao.Status != PromptStatus.OK)
                 {
@@ -1788,7 +1788,7 @@ namespace Ferramentas_DLM
                 {
                     foreach (var s in this.GetFurosPorDiam())
                     {
-                        Utilidades.AddLeader(s.Origem().GetPoint(), s.Origem().Mover(offset1, -offset1 / 2).GetPoint(), s.Nome, size * this.GetEscala());
+                        Ut.AddLeader(s.Origem().GetPoint2d(), s.Origem().Mover(offset1, -offset1 / 2).GetPoint2d(), s.Nome, size * this.GetEscala());
                     }
                 }
 

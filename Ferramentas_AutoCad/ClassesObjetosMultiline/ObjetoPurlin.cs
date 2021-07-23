@@ -1,11 +1,14 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Ferramentas_DLM
 {
     public class ObjetoPurlin : ObjetoMultiLineBase
     {
+        [Category("Eixo")]
+        [DisplayName("Vão")]
         public double Vao
         {
             get
@@ -21,9 +24,11 @@ namespace Ferramentas_DLM
             }
         }
      
-        public Point3d Origem_Esquerda { get; private set; } = new Point3d();
-        public Point3d Origem_Direita { get; private set; } = new Point3d();
+
+        [Browsable(false)]
         public List<ObjetoCorrente> Correntes { get; set; } = new List<ObjetoCorrente>();
+        [Category("Geometria")]
+        [DisplayName("Comprimento FB. Esq.")]
         public double FBE_Comp
         {
             get
@@ -55,6 +60,8 @@ namespace Ferramentas_DLM
             }
         }
         private double _FBE_Comp { get; set; } = 0;
+        [Category("Geometria")]
+        [DisplayName("Comprimento FB. Dir.")]
         public double FBD_Comp
         {
             get
@@ -86,19 +93,31 @@ namespace Ferramentas_DLM
             }
         }
         private double _FBD_Comp { get; set; } = 0;
+        [Category("Geometria")]
+        [DisplayName("Nome FB. Esq.")]
         public string FBE { get; private set; } = "";
+        [Category("Geometria")]
+        [DisplayName("Nome FB. Dir.")]
         public string FBD { get; private set; } = "";
+        [Category("Geometria")]
+        [DisplayName("Transpasse <- ESQ")]
         public double TRE { get; set; } = 0;
+        [Category("Geometria")]
+        [DisplayName("Transpasse DIR ->")]
         public double TRD { get; set; } = 0;
+        [Browsable(false)]
         public List<double> FurosCorrentes { get; set; } = new List<double>();
+        [Browsable(false)]
         public List<double> FurosManuais { get; set; } = new List<double>();
         public override string ToString()
         {
             return this.PurlinPadrao + " Vão: " + this.Vao + " Y: " + this.Y;
         }
-
+        [Browsable(false)]
         public ObjetoPurlin PurlinEsquerda { get; set; }
+        [Browsable(false)]
         public ObjetoPurlin PurlinDireita { get; set; }
+        [Browsable(false)]
         public string PurlinPadrao
         {
             get
@@ -109,7 +128,7 @@ namespace Ferramentas_DLM
                 }
                 if (this.GetPeca() != null)
                 {
-                    var desc = Utilidades.GetDescricao(this.GetPeca());
+                    var desc = Ut.GetDescricao(this.GetPeca());
                     return desc;
                 }
 
@@ -117,6 +136,8 @@ namespace Ferramentas_DLM
             }
         }
 
+        [Category("Geometria")]
+        [DisplayName("Dist. Purlin Acima")]
         public double DistCima
         {
             get
@@ -128,6 +149,8 @@ namespace Ferramentas_DLM
                 return 0;
             }
         }
+        [Category("Geometria")]
+        [DisplayName("Dist. Purlin Abaixo")]
         public double DistBaixo
         {
             get
@@ -140,12 +163,13 @@ namespace Ferramentas_DLM
             }
         }
 
-
+        [Browsable(false)]
         public double X1 { get
             {
                 return this.Origem_Esquerda.X - TRE;
             }
         }
+        [Browsable(false)]
         public double X2
         {
             get
@@ -154,6 +178,7 @@ namespace Ferramentas_DLM
             }
         }
 
+        [Category("Geometria")]
         public double Comprimento
         {
             get
@@ -169,38 +194,59 @@ namespace Ferramentas_DLM
             }
         }
 
-        public ObjetoPurlin(ObjetoMultiline multiline, Point3d origem,VaoObra vao)
+
+
+        public ObjetoPurlin(CADMline multiline,VaoObra vao)
         {
+            this.Grade = vao.Grade;
             this.CADPurlin = vao.CADPurlin;
             this.Multiline = multiline;
-            this.CentroBloco = origem;
+
             this.VaoObra = vao;
             this.SetPeca(vao.CADPurlin.GetPurlinPadrao());
 
 
+            var p1 = this.Multiline.GetInterSeccao(this.VaoObra.Esquerda.GetLinhaEixo(vao.Grade));
 
-            this.Origem_Direita = new Point3d(this.VaoObra.Direita.Origem.X, this.CentroBloco.Y, 0);
-            this.Origem_Esquerda = new Point3d(this.VaoObra.Esquerda.Origem.X, this.CentroBloco.Y, 0);
+            var p2 = this.Multiline.GetInterSeccao(this.VaoObra.Direita.GetLinhaEixo(vao.Grade));
+            if(p1.Count>0)
+            {
+                this.Origem_Esquerda = p1[0];
+            }
+            else
+            {
+                this.Origem_Esquerda = new Point2d(this.VaoObra.Esquerda.Origem.X, this.CentroBloco.Y);
+            }
+
+            if (p2.Count>0)
+            {
+                this.Origem_Direita = p2[0];
+            }
+            else
+            {
+                this.Origem_Direita = new Point2d(this.VaoObra.Direita.Origem.X, this.CentroBloco.Y);
+            }
         }
 
-        public ObjetoPurlin(ObjetoMultiline multiline, CADPurlin cADPurlin)
+        public ObjetoPurlin(CADMline multiline, CADPurlin cADPurlin, GradeEixos grade)
         {
             this.CADPurlin = cADPurlin;
             this.Multiline = multiline;
-            this.CentroBloco = multiline.Centro.GetPoint();
+            this.Grade = grade;
+
             
             this.SetPeca(cADPurlin.GetPurlinPadrao());
 
 
 
-            this.Origem_Direita = new Point3d(this.Multiline.Fim.X, this.CentroBloco.Y, 0);
-            this.Origem_Esquerda = new Point3d(this.Multiline.Inicio.X, this.CentroBloco.Y, 0);
+            this.Origem_Direita = new Point2d(this.Multiline.Fim.X, multiline.Centro.Y);
+            this.Origem_Esquerda = new Point2d(this.Multiline.Inicio.X, multiline.Centro.Y);
         }
 
-        public ObjetoPurlin(Point3d origem, VaoObra vao)
+        public ObjetoPurlin(Point2d origem, VaoObra vao)
         {
             this.CADPurlin = vao.CADPurlin;
-            this.CentroBloco = origem;
+
             this.VaoObra = vao;
             this.id_peca = -1;
             this.Considerar = false;

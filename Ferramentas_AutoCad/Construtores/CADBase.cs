@@ -48,7 +48,7 @@ namespace Ferramentas_DLM
                 }
             }
 
-            Utilidades.Apagar(remover);
+            Ut.Apagar(remover);
 
 
         }
@@ -58,7 +58,7 @@ namespace Ferramentas_DLM
             IrLayout();
             FLayer.Criar(layer, System.Drawing.Color.Gray);
             FLayer.Set("0");
-            var view = Utilidades.GetViewports(layer);
+            var view = Ut.GetViewports(layer);
             editor.Command("mview", "lock", block ? "ON" : "OFF", "all", "");
             editor.Command("layer", block ? "off":"on", layer, "");
             editor.Command("pspace", "");
@@ -104,7 +104,7 @@ namespace Ferramentas_DLM
             string nome = "LAYERS_PADRAO";
             
             Blocos.Inserir(CAD.acDoc, nome, new Point3d(), 0.001, 0, new Hashtable());
-            Utilidades.Apagar(Blocos.GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
+            Ut.Apagar(Blocos.GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
         }
         public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
@@ -128,7 +128,7 @@ namespace Ferramentas_DLM
         }
         public void IrLayout()
         {
-            var lista = Utilidades.GetLayouts().Select(x=>x.LayoutName).ToList().FindAll(x=> x.ToUpper()!="MODEL");
+            var lista = Ut.GetLayouts().Select(x=>x.LayoutName).ToList().FindAll(x=> x.ToUpper()!="MODEL");
             if(lista.Count>0)
             {
                 using (acDoc.LockDocument())
@@ -358,8 +358,8 @@ namespace Ferramentas_DLM
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                 // Create a line that starts at 5,5 and ends at 12,3
-                using (Line acLine = new Line(inicio.GetPoint(),
-                                              fim.GetPoint()))
+                using (Line acLine = new Line(inicio.GetPoint3D(),
+                                              fim.GetPoint3D()))
                 {
                     if (acLineTypTbl.Has(tipo) == false)
                     {
@@ -600,25 +600,25 @@ namespace Ferramentas_DLM
         }
         public List<Line> GetLinhas_Eixos()
         {
-            return Utilidades.LinhasVerticais(this.GetLinhas()).FindAll(x =>
+            return Ut.LinhasVerticais(this.GetLinhas()).FindAll(x =>
                 (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) && 
                 (x.Layer.ToUpper().Contains("EIXO"))
                 ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.ToList().OrderByDescending(y=>y.Length)).Select(x=>x.First()).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<Polyline> GetPolyLines_Eixos()
         {
-            return Utilidades.PolylinesVerticais(this.GetPolyLines()).FindAll(x =>
+            return Ut.PolylinesVerticais(this.GetPolyLines()).FindAll(x =>
                 (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) &&
                 (x.Layer.ToUpper().Contains("EIXO"))
                 ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.First()).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<Polyline> GetPolyLines_Verticais(List<Polyline> polylines)
         {
-            return Utilidades.PolylinesVerticais(polylines);
+            return Ut.PolylinesVerticais(polylines);
         }
         public List<Polyline> GetPolyLines_Horizontais(List<Polyline> polylines)
         {
-            return Utilidades.PolylinesHorizontais(polylines);
+            return Ut.PolylinesHorizontais(polylines);
         }
         #endregion
 
@@ -682,10 +682,17 @@ namespace Ferramentas_DLM
 
             );
         }
-        public List<BlockReference> GetBlocos_Eixos()
+
+        private List<BlocoTag> _blocos_eixo { get; set; }
+        public List<BlocoTag> GetBlocos_Eixos(bool update = false)
         {
             /*pega blocos dinâmicos*/
-            return this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO"));
+           if(_blocos_eixo==null | update)
+            {
+                _blocos_eixo = this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO")).Select(x => new BlocoTag(x)).ToList();
+            }
+
+            return _blocos_eixo;
         }
         public List<BlocoTag> GetBlocos_Nivel()
         {

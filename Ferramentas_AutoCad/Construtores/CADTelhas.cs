@@ -87,7 +87,7 @@ namespace Ferramentas_DLM
             list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
 
 
-            Utilidades.Apagar(list_apagar);
+            Ut.Apagar(list_apagar);
         }
         public void ApagarPassarelas()
         {
@@ -98,7 +98,7 @@ namespace Ferramentas_DLM
             list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
 
 
-            Utilidades.Apagar(list_apagar);
+            Ut.Apagar(list_apagar);
 
         }
 
@@ -138,8 +138,8 @@ namespace Ferramentas_DLM
                 var cabos_horizontais = GetPolyLines_Horizontais(cabos);
 
                 var cotas = Getcotaslinhadevida();
-                var cotas_verticais = Utilidades.CotasVerticais(cotas);
-                var cotas_horizontais = Utilidades.CotasHorizontais(cotas);
+                var cotas_verticais = Ut.CotasVerticais(cotas);
+                var cotas_horizontais = Ut.CotasHorizontais(cotas);
 
                 var etts = new List<Entity>();
                 etts.AddRange(sflis);
@@ -149,14 +149,14 @@ namespace Ferramentas_DLM
                 Point3d ie, id, se, sd;
 
 
-                Utilidades.GetBordas(etts, out se, out sd, out ie, out id);
+                Ut.GetBordas(etts, out se, out sd, out ie, out id);
                 double maxY = (sd.Y > se.Y ? sd.Y : se.Y) + ToleranciaY;
                 double minY = (sd.Y < se.Y ? sd.Y : se.Y) - ToleranciaY;
 
                 //filtra as xls que estão dentro ou próximas dos objetos
                 AddMensagem("\nXlines Encontradas:" + xls.Count);
 
-                xls = Utilidades.XLinesHorizontais(xls);
+                xls = Ut.XLinesHorizontais(xls);
                 AddMensagem("\nXlines Horizontais Encontradas:" + xls.Count);
 
 
@@ -169,15 +169,15 @@ namespace Ferramentas_DLM
                 foreach (var o in pcs)
                 {
                     var p0 = new Coordenada(o.Position);
-                    var xlss = Utilidades.GetXlinesProximas(o, xls, ToleranciaY);
-                    var xl = Utilidades.GetXlineMaisProxima(o, xls, ToleranciaY);
+                    var xlss = Ut.GetXlinesProximas(o, xls, ToleranciaY);
+                    var xl = Ut.GetXlineMaisProxima(o, xls, ToleranciaY);
                     if(xl == null) {
                         AddMensagem("\nNenhuma Xline encontrada. (SFLH) " + o.Position);
                         continue; }
-                    var pos = new Point3d(o.Position.X, xl.BasePoint.Y, 0);
+                    var pos = new Point2d(o.Position.X, xl.BasePoint.Y);
                     Blocos.Mover(o, pos);
 
-                    var polis = Utilidades.GetPolylinesProximas(cabos, p0.GetPoint(), 100);
+                    var polis = Ut.GetPolylinesProximas(cabos, p0.GetPoint3D(), 100);
                       
                     foreach(var p in polis)
                     {
@@ -207,19 +207,20 @@ namespace Ferramentas_DLM
                         AddPolyLine(new List<Coordenada> { new Coordenada(pp1), new Coordenada(pp2) }, this.EspessuraCabo, this.EspessuraCabo, System.Drawing.Color.Red);
                     }
 
-                    var ccotas = Utilidades.GetCotasProximas(Getcotaslinhadevida().FindAll(x=>x is RotatedDimension).Select(x=> x as RotatedDimension).ToList(), p0.GetPoint(), 100);
+                    var ccotas = Ut.GetCotasProximas(Getcotaslinhadevida().FindAll(x=>x is RotatedDimension).Select(x=> x as RotatedDimension).ToList(), p0.GetPoint3D(), 100);
 
                     foreach (var p in ccotas)
                     {
                         var d1 = new Coordenada(p.XLine1Point).Distancia(p0);
                         var d2 = new Coordenada(p.XLine2Point).Distancia(p0);
+                        var ptt = new Point3d(pos.X, pos.Y, 0);
                         if (d1 < d2)
                         {
-                            p.XLine1Point = pos;
+                            p.XLine1Point = ptt;
                         }
                         else
                         {
-                            p.XLine2Point = pos;
+                            p.XLine2Point = ptt;
                         }
                     }
 
@@ -227,12 +228,12 @@ namespace Ferramentas_DLM
                     var p1 = new Coordenada(pos);
                     var angulo = p0.Angulo(p1);
                     var dist = p0.Distancia(p1);
-                    var blocos_texto = Utilidades.GetBlocosProximos(textos, pos, GetEscala() * 20);
+                    var blocos_texto = Ut.GetBlocosProximos(textos, pos, GetEscala() * 20);
                     foreach(var p in blocos_texto)
                     {
                         var p_texto = new Coordenada(p.Position);
                         var pxx = p_texto.Mover(angulo, dist);
-                        Blocos.Mover(p,pxx.GetPoint());
+                        Blocos.Mover(p,pxx.GetPoint2d());
                     }
                 }
                 Utils.SetUndoMark(false);
@@ -286,7 +287,7 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    p1 = Utilidades.PedirPonto3D("Selecione o ponto inicial", out cancelado);
+                    p1 = Ut.PedirPonto3D("Selecione o ponto inicial", out cancelado);
                 }
 
                 int sequencia = 0;
@@ -294,19 +295,19 @@ namespace Ferramentas_DLM
                 {
                 denovo:
                     Point3d p0 = new Point3d(p1.X, p1.Y, p1.Z);
-                    Utilidades.SetOrtho(true);
-                    var p2 = Utilidades.PedirPonto3D("Selecione o ponto final",p1, out cancelado);
+                    Ut.SetOrtho(true);
+                    var p2 = Ut.PedirPonto3D("Selecione o ponto final",p1, out cancelado);
                     if(!cancelado)
                     {
 
                         if (sequencia ==0 && !selecionar)
                         {
-                            p1 = new Coordenada(p1).Mover(angulo, this.LarguraTelha/2).GetPoint();
+                            p1 = new Coordenada(p1).Mover(angulo, this.LarguraTelha/2).GetPoint3D();
                             angulo = new Coordenada(p1).Angulo(p2);
                             var tmpang = Angulo.Normalizar(angulo);
                             if (tmpang == 90 | tmpang == 270)
                             {
-                                p1 = new Coordenada(p1).Mover(tmpang, vert / 2).GetPoint();
+                                p1 = new Coordenada(p1).Mover(tmpang, vert / 2).GetPoint3D();
                             }
                         }
                         angulo = new Coordenada(p1).Angulo(p2);
@@ -337,7 +338,7 @@ namespace Ferramentas_DLM
                                     mov = this.LarguraTelha;
                                 }
 
-                               var p3 = new Coordenada(p1).Mover(angulo, mov).GetPoint();
+                               var p3 = new Coordenada(p1).Mover(angulo, mov).GetPoint3D();
 
 
                                 p1 = p3;
@@ -362,11 +363,11 @@ namespace Ferramentas_DLM
                                 var dist = Math.Round(d1.Distancia(d2));
                                 if (angulo == 90 | angulo == 270)
                                 {
-                                    AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint(), false, 0, false, false);
+                                    AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint3D(), false, 0, false, false);
                                 }
                                 else
                                 {
-                                    AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint(), false, 0, false, false);
+                                    AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint3D(), false, 0, false, false);
 
                                 }
                             }
@@ -426,15 +427,15 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    p1 = Utilidades.PedirPonto3D("Selecione o ponto inicial", out cancelado);
+                    p1 = Ut.PedirPonto3D("Selecione o ponto inicial", out cancelado);
                 }
 
                 int sequencia = 0;
                 if (!cancelado)
                 {
                 denovo:
-                    Utilidades.SetOrtho(true);
-                    var p2 = Utilidades.PedirPonto3D("Selecione o ponto final", p1, out cancelado);
+                    Ut.SetOrtho(true);
+                    var p2 = Ut.PedirPonto3D("Selecione o ponto final", p1, out cancelado);
                     if (!cancelado)
                     {
                         FLayer.Set(LayerLinhaDeVida);
@@ -442,7 +443,7 @@ namespace Ferramentas_DLM
                         List<Point3d> cotas = new List<Point3d>();
                         if (sequencia == 0 && !selecionar)
                         {
-                            p1 = new Coordenada(p1).Mover(angulo, this.LarguraTelha / 2).GetPoint();
+                            p1 = new Coordenada(p1).Mover(angulo, this.LarguraTelha / 2).GetPoint3D();
                             
                         }
                         cotas.Add(p1);
@@ -465,7 +466,7 @@ namespace Ferramentas_DLM
                             if (angulo == 0 | angulo == 180)
                             {
                                 var compf = (this.LarguraTelha * qtd_telhas) - (this.LarguraTelha);
-                                p2 = new Coordenada(p1).Mover(angulo, compf).GetPoint();
+                                p2 = new Coordenada(p1).Mover(angulo, compf).GetPoint3D();
                             }
 
                             var qtd_sflh = Conexoes.Utilz.Int(comp/ this.DistMaxSFLH);
@@ -511,7 +512,7 @@ namespace Ferramentas_DLM
                                 Point3d pxa = new Point3d(p1.X, p1.Y, p1.Z);
                                 foreach (var item in comps)
                                 {
-                                    Point3d pxb = new Coordenada(pxa).Mover(angulo, item).GetPoint();
+                                    Point3d pxb = new Coordenada(pxa).Mover(angulo, item).GetPoint3D();
                                     AddVaoSFLH(angulo,item, pxa, sequencia, pxb, ref cotas);
                                     sequencia++;
                                     cotas.Add(pxb);
@@ -535,11 +536,11 @@ namespace Ferramentas_DLM
                                 {
                                     if (angulo == 0 | angulo == 180)
                                     {
-                                        AddCotaHorizontal(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Utilidades.Mover(Utilidades.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
+                                        AddCotaHorizontal(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Ut.Mover(Ut.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
                                     }
                                     else
                                     {
-                                        AddCotaVertical(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Utilidades.Mover(Utilidades.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
+                                        AddCotaVertical(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Ut.Mover(Ut.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
 
                                     }
                                 }
@@ -547,11 +548,11 @@ namespace Ferramentas_DLM
                                 {
                                     if (angulo == 0 | angulo == 180)
                                     {
-                                        AddCotaHorizontal(new Coordenada(cotas.OrderBy(x => x.X).First()), new Coordenada(cotas.OrderBy(x => x.X).Last()), "", Utilidades.Mover(Utilidades.Centro(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+                                        AddCotaHorizontal(new Coordenada(cotas.OrderBy(x => x.X).First()), new Coordenada(cotas.OrderBy(x => x.X).Last()), "", Ut.Mover(Ut.Centro(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
                                     }
                                     else
                                     {
-                                        AddCotaVertical(new Coordenada(cotas.OrderBy(x => x.Y).First()), new Coordenada(cotas.OrderBy(x => x.Y).Last()), "", Utilidades.Mover(Utilidades.Centro(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+                                        AddCotaVertical(new Coordenada(cotas.OrderBy(x => x.Y).First()), new Coordenada(cotas.OrderBy(x => x.Y).Last()), "", Ut.Mover(Ut.Centro(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
 
                                     }
                                 }
@@ -607,40 +608,40 @@ namespace Ferramentas_DLM
      
                 Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLH, p1, 1, 0, sftlh);
                 AddBlocoTexto(angulo, p1, SFLH, GetEscala() * 5, "");
-                Utilidades.AddLeader(angulo, p1,this.GetEscala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
+                Ut.AddLeader(angulo, p1,this.GetEscala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
 
             }
             Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLH, p2, 1, 0, sftlh);
             AddBlocoTexto(angulo, p2, SFLH, GetEscala() * 5,"");
-            Utilidades.AddLeader(angulo, p2, this.GetEscala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
+            Ut.AddLeader(angulo, p2, this.GetEscala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
             int qtd_sfli = Conexoes.Utilz.Int(comp / this.DistMaxSFLI);
 
             if (qtd_sfli > 0)
             {
                 double espacos = Utilz.ArredondarMultiplo(Utilz.Double(comp / qtd_sfli), this.LarguraTelha);
-                Point3d pp0 = new Coordenada(p1).Mover(angulo, espacos).GetPoint();
+                Point3d pp0 = new Coordenada(p1).Mover(angulo, espacos).GetPoint3D();
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
                     Blocos.Inserir(CAD.acDoc, Constantes.Peca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, GetEscala() * 5,"");
                     cotas.Add(pp0);
-                    pp0 = new Coordenada(pp0).Mover(angulo, espacos).GetPoint();
+                    pp0 = new Coordenada(pp0).Mover(angulo, espacos).GetPoint3D();
 
                 }
             }
         }
         private void AddBlocoTexto(double angulo, Point3d pp0, string nome, double offset, string sap)
         {
-            var p1 = new Coordenada(pp0).Mover(angulo + 90, offset).GetPoint();
+            var p1 = new Coordenada(pp0).Mover(angulo + 90, offset).GetPoint3D();
             var ht = new Hashtable();
             ht.Add(Constantes.ATT_Texto, nome);
             ht.Add(Constantes.ATT_Cod_SAP, sap);
             if(angulo==90 | angulo == 270)
             {
                 //move pro lado quando é vertical
-                p1 = new Coordenada(pp0).Mover(angulo + 90, (GetEscala() * 16)/2).GetPoint();
+                p1 = new Coordenada(pp0).Mover(angulo + 90, (GetEscala() * 16)/2).GetPoint3D();
             }
             Blocos.Inserir(CAD.acDoc, Constantes.BL_Texto, p1, GetEscala(), 0, ht );
 
@@ -665,7 +666,7 @@ namespace Ferramentas_DLM
                 {
                     comp = new Coordenada(p1).DistanciaY(p2);
                 }
-                p2 = new Coordenada(p1).Mover(angulo, comp).GetPoint();
+                p2 = new Coordenada(p1).Mover(angulo, comp).GetPoint3D();
                 AddMensagem("\nÂngulo ajustado:" + angulo);
 
             }

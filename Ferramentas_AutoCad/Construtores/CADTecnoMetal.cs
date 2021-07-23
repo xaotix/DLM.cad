@@ -107,7 +107,7 @@ namespace Ferramentas_DLM
                     double largura = 63.69;
                     var filetes = retorno.GroupBy(x => x.ToString()).ToList();
                     bool cancelado = false;
-                    var pt = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+                    var pt = Ut.PedirPonto3D("Selecione a origem", out cancelado);
                     var origem = new Coordenada(pt).Mover(-largura, 0, 0);
                     if(!cancelado)
                     {
@@ -126,7 +126,7 @@ namespace Ferramentas_DLM
                                 Hashtable ht = new Hashtable();
                                 ht.Add("MBPERFIL", pc);
                                 ht.Add("MBFILETE", filete.First().Filete_Minimo);
-                                Blocos.Inserir(CAD.acDoc, nome, origem.GetPoint(), 1, 0, ht);
+                                Blocos.Inserir(CAD.acDoc, nome, origem.GetPoint2d(), 1, 0, ht);
 
                                 origem = origem.Mover(-largura, 0, 0);
                             }
@@ -276,7 +276,7 @@ namespace Ferramentas_DLM
                             {
 
 
-                                var layouts = Utilidades.GetLayouts();
+                                var layouts = Ut.GetLayouts();
                                 if (layouts.Count > 0)
                                 {
                                     nome = layouts[0].LayoutName;
@@ -292,7 +292,7 @@ namespace Ferramentas_DLM
                                 using (Transaction Tx = db.TransactionManager.StartTransaction())
                                 {
 
-                                    var layouts = Utilidades.getLayoutIds(db);
+                                    var layouts = Ut.getLayoutIds(db);
                                     if (layouts.Count > 0)
                                     {
                                         Layout layout = Tx.GetObject(layouts[0], OpenMode.ForRead) as Layout;
@@ -849,7 +849,7 @@ namespace Ferramentas_DLM
                 if (pcs.Count > 0)
                 {
                     bool cancelado = false;
-                    var pt = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+                    var pt = Ut.PedirPonto2D("Selecione a origem", out cancelado);
                     if (!cancelado)
                     {
 
@@ -1008,7 +1008,7 @@ namespace Ferramentas_DLM
 
                     if(cfg.LimparDesenhos)
                     {
-                        Utilidades.LimparDesenho();
+                        Ut.LimparDesenho();
                     }
                 }
 
@@ -1188,13 +1188,13 @@ namespace Ferramentas_DLM
             }
             return this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
         }
-        public void InserirTabela(Point3d? pt =null)
+        public void InserirTabela(Point2d? pt =null)
         {
 
             bool cancelado = false;
             if(pt==null)
             {
-                pt = Utilidades.PedirPonto3D("Clique na origem", out cancelado);
+                pt = Ut.PedirPonto2D("Clique na origem", out cancelado);
             }
 
             if (!cancelado)
@@ -1205,7 +1205,7 @@ namespace Ferramentas_DLM
                 {
                     if (erros.Count == 0)
                     {
-                        Tabelas.TecnoMetal(pcs, (Point3d)pt, -186.47);
+                        Tabelas.TecnoMetal(pcs, (Point2d)pt, -186.47);
                     }
                     else
                     {
@@ -1230,7 +1230,7 @@ namespace Ferramentas_DLM
 
 
 
-            Point3d? pt  = CleanTabela();
+            Point2d? pt  = CleanTabela();
 
             if (pt!=null)
             {
@@ -1250,9 +1250,9 @@ namespace Ferramentas_DLM
 
         }
 
-        private Point3d? CleanTabela()
+        private Point2d? CleanTabela()
         {
-            Point3d? retorno = null;
+            Point2d? retorno = null;
             List<BlockReference> blocos = new List<BlockReference>();
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
@@ -1299,15 +1299,15 @@ namespace Ferramentas_DLM
                     }
 
                 }
-                apagar.AddRange(Utilidades.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false));
+                apagar.AddRange(Ut.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false));
 
 
 
-                var selo = Utilidades.Filtrar(blocos, new List<string> { "SELO" }, false);
+                var selo = Ut.Filtrar(blocos, new List<string> { "SELO" }, false);
                 foreach (var s in selo)
                 {
-                    var pts = Blocos.GetContorno(s, acTrans);
-                    retorno = new Point3d(pts.Max(x => x.X) - 7.01, pts.Max(x => x.Y) - 7.01, 0);
+                    var pts = Ut.GetPontos(s);
+                    retorno = new Point2d(pts.Max(x => x.X) - 7.01, pts.Max(x => x.Y) - 7.01);
              
                     break;
                 }
@@ -1361,8 +1361,8 @@ namespace Ferramentas_DLM
                         }
                     }
 
-                    List<BlockReference> tabela_tecno = Utilidades.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false);
-                    List<BlockReference> selo = Utilidades.Filtrar(blocos, new List<string> { "SELO" }, false);
+                    List<BlockReference> tabela_tecno = Ut.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false);
+                    List<BlockReference> selo = Ut.Filtrar(blocos, new List<string> { "SELO" }, false);
 
       
 
@@ -1492,8 +1492,8 @@ namespace Ferramentas_DLM
                 }
 
                 var nomes = blocos.Select(x => x.Name).Distinct().ToList();
-                List<BlockReference> ms = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
-                List<BlockReference> pos = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
+                List<BlockReference> ms = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
+                List<BlockReference> pos = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
 
 
                 foreach (var m in ms)
@@ -1592,8 +1592,8 @@ namespace Ferramentas_DLM
                                 }
 
                                 var nomes = blocos.Select(x => x.Name).Distinct().ToList();
-                                List<BlockReference> ms = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
-                                List<BlockReference> pos = Utilidades.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
+                                List<BlockReference> ms = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
+                                List<BlockReference> pos = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
 
 
                                 foreach (var m in ms)
@@ -2114,7 +2114,7 @@ namespace Ferramentas_DLM
                         Conexoes.Utilz.Alerta("Polyline inválida. Somente polylines fechadas representando o contorno da chapa.");
                         return;
                     }
-                    Utilidades.GetInfo(pl, out comprimento, out largura, out area, out perimetro);
+                    Ut.GetInfo(pl, out comprimento, out largura, out area, out perimetro);
                     comprimento = Math.Round(comprimento, 4);
                     largura = Math.Round(largura, 4);
 
@@ -2127,10 +2127,10 @@ namespace Ferramentas_DLM
             else if(opcao == "Digitar")
             {
                 bool cancelado = false;
-                comprimento = Math.Abs(Utilidades.PedirDistancia("Defina o comprimento", out cancelado));
+                comprimento = Math.Abs(Ut.PedirDistancia("Defina o comprimento", out cancelado));
                 if(!cancelado)
                 {
-                    largura = Math.Abs(Utilidades.PedirDistancia("Defina a largura", out cancelado));
+                    largura = Math.Abs(Ut.PedirDistancia("Defina a largura", out cancelado));
 
                     if(!cancelado)
                     {
@@ -2238,7 +2238,7 @@ namespace Ferramentas_DLM
                 double corte = Math.Round(pl.Length);
 
 
-                double comprimento = Utilidades.PedirDistancia("Defina o comprimento", out status);
+                double comprimento = Ut.PedirDistancia("Defina o comprimento", out status);
 
 
 
@@ -2295,7 +2295,7 @@ namespace Ferramentas_DLM
                 if (pa.Comprimento > 0 && pa.Espessura > 0 && pa.Marca.Replace(" ", "") != "" && pa.Quantidade > 0)
                 {
                     bool cancelado = true;
-                    var origem = Utilidades.PedirPonto3D("Selecione o ponto de inserção do bloco.", out cancelado);
+                    var origem = Ut.PedirPonto2D("Selecione o ponto de inserção do bloco.", out cancelado);
                     if (!cancelado)
                     {
                         if (chapa_fina)
@@ -2424,7 +2424,7 @@ namespace Ferramentas_DLM
                         }
                         ConfiguracaoChapa_Dobrada pa = new ConfiguracaoChapa_Dobrada(bobina, largura, comprimento,area, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade, Mercadoria = mercadoria };
 
-                        var origem = Utilidades.PedirPonto3D("Selecione a origem", out status);
+                        var origem = Ut.PedirPonto2D("Selecione a origem", out status);
                         if (!status)
                         {
                             if (chapa_fina)
@@ -2520,7 +2520,7 @@ namespace Ferramentas_DLM
                     return;
                 }
 
-                var origem = Utilidades.PedirPonto3D("Selecione a origem", out status);
+                var origem = Ut.PedirPonto2D("Selecione a origem", out status);
 
                 if (status)
                 {
@@ -2590,7 +2590,7 @@ namespace Ferramentas_DLM
                                 return;
                             }
                             bool status = true;
-                            var ponto = Utilidades.PedirPonto3D("Selecione a origem do bloco", out status);
+                            var ponto = Ut.PedirPonto2D("Selecione a origem do bloco", out status);
 
                             if (!status)
                             {
@@ -2614,7 +2614,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 bool status;
-                double comprimento = Utilidades.PedirDistancia("Defina o comprimento", out status);
+                double comprimento = Ut.PedirDistancia("Defina o comprimento", out status);
 
                 comprimento = Math.Round(comprimento, 4);
 
@@ -2663,7 +2663,7 @@ namespace Ferramentas_DLM
                                     ficha = PromptFicha();
                                 }
 
-                                var ponto = Utilidades.PedirPonto3D("Selecione a origem do bloco", out status);
+                                var ponto = Ut.PedirPonto2D("Selecione a origem do bloco", out status);
 
                                 if (!status)
                                 {
@@ -2680,7 +2680,7 @@ namespace Ferramentas_DLM
         {
             this.SetEscala(escala);
             bool cancelado = true;
-            var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+            var origem = Ut.PedirPonto2D("Selecione a origem", out cancelado);
 
             if(cancelado)
             {
@@ -2695,7 +2695,7 @@ namespace Ferramentas_DLM
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             this.SetEscala(escala);
             bool cancelado = true;
-            var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+            var origem = Ut.PedirPonto2D("Selecione a origem", out cancelado);
 
             if (cancelado)
             {
@@ -2732,7 +2732,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Utilidades.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
+                var marcas = Ut.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if(marcas.Count>0)
                 {
@@ -2755,7 +2755,7 @@ namespace Ferramentas_DLM
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Utilidades.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
+                var marcas = Ut.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
                 {
@@ -2780,7 +2780,7 @@ namespace Ferramentas_DLM
 
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
 
-                var marcas = Utilidades.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
+                var marcas = Ut.Filtrar(this.GetBlocos(), Constantes.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
                 {

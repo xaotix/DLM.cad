@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 using DB;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,16 @@ namespace Ferramentas_DLM
 {
    public class BlocoTag: DB.Linha
     {
+        private List<Point2d> _contorno { get; set; }
+
+        public List<Point2d> GetContorno(Transaction tr)
+        {
+            if(_contorno==null)
+            {
+                _contorno = Ut.GetPontos(this.Bloco, tr).Select(x=>new Point2d(x.X,x.Y)).ToList();
+            }
+            return _contorno;
+        }
         public BlockReference Bloco { get; set; }
 
         public List<BlocoTag> Filhos { get; set; } = new List<BlocoTag>();

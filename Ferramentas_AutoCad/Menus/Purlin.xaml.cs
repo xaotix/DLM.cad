@@ -34,7 +34,7 @@ namespace Ferramentas_DLM.Menus
 
         private void terca_Click(object sender, RoutedEventArgs e)
         {
-            var s = Utilidades.SelecionarPurlin(null);
+            var s = Ut.SelecionarPurlin(null);
 
             if(s!=null)
             {
@@ -45,7 +45,7 @@ namespace Ferramentas_DLM.Menus
 
         private void corrente_Click(object sender, RoutedEventArgs e)
         {
-            var s = Utilidades.SelecionarCorrente();
+            var s = Ut.SelecionarCorrente();
 
             if (s != null)
             {
@@ -58,7 +58,7 @@ namespace Ferramentas_DLM.Menus
 
         private void tirante_Click(object sender, RoutedEventArgs e)
         {
-            var s = Utilidades.SelecionarTirante();
+            var s = Ut.SelecionarTirante();
 
             if (s != null)
             {

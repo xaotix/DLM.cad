@@ -110,7 +110,7 @@ namespace Ferramentas_DLM
 
         private void button9_Click(object sender, EventArgs e)
         {
-            var s = Utilidades.SelecionarPurlin(null);
+            var s = Ut.SelecionarPurlin(null);
             if (s!=null)
             {
                 this.id_terca = s.id_db;
@@ -169,7 +169,7 @@ namespace Ferramentas_DLM
 
         private void button17_Click(object sender, EventArgs e)
         {
-            var s = Utilidades.SelecionarCorrente();
+            var s = Ut.SelecionarCorrente();
             if (s != null)
             {
                 this.id_corrente = s.id_db;
@@ -179,7 +179,7 @@ namespace Ferramentas_DLM
 
         private void button18_Click(object sender, EventArgs e)
         {
-            var s = Utilidades.SelecionarTirante();
+            var s = Ut.SelecionarTirante();
             if (s != null)
             {
                 this.id_tirante = s.id_db;

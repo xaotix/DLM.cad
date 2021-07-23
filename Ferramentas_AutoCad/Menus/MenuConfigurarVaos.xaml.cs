@@ -107,7 +107,7 @@ namespace Ferramentas_DLM.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarPurlin(sel.CADPurlin.GetPurlinPadrao());
+                    var purlin = Ut.SelecionarPurlin(sel.CADPurlin.GetPurlinPadrao());
                     if (purlin != null)
                     {
                         foreach(var p in sel.GetPurlins())
@@ -124,7 +124,7 @@ namespace Ferramentas_DLM.Menus
                 ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarPurlin(sel.GetPeca());
+                    var purlin = Ut.SelecionarPurlin(sel.GetPeca());
                     if (purlin != null)
                     {
                         sel.SetPeca(purlin);
@@ -157,7 +157,7 @@ namespace Ferramentas_DLM.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarCorrente();
+                    var purlin = Ut.SelecionarCorrente();
                     if (purlin != null)
                     {
                         foreach (var p in sel.GetCorrentes())
@@ -174,7 +174,7 @@ namespace Ferramentas_DLM.Menus
                 ObjetoCorrente sel = ((FrameworkElement)sender).DataContext as ObjetoCorrente;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarCorrente();
+                    var purlin = Ut.SelecionarCorrente();
                     if (purlin != null)
                     {
                         sel.SetPeca(purlin);
@@ -193,7 +193,7 @@ namespace Ferramentas_DLM.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarTirante();
+                    var purlin = Ut.SelecionarTirante();
                     if (purlin != null)
                     {
                         foreach (var p in sel.GetTirantes())
@@ -210,7 +210,7 @@ namespace Ferramentas_DLM.Menus
                 ObjetoTirante sel = ((FrameworkElement)sender).DataContext as ObjetoTirante;
                 if (sel != null)
                 {
-                    var purlin = Utilidades.SelecionarTirante();
+                    var purlin = Ut.SelecionarTirante();
                     if (purlin != null)
                     {
                         sel.SetPeca(purlin);

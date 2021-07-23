@@ -28,7 +28,7 @@ using System.Windows;
 
 namespace Ferramentas_DLM
 {
-    public static class Utilidades
+    public static class Ut
     {
         #region Tive que adicionar isso por causa do leader - no cad 2012 dá pau
         //isso daqui está aqui só por causa do Leader.
@@ -45,16 +45,20 @@ namespace Ferramentas_DLM
 
         }
         #endregion
-        public static Point3d AddLeader(double angulo, Point3d pp0, double escala, string nome = "", double multiplicador = 7.5, bool pedir_ponto = false)
+        public static Point2d AddLeader(double angulo, Point3d pp0, double escala, string nome = "", double multiplicador = 7.5, bool pedir_ponto = false)
+        {
+            return AddLeader(angulo, new Point2d(pp0.X, pp0.Y), escala, nome, multiplicador = 7.5, pedir_ponto);
+        }
+        public static Point2d AddLeader(double angulo, Point2d pp0, double escala, string nome = "", double multiplicador = 7.5, bool pedir_ponto = false)
         {
             try
             {
-                var pt2 = new Coordenada(pp0).Mover(angulo + 45, escala * multiplicador).GetPoint();
+                var pt2 = new Coordenada(pp0).Mover(angulo + 45, escala * multiplicador).GetPoint2d();
 
                 if (pedir_ponto)
                 {
                     bool cancelado = false;
-                    var pt0 = Utilidades.PedirPonto3D("Selecione o segundo ponto", pp0, out cancelado);
+                    var pt0 = Ut.PedirPonto2D("Selecione o segundo ponto", pp0, out cancelado);
                     if (!cancelado)
                     {
                         pt2 = pt0;
@@ -72,8 +76,10 @@ namespace Ferramentas_DLM
             }
             return pp0;
         }
-        public static void AddLeader(Point3d origem, Point3d pt2, string texto, double escala)
+        public static void AddLeader(Point2d origem, Point2d pt2, string texto, double escala)
         {
+            Point3d p1 = new Point3d(origem.X, origem.Y, 0);
+            Point3d p2 = new Point3d(pt2.X, pt2.Y, 0);
             using (DocumentLock docLock = acDoc.LockDocument())
             {
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
@@ -85,8 +91,8 @@ namespace Ferramentas_DLM
                     // Create the leader with annotation
                     using (Leader acLdr = new Leader())
                     {
-                        acLdr.AppendVertex(origem);
-                        acLdr.AppendVertex(pt2);
+                        acLdr.AppendVertex(p1);
+                        acLdr.AppendVertex(p2);
                         acLdr.HasArrowHead = true;
 
 
@@ -262,11 +268,11 @@ namespace Ferramentas_DLM
 
         public static Point3d Centro(Point3d p1, Point3d p2)
         {
-            return new Coordenada(p1).GetCentro(p2).GetPoint();
+            return new Coordenada(p1).GetCentro(p2).GetPoint3D();
         }
         public static Point3d Mover(Point3d p, double angulo, double distancia)
         {
-            return new Coordenada(p).Mover(angulo, distancia).GetPoint();
+            return new Coordenada(p).Mover(angulo, distancia).GetPoint3D();
         }
 
         public static void ListarQuantidadeBlocos()
@@ -556,18 +562,17 @@ namespace Ferramentas_DLM
         }
 
 
-        public static List<ObjetoMultiline> MlinesPassando(Point3d de, Point3d ate, List<ObjetoMultiline> LS,  bool dentro_do_eixo = false, double tol_X = 0)
+        public static List<CADMline> MlinesPassando(Point2d de, Point2d ate, List<CADMline> LS,  bool dentro_do_eixo = false, double tol_X = 0)
         {
-            List<ObjetoMultiline> retorno = new List<ObjetoMultiline>();
-            Point3d nde = new Point3d(de.X - tol_X, de.Y, de.Z);
-            Point3d nate = new Point3d(ate.X + tol_X, ate.Y, ate.Z);
+            List<CADMline> retorno = new List<CADMline>();
+            Point3d nde = new Point3d(de.X - tol_X, de.Y,0);
+            Point3d nate = new Point3d(ate.X + tol_X, ate.Y, 0);
 
 
             foreach (var corrente in LS)
             {
-                Point3d p1 = corrente.Inicio.GetPoint();
-                
-                Point3d p2 = corrente.Fim.GetPoint();
+                Point2d p1 = corrente.Inicio;
+                Point2d p2 = corrente.Fim;
 
 
                 if (!dentro_do_eixo)
@@ -606,7 +611,7 @@ namespace Ferramentas_DLM
         /// <param name="dentro_do_eixo"></param>
         /// <param name="somente_vertical"></param>
         /// <returns></returns>
-        public static List<Entity> LinhasPassando(Point3d de, Point3d ate, List<Entity> LS, bool somente_dentro = false, bool dentro_do_eixo = false, bool somente_vertical = true)
+        public static List<Entity> LinhasPassando(Point2d de, Point2d ate, List<Entity> LS, bool somente_dentro = false, bool dentro_do_eixo = false, bool somente_vertical = true)
         {
             List<Entity> retorno = new List<Entity>();
             foreach (var s in LS)
@@ -694,12 +699,15 @@ namespace Ferramentas_DLM
             }
             Coordenada pp = new Coordenada(p1);
 
-            centro = pp.GetCentro(new Coordenada(p2)).GetPoint();
+            centro = pp.GetCentro(new Coordenada(p2)).GetPoint3D();
 
 
         }
 
-
+        public static Point2d Centro(Point2d p1, Point2d p2)
+        {
+            return new Point2d((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+        }
 
         public static List<Line> LinhasHorizontais(List<Line> LS, double comp_min = 100)
         {
@@ -792,9 +800,9 @@ namespace Ferramentas_DLM
                 id = new Point3d(pts.Max(x => x.X), pts.Min(x => x.Y), 0);
             }
         }
-        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point3d ponto, double tolerancia)
+        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point2d ponto, double tolerancia)
         {
-            return blocos.FindAll(x => new Coordenada(x.Position).Distancia(ponto) <= tolerancia);
+            return blocos.FindAll(x => Math.Abs(new Point2d(x.Position.X,x.Position.Y).GetDistanceTo(ponto)) <= tolerancia);
         }
         public static List<Polyline> GetPolylinesProximas(List<Polyline> blocos, Point3d ponto, double tolerancia)
         {
@@ -828,7 +836,7 @@ namespace Ferramentas_DLM
 
 
 
-                    using (Line ll = new Line(p1.GetPoint(), p2.GetPoint()))
+                    using (Line ll = new Line(p1.GetPoint3D(), p2.GetPoint3D()))
                     {
                         Point3dCollection pts3D = new Point3dCollection();
                         //Get the intersection Points between line 1 and line 2
@@ -1043,7 +1051,7 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
-        public static List<UIElement> GetCanvas(object obj, Point p0, double escala, Transaction tr, double opacidade)
+        public static List<UIElement> GetCanvas(object obj, Point p0, double escala, Transaction tr, double opacidade, double comp_min = 50)
         {
             var cor = Conexoes.FuncoesCanvas.Cores.White;
             List<UIElement> retorno = new List<UIElement>();
@@ -1057,9 +1065,9 @@ namespace Ferramentas_DLM
 
                     var obj1 = tr.GetObject(id, OpenMode.ForRead);
 
-                   var  ptss= Utilidades.GetPontosAgrupados(obj1,tr);
+                   var  ptss= Ut.GetPontosAgrupados(obj1,tr);
 
-                    cor = Utilidades.GetCor(obj1);
+                    cor = Ut.GetCor(obj1);
 
                    foreach(var pts in ptss)
                     {
@@ -1068,11 +1076,18 @@ namespace Ferramentas_DLM
 
                             for (int i = 1; i < pts.Count; i++)
                             {
-                                var p1 = new Coordenada(pts[i - 1].TransformBy(s.BlockTransform)).GetPoint2d();
-                                var p2 = new Coordenada(pts[i].TransformBy(s.BlockTransform)).GetPoint2d();
-                                p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
-                                p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
-                                retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                                var pt1 = pts[i - 1].TransformBy(s.BlockTransform);
+                                var pt2 = pts[i].TransformBy(s.BlockTransform);
+                                if(Math.Abs(pt1.DistanceTo(pt2))>=comp_min)
+                                {
+                                    var p1 = new Coordenada(pt1).GetWinPoint();
+                                    var p2 = new Coordenada(pt2).GetWinPoint();
+                                    p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
+                                    p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
+
+                                    retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                                }
+                             
                             }
                         }
                     }
@@ -1080,18 +1095,25 @@ namespace Ferramentas_DLM
             }
             else
             {
-                List<Point3d> pts = Utilidades.GetPontos(obj);
+                List<Point3d> pts = Ut.GetPontos(obj);
                 if (pts.Count > 1)
                 {
-                    cor = Utilidades.GetCor(obj);
+                    cor = Ut.GetCor(obj);
                     for (int i = 1; i < pts.Count; i++)
                     {
-                        var p1 = new Coordenada(pts[i - 1]).GetPoint2d();
-                        var p2 = new Coordenada(pts[i]).GetPoint2d();
-                        p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
-                        p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
-                        cor.Opacity = opacidade;
-                        retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                        var pt1 = pts[i - 1];
+                        var pt2 = pts[i];
+
+                        if(Math.Abs(pt1.DistanceTo(pt2))>=comp_min)
+                        {
+                            var p1 = new Coordenada(pt1).GetWinPoint();
+                            var p2 = new Coordenada(pt2).GetWinPoint();
+                            p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
+                            p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
+                            cor.Opacity = opacidade;
+                            retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                        }
+
                     }
                 }
             }
@@ -1235,8 +1257,19 @@ namespace Ferramentas_DLM
             return msg;
         }
 
-
-
+        public static System.Windows.Point GetWPoint(Point2d pt)
+        {
+            return new Point(pt.X, pt.Y);
+        }
+        public static Point3d GetP3d(Point2d pt)
+        {
+            return new Point3d(pt.X, pt.Y,0);
+        }
+        public static Point2d Mover(Point2d origem, double angulo, double distancia)
+        {
+            double angleRadians = (Math.PI * (angulo) / 180.0);
+            return  new Point2d(((double)origem.X + (Math.Cos(angleRadians) * distancia)), ((double)origem.Y + (Math.Sin(angleRadians) * distancia)));
+        }
 
 
         public static void AddMensagem(string Mensagem)
@@ -1262,6 +1295,11 @@ namespace Ferramentas_DLM
             cancelado = false;
             return PedirPonto3D(pergunta, new Point3d(), out cancelado, false);
         }
+        public static Point2d PedirPonto2D(string pergunta, out bool cancelado)
+        {
+            cancelado = false;
+            return PedirPonto2D(pergunta, new Point2d(), out cancelado, false);
+        }
         public static Point3d PedirPonto3D(string pergunta, Point3d origem, out bool cancelado, bool tem_origem = true)
         {
             cancelado = false;
@@ -1285,6 +1323,32 @@ namespace Ferramentas_DLM
             }
 
             return ptStart;
+
+        }
+
+        public static Point2d PedirPonto2D(string pergunta, Point2d origem, out bool cancelado, bool tem_origem = true)
+        {
+            cancelado = false;
+            PromptPointResult pPtRes;
+            PromptPointOptions pPtOpts = new PromptPointOptions("");
+
+            pPtOpts.Message = "\n" + pergunta;
+            if (tem_origem)
+            {
+                pPtOpts.UseBasePoint = true;
+                pPtOpts.BasePoint = new Point3d(origem.X, origem.Y,0);
+            }
+            pPtRes = acDoc.Editor.GetPoint(pPtOpts);
+
+            Point3d ptStart = pPtRes.Value;
+
+            if (pPtRes.Status == PromptStatus.Cancel)
+            {
+                cancelado = true;
+                return new Point2d();
+            }
+
+            return new Point2d(ptStart.X, ptStart.Y);
 
         }
 
@@ -1351,7 +1415,7 @@ namespace Ferramentas_DLM
 
         public static void LimparDesenho()
         {
-            Utilidades.Purge();
+            Ut.Purge();
             editor.Command("AUDIT", "Y", "");
             editor.Command("_.-scalelistedit", "_R", "_Y", "_E","");
         }
@@ -1408,17 +1472,25 @@ namespace Ferramentas_DLM
 
 
 
-        public static List<Point3d> GetPontos(object obj)
+        public static List<Point3d> GetPontos(object obj, Transaction tr = null)
         {
             List<Point3d> ptss = new List<Point3d>();
-            using (DocumentLock docLock = CAD.acDoc.LockDocument())
+            if(tr==null)
             {
-                // Start a transaction
-                using (Transaction acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
+                using (DocumentLock docLock = CAD.acDoc.LockDocument())
                 {
-                   ptss.AddRange(GetPontosAgrupados(obj).SelectMany(x=>x));
+                    // Start a transaction
+                    using (Transaction acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
+                    {
+                        ptss.AddRange(GetPontosAgrupados(obj).SelectMany(x => x));
+                    }
                 }
             }
+            else
+            {
+                ptss.AddRange(GetPontosAgrupados(obj,tr).SelectMany(x => x));
+            }
+
 
             return ptss;
         }
@@ -1436,7 +1508,7 @@ namespace Ferramentas_DLM
             if (obj is Line)
             {
                 var tt = obj as Line;
-                cor = Utilidades.GetCor(tt.Color);
+                cor = Ut.GetCor(tt.Color);
                 pts.Add(tt.StartPoint);
                 pts.Add(tt.EndPoint);
             }
@@ -1453,13 +1525,13 @@ namespace Ferramentas_DLM
                 {
                     pts.Add(pts[0]);
                 }
-                cor = Utilidades.GetCor(tt.Color);
+                cor = Ut.GetCor(tt.Color);
             }
             else if (obj is Circle)
             {
                 var tt = obj as Circle;
-                cor = Utilidades.GetCor(tt.Color);
-                pts.AddRange(GetPontosCirculo(tt.Center, tt.Diameter, 16).Select(x=>x.GetPoint()));
+                cor = Ut.GetCor(tt.Color);
+                pts.AddRange(GetPontosCirculo(tt.Center, tt.Diameter, 16).Select(x=>x.GetPoint3D()));
 
                 if(pts.Count>0)
                 {
@@ -1482,11 +1554,16 @@ namespace Ferramentas_DLM
             else if (obj is Mline)
             {
                 var tt = obj as Mline;
-                cor = Utilidades.GetCor(tt.Color);
+                cor = Ut.GetCor(tt.Color);
                 for (int i = 0; i < tt.NumberOfVertices; i++)
                 {
                     var t = tt.VertexAt(i);
                     pts.Add(t);
+                }
+
+                if(tt.IsClosed)
+                {
+                    pts.Add(pts[0]);
                 }
             }
             else if (obj is BlockReference && tr!=null)
@@ -1497,13 +1574,29 @@ namespace Ferramentas_DLM
                 foreach (ObjectId id in acBlkTblRec)
                 {
                     var obj1 = tr.GetObject(id, OpenMode.ForRead);
-                    pts2.AddRange(Utilidades.GetPontosAgrupados(obj1, tr).Select(x => x.Select(y=>y.TransformBy(s.BlockTransform)).ToList()).ToList());
+                    pts2.AddRange(Ut.GetPontosAgrupados(obj1, tr).Select(x => x.Select(y=>y.TransformBy(s.BlockTransform)).ToList()).ToList());
                 }
             }
             pts2.Add(pts);
             return pts2;
         }
-
+        public static void PoliLinha(List<Point3d> points)
+        {
+            using (acDoc.LockDocument())
+            using (var tr = acDoc.TransactionManager.StartTransaction())
+            using (var pline = new Polyline())
+            {
+                var plane = new Plane(Point3d.Origin, Vector3d.ZAxis);
+                for (int i = 0; i < points.Count; i++)
+                {
+                    pline.AddVertexAt(i, points[i].Convert2d(plane), 0.0, 0.0, 0.0);
+                }
+                var ms = (BlockTableRecord)tr.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(acCurDb), OpenMode.ForWrite);
+                ms.AppendEntity(pline);
+                tr.AddNewlyCreatedDBObject(pline, true);
+                tr.Commit();
+            }
+        }
         public static System.Windows.Media.SolidColorBrush GetCor(object obj)
         {
             Color color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.White);
@@ -1551,7 +1644,7 @@ namespace Ferramentas_DLM
                 Coordenada pt = new Coordenada(centro).Mover(ang, Diametro / 2);
 
                 ang = ang + ang0;
-                retorno.Add(pt.GetPoint());
+                retorno.Add(pt.GetPoint3D());
             }
             return retorno.Select(x=> new Coordenada(x)).ToList();
         }
@@ -1598,7 +1691,7 @@ namespace Ferramentas_DLM
             }
             else
             {
-            parecidas = Conexoes.DBases.GetBancoRM().GetTercas().FindAll(x => Utilidades.Gettipo(x) == Utilidades.Gettipo(purlin) && Utilidades.Getsecao(x) == Utilidades.Getsecao(purlin));
+            parecidas = Conexoes.DBases.GetBancoRM().GetTercas().FindAll(x => Ut.Gettipo(x) == Ut.Gettipo(purlin) && Ut.Getsecao(x) == Ut.Getsecao(purlin));
 
             }
             return Conexoes.Utilz.SelecionarObjeto(parecidas, null, "Selecione");

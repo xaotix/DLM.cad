@@ -12,14 +12,14 @@ namespace Ferramentas_DLM
 {
     public class Eixo
     {
-        public Point3d Origem
+        public Point2d Origem
         {
             get
             {
-                return new Point3d(Xmin, Ymin, 0);
+                return new Point2d(MinX, MinY);
             }
         }
-        public double Xmin
+        public double MinX
         {
             get
             {
@@ -30,7 +30,7 @@ namespace Ferramentas_DLM
                 return Linha.StartPoint.X < Linha.EndPoint.X ? Linha.StartPoint.X : Linha.EndPoint.X;
             }
         }
-        public double Xmax
+        public double MaxX
         {
             get
             {
@@ -41,7 +41,7 @@ namespace Ferramentas_DLM
                 return Linha.StartPoint.X > Linha.EndPoint.X ? Linha.StartPoint.X : Linha.EndPoint.X;
             }
         }
-        public double Ymin
+        public double MinY
         {
             get
             {
@@ -52,7 +52,7 @@ namespace Ferramentas_DLM
                 return Linha.StartPoint.Y < Linha.EndPoint.Y ? Linha.StartPoint.Y : Linha.EndPoint.Y;
             }
         }
-        public double Ymax
+        public double MaxY
         {
             get
             {
@@ -74,8 +74,15 @@ namespace Ferramentas_DLM
 
 
 
+        public Line GetLinhaEixo(GradeEixos grade)
+        {
+            Line p = new Line();
+            p.StartPoint = new Point3d(this.MinX, grade.GetYmax(), 0);
+            p.EndPoint = new Point3d(this.MinX, grade.GetYmin(), 0);
+            return p;
+        }
 
-        public BlockReference Bloco { get; private set; }
+        public BlocoTag Bloco { get; private set; }
         public Line Linha { get; private set; }
         public override string ToString()
         {
@@ -94,7 +101,7 @@ namespace Ferramentas_DLM
             this.Nome = Nome;
             this.Vao = Vao;
         }
-        public Eixo(Sentido sentido, BlockReference bloco, Line linha, double Vao)
+        public Eixo(Sentido sentido, BlocoTag bloco, Line linha, double Vao)
         {
             this.Sentido = sentido;
             this.Vao = Vao;
@@ -105,15 +112,15 @@ namespace Ferramentas_DLM
             Nome = "";
             if (bloco != null)
             {
-                var atributos = Atributos.GetBlocoTag(this.Bloco);
-                var nomes = atributos.Celulas.FindAll(x => x.Coluna.ToUpper().Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
+
+                var nomes = this.Bloco.Celulas.FindAll(x => x.Coluna.ToUpper().Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
 
                 if (nomes.Count > 0)
                 {
                     Nome = nomes[0];
                 }
-                if (Nome == "") { Nome = atributos.Get("Nome").valor; };
-                var preenchidos = atributos.Celulas.FindAll(x => x.Valor.Replace(" ", "") != "");
+                if (Nome == "") { Nome = this.Bloco.Get("Nome").valor; };
+                var preenchidos = this.Bloco.Celulas.FindAll(x => x.Valor.Replace(" ", "") != "");
                 if (Nome == "" && preenchidos.Count > 0)
                 {
                     Nome = preenchidos[0].Valor;

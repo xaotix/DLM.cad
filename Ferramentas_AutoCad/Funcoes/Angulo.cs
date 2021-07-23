@@ -11,6 +11,13 @@ namespace Ferramentas_DLM
         {
             return Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(0, 0, 0), new Calculos.Ponto3D(s.UnitDir.X, s.UnitDir.Y, 0)));
         }
+        public static double Get(Point2d pt1, Point2d pt2)
+        {
+
+            return RadianosParaGraus(pt1.GetVectorTo(pt2).Angle);
+        }
+
+
         public static bool E_Horizontal(double Angulo)
         {
             if (Angulo == 0 | Angulo == 180)
@@ -59,7 +66,7 @@ namespace Ferramentas_DLM
         {
 
             List<double> retorno = new List<double>();
-            segmentos3d = Utilidades.GetSegmentos3D(pl);
+            segmentos3d = Ut.GetSegmentos3D(pl);
 
             if (segmentos3d.Count > 1)
             {

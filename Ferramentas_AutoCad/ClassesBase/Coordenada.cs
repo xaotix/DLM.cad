@@ -9,7 +9,11 @@ namespace Ferramentas_DLM
 
     public class Coordenada
     {
-        public System.Windows.Point GetPoint2d()
+        public Point2d GetPoint2d()
+        {
+            return new Point2d(this.X, this.Y);
+        }
+        public System.Windows.Point GetWinPoint()
         {
             return new System.Windows.Point(this.X, this.Y);
         }
@@ -17,6 +21,13 @@ namespace Ferramentas_DLM
         {
             this.X = p.X;
             this.X = p.Y;
+        }
+
+        public Coordenada(Point2d pt)
+        {
+            this.X = pt.X;
+            this.Y = pt.Y;
+            this.Z = 0;
         }
         public Coordenada Mover(double X, double Y = 0, double Z = 0)
         {
@@ -28,7 +39,7 @@ namespace Ferramentas_DLM
         {
             return "[" + Tipo.ToString().PadRight(10,' ') + "] [" + this.id.ToString().PadLeft(3, '0') + "] " + chave;
         }
-        public Point3d GetPoint()
+        public Point3d GetPoint3D()
         {
             return new Point3d(this.X, this.Y, 0);
         }

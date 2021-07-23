@@ -1,18 +1,31 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace Ferramentas_DLM
 {
-    public class ObjetoMultiline
+    public class CADMline
     {
-        
+        public List<Point2d> GetInterSeccao(Entity line)
+        {
+            Point3dCollection pts = new Point3dCollection();
+            this.GetPLineDummy().IntersectWith(line, Autodesk.AutoCAD.DatabaseServices.Intersect.ExtendBoth, pts, new IntPtr(), new IntPtr());
+
+            List<Point2d> ptss = new List<Point2d>();
+
+            foreach(Point3d p in pts)
+            {
+                ptss.Add(new Point2d(p.X,p.Y));
+            }
+            return ptss;
+        }
         public System.Windows.Shapes.Line GetCanvas(System.Windows.Point p0, double escala, double espessura, SolidColorBrush cor)
         {
             var p1 = new System.Windows.Point((this.Inicio.X - p0.X) * escala, (this.Inicio.Y - p0.Y) * escala);
             var p2 = new System.Windows.Point((this.Fim.X - p0.X) * escala, (this.Fim.Y - p0.Y) * escala);
-            var l = Conexoes.FuncoesCanvas.Linha(p1, p2, cor, 0, Conexoes.FuncoesCanvas.TipoLinha.Continua, espessura);
+            var l = Conexoes.FuncoesCanvas.Linha(p1, p2, cor, espessura, Conexoes.FuncoesCanvas.TipoLinha.Continua);
 
             return l;
         }
@@ -25,9 +38,24 @@ namespace Ferramentas_DLM
         }
         public Mline Mline { get; private set; }
         public double Comprimento { get; private set; } = 0;
-        public Coordenada Inicio { get; private set; }
-        public Coordenada Fim { get; private set; }
-        public Coordenada Centro { get; private set; }
+        public Point2d Inicio { get; private set; }
+        public Point2d Fim { get; private set; }
+        public Point2d Centro { get; private set; }
+
+        public Polyline GetPLineDummy()
+        {
+            Polyline ps = new Polyline();
+            var plane = new Plane(Point3d.Origin, Vector3d.ZAxis);
+            for (int i = 0; i < this.Pontos.Count; i++)
+            {
+           
+                ps.AddVertexAt(i, this.Pontos[i].Convert2d(plane), 0.0, 0.0, 0.0);
+            }
+         
+
+
+            return ps;
+        }
 
         public double maxx
         {
@@ -58,23 +86,26 @@ namespace Ferramentas_DLM
             }
         }
         public double Angulo { get; set; } = 0;
-        public ObjetoMultiline()
+        public List<Point3d> Pontos { get; set; } = new List<Point3d>();
+        public CADMline()
         {
 
         }
-        public ObjetoMultiline(Mline l, Tipo_Multiline tipo)
+        public CADMline(Mline l, Tipo_Multiline tipo)
         {
             this.Tipo = tipo;
             Point3d p0, p1, centro;
             double comprimento, angulo,largura;
-            Utilidades.GetCoordenadas(l, out p0, out p1, out angulo, out comprimento, out centro, out largura);
+            Ut.GetCoordenadas(l, out p0, out p1, out angulo, out comprimento, out centro, out largura);
             this.Angulo = angulo;
-            this.Centro = new Coordenada(centro);
+            this.Centro = new Point2d(centro.X,centro.Y);
             this.Comprimento = Math.Round(comprimento);
             this.Mline = l;
-            this.Inicio = new Coordenada(p0);
-            this.Fim = new Coordenada(p1);
+            this.Inicio = new Point2d(p0.X,p0.Y);
+            this.Fim = new Point2d(p1.X,p1.Y);
             this.Largura = largura;
+
+            this.Pontos = Ut.GetPontos(this.Mline);
         }
     }
 }

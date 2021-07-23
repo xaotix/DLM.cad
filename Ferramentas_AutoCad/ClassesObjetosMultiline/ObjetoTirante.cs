@@ -15,18 +15,21 @@
         }
         public double Offset { get; set; } = 0;
 
-        public ObjetoTirante(ObjetoMultiline multiline, int numero, VaoObra vao)
+        public ObjetoTirante(CADMline multiline,  VaoObra vao)
         {
+            this.Grade = vao.Grade;
             this.CADPurlin = vao.CADPurlin;
             this.id_peca = vao.CADPurlin.id_tirante;
             this.Multiline = multiline;
-            this.CentroBloco = multiline.Centro.GetPoint();
             this.VaoObra = vao;
 
             this.Offset = vao.CADPurlin.TirantesOffSet;
 
             this.Suporte = vao.CADPurlin.TirantesSuporte;
             this.SetPeca(vao.CADPurlin.GetTirantePadrao());
+
+            this.Origem_Direita = this.Multiline.Inicio;
+            this.Origem_Esquerda = this.Multiline.Fim;
         }
     }
 

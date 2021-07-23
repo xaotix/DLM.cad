@@ -296,13 +296,13 @@ namespace Ferramentas_DLM.Menus
             ht.Add("DESTINO", txt_destino.Text);
             ht.Add(Constantes.ATT_Quantidade, qtd);
 
-            var origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+            var origem = Ut.PedirPonto3D("Selecione a origem", out cancelado);
             if (!cancelado)
             {
                 while (!cancelado)
                 {
                     Blocos.Inserir(CAD.acDoc, arquivo, origem, escala, 0, ht);
-                    origem = Utilidades.PedirPonto3D("Selecione a origem", out cancelado);
+                    origem = Ut.PedirPonto3D("Selecione a origem", out cancelado);
                 }
             }
 
