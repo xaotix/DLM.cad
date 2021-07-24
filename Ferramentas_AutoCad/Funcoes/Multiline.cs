@@ -14,6 +14,75 @@ namespace Ferramentas_DLM
 {
    public static class Multiline
     {
+        private  static  List<MlineStyle> _mlstyles { get; set; }
+
+        public static MlineStyle GetMlStyle(ObjectId nome)
+        {
+            var s = GetMLStyles();
+            if (_mlstyles != null)
+            {
+                var retorno = _mlstyles.Find(x => x.ObjectId == nome);
+                return retorno;
+            }
+            return null;
+        }
+        public static MlineStyle GetMlStyle(string nome)
+        {
+            var s = GetMLStyles();
+            if (_mlstyles != null)
+            {
+                var retorno = _mlstyles.Find(x => x.Name.ToUpper() == nome.ToUpper());
+                return retorno;
+            }
+            return null;
+        }
+        public static List<MlineStyle> GetMlineStyles(List<Mline> mlss)
+        {
+            List<MlineStyle> retorno = new List<MlineStyle>();
+            Multiline.GetMLStyles();
+            if (Multiline._mlstyles != null)
+            {
+                if (Multiline._mlstyles.Count > 0)
+                {
+                    var estilos = mlss.Select(x => x.Style).GroupBy(x => x).Select(x => x.First()).ToList();
+                    foreach (var estilo in estilos)
+                    {
+                        var igual = Multiline._mlstyles.Find(x => x.ObjectId == estilo);
+                        if (igual != null)
+                        {
+                            retorno.Add(igual);
+                        }
+
+                    }
+                }
+
+            }
+
+
+            return retorno;
+        }
+        public static List<MlineStyle> GetMLStyles(bool update = false)
+        {
+            if (_mlstyles == null|update)
+            {
+                _mlstyles = new List<MlineStyle>();
+                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                {
+                    DBDictionary acLyrTbl;
+                    acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead) as DBDictionary;
+
+                    foreach (var acObjId in acLyrTbl)
+                    {
+                        MlineStyle acLyrTblRec;
+                        acLyrTblRec = acTrans.GetObject(acObjId.Value, OpenMode.ForRead) as MlineStyle;
+                        _mlstyles.Add(acLyrTblRec);
+                    }
+
+                }
+            }
+
+            return _mlstyles;
+        }
         public static void MudarPolyline()
         {
             CADBase pp = new CADBase();
@@ -56,7 +125,7 @@ namespace Ferramentas_DLM
 
             if (multiline.Count == 0) { return; }
 
-            var estilos = pp.GetMlineStyles(multiline).Select(x => x.Name).OrderBy(x => x).ToList();
+            var estilos = Multiline.GetMlineStyles(multiline).Select(x => x.Name).OrderBy(x => x).ToList();
 
             if (estilos.Count == 0) { return; }
             var estilo_subst = Conexoes.Utilz.SelecionaCombo(estilos, null);
@@ -65,7 +134,7 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            var st = pp.GetMlStyle(estilo_subst);
+            var st = Multiline.GetMlStyle(estilo_subst);
 
             if(st==null)
             {
@@ -274,6 +343,7 @@ namespace Ferramentas_DLM
             pts.Add(s.Bounds.Value.MinPoint);
             pts.Add(s.Bounds.Value.MaxPoint);
 
+            
 
             p1 = new Point3d();
             p2 = new Point3d();

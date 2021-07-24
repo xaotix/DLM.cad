@@ -86,7 +86,7 @@ namespace Ferramentas_DLM
         public Line Linha { get; private set; }
         public override string ToString()
         {
-            return $"Eixo {Nome} - [{Sentido}] - Vão: {Vao}";
+            return $"[{Nome} - {Sentido}]";
         }
         public Sentido Sentido { get; private set; } = Sentido.Horizontal;
         public string Nome { get; private set; } = "A";

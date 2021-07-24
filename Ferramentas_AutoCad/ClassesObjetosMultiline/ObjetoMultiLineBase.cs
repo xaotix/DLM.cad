@@ -10,7 +10,47 @@ namespace Ferramentas_DLM
 {
     public class ObjetoMultiLineBase : INotifyPropertyChanged
     {
+        [Category("Geometria")]
+        public double Comprimento
+        {
+            get
+            {
+                if (this.Tipo == Tipo_ObjetoBase.Corrente)
+                {
+                    var tt = this as ObjetoCorrente;
+                    var comp = tt.EntrePurlin;
+                    if (comp > 0)
+                    {
+                        comp = comp - (2 * Math.Abs(tt.Descontar));
+                    }
+                    return comp;
+                }
+                else if (this.Tipo == Tipo_ObjetoBase.Purlin)
+                {
+                    var tt = this as ObjetoPurlin;
 
+                    if (Objeto_Orfao)
+                    {
+                        return tt.Multiline.Comprimento;
+                    }
+                    else
+                    {
+                        return tt.TRE + tt.TRD + tt.Vao;
+                    }
+                }
+                else if (this.Tipo == Tipo_ObjetoBase.Tirante)
+                {
+                    var tt = this as ObjetoTirante;
+                    return this.Multiline.Comprimento + 2 * tt.Offset;
+                }
+                else if (Objeto_Orfao)
+                {
+                    return Multiline.Comprimento;
+                }
+                else return 0;
+
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
@@ -118,11 +158,12 @@ namespace Ferramentas_DLM
                 return 0;
             }
         }
+        private string _Nome { get; set; }
         public string Nome
         {
             get
             {
-                string retorno = "";
+                _Nome = "";
                 if (Tipo == Tipo_ObjetoBase.Corrente)
                 {
 
@@ -130,8 +171,7 @@ namespace Ferramentas_DLM
                     var pc = this.GetPeca();
                     if (pc != null)
                     {
-                        pc.COMP = s.Comprimento;
-                        retorno = pc.CODIGOFIM;
+                        _Nome = pc.CODIGOFIM;
                     }
                 }
                 else if (Tipo == Tipo_ObjetoBase.Tirante)
@@ -140,23 +180,22 @@ namespace Ferramentas_DLM
                     var pc = this.GetPeca();
                     if (pc != null)
                     {
-                        pc.COMP = s.Comprimento;
-                        retorno = pc.CODIGOFIM;
+                        _Nome = pc.CODIGOFIM;
                     }
                 }
                 else if (Tipo == Tipo_ObjetoBase.Purlin)
                 {
                     var s = this as ObjetoPurlin;
-                    retorno = s.PurlinPadrao;
-                    return retorno;
+                    _Nome = s.PurlinPadrao;
+                    return _Nome;
                 }
-                else retorno = "Base";
+                else _Nome = "Base";
 
-                retorno = retorno + " #" + this.Espessura.ToString("N2");
+                _Nome = _Nome + " #" + this.Espessura.ToString("N2");
 
 
 
-                return retorno;
+                return _Nome;
             }
         }
         [Category("Geometria")]
@@ -187,71 +226,79 @@ namespace Ferramentas_DLM
 
         private System.Windows.Controls.Button _botao { get; set; }
         private System.Windows.Shapes.Line _linha { get; set; }
-        private Conexoes.RME _pecaRME { get; set; }
+        private Conexoes.RMLite _pecaRME { get; set; }
 
 
-        public List<UIElement> GetCanvas(bool inserir_botao = false)
+        public List<UIElement> GetCanvas()
         {
 
             List<UIElement> retorno = new List<UIElement>();
 
-            UpdateLinha();
-            retorno.Add(_linha);
+            RedrawCanvas();
+    
 
 
-           if(inserir_botao)
-            {
-                var pt = new System.Windows.Point((this.CentroBloco.X - this.Grade.p0.X) * this.Grade.escala, (this.CentroBloco.Y - this.Grade.p0.Y) * this.Grade.escala);
-
-                double angulo = 0;
-                if (this is ObjetoCorrente)
-                {
-                    angulo = 90;
-                }
-
-                _botao = Conexoes.FuncoesCanvas.Botao(this.Letra, pt, this.Cor.Clone(), this.Grade.CADPurlin.Canvas_Tam_Texto, angulo, 1, Conexoes.FuncoesCanvas.Cores.Black);
-
-                _botao.MouseMove += Evento_Sobre;
-                _botao.MouseLeave += Evento_Sair;
-                _botao.MouseRightButtonUp += Botao_Direito;
-
-                _botao.ToolTip = this;
-
-                _botao.Click += Evento_Clicar;
+            
 
 
-                retorno.Add(_botao);
-            }
-
+            retorno.Add(_botao);
             return retorno;
         }
 
-        public void UpdateLinha()
+        public void RedrawCanvas()
         {
             if(this.Grade.canvas!=null && this._linha!=null)
             {
                 this.Grade.canvas.Children.Remove(this._linha);
+            }
+            if (this.Grade.canvas != null && this._botao != null)
+            {
+                this.Grade.canvas.Children.Remove(this._botao);
             }
             var p1 = Ut.GetWPoint(this.P1);
             var p2 = Ut.GetWPoint(this.P2);
 
             p1 = new Point((p1.X - this.Grade.p0.X)*this.Grade.escala, (p1.Y - this.Grade.p0.Y)* this.Grade.escala);
             p2 = new Point((p2.X - this.Grade.p0.X)* this.Grade.escala, (p2.Y - this.Grade.p0.Y)* this.Grade.escala);
-            _linha = Conexoes.FuncoesCanvas.Linha(p1,p2, this.Cor.Clone(),this.VaoObra.CADPurlin.Canvas_Espessura_Multiline);
+            _linha = Conexoes.FuncoesCanvas.Linha(p1,p2, this.Cor.Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;
             _linha.ToolTip = this;
-        }
-        public Conexoes.RME GetPeca()
-        {
-            if (_pecaRME == null)
+
+
+            var pt = new System.Windows.Point((this.CentroBloco.X - this.Grade.p0.X) * this.Grade.escala, (this.CentroBloco.Y - this.Grade.p0.Y) * this.Grade.escala);
+
+            double angulo = 0;
+            if (this is ObjetoCorrente)
             {
-                if (!this.Considerar | this.id_peca < 1)
-                {
-                    return null;
-                }
-                _pecaRME = Conexoes.DBases.GetBancoRM().GetRME(this.id_peca);
+                angulo = 90;
+            }
+
+            _botao = Conexoes.FuncoesCanvas.Botao(this.Letra, pt, this.Cor.Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, Conexoes.FuncoesCanvas.Cores.Black);
+
+            _botao.MouseRightButtonUp += Botao_Direito;
+            _botao.MouseMove += Evento_Sobre;
+            _botao.MouseLeave += Evento_Sair;
+            _botao.ToolTip = this;
+            _botao.Visibility = Visibility.Collapsed;
+            _botao.Click += Evento_Clicar;
+
+            if (this.Grade.canvas != null)
+            {
+                this.Grade.canvas.Children.Add(this._linha);
+                this.Grade.canvas.Children.Add(this._botao);
+            }
+        }
+        public Conexoes.RMLite GetPeca()
+        {
+            if(_pecaRME==null)
+            {
+                return null;
+            }
+            if(this.Comprimento!= _pecaRME.COMP)
+            {
+                _pecaRME = _pecaRME.Get(this.Comprimento);
             }
             return _pecaRME;
         }
@@ -295,21 +342,31 @@ namespace Ferramentas_DLM
             Conexoes.Utilz.Propriedades(this,out status);
             if(status)
             {
-                UpdateLinha();
+                RedrawCanvas();
                 this.Grade.canvas.Children.Add(this._linha);
             }
         }
 
         public void Evento_Sair(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Conexoes.FuncoesCanvas.SetCor(sender as UIElement, this.Cor, Conexoes.FuncoesCanvas.Cores.Black);
+            Conexoes.FuncoesCanvas.SetCor(_linha, this.Cor, Conexoes.FuncoesCanvas.Cores.Black);
+            _botao.Visibility = Visibility.Collapsed;
+            _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline;
+            Conexoes.FuncoesCanvas.SetCor(_botao, this.Cor,Conexoes.FuncoesCanvas.Cores.Black);
+            Conexoes.FuncoesCanvas.TrazerPraFrente(_linha);
+            Conexoes.FuncoesCanvas.TrazerPraFrente(_botao);
         }
 
         public void Evento_Sobre(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var p = sender as UIElement;
-            Conexoes.FuncoesCanvas.SetCor(sender as UIElement, Conexoes.FuncoesCanvas.Cores.White, this.Cor);
-            Conexoes.FuncoesCanvas.TrazerPraFrente(p);
+            Conexoes.FuncoesCanvas.SetCor(_linha, Conexoes.FuncoesCanvas.Cores.White, this.Cor);
+            _botao.Visibility = Visibility.Visible;
+            _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline * 2;
+            Conexoes.FuncoesCanvas.SetCor(_botao, Conexoes.FuncoesCanvas.Cores.Black, this.Cor);
+            Conexoes.FuncoesCanvas.TrazerPraFrente(_linha);
+            Conexoes.FuncoesCanvas.TrazerPraFrente(_botao);
+
         }
 
         public string Letra
@@ -325,14 +382,15 @@ namespace Ferramentas_DLM
         {
             get
             {
-                if (this.GetPeca() != null)
+                switch (this.Tipo)
                 {
-                    var o = this.GetPeca().GetCorEsp();
-                    o = o.Clone();
-                    o.Opacity = 1;
-                    return o;
+                    case Tipo_ObjetoBase.Purlin:
+                        return Conexoes.FuncoesCanvas.Cores.Yellow.Clone();
+                    case Tipo_ObjetoBase.Corrente:
+                        return Conexoes.FuncoesCanvas.Cores.Red.Clone();
+                    case Tipo_ObjetoBase.Tirante:
+                        return Conexoes.FuncoesCanvas.Cores.White.Clone();
                 }
-
                 SolidColorBrush pp = new SolidColorBrush(System.Windows.Media.Colors.Transparent);
                 return pp;
             }
@@ -352,8 +410,12 @@ namespace Ferramentas_DLM
 
 
 
-        public void SetPeca(Conexoes.RME rm)
+        public void SetPeca(Conexoes.RMLite rm)
         {
+            if(rm==null)
+            {
+                return;
+            }
             this.id_peca = rm.id_db;
 
             this._pecaRME = rm;
@@ -366,6 +428,8 @@ namespace Ferramentas_DLM
             {
                 this._botao.Content = this.Letra;
             }
+
+            this._Nome = null;
 
         }
         [Browsable(false)]
@@ -401,8 +465,7 @@ namespace Ferramentas_DLM
         public ObjetoPurlin PurlinEmBaixo { get; internal set; }
         [Browsable(false)]
         public ObjetoPurlin PurlinEmCima { get; internal set; }
-        [Browsable(false)]
-        public CADPurlin CADPurlin { get; internal set; }
+
         [Browsable(false)]
         public GradeEixos Grade { get; set; }
         public ObjetoMultiLineBase()

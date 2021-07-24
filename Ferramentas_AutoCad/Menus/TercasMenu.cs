@@ -114,7 +114,7 @@ namespace Ferramentas_DLM
             if (s!=null)
             {
                 this.id_terca = s.id_db;
-                this.terca.Text = s.TIPO;
+                this.terca.Text = s.COD_DB;
             }
         }
 

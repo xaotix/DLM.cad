@@ -210,7 +210,7 @@
     <Compile Include="Extensoes\Extensoes.cs" />
     <Compile Include="ClassesObjetosMultiline\EstiloML.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoTirante.cs" />
-    <Compile Include="Funcoes\Comandos.cs" />
+    <Compile Include="Funcoes\Core.cs" />
     <Compile Include="Funcoes\Atributos.cs" />
     <Compile Include="ClassesBase\CTV_de_para.cs" />
     <Compile Include="ClassesObjetosBloco\BlocoFuro.cs" />

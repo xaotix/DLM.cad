@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Ferramentas_DLM.Menus"
              mc:Ignorable="d" 
-              Width="550" MaxWidth="650" MinWidth="550"
+              Width="700" MaxWidth="750" MinWidth="650"
         Height="650"
              d:DesignHeight="450" d:DesignWidth="800">
     <Window.Resources>
@@ -39,6 +39,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
+                    <ScrollViewer>
                     <GroupBox Header="Configuração" >
                         <ScrollViewer Padding="5">
                             <Grid>
@@ -53,48 +54,64 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="150"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Row="0" Content="Transpasse Padrão:"/>
-                                <Button Content="337" x:Name="transpasse" Grid.Row="0" Grid.Column="1" Click="transpasse_Click"/>
+                                <Button Content="337" x:Name="transpasse" Grid.Row="0" Grid.Column="1" Click="transpasse_Click" Grid.ColumnSpan="2"/>
 
                                 <Label Grid.Row="1" Content="Furo Offset Apoio:"/>
-                                <Button Content="0" x:Name="furo_offset_apoio" Grid.Row="1" Grid.Column="1" Click="furo_offset_apoio_Click"/>
+                                <Button Content="0" x:Name="furo_offset_apoio" Grid.Row="1" Grid.Column="1" Click="furo_offset_apoio_Click" Grid.ColumnSpan="2"/>
 
                                 <Label Grid.Row="2" Content="Ficha de Pintura:"/>
-                                <Button x:Name="ficha" Content="FICHA 01" Grid.Row="2" Grid.Column="1" Click="ficha_Click"/>
+                                <Button x:Name="ficha" Content="FICHA 01" Grid.Row="2" Grid.Column="1" Click="ficha_Click" Grid.ColumnSpan="2"/>
 
                                 <Label Grid.Row="3" Content="Purlin Padrão:"/>
-                                <Button Name="terca" Grid.Row="3" Grid.Column="1" Content="PERFIL PADRAO Z 360 - 1.55" Click="terca_Click"/>
+                                <Button Name="terca" Grid.Row="3" Grid.Column="1" Content="PERFIL PADRAO Z 360 - 1.55" Click="terca_Click" Grid.ColumnSpan="2"/>
 
                                 <Label Grid.Row="4" Content="Corrente Padrão:"/>
-                                <Button Content="DLDA$C$" x:Name="corrente" Grid.Row="4" Grid.Column="1" Click="corrente_Click"/>
+                                <Button Content="DLDA$C$" x:Name="corrente" Grid.Row="4" Grid.Column="1" Click="corrente_Click" Grid.ColumnSpan="2"/>
 
                                 <Label Grid.Row="5" Content="Tirante Padrão:"/>
-                                <Button Content="03TR$C$" Name="tirante" Grid.Row="5" Grid.Column="1" Click="tirante_Click"/>
+                                <Button Content="03TR$C$" Name="tirante" Grid.Row="5" Grid.Column="1" Click="tirante_Click" Grid.ColumnSpan="2"/>
 
-                                <CheckBox Grid.Row="6" Content="Mapear Furações Manuais. Layer:" Name="mapeia_furos" IsChecked="True"/>
-                                <Button Content="0" Name="furos_manuais_layer" Grid.Row="6" Grid.Column="1" Click="furos_manuais_layer_Click" IsEnabled="{Binding ElementName=mapeia_furos, Path=IsChecked,TargetNullValue=false}"/>
+                                    <CheckBox Grid.Row="6" Name="mapeia_furos" IsChecked="True">
+                                        <TextBlock>Furos <LineBreak/> manuais:</TextBlock>
+                                    </CheckBox>
+                                <Button Content="0" Name="furos_manuais_layer" Grid.Row="6" Grid.Column="1" Click="furos_manuais_layer_Click" IsEnabled="{Binding ElementName=mapeia_furos, Path=IsChecked,TargetNullValue=false}"  Grid.ColumnSpan="2"/>
 
-                                <CheckBox Grid.Row="7" Content="Mapear Correntes MlStyles:" Name="mapeia_correntes" IsChecked="True"/>
-                                <ListView x:Name="correntes_mlstyles" Grid.Row="7" Grid.Column="1" MinHeight="75" IsEnabled="{Binding ElementName=mapeia_correntes, Path=IsChecked,TargetNullValue=false}"/>
+                                <CheckBox Grid.Row="7" Content="Correntes" Name="mapeia_correntes" IsChecked="True"/>
+                                <ListView x:Name="correntes_mlstyles" Grid.Row="7" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_correntes, Path=IsChecked,TargetNullValue=false}"/>
+                                <ListView x:Name="correntes_multilines" Grid.Row="7" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_correntes, Path=IsChecked,TargetNullValue=false}"/>
 
-                                <CheckBox Grid.Row="8" Content="Mapear Tirantes MlStyles:" Name="mapeia_tirantes" IsChecked="True"/>
-                                <ListView x:Name="tirantes_mlstyles" Grid.Row="8" Grid.Column="1" MinHeight="75" IsEnabled="{Binding ElementName=mapeia_tirantes, Path=IsChecked,TargetNullValue=false}"/>
+                                <CheckBox Grid.Row="8" Content="Tirantes" Name="mapeia_tirantes" IsChecked="True"/>
+                                <ListView x:Name="tirantes_mlstyles" Grid.Row="8" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_tirantes, Path=IsChecked,TargetNullValue=false}"/>
+                                <ListView x:Name="tirantes_multilines" Grid.Row="8" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_tirantes, Path=IsChecked,TargetNullValue=false}"/>
 
-                                <CheckBox Grid.Row="9" Content="Mapear Terças MlStyles:" Name="mapeia_tercas" IsChecked="True"/>
-                                <ListView x:Name="tercas_mlstyles" Grid.Row="9" Grid.Column="1" MinHeight="75" IsEnabled="{Binding ElementName=mapeia_tercas, Path=IsChecked,TargetNullValue=false}"/>
-
-                            </Grid>
+                                <CheckBox Grid.Row="9" Content="Terças" Name="mapeia_tercas" IsChecked="True"/>
+                                <ListView x:Name="tercas_mlstyles" Grid.Row="9" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_tercas, Path=IsChecked,TargetNullValue=false}"/>
+                                <ListView x:Name="tercas_multilines" Grid.Row="9" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_tercas, Path=IsChecked,TargetNullValue=false}"/>
+                                    <Label  Grid.Row="10">
+                                        <TextBlock>Eixos/Vãos <LineBreak/> encontrados:</TextBlock>
+                                    </Label>
+                                    <ListView Height="75" x:Name="eixos_mapeados" Grid.Row="10" Grid.Column="1"/>
+                                    <ListView Height="75" x:Name="vaos_mapeados" Grid.Row="10" Grid.Column="2"/>
+                                </Grid>
                         </ScrollViewer>
                     </GroupBox>
+                        
+                    </ScrollViewer>
 
                     <StackPanel Grid.Row="10">
-                        <Button Content="Propriedades Avançadas..." Click="ver_propriedades"></Button>
-                        <Button Content="Mapear" Click="mapeia"></Button>
+                        <!--<Button Content="Propriedades Avançadas..." Click="ver_propriedades"></Button>-->
+                        <Button Content="Abrir Editor" Click="mapeia"></Button>
                     </StackPanel>
                 </Grid>
             </TabItem>

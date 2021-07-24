@@ -8,6 +8,15 @@ namespace Ferramentas_DLM
 {
     public class CADMline
     {
+        private MlineStyle _mlstyle { get; set; }
+        public MlineStyle GetStyle()
+        {
+            if(_mlstyle==null)
+            {
+                _mlstyle = Multiline.GetMlStyle(this.Mline.Style);
+            }
+            return _mlstyle;
+        }
         public List<Point2d> GetInterSeccao(Entity line)
         {
             Point3dCollection pts = new Point3dCollection();
@@ -34,7 +43,7 @@ namespace Ferramentas_DLM
         public bool Mapeado { get; set; } = false;
         public override string ToString()
         {
-            return "p0: " + Inicio + " / p1: " + Fim + " comprimento: " + Comprimento + " angulo: " + Angulo;
+            return $"{Comprimento}X{Largura}X{Angulo}° St: {this.GetStyle().Name}";
         }
         public Mline Mline { get; private set; }
         public double Comprimento { get; private set; } = 0;
@@ -57,28 +66,28 @@ namespace Ferramentas_DLM
             return ps;
         }
 
-        public double maxx
+        public double Maxx
         {
             get
             {
                 return Inicio.X > Fim.X ? Inicio.X : Fim.X;
             }
         }
-        public double maxy
+        public double Maxy
         {
             get
             {
                 return Inicio.Y > Fim.Y ? Inicio.Y : Fim.Y;
             }
         }
-        public double miny
+        public double Miny
         {
             get
             {
                 return Inicio.Y < Fim.Y ? Inicio.Y : Fim.Y;
             }
         }
-        public double minx
+        public double Minx
         {
             get
             {
@@ -103,7 +112,7 @@ namespace Ferramentas_DLM
             this.Mline = l;
             this.Inicio = new Point2d(p0.X,p0.Y);
             this.Fim = new Point2d(p1.X,p1.Y);
-            this.Largura = largura;
+            this.Largura = Math.Round(largura);
 
             this.Pontos = Ut.GetPontos(this.Mline);
         }

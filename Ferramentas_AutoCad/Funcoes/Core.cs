@@ -19,11 +19,11 @@ using Autodesk.AutoCAD.EditorInput;
 using System.Runtime.InteropServices;
 using Autodesk.AutoCAD.Internal.Reactors;
 
-[assembly: CommandClass(typeof(Ferramentas_DLM.Comandos))]
+[assembly: CommandClass(typeof(Ferramentas_DLM.Core))]
 
 namespace Ferramentas_DLM
 {
-    public class Comandos
+    public class Core
     {
         private static Menus.Menu_Bloco_Peca menu_bloco { get; set; }
         private static CADCotagem _Cotas { get; set; }
@@ -177,45 +177,44 @@ namespace Ferramentas_DLM
         {
             CADPurlin = new CADPurlin();
 
-            Menus.Purlin pp = new Menus.Purlin();
-            pp.Show();
+            CADPurlin.Purlin();
         }
-      
-        [CommandMethod("mapeiapurlins")]
-        public static void mapeiapurlins()
-        {
-            CADPurlin P = new CADPurlin();
-            P.Mapear();
 
+        [CommandMethod("renomeiablocos")]
+        public static void renomeiablocos()
+        {
+            CADPurlin = new CADPurlin();
+            CADPurlin.RenomeiaBlocos();
         }
+
 
 
         [CommandMethod("ApagarBlocosPurlin")]
         public static void ApagarBlocosPurlin()
         {
-            CADPurlin p = new CADPurlin();
-            p.ApagarBlocosPurlin();
+            CADPurlin = new CADPurlin();
+            CADPurlin.ApagarBlocosPurlin();
 
         }
         [CommandMethod("apagarpurlins")]
         public static void apagarpurlins()
         {
-            CADPurlin p = new CADPurlin();
-            p.ApagarPurlins();
+            CADPurlin = new CADPurlin();
+            CADPurlin.ApagarPurlins();
 
         }
 
         [CommandMethod("boneco")]
         public static void boneco()
         {
-            CADPurlin P = new CADPurlin();
-            P.GetBoneco_Purlin();
+            CADPurlin = new CADPurlin();
+            CADPurlin.GetBoneco_Purlin();
         }
         [CommandMethod("mudaperfiltercas")]
         public static void mudaperfiltercas()
         {
-            CADPurlin P = new CADPurlin();
-            P.SetPerfil();
+            CADPurlin = new CADPurlin();
+            CADPurlin.SetPerfil();
 
         }
 
@@ -606,13 +605,7 @@ namespace Ferramentas_DLM
         }
 
 
-        [CommandMethod("testeeixos")]
-        public static void testeeixos()
-        {
-            CADPurlin p = new CADPurlin();
-            p.SelecionarObjetos();
-            var eixos = p.GetGradeEixos();
-        }
+
 
 
         [CommandMethod("preenche")]

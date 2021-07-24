@@ -41,11 +41,11 @@ namespace Ferramentas_DLM
 
                 if(value>0)
                 {
-                    var pc = this.VaoObra.CADPurlin.GetFlangeBracePadrao();
+                    var pc = Core.CADPurlin.GetFlangeBracePadrao();
                     if(pc!=null)
                     {
-                        Conexoes.RME cc = new Conexoes.RME(pc);
-                        cc.COMP = value;
+                        Conexoes.RMLite cc = pc.Get(value);
+
                         FBE = cc.CODIGOFIM;
                     }
                     else
@@ -74,11 +74,10 @@ namespace Ferramentas_DLM
 
                 if (value > 0)
                 {
-                    var pc = this.VaoObra.CADPurlin.GetFlangeBracePadrao();
+                    var pc = Core.CADPurlin.GetFlangeBracePadrao();
                     if (pc != null)
                     {
-                        Conexoes.RME cc = new Conexoes.RME(pc);
-                        cc.COMP = value;
+                        Conexoes.RMLite cc = pc.Get(value);
                         FBD = cc.CODIGOFIM;
                     }
                     else
@@ -128,7 +127,7 @@ namespace Ferramentas_DLM
                 }
                 if (this.GetPeca() != null)
                 {
-                    var desc = Ut.GetDescricao(this.GetPeca());
+                    var desc = this.GetPeca().DESC.Replace("PERFIL PADRAO ", "");
                     return desc;
                 }
 
@@ -178,32 +177,18 @@ namespace Ferramentas_DLM
             }
         }
 
-        [Category("Geometria")]
-        public double Comprimento
-        {
-            get
-            {
-                if(Objeto_Orfao)
-                {
-                    return this.Multiline.Comprimento;
-                }
-                else
-                {
-                    return this.TRE + this.TRD + this.Vao;
-                }
-            }
-        }
+
 
 
 
         public ObjetoPurlin(CADMline multiline,VaoObra vao)
         {
             this.Grade = vao.Grade;
-            this.CADPurlin = vao.CADPurlin;
+  
             this.Multiline = multiline;
 
             this.VaoObra = vao;
-            this.SetPeca(vao.CADPurlin.GetPurlinPadrao());
+            this.SetPeca(Core.CADPurlin.GetPurlinPadrao());
 
 
             var p1 = this.Multiline.GetInterSeccao(this.VaoObra.Esquerda.GetLinhaEixo(vao.Grade));
@@ -228,14 +213,14 @@ namespace Ferramentas_DLM
             }
         }
 
-        public ObjetoPurlin(CADMline multiline, CADPurlin cADPurlin, GradeEixos grade)
+        public ObjetoPurlin(CADMline multiline,  GradeEixos grade)
         {
-            this.CADPurlin = cADPurlin;
+
             this.Multiline = multiline;
             this.Grade = grade;
 
             
-            this.SetPeca(cADPurlin.GetPurlinPadrao());
+            this.SetPeca(Core.CADPurlin.GetPurlinPadrao());
 
 
 
@@ -245,8 +230,6 @@ namespace Ferramentas_DLM
 
         public ObjetoPurlin(Point2d origem, VaoObra vao)
         {
-            this.CADPurlin = vao.CADPurlin;
-
             this.VaoObra = vao;
             this.id_peca = -1;
             this.Considerar = false;

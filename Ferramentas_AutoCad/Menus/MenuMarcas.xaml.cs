@@ -42,7 +42,7 @@ namespace Ferramentas_DLM
         {
             if(this.IsLoaded)
             {
-                this.Update(Comandos.TecnoMetal);
+                this.Update(Core.TecnoMetal);
                 this.Visibility = Visibility.Visible;
             }
             else
@@ -427,7 +427,7 @@ namespace Ferramentas_DLM
                 FLayer.Desligar(Constantes.LayersMarcasDesligar);
             }
 
-            this.Update(Comandos.TecnoMetal);
+            this.Update(Core.TecnoMetal);
             this.Visibility = Visibility.Visible;
         }
 
@@ -569,131 +569,131 @@ namespace Ferramentas_DLM
         {
             this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            Comandos.gerardbf();
+            Core.gerardbf();
         }
 
         private void gerar_dbf_3d(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            Comandos.gerardbf3d();
+            Core.gerardbf3d();
         }
 
         private void mercadorias(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            Comandos.mercadorias();
+            Core.mercadorias();
         }
 
         private void materiais(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            Comandos.materiais();
+            Core.materiais();
         }
 
         private void tratamentos(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            Comandos.tratamentos();
+            Core.tratamentos();
         }
 
         private void quantificar(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.quantificar();
+            Core.quantificar();
         }
 
         private void purlin(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.purlin();
+            Core.purlin();
         }
 
         private void cotar(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.Cotar();
+            Core.Cotar();
         }
 
         private void limpar_cotas(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.LimparCotas();
+            Core.LimparCotas();
         }
 
         private void boneco(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.boneco();
+            Core.boneco();
         }
 
         private void passarelas(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.passarela();
+            Core.passarela();
         }
 
         private void passarelas_apaga(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.apagapassarela();
+            Core.apagapassarela();
         }
 
         private void linha_de_vida(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.linhadevida();
+            Core.linhadevida();
         }
 
         private void linha_de_vida_apaga(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.apagalinhadevida();
+            Core.apagalinhadevida();
         }
 
         private void linha_de_vida_alinha(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.alinharlinhadevida();
+            Core.alinharlinhadevida();
         }
 
         private void preenche_selo(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.selopreenche();
+            Core.selopreenche();
         }
 
         private void limpa_selo(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.selolimpar();
+            Core.selolimpar();
         }
 
         private void criar_marcas_cam(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.criarmarcasdecam();
+            Core.criarmarcasdecam();
         }
 
         private void rodar_macro(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.rodarmacros();
+            Core.rodarmacros();
         }
 
         private void gerar_dxf_cams(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.gerardxf();
+            Core.gerardxf();
         }
 
         private void marcar_montagem(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.marcarmontagem();
+            Core.marcarmontagem();
         }
 
         private void rad_m_simples_Checked(object sender, RoutedEventArgs e)
@@ -704,7 +704,7 @@ namespace Ferramentas_DLM
         private void gerar_pdf(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.gerarPDFEtapa();
+            Core.gerarPDFEtapa();
         }
 
         private void composicao(object sender, RoutedEventArgs e)
@@ -716,61 +716,61 @@ namespace Ferramentas_DLM
         private void preenche_selo_tabela(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.preenche();
+            Core.preenche();
         }
 
         private void limpar_selo_tabela(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.limpa();
+            Core.limpa();
         }
 
         private void purlin_muda_perfil(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.mudaperfiltercas();
+            Core.mudaperfiltercas();
         }
 
         private void abre_pasta(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.abrepasta();
+            Core.abrepasta();
         }
 
         private void exporta_rma(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.exportarma();
+            Core.exportarma();
         }
 
         private void importa_rm(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.importarm();
+            Core.importarm();
         }
 
         private void listar_quantidades(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.listarquantidadeblocos();
+            Core.listarquantidadeblocos();
         }
 
         private void bloqueia_mviews(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.bloqueiamviews();
+            Core.bloqueiamviews();
         }
 
         private void desloqueia_mviews(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.desbloqueiamviews();
+            Core.desbloqueiamviews();
         }
 
         private void cria_layers_padrao(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.criarlayersPadrao();
+            Core.criarlayersPadrao();
         }
 
         private void abre_versionamento(object sender, RoutedEventArgs e)
@@ -781,7 +781,7 @@ namespace Ferramentas_DLM
         private void rodar_macros(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Comandos.rodarmacros();
+            Core.rodarmacros();
         }
     }
 }

@@ -11,19 +11,7 @@ namespace Ferramentas_DLM
             return this.Nome;
         }
 
-        [Category("Geometria")]
-        public double Comprimento
-        {
-            get
-            {
-                var comp = EntrePurlin;
-                if(comp>0)
-                {
-                    comp = comp - (2 * Math.Abs(Descontar));
-                }
-                return comp;
-            }
-        }
+
         [Category("Geometria")]
         public double Descontar { get; set; } = 20;
         [Category("Geometria")]
@@ -45,14 +33,14 @@ namespace Ferramentas_DLM
         public ObjetoCorrente(CADMline multiline, Point2d centro,  VaoObra vao, ObjetoPurlin purlin_cima, ObjetoPurlin purlin_baixo)
         {
             this.Grade = vao.Grade;
-            this.CADPurlin = vao.CADPurlin;
+
             this.Multiline = multiline;
 
 
             this.VaoObra = vao;
-            this.Descontar = vao.CADPurlin.CorrenteDescontar;
-            this.id_peca = vao.CADPurlin.id_corrente;
-            this.Suporte = vao.CADPurlin.CorrenteSuporte;
+            this.Descontar = Core.CADPurlin.CorrenteDescontar;
+            this.id_peca = Core.CADPurlin.id_corrente;
+            this.Suporte = Core.CADPurlin.CorrenteSuporte;
 
             this.PurlinEmCima = purlin_cima;
             this.PurlinEmBaixo = purlin_baixo;
@@ -78,12 +66,9 @@ namespace Ferramentas_DLM
                 this.Origem_Esquerda = new Point2d(centro.X, PurlinEmBaixo.Y);
             }
 
-            this.SetPeca(vao.CADPurlin.GetCorrentePadrao());
+            this.SetPeca(Core.CADPurlin.GetCorrentePadrao());
 
-            if(this.GetPeca()!=null)
-            {
-              
-            }
+
         }
     }
 

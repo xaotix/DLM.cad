@@ -37,10 +37,10 @@ namespace Ferramentas_DLM
 
         [Category("Canvas")]
         [DisplayName("Texto")]
-        public double Canvas_Tam_Texto { get; set; } = 10;
+        public double Canvas_Tam_Texto { get; set; } = 20;
         [Category("Canvas")]
         [DisplayName("Espessura Multiline Mapeável")]
-        public double Canvas_Espessura_Multiline { get; set; } = 5;
+        public double Canvas_Espessura_Multiline { get; set; } = 2;
         [Category("Canvas")]
         [DisplayName("Esp. Linha")]
         public double Canvas_Esp_Linha { get; set; } = 1;
@@ -116,6 +116,8 @@ namespace Ferramentas_DLM
         [Category("Purlin")]
         [DisplayName("Mapear Fr. Man.")]
         public bool MapeiaFurosManuais { get; set; } = true;
+
+
         [Category("Purlin")]
         [DisplayName("Offset Apoio")]
         public int OffsetApoio { get; set; } = 0;
@@ -124,7 +126,7 @@ namespace Ferramentas_DLM
         public int id_flange_brace { get; set; } = 953;
 
         [Browsable(false)]
-        public int id_terca { get; set; } = 1763;
+        public int id_purlin { get; set; } = 1763;
         [Browsable(false)]
         public int id_corrente { get; set; } = 27;
         [Browsable(false)]
@@ -152,25 +154,10 @@ namespace Ferramentas_DLM
         public List<string> TirantesMLStyles { get; set; } = new List<string> { "10MM" };
         [Category("Correntes")]
         [DisplayName("MLStyle")]
-        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3","CR", "CR2"};
+        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3","CR", "CR2", "L51X51X3MM"};
 
-        public List<string> GetCorrentesMlStylesSelecao()
-        {
-            return CorrenteMLStyles.FindAll(x => GetMLStyles().Find(y => y.ToUpper() == x.ToUpper()) != null);
-        }
-        public List<string> GetTirantesMLStylesSelecao()
-        {
-            return TirantesMLStyles.FindAll(x => GetMLStyles().Find(y => y.ToUpper() == x.ToUpper()) != null);
-        }
-        public List<string> GetTercasMLStylesSelecao()
-        {
-            return TercasMLStyles.FindAll(x => GetMLStyles().Find(y => y.ToUpper() == x.ToUpper()) != null);
-        }
 
-        public List<MlineStyle> GetEstilosSelecao()
-        {
-          return this.GetMlineStyles(this.GetMultilines());
-        }
+
 
         [Category("Purlin")]
         [DisplayName("MLStyle")]
@@ -187,47 +174,47 @@ namespace Ferramentas_DLM
         [Category("Purlin")]
         [DisplayName("Mapear")]
         public bool MapearTercas { get; set; } = true;
-        private Conexoes.RME _fb_padrao { get; set; }
-        private Conexoes.RME _purlin_padrao { get; set; }
-        private Conexoes.RME _corrente_padrao { get; set; }
-        private Conexoes.RME _tirante_padrao { get; set; }
+        private Conexoes.RMLite _fb_padrao { get; set; }
+        private Conexoes.RMLite _purlin_padrao { get; set; }
+        private Conexoes.RMLite _corrente_padrao { get; set; }
+        private Conexoes.RMLite _tirante_padrao { get; set; }
         #endregion
 
-        public Conexoes.RME GetPurlinPadrao()
+        public Conexoes.RMLite GetPurlinPadrao()
         {
             if (_purlin_padrao == null)
             {
-                _purlin_padrao = Conexoes.DBases.GetBancoRM().GetRME(this.id_terca);
+                _purlin_padrao = Ut.GetPURLINS().Get(this.id_purlin);
             }
             return _purlin_padrao;
         }
-        public Conexoes.RME GetFlangeBracePadrao()
+        public Conexoes.RMLite GetFlangeBracePadrao()
         {
             if (_fb_padrao == null)
             {
-                _fb_padrao = Conexoes.DBases.GetBancoRM().GetRME(this.id_flange_brace);
+                _fb_padrao = Ut.GetFBs().Get(this.id_flange_brace);
             }
             return _fb_padrao;
         }
-        public Conexoes.RME GetCorrentePadrao()
+        public Conexoes.RMLite GetCorrentePadrao()
         {
             if (_corrente_padrao == null)
             {
-                _corrente_padrao = Conexoes.DBases.GetBancoRM().GetRME(this.id_corrente);
+                _corrente_padrao = Ut.GetCORRENTES().Get(this.id_corrente);
             }
             return _corrente_padrao;
         }
-        public Conexoes.RME GetTirantePadrao()
+        public Conexoes.RMLite GetTirantePadrao()
         {
             if (_tirante_padrao == null)
             {
-                _tirante_padrao = Conexoes.DBases.GetBancoRM().GetRME(this.id_tirante);
+                _tirante_padrao = Ut.GetTIRANTES().Get(this.id_tirante);
             }
             return _tirante_padrao;
         }
         public void SetTerca(int id)
         {
-            this.id_terca = id;
+            this.id_purlin = id;
             this._purlin_padrao = null;
         }
         public void SetCorrente(int id)
@@ -250,12 +237,12 @@ namespace Ferramentas_DLM
             return retorno;
         }
 
-        public List<CADMline> GetMLinesPurlin()
+        public List<CADMline> GetMLinesSecundarias()
         {
             List<CADMline> retorno = new List<CADMline>();
-            retorno.AddRange(this.GetMultLinesTirantes());
-            retorno.AddRange(this.GetMultLinesCorrentes());
-            retorno.AddRange(this.GetMultLinePurlins());
+            retorno.AddRange(this.GetMLTirantes());
+            retorno.AddRange(this.GetMLCorrentes());
+            retorno.AddRange(this.GetMLPurlins());
 
             return retorno;
         }
@@ -271,38 +258,46 @@ namespace Ferramentas_DLM
 
             }
         }
-        public void Mapear()
+
+        public void Purlin()
         {
             var sel = SelecionarObjetos();
             if (sel.Status == PromptStatus.OK)
             {
-        
-
-
-
-
-                int c = 1;
-
-
 
                 FLayer.Set(LayerBlocos, true, true);
 
-                var eixos = this.GetGradeEixos();
+                var eixos = this.GetGrade();
 
                 if (eixos.GetEixosVerticais().Count < 2)
                 {
-                    Conexoes.Utilz.Alerta("Não foi encontrado nenhum eixo vertical.", "Abortado.");
+                    Conexoes.Utilz.Alerta("Não foi encontrado pelo menos 2 eixos verticais.", "Abortado.");
                     return;
                 }
 
-                var verticais = eixos.GetVaosVerticais();
-                if (verticais.Count > 1)
-                {
-
-                    Menus.MenuConfigurarVaos mm = new Menus.MenuConfigurarVaos(eixos);
-                    mm.Show();
-                }
+                Menus.Purlin pp = new Menus.Purlin();
+                pp.Show();
             }
+        }
+
+        public bool Mapear()
+        {
+            var eixos = this.GetGrade();
+
+            if (eixos.GetEixosVerticais().Count < 2)
+            {
+                Conexoes.Utilz.Alerta("Não foi encontrado nenhum eixo vertical.", "Abortado.");
+                return false;
+            }
+
+            var verticais = eixos.GetVaosVerticais();
+            if (verticais.Count > 1)
+            {
+
+                Menus.MenuConfigurarVaos mm = new Menus.MenuConfigurarVaos(eixos);
+                mm.Show();
+            }
+            return true;
         }
 
         public void Inserir(GradeEixos grade)
@@ -332,6 +327,11 @@ namespace Ferramentas_DLM
                 InserirBlocos(verticais[i]);
             }
 
+            foreach (var p in this.GetGrade().GetPurlinsSemVao())
+            {
+                AddBlocoPurlin(p.Letra, p.id_peca, p.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
+            }
+
             AddBarra();
             AddMensagem("\n" + blocos_excluir.Count.ToString() + " blocos encontrados excluídos");
             AddMensagem("\n" + this.GetLinhas_Eixos().Count.ToString() + " Linhas eixo encontradas");
@@ -339,9 +339,9 @@ namespace Ferramentas_DLM
             AddMensagem("\n" + this.GetMultilines().Count.ToString() + " Multilines encontradas");
             AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
             AddBarra();
-            AddMensagem("\n" + this.GetMultLinesTirantes().Count + " Tirantes");
-            AddMensagem("\n" + this.GetMultLinePurlins().Count.ToString() + " Purlins");
-            AddMensagem("\n" + this.GetMultLinesCorrentes().Count.ToString() + " Correntes");
+            AddMensagem("\n" + this.GetMLTirantes().Count + " Tirantes");
+            AddMensagem("\n" + this.GetMLPurlins().Count.ToString() + " Purlins");
+            AddMensagem("\n" + this.GetMLCorrentes().Count.ToString() + " Correntes");
             AddBarra();
         }
 
@@ -351,7 +351,7 @@ namespace Ferramentas_DLM
             if (sel.Status == PromptStatus.OK)
             {
                 Ut.Apagar(GetBlocosSecundariasIndicacao().Select(x => x as Entity).ToList());
-                Ut.Apagar(GetMLinesPurlin().Select(x => x.Mline as Entity).ToList());
+                Ut.Apagar(GetMLinesSecundarias().Select(x => x.Mline as Entity).ToList());
             }
         }
 
@@ -370,9 +370,9 @@ namespace Ferramentas_DLM
             blocos = blocos.FindAll(x => this.GetBlocos_Nivel().Select(y => y.Bloco).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
             if(!ignorar_multilines)
             {
-                blocos = blocos.FindAll(x => this.GetMultLinePurlins().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
-                blocos = blocos.FindAll(x => this.GetMultLinesCorrentes().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
-                blocos = blocos.FindAll(x => this.GetMultLinesTirantes().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+                blocos = blocos.FindAll(x => this.GetMLPurlins().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+                blocos = blocos.FindAll(x => this.GetMLCorrentes().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+                blocos = blocos.FindAll(x => this.GetMLTirantes().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
             }
 
 
@@ -408,7 +408,7 @@ namespace Ferramentas_DLM
         }
 
         private List<CADMline> _correntes { get; set; } = null;
-        public List<CADMline> GetMultLinesCorrentes( bool reset = false)
+        public List<CADMline> GetMLCorrentes( bool reset = false)
         {
             if (_correntes == null | reset)
             {
@@ -419,7 +419,7 @@ namespace Ferramentas_DLM
                 List<MlineStyle> estilos = new List<MlineStyle>();
                 foreach (var s in this.CorrenteMLStyles)
                 {
-                    var st = this.GetMlStyle(s);
+                    var st = Multiline.GetMlStyle(s);
                     if (st != null)
                         estilos.Add(st);
                 }
@@ -432,22 +432,25 @@ namespace Ferramentas_DLM
                 }
             }
             
-            return _correntes.OrderBy(x => x.minx).ToList(); 
+            return _correntes.OrderBy(x => x.Minx).ToList(); 
         }
 
         private List<CADMline> _tirantes { get; set; } = null;
-        public List<CADMline> GetMultLinesTirantes( bool reset = false)
+        public List<CADMline> GetMLTirantes( bool reset = false)
         {
            if(_tirantes==null | reset)
             {
                 _tirantes = new List<CADMline>();
                 var lista = this.GetMultilines();
 
+                
+
+
 
                 List<MlineStyle> estilos = new List<MlineStyle>();
                 foreach (var s in this.TirantesMLStyles)
                 {
-                    var st = this.GetMlStyle(s);
+                    var st = Multiline.GetMlStyle(s);
                     if (st != null)
                         estilos.Add(st);
                 }
@@ -464,7 +467,7 @@ namespace Ferramentas_DLM
         }
 
         private List<CADMline> _purlins { get; set; }
-        public List<CADMline> GetMultLinePurlins(bool update = false)
+        public List<CADMline> GetMLPurlins(bool update = false)
         {
             if(_purlins==null | update)
             {
@@ -476,7 +479,7 @@ namespace Ferramentas_DLM
                 List<MlineStyle> estilos = new List<MlineStyle>();
                 foreach (var s in this.TercasMLStyles)
                 {
-                    var st = this.GetMlStyle(s);
+                    var st = Multiline.GetMlStyle(s);
                    
                     if(st!=null)
                         estilos.Add(st);
@@ -498,92 +501,96 @@ namespace Ferramentas_DLM
         }
 
 
-
-        public GradeEixos GetGradeEixos()
+        private GradeEixos _grade { get; set; }
+        public GradeEixos GetGrade(bool update = false)
         {
-            GradeEixos retorno = new GradeEixos(this);
 
-  
-            var blocos = GetBlocos_Eixos();
-
-
-
-            /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
-            var HORIS1 = GetLinhas_Horizontais().FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
-            var VERTS1 = GetLinhas_Verticais().FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
-
-            List<Line> HORIS = Linha.GetLinhas(HORIS1, this.DistanciaMinimaEixos, Sentido.Horizontal);
-            List<Line> VERTS = Linha.GetLinhas(VERTS1, this.DistanciaMinimaEixos, Sentido.Vertical);
-
-            /*organiza por comprimento e pega as linhas maiores*/
-            //HORIS1 = HORIS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
-            //VERTS1 = VERTS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
-
-
-            if (HORIS.Count > 1)
+            if(_grade==null | update)
             {
-                for (int i = 0; i < HORIS.Count; i++)
+                _grade = new GradeEixos();
+
+
+                var blocos = GetBlocos_Eixos();
+
+
+
+                /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
+                var HORIS1 = GetLinhas_Horizontais().FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+                var VERTS1 = GetLinhas_Verticais().FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+
+                List<Line> HORIS = Linha.GetLinhas(HORIS1, this.DistanciaMinimaEixos, Sentido.Horizontal);
+                List<Line> VERTS = Linha.GetLinhas(VERTS1, this.DistanciaMinimaEixos, Sentido.Vertical);
+
+                /*organiza por comprimento e pega as linhas maiores*/
+                //HORIS1 = HORIS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
+                //VERTS1 = VERTS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
+
+
+                if (HORIS.Count > 1)
                 {
-                    var L = HORIS[i];
-                    double dist = 0;
-                    if (retorno.GetEixosHorizontais().Count > 0)
+                    for (int i = 0; i < HORIS.Count; i++)
                     {
-                        dist = Math.Round(Math.Abs(HORIS[(int)i].StartPoint.Y - retorno.GetEixosHorizontais().Last().Linha.StartPoint.Y));
+                        var L = HORIS[i];
+                        double dist = 0;
+                        if (_grade.GetEixosHorizontais().Count > 0)
+                        {
+                            dist = Math.Round(Math.Abs(HORIS[(int)i].StartPoint.Y - _grade.GetEixosHorizontais().Last().Linha.StartPoint.Y));
+                        }
+
+                        var pt1 = L.StartPoint.X > L.EndPoint.X ? L.StartPoint : L.EndPoint;
+                        var pt2 = L.StartPoint.X < L.EndPoint.X ? L.StartPoint : L.EndPoint;
+
+
+                        List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, this.Eitos_Tolerancia);
+
+
+                        if (blks.Count >= 1)
+                        {
+                            _grade.Add(Sentido.Horizontal, dist, blks[0], L);
+                        }
+                        else
+                        {
+                            //retorno.Add(Sentido.Horizontal, dist, null, L);
+                        }
+
                     }
-
-                    var pt1 = L.StartPoint.X > L.EndPoint.X ? L.StartPoint : L.EndPoint;
-                    var pt2 = L.StartPoint.X < L.EndPoint.X ? L.StartPoint : L.EndPoint;
+                }
 
 
-                    List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, this.Eitos_Tolerancia);
-
-
-                    if (blks.Count >= 1)
+                if (VERTS.Count > 1)
+                {
+                    for (int i = 0; i < VERTS.Count; i++)
                     {
-                        retorno.Add(Sentido.Horizontal, dist, blks[0], L);
-                    }
-                    else
-                    {
-                        //retorno.Add(Sentido.Horizontal, dist, null, L);
-                    }
+                        var L = VERTS[i];
+                        double dist = 0;
+                        if (_grade.GetEixosVerticais().Count > 0)
+                        {
+                            dist = Math.Round(Math.Abs(VERTS[i].StartPoint.X - _grade.GetEixosVerticais().Last().Linha.StartPoint.X));
+                        }
 
+                        var pt1 = L.StartPoint.Y > L.EndPoint.Y ? L.StartPoint : L.EndPoint;
+                        var pt2 = L.StartPoint.Y < L.EndPoint.Y ? L.StartPoint : L.EndPoint;
+
+
+
+                        List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, this.Eitos_Tolerancia);
+
+
+                        if (blks.Count >= 1)
+                        {
+                            _grade.Add(Sentido.Vertical, dist, blks[0], L);
+                        }
+                        else
+                        {
+                            //retorno.Add(Sentido.Vertical, dist,null, L);
+                        }
+
+                    }
                 }
             }
 
 
-            if (VERTS.Count > 1)
-            {
-                for (int i = 0; i < VERTS.Count; i++)
-                {
-                    var L = VERTS[i];
-                    double dist = 0;
-                    if (retorno.GetEixosVerticais().Count > 0)
-                    {
-                        dist = Math.Round(Math.Abs(VERTS[i].StartPoint.X - retorno.GetEixosVerticais().Last().Linha.StartPoint.X));
-                    }
-
-                    var pt1 = L.StartPoint.Y > L.EndPoint.Y ? L.StartPoint : L.EndPoint;
-                    var pt2 = L.StartPoint.Y < L.EndPoint.Y ? L.StartPoint : L.EndPoint;
-
-
-
-                    List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, this.Eitos_Tolerancia);
-
-
-                    if (blks.Count >= 1)
-                    {
-                        retorno.Add(Sentido.Vertical, dist, blks[0], L);
-                    }
-                    else
-                    {
-                        //retorno.Add(Sentido.Vertical, dist,null, L);
-                    }
-
-                }
-            }
-
-
-            return retorno;
+            return _grade;
         }
         public void GetBoneco_Purlin()
         {
@@ -690,10 +697,7 @@ namespace Ferramentas_DLM
                         }
                     }
                 }
-                foreach(var p in this.GetGradeEixos().GetPurlinsSemVao())
-                {
-                    AddBlocoPurlin(p.Letra, p.id_peca, p.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
-                }
+                
             }
 
             if (MapearCorrentes)
@@ -745,7 +749,7 @@ namespace Ferramentas_DLM
         }
         public void AddBlocoPurlin(string c, int id_purlin, double VAO, double TRE, double TRD, Point2d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
         {
-            Conexoes.RME pc = Conexoes.DBases.GetBancoRM().GetRME(id_purlin);
+            Conexoes.RMLite pc = Ut.GetPURLINS().Get(id_purlin);
             //AddMensagem("Origem: " + centro + "\n");
             Hashtable ht = new Hashtable();
 
@@ -769,9 +773,9 @@ namespace Ferramentas_DLM
             ht.Add("ID_DB", id_purlin);
             ht.Add("PINTURA", this.FichaDePintura);
             ht.Add("ID_PECA", id_purlin);
-            ht.Add(Constantes.ATT_Tipo, Ut.Gettipo(pc));
-            ht.Add("SECAO", Ut.Getsecao(pc));
-            ht.Add(Constantes.ATT_Espessura, Ut.Getespessura(pc));
+            ht.Add(Constantes.ATT_Tipo, pc.GRUPO);
+            ht.Add("SECAO", pc.SECAO);
+            ht.Add(Constantes.ATT_Espessura, pc.ESP);
 
             //quando a purlin está deslocada.
             double comp_sem_transpasse = VAO + (TRE < 0 ? TRE : 0) + (TRD < 0 ? TRD : 0);
@@ -832,8 +836,8 @@ namespace Ferramentas_DLM
                         Hashtable ht = new Hashtable();
                         ht.Add("ID_PECA", perfil.id_db.ToString());
                         ht.Add(Constantes.ATT_Espessura, perfil.ESP.ToString());
-                        ht.Add("SECAO", perfil.GetCadastroRME().SECAO.ToString());
-                        ht.Add(Constantes.ATT_Tipo, perfil.TIPO.Contains("C")?"C":"Z");
+                        ht.Add("SECAO", perfil.SECAO.ToString());
+                        ht.Add(Constantes.ATT_Tipo, perfil.GRUPO.Contains("C")?"C":"Z");
 
                         Atributos.Set(s, acTrans, ht);
                     }
@@ -898,7 +902,7 @@ namespace Ferramentas_DLM
 
             if(comprimento> this.PurlinCompMin)
             {
-                AddBlocoPurlin("",this.id_terca, comprimento, 0, 0, Ut.Centro(pt1, pt2), new List<double>(), new List<double>());
+                AddBlocoPurlin("",this.id_purlin, comprimento, 0, 0, Ut.Centro(pt1, pt2), new List<double>(), new List<double>());
             }
             else
             {
@@ -923,7 +927,7 @@ namespace Ferramentas_DLM
         }
         public void SetCorrente()
         {
-            var perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMEs().FindAll(x=>x.TIPO == "DLD" && x.VARIAVEL).ToList(), null, "Selecione");
+            var perfil =Ut.SelecionarCorrente();
             if (perfil == null)
             {
                 return;
@@ -1387,7 +1391,7 @@ namespace Ferramentas_DLM
             p.Descontar = DESC;
             p.Objeto = bloco;
             p.SetFixacao(FIX);
-            var diagonal = Conexoes.DBases.GetBancoRM().GetRME(TIP);
+            var diagonal = Ut.GetCORRENTES().Get(TIP);
             if(diagonal!=null)
             {
                 p.SetDiagonal(diagonal);
@@ -1527,7 +1531,7 @@ namespace Ferramentas_DLM
 
         public void SetPurlin(int id)
         {
-            this.id_terca = id;
+            this.id_purlin = id;
             this._purlin_padrao = null;
 
 
@@ -1535,7 +1539,7 @@ namespace Ferramentas_DLM
 
         public CADPurlin()
         {
-
+            Multiline.GetMLStyles(true);
         }
     }
 }

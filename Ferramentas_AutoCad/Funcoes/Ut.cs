@@ -1649,61 +1649,70 @@ namespace Ferramentas_DLM
             return retorno.Select(x=> new Coordenada(x)).ToList();
         }
 
-        public static string GetDescricao(RME pc)
+
+        public static RMLiteFamilia GetFBs()
         {
-            if(pc!=null)
+            var fam = Conexoes.DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_FB.ToUpper());
+
+            if (fam != null)
             {
-                return Gettipo(pc) + Getsecao(pc) + " #" + pc.ESP.ToString("N2") +  (pc.GetMATERIAIS().FindAll(x=> x.Contains("ZINC")).Count>0?" ZINC":" 350");
+                return fam;
             }
-            return "";
-        }
-        public static string Gettipo(RME pc)
-        {
-            if (pc != null)
-            {
-                return pc.PERFIL.Contains("PADRAOZ") ? "Z" : "C";
-            }
-            return "";
-        }
-        public static string Getsecao(RME pc)
-        {
-            if (pc != null)
-            {
-                return pc.GetCadastroRME().SECAO.ToString().Replace(",", ".");
-            }
-            return "";
-        }
-        public static  string Getespessura(RME pc)
-        {
-            if (pc != null)
-            {
-                return pc.ESP.ToString("N2").Replace(",", ".");
-            }
-            return "";
+            return new RMLiteFamilia("");
         }
 
-        public static RME SelecionarPurlin(RME purlin)
+        public static RMLiteFamilia GetPURLINS()
         {
-            List<RME> parecidas = new List<RME>();
-            if(purlin ==null)
+            var fam = Conexoes.DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin.ToUpper());
+
+            if (fam != null)
             {
-                parecidas = Conexoes.DBases.GetBancoRM().GetTercas();
+                return fam;
+            }
+            return new RMLiteFamilia("");
+        }
+        public static RMLiteFamilia GetTIRANTES()
+        {
+            var fam = Conexoes.DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante.ToUpper());
+
+            if (fam != null)
+            {
+                return fam;
+            }
+            return new RMLiteFamilia("");
+        }
+        public static RMLiteFamilia GetCORRENTES()
+        {
+            var fam = Conexoes.DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente.ToUpper());
+
+            if (fam != null)
+            {
+                return fam;
+            }
+            return new RMLiteFamilia("");
+        }
+        public static RMLite SelecionarPurlin(RMLite purlin)
+        {
+            List<RMLite> parecidas = new List<RMLite>();
+            if(purlin !=null)
+            {
+                parecidas = GetPURLINS().GetPecas();
             }
             else
             {
-            parecidas = Conexoes.DBases.GetBancoRM().GetTercas().FindAll(x => Ut.Gettipo(x) == Ut.Gettipo(purlin) && Ut.Getsecao(x) == Ut.Getsecao(purlin));
+            parecidas = GetPURLINS().GetPecas().FindAll(x => x.GRUPO == x.GRUPO);
 
             }
             return Conexoes.Utilz.SelecionarObjeto(parecidas, null, "Selecione");
         }
 
-        public static RME SelecionarCorrente()
+        public static RMLite SelecionarCorrente()
         {
-            return Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetDLDs(), null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(GetCORRENTES().GetPecas(), null, "Selecione");
         }
-        public static RME SelecionarTirante()
+        public static RMLite SelecionarTirante()
         {
-            return Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetTirantes(), null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(GetTIRANTES().GetPecas(), null, "Selecione");
         }
     }
 }

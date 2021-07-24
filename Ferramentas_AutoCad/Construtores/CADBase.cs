@@ -147,10 +147,44 @@ namespace Ferramentas_DLM
             CAD.acadApp.ZoomExtents();
         }
 
+        private List<Entity> _entities_blocos { get; set; }
+        public List<Entity> GetEntitiesdeBlocos()
+        {
+            if(_entities_blocos==null)
+            {
+                _entities_blocos = new List<Entity>();
+                foreach (var bl in this.GetBlocos())
+                {
+                    _entities_blocos.AddRange(Blocos.GetEntities(bl));
+                }
+            }
+
+            return _entities_blocos;
+        }
+
+        [Category("Mapeamento")]
+        [DisplayName("Buscar objetos em Blocos")]
+        public bool BuscarEmBlocos { get; set; } = true;
 
         [Category("Configuração")]
         [DisplayName("Layer Blocos")]
         public string LayerBlocos { get; set; } = "BLOCOS";
+
+        [Category("RM")]
+        [DisplayName("Família Purlin")]
+        public string RM_Familia_Purlin { get; set; } = "TERCA";
+        [Category("RM")]
+        [DisplayName("Família FB")]
+        public string RM_Familia_FB { get; set; } = "FLANGE BRACE";
+
+        [Category("RM")]
+        [DisplayName("Família Tirante")]
+        public string RM_Familia_Tirante { get; set; } = "TIRANTE";
+
+        [Category("RM")]
+        [DisplayName("Família Corrente")]
+        public string RM_Familia_Corrente { get; set; } = "DLD";
+
         [Category("Configuração")]
         [DisplayName("Layer Eixos")]
         public string LayerEixos { get; set; } = "EIXO";
@@ -536,68 +570,7 @@ namespace Ferramentas_DLM
 
 
         #region mapeamento de objetos a serem usados
-        private List<MlineStyle> _mlstylesObjs { get; set; }
-        private List<string> _mlstyles { get; set; }
-        public MlineStyle GetMlStyle(string nome)
-        {
-            var s = GetMLStyles();
-            if(_mlstylesObjs!=null)
-            {
-                var retorno = _mlstylesObjs.Find(x => x.Name.ToUpper() == nome.ToUpper());
-                return retorno;
-            }
-            return null;
-        }
 
-        public List<MlineStyle> GetMlineStyles(List<Mline> mlss)
-        {
-            List<MlineStyle> retorno = new List<MlineStyle>();
-            this.GetMLStyles();
-            if(this._mlstylesObjs!=null)
-            {
-                if(this._mlstylesObjs.Count>0)
-                {
-                    var estilos = mlss.Select(x => x.Style).GroupBy(x => x).Select(x => x.First()).ToList();
-                    foreach (var estilo in estilos)
-                    {
-                        var igual = this._mlstylesObjs.Find(x => x.ObjectId == estilo);
-                        if(igual!=null)
-                        {
-                            retorno.Add(igual);
-                        }
-
-                    }
-                }
-
-            }
-
-
-            return retorno;
-        }
-        public List<string> GetMLStyles()
-        {
-            if(_mlstyles==null)
-            {
-                _mlstylesObjs = new List<MlineStyle>();
-                _mlstyles = new List<string>();
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                {
-                    DBDictionary acLyrTbl;
-                    acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead) as DBDictionary;
-
-                    foreach (var acObjId in acLyrTbl)
-                    {
-                        MlineStyle acLyrTblRec;
-                        acLyrTblRec = acTrans.GetObject(acObjId.Value, OpenMode.ForRead) as MlineStyle;
-                        _mlstylesObjs.Add(acLyrTblRec);
-                        _mlstyles.Add(acLyrTblRec.Name);
-                    }
-
-                }
-            }
-
-            return _mlstyles;
-        }
         public List<Line> GetLinhas_Eixos()
         {
             return Ut.LinhasVerticais(this.GetLinhas()).FindAll(x =>
@@ -656,9 +629,18 @@ namespace Ferramentas_DLM
         {
             return selecoes.FindAll(x => x is BlockReference).Select(x => x as BlockReference).ToList();
         }
+
         public List<Mline> GetMultilines()
         {
-            return selecoes.FindAll(x => x is Mline).Select(x => x as Mline).ToList();
+            List<Mline> lista = new List<Mline>();
+            lista.AddRange(selecoes.FindAll(x => x is Mline).Select(x => x as Mline).ToList());
+
+            if (BuscarEmBlocos)
+            {
+                lista.AddRange(this.GetEntitiesdeBlocos().FindAll(x => x is Mline).Select(x => x as Mline));
+            }
+
+            return lista;
         }
         public List<Xline> GetXlines()
         {
@@ -772,6 +754,7 @@ namespace Ferramentas_DLM
             pp.RejectPaperspaceViewport = true;
             pp.RejectObjectsFromNonCurrentSpace = true;
             pp.AllowDuplicates = false;
+          
             //pp.MessageForAdding = "Item adicionado à seleção";
             //pp.MessageForRemoval = "Item removido da seleção";
 
@@ -860,12 +843,40 @@ namespace Ferramentas_DLM
         {
             var st = editor.Command("LTSCALE", valor, "");
         }
+
+        public void RenomeiaBlocos()
+        {
+          var sel =  SelecionarObjetos(Tipo_Selecao.Blocos);
+
+            if(sel.Status == PromptStatus.OK)
+            {
+                var blocos = this.GetBlocos();
+
+                var nomes = blocos.GroupBy(x => x.Name);
+                foreach(var nome in nomes)
+                {
+                    var novo_nome = Conexoes.Utilz.Prompt($"Digite o novo nome para o bloco \n[{nome.Key}]");
+                    if(novo_nome!=null && novo_nome.Length>0)
+                    {
+                        novo_nome = novo_nome.Replace(" ", "_").ToUpper();
+                        if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja renomear o bloco \n[{nome.Key}] para [{novo_nome}]"))
+                        {
+                            Blocos.Renomear(nome.Key, novo_nome);
+                        }
+
+                    }
+                }
+
+
+            }
+        }
+
         public CADBase()
         {
             Constantes.VerificarVersao();
             SetUCSParaWorld();
             GetLayers();
-            GetMLStyles();
+            Multiline.GetMLStyles();
         }
     }
 }

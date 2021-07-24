@@ -96,6 +96,44 @@ namespace Ferramentas_DLM
         }
 
 
+        public static void Renomear(string nome_antigo, string novo_nome, bool auto_cont = true)
+        {
+
+
+            using (Transaction tr = CAD.acCurDb.TransactionManager.StartTransaction())
+            {
+                string nome = novo_nome;
+                var bt = (BlockTable)tr.GetObject(CAD.acCurDb.BlockTableId, OpenMode.ForRead);
+                if (bt.Has(nome_antigo))
+                {
+                    if (auto_cont)
+                    {
+                        int c = 1;
+                        while (bt.Has(nome))
+                        {
+                            nome = novo_nome + "_" + c;
+                            c++;
+                        }
+                    }
+
+
+                    if (!bt.Has(nome))
+                    {
+                        var btr = (BlockTableRecord)tr.GetObject(bt[nome_antigo], OpenMode.ForWrite);
+                        btr.Name = nome;
+                    }
+                    else
+                    {
+                        Conexoes.Utilz.Alerta($"Já Existe um bloco com o nome {nome}.");
+                    }
+
+                }
+
+                tr.Commit();
+            }
+        }
+
+
         public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point2d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
         {
             Hashtable ht = new Hashtable();
@@ -701,6 +739,39 @@ namespace Ferramentas_DLM
                 return nt.Name;
             }
             return bloco.Name;
+        }
+
+        public static List<Entity> GetEntities(BlockReference bloco)
+        {
+
+            List<Entity> retorno = new List<Entity>();
+
+            try
+            {
+                DBObjectCollection acDBObjColl = new DBObjectCollection();
+                bloco.Explode(acDBObjColl);
+
+                foreach (Entity acEnt in acDBObjColl)
+                {
+                    try
+                    {
+                        retorno.Add(acEnt);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+
+              
+            }
+
+            return retorno.FindAll(x=>x!=null);
+
         }
 
         public static List<Point2d> GetInterSeccao(BlockReference obj, Entity obj2)
