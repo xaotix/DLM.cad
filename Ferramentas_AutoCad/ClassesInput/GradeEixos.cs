@@ -132,7 +132,7 @@ namespace Ferramentas_DLM
             return _eixos.FindAll(x => x.Sentido == Sentido.Horizontal);
         }
 
-        public void Add(Sentido Sentido, double Vao, BlocoTag bloco, Line line)
+        public void Add(Sentido Sentido, double Vao, BlocoTag bloco, CADLine line)
         {
             var neixo = new Eixo(Sentido, bloco, line, Vao);
             _eixos.Add(neixo);
@@ -169,7 +169,7 @@ namespace Ferramentas_DLM
 
             
 
-            p0 = new Point(GetXmin() + Core.CADPurlin.Canvas_Offset, GetYmin() + Core.CADPurlin.Canvas_Offset);
+            p0 = new Point(GetXmin() - Core.CADPurlin.Canvas_Offset, GetYmin() - Core.CADPurlin.Canvas_Offset);
 
 
             List<UIElement> objetos = new List<UIElement>();
@@ -241,7 +241,7 @@ namespace Ferramentas_DLM
                             var pp = pps[i];
                             if(pp.DistBaixo>0)
                             {
-                                var pt = new System.Windows.Point((this.GetXmin() - p0.X) * escala, (pp.CentroBloco.Y- p0.Y - (pp.DistBaixo/2)) * escala);
+                                var pt = new System.Windows.Point((this.GetXmin() - p0.X - Core.CADPurlin.Canvas_Offset) * escala, (pp.CentroBloco.Y- p0.Y - (pp.DistBaixo/2)) * escala);
                                 var cota = Conexoes.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, Conexoes.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
@@ -261,7 +261,7 @@ namespace Ferramentas_DLM
                             var pp = pps[i];
                             if (pp.DistBaixo > 0)
                             {
-                                var pt = new System.Windows.Point((this.GetXMax() - p0.X + Core.CADPurlin.Canvas_Offset) * escala, (pp.CentroBloco.Y - p0.Y - (pp.DistBaixo / 2)) * escala);
+                                var pt = new System.Windows.Point((this.GetXMax() - p0.X) * escala, (pp.CentroBloco.Y - p0.Y - (pp.DistBaixo / 2)) * escala);
                                 var cota = Conexoes.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, Conexoes.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;

@@ -188,13 +188,21 @@ namespace Ferramentas_DLM
         [Category("Configuração")]
         [DisplayName("Layer Eixos")]
         public string LayerEixos { get; set; } = "EIXO";
+
+        [Category("Configuração")]
+        [DisplayName("Layer Eixos Comprimento Mínimo")]
+        public double LayerEixosCompMin { get; set; } = 2500;
+
+        [Category("Configuração")]
+        [DisplayName("Bloco Eixos")]
+        public string BlocoEixos { get; set; } = "EIXO";
         [Category("Configuração")]
         [DisplayName("Descrição FB")]
         public string DescFB { get; set; } = "FLANGE BRACE";
 
         [Category("Eixos")]
         [DisplayName("Distancia Mínima")]
-        public double DistanciaMinimaEixos { get; set; } = 250;
+        public double DistanciaMinimaEixos { get; set; } = 1000;
 
         [Category("Informações")]
         [DisplayName("Pasta Arquivo")]
@@ -571,20 +579,11 @@ namespace Ferramentas_DLM
 
         #region mapeamento de objetos a serem usados
 
-        public List<Line> GetLinhas_Eixos()
+        public List<CADLine> GetLinhas_Eixos()
         {
-            return Ut.LinhasVerticais(this.GetLinhas()).FindAll(x =>
-                (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) && 
-                (x.Layer.ToUpper().Contains("EIXO"))
-                ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.ToList().OrderByDescending(y=>y.Length)).Select(x=>x.First()).OrderBy(x => x.StartPoint.X).ToList();
+            return GetLinhas().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
         }
-        public List<Polyline> GetPolyLines_Eixos()
-        {
-            return Ut.PolylinesVerticais(this.GetPolyLines()).FindAll(x =>
-                (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer) &&
-                (x.Layer.ToUpper().Contains("EIXO"))
-                ).ToList().GroupBy(x => Math.Round(x.StartPoint.X)).Select(x => x.First()).OrderBy(x => x.StartPoint.X).ToList();
-        }
+
         public List<Polyline> GetPolyLines_Verticais(List<Polyline> polylines)
         {
             return Ut.PolylinesVerticais(polylines);
@@ -597,21 +596,18 @@ namespace Ferramentas_DLM
 
 
         #region listas de itens selecionados
-        public List<Line> GetLinhas()
+        public List<CADLine> GetLinhas()
         {
-            return selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList();
+            return selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList().Select(x=>new CADLine(x)).ToList();
         }
-        public List<Line> GetLinhas_Verticais()
+        public List<CADLine> GetLinhas_Verticais()
         {
             
-            return GetLinhas().FindAll(x=> Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 90 | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 270).OrderBy(x => x.StartPoint.X).ToList();
+            return GetLinhas().FindAll(x=>x.Sentido == Sentido.Vertical).OrderBy(x => x.StartPoint.X).ToList();
         }
-        public List<Line> GetLinhas_Horizontais()
+        public List<CADLine> GetLinhas_Horizontais()
         {
-            return GetLinhas().FindAll(x => 
-            Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 0 
-            | Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 360
-            |  Math.Round(Conexoes.Utilz.RadianosParaGraus(x.Angle)) == 180).OrderBy(x=>x.StartPoint.Y).ToList();
+            return GetLinhas().FindAll(x => x.Sentido == Sentido.Horizontal).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<Polyline> GetPolyLines()
         {
@@ -671,7 +667,7 @@ namespace Ferramentas_DLM
             /*pega blocos dinâmicos*/
            if(_blocos_eixo==null | update)
             {
-                _blocos_eixo = this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("EIXO")).Select(x => new BlocoTag(x)).ToList();
+                _blocos_eixo = this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => new BlocoTag(x)).ToList();
             }
 
             return _blocos_eixo;

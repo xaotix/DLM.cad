@@ -23,6 +23,7 @@ namespace Ferramentas_DLM
     {
         Horizontal,
         Vertical,
+        Inclinado,
     }
     public enum Tipo_Vista
     {

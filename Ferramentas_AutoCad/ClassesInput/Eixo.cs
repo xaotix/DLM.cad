@@ -83,7 +83,7 @@ namespace Ferramentas_DLM
         }
 
         public BlocoTag Bloco { get; private set; }
-        public Line Linha { get; private set; }
+        public CADLine Linha { get; private set; }
         public override string ToString()
         {
             return $"[{Nome} - {Sentido}]";
@@ -101,7 +101,7 @@ namespace Ferramentas_DLM
             this.Nome = Nome;
             this.Vao = Vao;
         }
-        public Eixo(Sentido sentido, BlocoTag bloco, Line linha, double Vao)
+        public Eixo(Sentido sentido, BlocoTag bloco, CADLine linha, double Vao)
         {
             this.Sentido = sentido;
             this.Vao = Vao;

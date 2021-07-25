@@ -26,14 +26,14 @@ namespace Ferramentas_DLM
 
         #region CAD
 
-        public List<Line> Getlinhas_perfil()
+        public List<CADLine> Getlinhas_perfil()
         {
-            return GetLinhas().FindAll(x => x.Layer == LayerLinhas && x.Length >= distancia_minima_X);
+            return GetLinhas().FindAll(x => x.Layer == LayerLinhas && x.Comprimento >= distancia_minima_X);
         }
 
-        public List<Line> Getlinhas_projecao()
+        public List<CADLine> Getlinhas_projecao()
         {
-            return GetLinhas().FindAll(x => x.Layer == LayerProjecao && x.Length >= distancia_minima_X && x.Length >= tam_minimo_projecao);
+            return GetLinhas().FindAll(x => x.Layer == LayerProjecao && x.Comprimento >= distancia_minima_X && x.Comprimento >= tam_minimo_projecao);
         }
 
         public List<BlockReference> Getfuros_vista()

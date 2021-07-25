@@ -162,6 +162,7 @@
     </Compile>
     <Compile Include="ClassesObjetosMultiline\ObjetoMultiLineBase.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoCorrente.cs" />
+    <Compile Include="Construtores\CADLine.cs" />
     <Compile Include="Construtores\CADMline.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoPurlin.cs" />
     <Compile Include="ClassesInput\GradeEixos.cs" />

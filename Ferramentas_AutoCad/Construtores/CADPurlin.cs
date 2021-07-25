@@ -25,7 +25,7 @@ namespace Ferramentas_DLM
         public double ToleranciaPasse { get; set; } = 2;
         [Category("Eixos")]
         [DisplayName("Tolerância Mapeamento")]
-        public double Eitos_Tolerancia { get; set; } = 30;
+        public double Eixos_Tolerancia { get; set; } = 30;
 
         [Category("Canvas")]
         [DisplayName("Largura")]
@@ -265,18 +265,47 @@ namespace Ferramentas_DLM
             if (sel.Status == PromptStatus.OK)
             {
 
-                FLayer.Set(LayerBlocos, true, true);
 
-                var eixos = this.GetGrade();
-
-                if (eixos.GetEixosVerticais().Count < 2)
+                try
                 {
-                    Conexoes.Utilz.Alerta("Não foi encontrado pelo menos 2 eixos verticais.", "Abortado.");
-                    return;
+                    FLayer.Set(LayerBlocos, true, true);
+
+                    var eixos = this.GetGrade();
+
+                    if (eixos.GetEixosVerticais().Count < 2)
+                    {
+                        Conexoes.Utilz.Alerta("Não foi encontrado pelo menos 2 eixos verticais.", "Abortado.");
+                        return;
+                    }
+
+                    Menus.Purlin pp = new Menus.Purlin();
+                    pp.eixos_mapeados.ItemsSource = Core.CADPurlin.GetGrade().GetEixosVerticais();
+                    pp.vaos_mapeados.ItemsSource = Core.CADPurlin.GetGrade().GetVaosVerticais();
+
+
+                    Ut.GetPURLINS();
+                    Ut.GetTIRANTES();
+                    Ut.GetCORRENTES();
+
+                    pp.correntes_mlstyles.ItemsSource = Core.CADPurlin.CorrenteMLStyles;
+                    pp.tirantes_mlstyles.ItemsSource = Core.CADPurlin.TirantesMLStyles;
+                    pp.tercas_mlstyles.ItemsSource = Core.CADPurlin.TercasMLStyles;
+                    pp.correntes_multilines.ItemsSource = Core.CADPurlin.GetMLCorrentes();
+                    pp.tirantes_multilines.ItemsSource = Core.CADPurlin.GetMLTirantes();
+                    pp.tercas_multilines.ItemsSource = Core.CADPurlin.GetMLPurlins();
+
+
+
+                    pp.Show();
+                }
+                catch (Exception ex)
+                {
+
+                    Conexoes.Utilz.JanelaTexto($"{ex.Message}\n{ex.StackTrace}\n\n\n{ex.Source}", "Erro interno");
+
                 }
 
-                Menus.Purlin pp = new Menus.Purlin();
-                pp.Show();
+
             }
         }
 
@@ -334,8 +363,6 @@ namespace Ferramentas_DLM
 
             AddBarra();
             AddMensagem("\n" + blocos_excluir.Count.ToString() + " blocos encontrados excluídos");
-            AddMensagem("\n" + this.GetLinhas_Eixos().Count.ToString() + " Linhas eixo encontradas");
-            AddMensagem("\n" + this.GetPolyLines_Eixos().Count.ToString() + " PolyLinhas eixo encontradas");
             AddMensagem("\n" + this.GetMultilines().Count.ToString() + " Multilines encontradas");
             AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
             AddBarra();
@@ -515,11 +542,11 @@ namespace Ferramentas_DLM
 
 
                 /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
-                var HORIS1 = GetLinhas_Horizontais().FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
-                var VERTS1 = GetLinhas_Verticais().FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+                List<CADLine> HORIS1 = GetLinhas_Horizontais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
+                List<CADLine> VERTS1 = GetLinhas_Verticais().FindAll(x => x.Comprimento>=this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Constantes.LineType_Eixos | x.Linetype.ToUpper() == Constantes.LineType_ByLayer));
 
-                List<Line> HORIS = Linha.GetLinhas(HORIS1, this.DistanciaMinimaEixos, Sentido.Horizontal);
-                List<Line> VERTS = Linha.GetLinhas(VERTS1, this.DistanciaMinimaEixos, Sentido.Vertical);
+                List<CADLine> HORIS = HORIS1.GroupBy(x=>x.MinY).Select(x=>x.First()).ToList().OrderBy(x=>x.MinY).ToList();
+                List<CADLine> VERTS = VERTS1.GroupBy(x => x.MinX).Select(x => x.First()).ToList().OrderBy(x => x.MinX).ToList();
 
                 /*organiza por comprimento e pega as linhas maiores*/
                 //HORIS1 = HORIS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
@@ -537,21 +564,23 @@ namespace Ferramentas_DLM
                             dist = Math.Round(Math.Abs(HORIS[(int)i].StartPoint.Y - _grade.GetEixosHorizontais().Last().Linha.StartPoint.Y));
                         }
 
-                        var pt1 = L.StartPoint.X > L.EndPoint.X ? L.StartPoint : L.EndPoint;
-                        var pt2 = L.StartPoint.X < L.EndPoint.X ? L.StartPoint : L.EndPoint;
+  
 
-
-                        List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, this.Eitos_Tolerancia);
-
-
-                        if (blks.Count >= 1)
+                        if(dist>=DistanciaMinimaEixos | _grade.GetEixosHorizontais().Count ==0)
                         {
-                            _grade.Add(Sentido.Horizontal, dist, blks[0], L);
+                            List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
+
+
+                            if (blks.Count >= 1)
+                            {
+                                _grade.Add(Sentido.Horizontal, dist, blks[0], L);
+                            }
+                            else
+                            {
+                                //retorno.Add(Sentido.Horizontal, dist, null, L);
+                            }
                         }
-                        else
-                        {
-                            //retorno.Add(Sentido.Horizontal, dist, null, L);
-                        }
+
 
                     }
                 }
@@ -568,22 +597,24 @@ namespace Ferramentas_DLM
                             dist = Math.Round(Math.Abs(VERTS[i].StartPoint.X - _grade.GetEixosVerticais().Last().Linha.StartPoint.X));
                         }
 
-                        var pt1 = L.StartPoint.Y > L.EndPoint.Y ? L.StartPoint : L.EndPoint;
-                        var pt2 = L.StartPoint.Y < L.EndPoint.Y ? L.StartPoint : L.EndPoint;
 
 
-
-                        List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, pt1, pt2, this.Eitos_Tolerancia);
-
-
-                        if (blks.Count >= 1)
+                        if(dist >= DistanciaMinimaEixos | _grade.GetEixosVerticais().Count == 0)
                         {
-                            _grade.Add(Sentido.Vertical, dist, blks[0], L);
+                            List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
+
+
+                            if (blks.Count >= 1)
+                            {
+                                _grade.Add(Sentido.Vertical, dist, blks[0], L);
+                            }
+                            else
+                            {
+                                //retorno.Add(Sentido.Vertical, dist,null, L);
+                            }
                         }
-                        else
-                        {
-                            //retorno.Add(Sentido.Vertical, dist,null, L);
-                        }
+
+
 
                     }
                 }
@@ -603,7 +634,7 @@ namespace Ferramentas_DLM
                 {
                     foreach(var s in GetLinhas())
                     {
-                        AddMensagem($"\nLinha: {s.StartPoint.ToString()} Comprimento: {s.Length} Angulo: {Math.Round(Conexoes.Utilz.RadianosParaGraus(s.Angle))}");
+                        AddMensagem($"\nLinha: {s.StartPoint.ToString()} Comprimento: {s.Comprimento} Angulo: {s.Angulo}");
                     }
                     var linhas_horizon = GetLinhas_Horizontais();
 
@@ -618,12 +649,11 @@ namespace Ferramentas_DLM
                     int c = 1;
                     foreach (var lhs in linhas_horizon)
                     {
-                        var min_x = lhs.StartPoint.X < lhs.EndPoint.X ? lhs.StartPoint.X : lhs.EndPoint.X;
-                        var max_x = lhs.StartPoint.X > lhs.EndPoint.X ? lhs.StartPoint.X : lhs.EndPoint.X;
 
 
-                        var verts = verticais.FindAll(x =>x.StartPoint.X>min_x+1 && x.EndPoint.X<max_x-1);
-                        List<Line> passa = new List<Line>();
+
+                        var verts = verticais.FindAll(x =>x.MinX>lhs.MinX+1 && x.MaxX<lhs.MaxX-1);
+                        List<CADLine> passa = new List<CADLine>();
 
                         foreach (var v in verts)
                         {
@@ -638,7 +668,7 @@ namespace Ferramentas_DLM
                         AddMensagem($"Linhas verticais que passam: {passa.Count}");
 
                         double comprimento = Math.Round(Math.Abs(lhs.StartPoint.X - lhs.EndPoint.X));
-                        List<double> furos = passa.Select(x => x.StartPoint.X - min_x).ToList().OrderBy(x=>x).ToList();
+                        List<double> furos = passa.Select(x => x.StartPoint.X - lhs.MinX).ToList().OrderBy(x=>x).ToList();
                         furos = furos.Distinct().ToList();
                         textos.Add($"@Linha {c}");
                         textos.Add($"Comprimento: {comprimento}");

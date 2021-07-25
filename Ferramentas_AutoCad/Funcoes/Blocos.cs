@@ -869,16 +869,22 @@ namespace Ferramentas_DLM
 
                     var pts = blk.GetContorno(acTrans);
 
-                    foreach (var pt in pts)
+                    List<double> dists = new List<double>();
+                    dists.AddRange(pts.Select(x => Math.Round(pt1.GetDistanceTo(x))).Distinct().ToList());
+                    dists.AddRange(pts.Select(x => Math.Round(pt2.GetDistanceTo(x))).Distinct().ToList());
+
+                    if(dists.Count>0)
                     {
-                        d1 = Math.Round(Math.Abs(pt1.GetDistanceTo(pt)));
-                        d2 = Math.Round(Math.Abs(pt2.GetDistanceTo(pt)));
-                        if (d1 <= tolerancia | d2 <= tolerancia)
+                        var min = dists.Min();
+
+
+                        if (min <= tolerancia)
                         {
                             blks.Add(blk);
-                            break;
+
                         }
                     }
+                    
 
                 }
             }

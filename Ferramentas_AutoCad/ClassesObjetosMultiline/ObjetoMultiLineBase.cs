@@ -98,7 +98,7 @@ namespace Ferramentas_DLM
                         return Ut.Mover(this.Origem_Esquerda, this.Angulo, c.Descontar);
                     case Tipo_ObjetoBase.Tirante:
                         var t = this as ObjetoTirante;
-                        return Ut.Mover(this.Origem_Esquerda, this.Angulo, t.Offset);
+                        return Ut.Mover(this.Origem_Esquerda, this.Angulo, -t.Offset);
                 }
                 return new Point2d();
             }
@@ -125,7 +125,7 @@ namespace Ferramentas_DLM
                         return Ut.Mover(this.Origem_Direita, this.Angulo, -c.Descontar);
                     case Tipo_ObjetoBase.Tirante:
                         var t = this as ObjetoTirante;
-                        return Ut.Mover(this.Origem_Direita, this.Angulo, -t.Offset);
+                        return Ut.Mover(this.Origem_Direita, this.Angulo, t.Offset);
                 }
                 return new Point2d();
             }
@@ -191,7 +191,7 @@ namespace Ferramentas_DLM
                 }
                 else _Nome = "Base";
 
-                _Nome = _Nome + " #" + this.Espessura.ToString("N2");
+                _Nome = _Nome;
 
 
 
@@ -234,20 +234,7 @@ namespace Ferramentas_DLM
 
             List<UIElement> retorno = new List<UIElement>();
 
-            RedrawCanvas();
-    
-
-
-            
-
-
-            retorno.Add(_botao);
-            return retorno;
-        }
-
-        public void RedrawCanvas()
-        {
-            if(this.Grade.canvas!=null && this._linha!=null)
+            if (this.Grade.canvas != null && this._linha != null)
             {
                 this.Grade.canvas.Children.Remove(this._linha);
             }
@@ -258,9 +245,9 @@ namespace Ferramentas_DLM
             var p1 = Ut.GetWPoint(this.P1);
             var p2 = Ut.GetWPoint(this.P2);
 
-            p1 = new Point((p1.X - this.Grade.p0.X)*this.Grade.escala, (p1.Y - this.Grade.p0.Y)* this.Grade.escala);
-            p2 = new Point((p2.X - this.Grade.p0.X)* this.Grade.escala, (p2.Y - this.Grade.p0.Y)* this.Grade.escala);
-            _linha = Conexoes.FuncoesCanvas.Linha(p1,p2, this.Cor.Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
+            p1 = new Point((p1.X - this.Grade.p0.X) * this.Grade.escala, (p1.Y - this.Grade.p0.Y) * this.Grade.escala);
+            p2 = new Point((p2.X - this.Grade.p0.X) * this.Grade.escala, (p2.Y - this.Grade.p0.Y) * this.Grade.escala);
+            _linha = Conexoes.FuncoesCanvas.Linha(p1, p2, this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;
@@ -275,7 +262,7 @@ namespace Ferramentas_DLM
                 angulo = 90;
             }
 
-            _botao = Conexoes.FuncoesCanvas.Botao(this.Letra, pt, this.Cor.Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, Conexoes.FuncoesCanvas.Cores.Black);
+            _botao = Conexoes.FuncoesCanvas.Botao(this.Nome + $"\n#{this.Espessura.ToString("N2")}", pt, this.GetCor().Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, Conexoes.FuncoesCanvas.Cores.Black);
 
             _botao.MouseRightButtonUp += Botao_Direito;
             _botao.MouseMove += Evento_Sobre;
@@ -284,12 +271,14 @@ namespace Ferramentas_DLM
             _botao.Visibility = Visibility.Collapsed;
             _botao.Click += Evento_Clicar;
 
-            if (this.Grade.canvas != null)
-            {
-                this.Grade.canvas.Children.Add(this._linha);
-                this.Grade.canvas.Children.Add(this._botao);
-            }
+
+            retorno.Add(_linha);
+            retorno.Add(_botao);
+
+            return retorno;
         }
+
+
         public Conexoes.RMLite GetPeca()
         {
             if(_pecaRME==null)
@@ -311,6 +300,8 @@ namespace Ferramentas_DLM
                 if (sel != null)
                 {
                     SetPeca(sel);
+
+                    Redraw();
                 }
             }
             else if (this is ObjetoPurlin)
@@ -319,6 +310,8 @@ namespace Ferramentas_DLM
                 if (sel != null)
                 {
                     SetPeca(sel);
+
+                    Redraw();
                 }
 
             }
@@ -328,11 +321,12 @@ namespace Ferramentas_DLM
                 if (sel != null)
                 {
                     SetPeca(sel);
+
+                    Redraw();
                 }
             }
 
-            Conexoes.FuncoesCanvas.SetCor(_botao, this.Cor, Conexoes.FuncoesCanvas.Cores.Black);
-
+            
 
         }
 
@@ -342,17 +336,25 @@ namespace Ferramentas_DLM
             Conexoes.Utilz.Propriedades(this,out status);
             if(status)
             {
-                RedrawCanvas();
-                this.Grade.canvas.Children.Add(this._linha);
+                Redraw();
+            }
+        }
+
+        public void Redraw()
+        {
+            var pcs = this.GetCanvas();
+            foreach (var pc in pcs)
+            {
+                Core.CADPurlin.GetGrade().canvas.Children.Add(pc);
             }
         }
 
         public void Evento_Sair(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Conexoes.FuncoesCanvas.SetCor(_linha, this.Cor, Conexoes.FuncoesCanvas.Cores.Black);
+            Conexoes.FuncoesCanvas.SetCor(_linha, this.GetCor(), Conexoes.FuncoesCanvas.Cores.Black);
             _botao.Visibility = Visibility.Collapsed;
             _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline;
-            Conexoes.FuncoesCanvas.SetCor(_botao, this.Cor,Conexoes.FuncoesCanvas.Cores.Black);
+            Conexoes.FuncoesCanvas.SetCor(_botao, this.GetCor(), Conexoes.FuncoesCanvas.Cores.Black);
             Conexoes.FuncoesCanvas.TrazerPraFrente(_linha);
             Conexoes.FuncoesCanvas.TrazerPraFrente(_botao);
         }
@@ -360,10 +362,9 @@ namespace Ferramentas_DLM
         public void Evento_Sobre(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var p = sender as UIElement;
-            Conexoes.FuncoesCanvas.SetCor(_linha, Conexoes.FuncoesCanvas.Cores.White, this.Cor);
+
             _botao.Visibility = Visibility.Visible;
-            _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline * 2;
-            Conexoes.FuncoesCanvas.SetCor(_botao, Conexoes.FuncoesCanvas.Cores.Black, this.Cor);
+            _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline * 4;
             Conexoes.FuncoesCanvas.TrazerPraFrente(_linha);
             Conexoes.FuncoesCanvas.TrazerPraFrente(_botao);
 
@@ -377,23 +378,31 @@ namespace Ferramentas_DLM
             }
         }
 
-        [Browsable(false)]
-        public SolidColorBrush Cor
+
+        private SolidColorBrush _Cor { get; set; }
+        public SolidColorBrush GetCor()
         {
-            get
+
+            if(_Cor==null)
             {
-                switch (this.Tipo)
+                if (this.Tipo == Tipo_ObjetoBase.Purlin)
                 {
-                    case Tipo_ObjetoBase.Purlin:
-                        return Conexoes.FuncoesCanvas.Cores.Yellow.Clone();
-                    case Tipo_ObjetoBase.Corrente:
-                        return Conexoes.FuncoesCanvas.Cores.Red.Clone();
-                    case Tipo_ObjetoBase.Tirante:
-                        return Conexoes.FuncoesCanvas.Cores.White.Clone();
+                    _Cor = Conexoes.FuncoesCanvas.Cores.Yellow.Clone();
                 }
-                SolidColorBrush pp = new SolidColorBrush(System.Windows.Media.Colors.Transparent);
-                return pp;
+                else if (this.Tipo == Tipo_ObjetoBase.Corrente)
+                {
+                    _Cor = Conexoes.FuncoesCanvas.Cores.Red.Clone();
+                }
+                else if (this.Tipo == Tipo_ObjetoBase.Tirante)
+                {
+                    _Cor = Conexoes.FuncoesCanvas.Cores.White.Clone();
+                }
+                else
+                {
+                    return Conexoes.FuncoesCanvas.Cores.White.Clone();
+                }
             }
+            return _Cor;
         }
         [Browsable(false)]
         public static int id_cont { get; set; } = 1;
@@ -452,7 +461,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                return Ut.Centro(this.Origem_Esquerda, this.Origem_Direita);
+                return Ut.Centro(this.P1, this.P2);
             }
         }
         [Browsable(false)]

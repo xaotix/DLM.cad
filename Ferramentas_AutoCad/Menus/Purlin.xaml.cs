@@ -27,16 +27,7 @@ namespace Ferramentas_DLM.Menus
             InitializeComponent();
             this.Title = $"xPurlin V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
 
-            this.correntes_mlstyles.ItemsSource = Core.CADPurlin.CorrenteMLStyles;
-            this.tirantes_mlstyles.ItemsSource = Core.CADPurlin.TirantesMLStyles;
-            this.tercas_mlstyles.ItemsSource = Core.CADPurlin.TercasMLStyles;
 
-            this.correntes_multilines.ItemsSource = Core.CADPurlin.GetMLCorrentes();
-            this.tirantes_multilines.ItemsSource = Core.CADPurlin.GetMLTirantes();
-            this.tercas_multilines.ItemsSource = Core.CADPurlin.GetMLPurlins();
-
-            this.eixos_mapeados.ItemsSource = Core.CADPurlin.GetGrade().GetEixosVerticais();
-            this.vaos_mapeados.ItemsSource = Core.CADPurlin.GetGrade().GetVaosVerticais();
         }
 
         private void terca_Click(object sender, RoutedEventArgs e)
@@ -146,21 +137,25 @@ namespace Ferramentas_DLM.Menus
                 Conexoes.Utilz.Alerta($"Não foi encontrada nenhuma purlin da família {Core.CADPurlin.RM_Familia_Purlin}");
                 return;
             }
+
+
+
+
             if (correntes_multilines.Items.Count == 0 && (bool)mapeia_correntes.IsChecked)
             {
-                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de corrente nos estilos mapeáveis.");
+                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de [corrente] nos estilos mapeáveis.");
                 return;
             }
 
             if (tirantes_multilines.Items.Count == 0 && (bool)mapeia_tirantes.IsChecked)
             {
-                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de corrente nos estilos mapeáveis.");
+                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de [tirante] nos estilos mapeáveis.");
                 return;
             }
 
             if (tercas_multilines.Items.Count == 0 && (bool)mapeia_tercas.IsChecked)
             {
-                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de corrente nos estilos mapeáveis.");
+                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de [purlin] nos estilos mapeáveis.");
                 return;
             }
             if (Core.CADPurlin.MapeiaFurosManuaisLayer == "" && (bool)mapeia_furos.IsChecked)
