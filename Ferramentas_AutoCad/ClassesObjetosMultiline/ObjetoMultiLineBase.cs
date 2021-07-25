@@ -252,7 +252,7 @@ namespace Ferramentas_DLM
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;
             _linha.ToolTip = this;
-
+            
 
             var pt = new System.Windows.Point((this.CentroBloco.X - this.Grade.p0.X) * this.Grade.escala, (this.CentroBloco.Y - this.Grade.p0.Y) * this.Grade.escala);
 

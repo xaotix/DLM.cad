@@ -1694,7 +1694,7 @@ namespace Ferramentas_DLM
         public static RMLite SelecionarPurlin(RMLite purlin)
         {
             List<RMLite> parecidas = new List<RMLite>();
-            if(purlin !=null)
+            if(purlin ==null)
             {
                 parecidas = GetPURLINS().GetPecas();
             }
