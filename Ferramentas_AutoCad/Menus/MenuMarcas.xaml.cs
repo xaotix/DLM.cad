@@ -783,5 +783,125 @@ namespace Ferramentas_DLM
             this.Visibility = Visibility.Collapsed;
             Core.rodarmacros();
         }
+
+        private void editar_transpasse(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetTranspasse();
+        }
+
+        private void editar_ficha(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetFicha();
+        }
+
+        private void editar_trocar_perfil(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetPerfil();
+        }
+
+        private void editar_furacao_suporte(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetSuporte();
+        }
+
+        private void editar_ver_croqui(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetSuporte();
+        }
+
+        private void editar_criar_manual(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.PurlinManual();
+        }
+
+        private void editar_edicao_completa(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.EdicaoCompleta();
+        }
+
+        private void editar_corrente(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetCorrente();
+        }
+
+        private void editar_corrente_descontar(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetCorrenteDescontar();
+        }
+
+        private void editar_corrente_fixador(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.SetCorrenteFixador();
+        }
+
+        private void apagar_blocos(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.ApagarBlocosPurlin();
+        }
+
+        private void apagar_tudo(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.ApagarBlocosPurlin();
+        }
+
+        private void desnha_multiline(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.desenharmline();
+        }
+
+        private void troca_polyline_por_multiline(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.substituirpolylinepormultiline();
+        }
+
+        private void trocar_multiline(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.mudarmultiline();
+        }
+
+        private void marcar_inserir_tabela(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.Exportar(Conexoes.Utilz.Pergunta("Gerar Tabela?"), Conexoes.Utilz.Pergunta("Exportar arquivo .RM?"));
+        }
+
+        private void gerar_croquis(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            this.Close();
+            Core.CADPurlin.GerarCroquis();
+
+        }
     }
 }

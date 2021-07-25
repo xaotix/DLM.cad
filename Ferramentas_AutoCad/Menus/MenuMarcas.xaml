@@ -355,6 +355,44 @@
             </ScrollViewer>
         </TabItem>
 
+        <TabItem Header="Estrutura Secundária">
+            <ScrollViewer Padding="5">
+                <StackPanel>
+                    <GroupBox Header="Edição">
+                        <StackPanel>
+                            <GroupBox Header="Purlins">
+                                <StackPanel>
+                                    <Button Content="Transpasse" Click="editar_transpasse"/>
+                                    <Button Content="Ficha de Pintura" Click="editar_ficha"/>
+                                    <Button Content="Trocar Perfil" Click="editar_trocar_perfil"/>
+                                    <Button Content="Furação Suporte" Click="editar_furacao_suporte"/>
+                                    <Button Content="Ver Croqui" Click="editar_ver_croqui"/>
+                                    <Button Content="Criar Manual" Click="editar_criar_manual"/>
+                                    <Button Content="Edição Completa" Click="editar_edicao_completa"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="Correntes">
+                                <StackPanel>
+                                    <Button Content="Trocar" Click="editar_corrente"/>
+                                    <Button Content="Editar Descontar" Click="editar_corrente_descontar"/>
+                                    <Button Content="Trocar Fixador" Click="editar_corrente_fixador"/>
+
+                                </StackPanel>
+                            </GroupBox>
+
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Extração">
+                        <StackPanel>
+                            <Button Content="Marcar / Tabela / Extrair" Click="marcar_inserir_tabela"/>
+                            <Button Content="Gerar Croquis Purlin" Click="gerar_croquis"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
         <TabItem Header="Ferramentas">
             <ScrollViewer>
                 <StackPanel>
@@ -365,6 +403,10 @@
                             <Button Content="Gerar DBF 3D"  Click="gerar_dbf_3d"/>
                             <Button Content="Abrir Pasta"  Click="abre_pasta"/>
                             <Button Content="Listar Quantidades de blocos" Click="listar_quantidades"/>
+                            <Separator/>
+                            <Button Content="Desenhar Multiline" Click="desnha_multiline"/>
+                            <Button Content="Trocar Multiline" Click="trocar_multiline"/>
+                            <Button Content="Trocar PolyLine por Multiline" Click="troca_polyline_por_multiline"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Purlin">
@@ -373,6 +415,9 @@
                             <!--<Separator/>
                             <Button Content="Mapear Purlins (em testes)"  Click="purlin"/>
                             <Button Content="Mudar perfil (em testes)"  Click="purlin_muda_perfil"/>-->
+                            <Separator/>
+                            <Button Content="Apagar Blocos" Click="apagar_blocos"/>
+                            <Button Content="Apagar Tudo de Purlin" Click="apagar_tudo"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Exportar / Importar RM">
