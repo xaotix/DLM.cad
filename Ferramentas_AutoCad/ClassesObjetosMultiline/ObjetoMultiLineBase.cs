@@ -234,19 +234,19 @@ namespace Ferramentas_DLM
 
             List<UIElement> retorno = new List<UIElement>();
 
-            if (this.Grade.canvas != null && this._linha != null)
+            if (this.Grade.Canvas != null && this._linha != null)
             {
-                this.Grade.canvas.Children.Remove(this._linha);
+                this.Grade.Canvas.Children.Remove(this._linha);
             }
-            if (this.Grade.canvas != null && this._botao != null)
+            if (this.Grade.Canvas != null && this._botao != null)
             {
-                this.Grade.canvas.Children.Remove(this._botao);
+                this.Grade.Canvas.Children.Remove(this._botao);
             }
             var p1 = Ut.GetWPoint(this.P1);
             var p2 = Ut.GetWPoint(this.P2);
 
-            p1 = new Point((p1.X - this.Grade.p0.X) * this.Grade.escala, (p1.Y - this.Grade.p0.Y) * this.Grade.escala);
-            p2 = new Point((p2.X - this.Grade.p0.X) * this.Grade.escala, (p2.Y - this.Grade.p0.Y) * this.Grade.escala);
+            p1 = new Point((p1.X - this.Grade.P0.X) * this.Grade.Escala, (p1.Y - this.Grade.P0.Y) * this.Grade.Escala);
+            p2 = new Point((p2.X - this.Grade.P0.X) * this.Grade.Escala, (p2.Y - this.Grade.P0.Y) * this.Grade.Escala);
             _linha = Conexoes.FuncoesCanvas.Linha(p1, p2, this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
@@ -254,7 +254,7 @@ namespace Ferramentas_DLM
             _linha.ToolTip = this;
             
 
-            var pt = new System.Windows.Point((this.CentroBloco.X - this.Grade.p0.X) * this.Grade.escala, (this.CentroBloco.Y - this.Grade.p0.Y) * this.Grade.escala);
+            var pt = new System.Windows.Point((this.CentroBloco.X - this.Grade.P0.X) * this.Grade.Escala, (this.CentroBloco.Y - this.Grade.P0.Y) * this.Grade.Escala);
 
             double angulo = 0;
             if (this is ObjetoCorrente)
@@ -345,7 +345,7 @@ namespace Ferramentas_DLM
             var pcs = this.GetCanvas();
             foreach (var pc in pcs)
             {
-                Core.CADPurlin.GetGrade().canvas.Children.Add(pc);
+                Core.CADPurlin.GetGrade().Canvas.Children.Add(pc);
             }
         }
 

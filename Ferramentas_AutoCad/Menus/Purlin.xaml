@@ -61,7 +61,7 @@
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Row="0" Content="Transpasse Padrão:"/>
@@ -72,16 +72,24 @@
 
                                 <Label Grid.Row="2" Content="Ficha de Pintura:"/>
                                 <Button x:Name="ficha" Content="FICHA 01" Grid.Row="2" Grid.Column="1" Click="ficha_Click" Grid.ColumnSpan="2"/>
+                                
+                                
 
-                                <Label Grid.Row="3" Content="Purlin Padrão:"/>
-                                <Button Name="terca" Grid.Row="3" Grid.Column="1" Content="PERFIL PADRAO Z 360 - 1.55" Click="terca_Click" Grid.ColumnSpan="2"/>
+                                    <Label Grid.Row="3" Content="Purlin Padrão:"/>
+                                    <Button Name="terca" Grid.Row="3" Grid.Column="1" Content="PERFIL PADRAO Z 360 - 1.55" Click="terca_Click" />
+                                    <Button Name="terca_suporte" Grid.Row="3" Grid.Column="2" Content="PC5" Click="terca_suporte_Click" />
 
-                                <Label Grid.Row="4" Content="Corrente Padrão:"/>
-                                <Button Content="DLDA$C$" x:Name="corrente" Grid.Row="4" Grid.Column="1" Click="corrente_Click" Grid.ColumnSpan="2"/>
+                                    <Label Grid.Row="4" Content="Corrente Padrão:"/>
+                                    <Button Content="DLDA$C$" x:Name="corrente" Grid.Row="4" Grid.Column="1" Click="corrente_Click" />
+                                    <Button Content="F156" x:Name="corrente_suporte" Grid.Row="4" Grid.Column="2" Click="corrente_suporte_Click" />
 
-                                <Label Grid.Row="5" Content="Tirante Padrão:"/>
-                                <Button Content="03TR$C$" Name="tirante" Grid.Row="5" Grid.Column="1" Click="tirante_Click" Grid.ColumnSpan="2"/>
-
+                                    <Label Grid.Row="5" Content="Tirante Padrão:"/>
+                                    <Button Content="03TR$C$" Name="tirante" Grid.Row="5" Grid.Column="1" Click="tirante_Click" />
+                                    <Button Content="SFT-1" Name="tirante_suporte" Grid.Row="5" Grid.Column="2" Click="tirante_suporte_Click" />
+                                
+                                
+                                
+                                
                                     <CheckBox Grid.Row="6" Name="mapeia_furos" IsChecked="True">
                                         <TextBlock>Furos <LineBreak/> manuais:</TextBlock>
                                     </CheckBox>

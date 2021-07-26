@@ -240,6 +240,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Configuracao_Mysql.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="DE_PARA_CTV.CFG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

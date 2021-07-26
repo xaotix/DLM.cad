@@ -802,7 +802,7 @@ namespace Ferramentas_DLM
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetPerfil();
+            Core.CADPurlin.SetPurlin();
         }
 
         private void editar_furacao_suporte(object sender, RoutedEventArgs e)
@@ -851,7 +851,7 @@ namespace Ferramentas_DLM
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetCorrenteFixador();
+            Core.CADPurlin.SetCorrenteSuporte();
         }
 
         private void apagar_blocos(object sender, RoutedEventArgs e)

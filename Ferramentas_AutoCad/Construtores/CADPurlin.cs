@@ -127,11 +127,17 @@ namespace Ferramentas_DLM
 
         [Browsable(false)]
         public int id_purlin { get; set; } = 1763;
+
+        [Browsable(false)]
+        public int id_purlin_suporte { get; set; } = 881;
         [Browsable(false)]
         public int id_corrente { get; set; } = 27;
         [Browsable(false)]
+        public int id_corrente_suporte { get; set; } = 1386;
+        [Browsable(false)]
         public int id_tirante { get; set; } = 1407;
-
+        [Browsable(false)]
+        public int id_tirante_suporte { get; set; } = 1722;
 
 
         [Category("Purlin")]
@@ -176,8 +182,11 @@ namespace Ferramentas_DLM
         public bool MapearTercas { get; set; } = true;
         private Conexoes.RMLite _fb_padrao { get; set; }
         private Conexoes.RMLite _purlin_padrao { get; set; }
+        private Conexoes.RMLite _purlin_padrao_suporte { get; set; }
         private Conexoes.RMLite _corrente_padrao { get; set; }
+        private Conexoes.RMLite _corrente_padrao_suporte { get; set; }
         private Conexoes.RMLite _tirante_padrao { get; set; }
+        private Conexoes.RMLite _tirante_padrao_suporte { get; set; }
         #endregion
 
         public Conexoes.RMLite GetPurlinPadrao()
@@ -187,6 +196,15 @@ namespace Ferramentas_DLM
                 _purlin_padrao = Ut.GetPURLINS().Get(this.id_purlin);
             }
             return _purlin_padrao;
+        }
+
+        public Conexoes.RMLite GetPurlinSuportePadrao()
+        {
+            if (_purlin_padrao_suporte == null)
+            {
+                _purlin_padrao_suporte = Ut.GetPURLINS().Get(this.id_purlin_suporte);
+            }
+            return _purlin_padrao_suporte;
         }
         public Conexoes.RMLite GetFlangeBracePadrao()
         {
@@ -204,6 +222,15 @@ namespace Ferramentas_DLM
             }
             return _corrente_padrao;
         }
+
+        public Conexoes.RMLite GetCorrentePadraoSuporte()
+        {
+            if (_corrente_padrao_suporte == null)
+            {
+                _corrente_padrao_suporte = Ut.GetSUPORTES_CORRENTES().Get(this.id_corrente_suporte);
+            }
+            return _corrente_padrao_suporte;
+        }
         public Conexoes.RMLite GetTirantePadrao()
         {
             if (_tirante_padrao == null)
@@ -211,6 +238,14 @@ namespace Ferramentas_DLM
                 _tirante_padrao = Ut.GetTIRANTES().Get(this.id_tirante);
             }
             return _tirante_padrao;
+        }
+        public Conexoes.RMLite GetTirantePadraoSuporte()
+        {
+            if (_tirante_padrao_suporte == null)
+            {
+                _tirante_padrao_suporte = Ut.GetSUPORTES_TIRANTE().Get(this.id_tirante_suporte);
+            }
+            return _tirante_padrao_suporte;
         }
         public void SetTerca(int id)
         {
@@ -329,7 +364,7 @@ namespace Ferramentas_DLM
             return true;
         }
 
-        public void Inserir(GradeEixos grade)
+        public void InserirBlocos(GradeEixos grade)
         {
             List<BlockReference> blocos_excluir = new List<BlockReference>();
             var verticais = grade.GetVaosVerticais();
@@ -349,11 +384,49 @@ namespace Ferramentas_DLM
 
             Ut.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
 
-
-
+            var fb = this.GetFlangeBracePadrao();
             for (int i = 0; i < verticais.Count; i++)
             {
-                InserirBlocos(verticais[i]);
+                var vao = verticais[i];
+         
+
+                if (MapearTercas)
+                {
+                    foreach (var p in vao.GetPurlins())
+                    {
+                        if (p.Comprimento > this.PurlinBalancoMax)
+                        {
+                            AddBlocoPurlin(p.Letra, p.id_peca, p.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
+
+                            if (p.FBD_Comp > 0 && fb != null)
+                            {
+                                Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_ESQ, p.FBD, p.FBD_Comp, this.id_flange_brace, p.Origem_Direita, this.DescFB, this.GetEscala());
+                            }
+
+                            if (p.FBE_Comp > 0 && fb != null)
+                            {
+                                Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_DIR, p.FBE, p.FBE_Comp, this.id_flange_brace, p.Origem_Esquerda, this.DescFB, this.GetEscala());
+                            }
+                        }
+                    }
+
+                }
+
+                if (MapearCorrentes)
+                {
+                    foreach (var p in vao.GetCorrentes())
+                    {
+                        AddBlocoCorrente(p.Letra, p.CentroBloco, p.EntrePurlin, p.Descontar, p.GetPeca().COD_DB, p.Suporte);
+                    }
+                }
+
+                if (MapearTirantes)
+                {
+                    foreach (var p in vao.GetTirantes())
+                    {
+                        AddBlocoTirante(p.Letra, p.CentroBloco, Math.Round(p.Multiline.Comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
+                    }
+                }
             }
 
             foreach (var p in this.GetGrade().GetPurlinsSemVao())
@@ -405,21 +478,6 @@ namespace Ferramentas_DLM
 
             return blocos;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         public List<BlockReference> Getblocos_tercas()
         {
@@ -527,7 +585,6 @@ namespace Ferramentas_DLM
 
         }
 
-
         private GradeEixos _grade { get; set; }
         public GradeEixos GetGrade(bool update = false)
         {
@@ -573,11 +630,10 @@ namespace Ferramentas_DLM
 
                             if (blks.Count >= 1)
                             {
-                                _grade.Add(Sentido.Horizontal, dist, blks[0], L);
+                                _grade.AddEixo(Sentido.Horizontal, dist, blks[0], L);
                             }
                             else
                             {
-                                //retorno.Add(Sentido.Horizontal, dist, null, L);
                             }
                         }
 
@@ -606,7 +662,7 @@ namespace Ferramentas_DLM
 
                             if (blks.Count >= 1)
                             {
-                                _grade.Add(Sentido.Vertical, dist, blks[0], L);
+                                _grade.AddEixo(Sentido.Vertical, dist, blks[0], L);
                             }
                             else
                             {
@@ -702,53 +758,6 @@ namespace Ferramentas_DLM
             }
         }
 
-
-
-
-        private void InserirBlocos(VaoObra vao)
-        {
-            var fb = this.GetFlangeBracePadrao();
-
-            if (MapearTercas)
-            {
-                foreach (var p in vao.GetPurlins())
-                {
-                    if (p.Comprimento > this.PurlinBalancoMax)
-                    {
-                        AddBlocoPurlin(p.Letra, p.id_peca, p.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
-                        if(p.FBD_Comp>0 && fb!=null)
-                        {
-                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_ESQ, p.FBD, p.FBD_Comp, this.id_flange_brace, p.Origem_Direita,this.DescFB,this.GetEscala());
-                        }
-
-                        if (p.FBE_Comp > 0 && fb != null)
-                        {
-                            Blocos.IndicacaoPeca(Constantes.Bloco_PECA_INDICACAO_DIR, p.FBE, p.FBE_Comp, this.id_flange_brace, p.Origem_Esquerda, this.DescFB, this.GetEscala());
-                        }
-                    }
-                }
-                
-            }
-
-            if (MapearCorrentes)
-            {
-                foreach (var p in vao.GetCorrentes())
-                {
-                    AddBlocoCorrente(p.Letra, p.CentroBloco, p.EntrePurlin, p.Descontar, p.GetPeca().COD_DB, p.Suporte);
-                }
-            }
-
-            if (MapearTirantes)
-            {
-                foreach (var p in vao.GetTirantes())
-                {
-                    AddBlocoTirante(p.Letra, p.CentroBloco, Math.Round(p.Multiline.Comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
-                }
-            }
-
-        }
-
-
         public Hashtable GetHashtable(Conexoes.Macros.Purlin p)
         {
             Hashtable ht = new Hashtable();
@@ -777,7 +786,9 @@ namespace Ferramentas_DLM
 
             return ht;
         }
-        public void AddBlocoPurlin(string c, int id_purlin, double VAO, double TRE, double TRD, Point2d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
+
+
+        public void AddBlocoPurlin(string letra, int id_purlin, double VAO, double TRE, double TRD, Point2d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
         {
             Conexoes.RMLite pc = Ut.GetPURLINS().Get(id_purlin);
             //AddMensagem("Origem: " + centro + "\n");
@@ -785,7 +796,7 @@ namespace Ferramentas_DLM
 
      
 
-            ht.Add(Constantes.ATT_N, c);
+            ht.Add(Constantes.ATT_N, letra);
             ht.Add("CRD", "");
             ht.Add("CRE", string.Join(";", Correntes_Esq));
             ht.Add("AD", this.OffsetApoio.ToString());
@@ -831,10 +842,10 @@ namespace Ferramentas_DLM
 
             Blocos.Inserir(CAD.acDoc, Constantes.Indicacao_Tirantes, origembloco, this.GetEscala(), 0, ht);
         }
-        public void AddBlocoCorrente(string c, Point2d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
+        public void AddBlocoCorrente(string letra, Point2d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
         {
             Hashtable ht = new Hashtable();
-            ht.Add(Constantes.ATT_N, c);
+            ht.Add(Constantes.ATT_N, letra);
             ht.Add("TIP", tip);
             ht.Add(Constantes.ATT_Descricao, desc.ToString());
             ht.Add(Constantes.ATT_Comprimento, Comp.ToString());
@@ -846,34 +857,17 @@ namespace Ferramentas_DLM
         {
             return this.selecoes.FindAll(x => x.Layer.ToUpper().Replace(" ", "") == this.MapeiaFurosManuaisLayer.ToUpper().Replace(" ", "") && (x is Line | x is Polyline));
         }
-
-        public void SetPerfil()
+        public void ExcluirBlocosMarcas()
         {
-            var perfil = Ut.SelecionarPurlin(null);
-            if(perfil==null)
+            var sel = SelecionarObjetos(Tipo_Selecao.Blocos);
+            if (sel.Status == PromptStatus.OK)
             {
-                return;
-            }
+                List<BlockReference> blocos = new List<BlockReference>();
+                blocos.AddRange(this.Getblocos_tercas());
+                blocos.AddRange(this.Getblocos_correntes());
+                blocos.AddRange(this.Getblocos_tirantes());
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                var sel = SelecionarObjetos();
-                if (sel.Status == PromptStatus.OK)
-                {
-
-                   foreach(var s in this.Getblocos_tercas())
-                    {
-                        Hashtable ht = new Hashtable();
-                        ht.Add("ID_PECA", perfil.id_db.ToString());
-                        ht.Add(Constantes.ATT_Espessura, perfil.ESP.ToString());
-                        ht.Add("SECAO", perfil.SECAO.ToString());
-                        ht.Add(Constantes.ATT_Tipo, perfil.GRUPO.Contains("C")?"C":"Z");
-
-                        Atributos.Set(s, acTrans, ht);
-                    }
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
-                }
+                Ut.Apagar(blocos.Select(x => x as Entity).ToList());
             }
         }
         public void EdicaoCompleta()
@@ -942,92 +936,7 @@ namespace Ferramentas_DLM
 
             
         }
-        public void ExcluirBlocosMarcas()
-        {
-            var sel = SelecionarObjetos(Tipo_Selecao.Blocos);
-            if (sel.Status == PromptStatus.OK)
-            {
-                List<BlockReference> blocos = new List<BlockReference>();
-                blocos.AddRange(this.Getblocos_tercas());
-                blocos.AddRange(this.Getblocos_correntes());
-                blocos.AddRange(this.Getblocos_tirantes());
 
-                Ut.Apagar(blocos.Select(x => x as Entity).ToList());
-            }
-        }
-        public void SetCorrente()
-        {
-            var perfil =Ut.SelecionarCorrente();
-            if (perfil == null)
-            {
-                return;
-            }
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                var sel = SelecionarObjetos();
-                if (sel.Status == PromptStatus.OK)
-                {
-
-                    foreach (var s in this.Getblocos_correntes())
-                    {
-                        Atributos.Set(s, acTrans, "TIP", perfil.CODIGOFIM.ToString());
-
-                    }
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
-                }
-            }
-        }
-
-        public void SetCorrenteDescontar()
-        {
-            var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite","",this.CorrenteDescontar.ToString()));
-            if (valor <0)
-            {
-                return;
-            }
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                var sel = SelecionarObjetos();
-                if (sel.Status == PromptStatus.OK)
-                {
-
-                    foreach (var s in this.Getblocos_correntes())
-                    {
-                        Atributos.Set(s, acTrans, Constantes.ATT_Descricao, valor.ToString());
-
-                    }
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
-                }
-            }
-        }
-        public void SetCorrenteFixador()
-        {
-            var valor = Conexoes.Utilz.SelecionarObjeto(CorrenteFixadores, null,"Selecione");
-            if (valor ==null)
-            {
-                return;
-            }
-
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                var sel = SelecionarObjetos();
-                if (sel.Status == PromptStatus.OK)
-                {
-
-                    foreach (var s in this.Getblocos_correntes())
-                    {
-                        Atributos.Set(s, acTrans, "FIX", valor.ToString());
-
-                    }
-                    acTrans.Commit();
-                    acDoc.Editor.Regen();
-                }
-            }
-        }
         public void Editar(bool editar = false)
         {
 
@@ -1047,7 +956,6 @@ namespace Ferramentas_DLM
                 }
             }
         }
-
         public void GerarCroquis()
         {
            if(SelecionarObjetos(Tipo_Selecao.Blocos).Status!= PromptStatus.OK)
@@ -1083,8 +991,6 @@ namespace Ferramentas_DLM
                 baixo = !baixo;
             }
         }
-
-
         public void GerarCroqui(Conexoes.Macros.Purlin purlin, Point3d pt)
         {
             double fonte = 30;
@@ -1294,6 +1200,8 @@ namespace Ferramentas_DLM
 
             return ss;
         }
+
+
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
             var atributos = Atributos.GetBlocoTag(bloco);
@@ -1558,13 +1466,129 @@ namespace Ferramentas_DLM
 
 
 
-
+        public void SetPurlinSuporte(int id)
+        {
+            this.id_purlin_suporte = id;
+            this._purlin_padrao_suporte = null;
+        }
+        public void SetTiranteSuporte(int id)
+        {
+            this.id_tirante_suporte = id;
+            this._tirante_padrao = null;
+        }
+        public void SetCorrenteSuporte(int id)
+        {
+            this.id_corrente_suporte = id;
+            this._corrente_padrao_suporte = null;
+        }
         public void SetPurlin(int id)
         {
             this.id_purlin = id;
             this._purlin_padrao = null;
 
 
+        }
+
+        public void SetPurlin()
+        {
+            var perfil = Ut.SelecionarPurlin(this.GetPurlinPadrao());
+            if (perfil == null)
+            {
+                return;
+            }
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var sel = SelecionarObjetos();
+                if (sel.Status == PromptStatus.OK)
+                {
+
+                    foreach (var s in this.Getblocos_tercas())
+                    {
+                        Hashtable ht = new Hashtable();
+                        ht.Add("ID_PECA", perfil.id_db.ToString());
+                        ht.Add(Constantes.ATT_Espessura, perfil.ESP.ToString());
+                        ht.Add("SECAO", perfil.SECAO.ToString());
+                        ht.Add(Constantes.ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");
+
+                        Atributos.Set(s, acTrans, ht);
+                    }
+                    acTrans.Commit();
+                    acDoc.Editor.Regen();
+                }
+            }
+        }
+        public void SetCorrente()
+        {
+            var perfil = Ut.SelecionarCorrente();
+            if (perfil == null)
+            {
+                return;
+            }
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var sel = SelecionarObjetos();
+                if (sel.Status == PromptStatus.OK)
+                {
+
+                    foreach (var s in this.Getblocos_correntes())
+                    {
+                        Atributos.Set(s, acTrans, "TIP", perfil.CODIGOFIM.ToString());
+
+                    }
+                    acTrans.Commit();
+                    acDoc.Editor.Regen();
+                }
+            }
+        }
+        public void SetCorrenteDescontar()
+        {
+            var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite", "", this.CorrenteDescontar.ToString()));
+            if (valor < 0)
+            {
+                return;
+            }
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var sel = SelecionarObjetos();
+                if (sel.Status == PromptStatus.OK)
+                {
+
+                    foreach (var s in this.Getblocos_correntes())
+                    {
+                        Atributos.Set(s, acTrans, Constantes.ATT_Descricao, valor.ToString());
+
+                    }
+                    acTrans.Commit();
+                    acDoc.Editor.Regen();
+                }
+            }
+        }
+        public void SetCorrenteSuporte()
+        {
+            var valor = Conexoes.Utilz.SelecionarObjeto(CorrenteFixadores, null, "Selecione");
+            if (valor == null)
+            {
+                return;
+            }
+
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var sel = SelecionarObjetos();
+                if (sel.Status == PromptStatus.OK)
+                {
+
+                    foreach (var s in this.Getblocos_correntes())
+                    {
+                        Atributos.Set(s, acTrans, "FIX", valor.ToString());
+
+                    }
+                    acTrans.Commit();
+                    acDoc.Editor.Regen();
+                }
+            }
         }
 
         public CADPurlin()

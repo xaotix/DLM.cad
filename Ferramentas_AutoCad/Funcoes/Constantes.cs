@@ -231,6 +231,7 @@ namespace Ferramentas_DLM
 
 
         public static string PC_Quantificar { get; set; } = "PECA_INDICACAO";
+
         public static string BL_M_Composta { get; set; } = "M8_COM";
         public static string BL_M_PERF { get; set; } = "M8_PRO";
         public static string BL_M_CH { get; set; } = "M8_LAM";
@@ -320,7 +321,8 @@ namespace Ferramentas_DLM
         }
 
 
-        public static string Bloco_Indicacao_Texto { get; set; } = $"{Raiz_Blocos_Indicacao}{Constantes.PC_Quantificar}_TEXTO.dwg";
+        public static string BL_INDICACAO_TXT { get; set; } = $"{Raiz_Blocos_Indicacao}{Constantes.PC_Quantificar}_TEXTO.dwg";
+        public static string BL_INDICACAO_SUPORTE { get; set; } = $"{Raiz_Blocos_Indicacao}{Constantes.PC_Quantificar}_10";
 
         public static string Marca_Composta { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_Composta}.dwg";
         public static string Marca_Perfil { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_PERF}.dwg";

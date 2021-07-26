@@ -548,7 +548,7 @@ namespace Ferramentas_DLM
                             else
                             {
                                 var angulo = s.GetAngulo();
-                                Blocos.Inserir(CAD.acDoc, Constantes.Bloco_Indicacao_Texto, s.Bloco.Position, escala, angulo, att);
+                                Blocos.Inserir(CAD.acDoc, Constantes.BL_INDICACAO_TXT, s.Bloco.Position, escala, angulo, att);
                             }
                         }
 

@@ -1691,6 +1691,37 @@ namespace Ferramentas_DLM
             }
             return new RMLiteFamilia("");
         }
+
+        public static RMLiteFamilia GetSUPORTES_CORRENTES()
+        {
+            var fam = Conexoes.DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente_Suporte.ToUpper());
+
+            if (fam != null)
+            {
+                return fam;
+            }
+            return new RMLiteFamilia("");
+        }
+        public static RMLiteFamilia GetSUPORTES_PURLIN()
+        {
+            var fam = Conexoes.DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin_Suporte.ToUpper());
+
+            if (fam != null)
+            {
+                return fam;
+            }
+            return new RMLiteFamilia("");
+        }
+        public static RMLiteFamilia GetSUPORTES_TIRANTE()
+        {
+            var fam = Conexoes.DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante_Suporte.ToUpper());
+
+            if (fam != null)
+            {
+                return fam;
+            }
+            return new RMLiteFamilia("");
+        }
         public static RMLite SelecionarPurlin(RMLite purlin)
         {
             List<RMLite> parecidas = new List<RMLite>();
@@ -1705,14 +1736,25 @@ namespace Ferramentas_DLM
             }
             return Conexoes.Utilz.SelecionarObjeto(parecidas, null, "Selecione");
         }
-
+        public static RMLite SelecionarPurlinSuporte()
+        {
+            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_PURLIN().GetPecas(), null, "Selecione");
+        }
         public static RMLite SelecionarCorrente()
         {
             return Conexoes.Utilz.SelecionarObjeto(GetCORRENTES().GetPecas(), null, "Selecione");
         }
+        public static RMLite SelecionarCorrenteSuporte()
+        {
+            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_CORRENTES().GetPecas(), null, "Selecione");
+        }
         public static RMLite SelecionarTirante()
         {
             return Conexoes.Utilz.SelecionarObjeto(GetTIRANTES().GetPecas(), null, "Selecione");
+        }
+        public static RMLite SelecionarTiranteSuporte()
+        {
+            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_TIRANTE().GetPecas(), null, "Selecione");
         }
     }
 }

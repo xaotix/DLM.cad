@@ -184,6 +184,15 @@ namespace Ferramentas_DLM
         [Category("RM")]
         [DisplayName("Família Corrente")]
         public string RM_Familia_Corrente { get; set; } = "DLD";
+        [Category("RM")]
+        [DisplayName("Família Corrente Suporte")]
+        public string RM_Familia_Corrente_Suporte { get; set; } = "SUPORTE CORRENTE";
+        [Category("RM")]
+        [DisplayName("Família Purlin Suporte")]
+        public string RM_Familia_Purlin_Suporte { get; set; } = "SUPORTE PURLIN";
+        [Category("RM")]
+        [DisplayName("Família Purlin Tirante")]
+        public string RM_Familia_Tirante_Suporte { get; set; } = "SUPORTE TIRANTE";
 
         [Category("Configuração")]
         [DisplayName("Layer Eixos")]

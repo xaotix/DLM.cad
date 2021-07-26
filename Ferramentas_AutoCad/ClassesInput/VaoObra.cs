@@ -16,8 +16,8 @@ namespace Ferramentas_DLM
         {
             List<UIElement> retorno = new List<UIElement>();
 
-            var p0 = this.Grade.p0;
-            var escala = this.Grade.escala;
+            var p0 = this.Grade.P0;
+            var escala = this.Grade.Escala;
 
             /*Cotas*/
             var pt = new System.Windows.Point((this.CentroX - p0.X) * escala, (this.Ymax - p0.Y) * escala);

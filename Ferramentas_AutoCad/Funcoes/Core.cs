@@ -214,7 +214,7 @@ namespace Ferramentas_DLM
         public static void mudaperfiltercas()
         {
             CADPurlin = new CADPurlin();
-            CADPurlin.SetPerfil();
+            CADPurlin.SetPurlin();
 
         }
 

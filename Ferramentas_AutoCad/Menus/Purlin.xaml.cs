@@ -172,8 +172,37 @@ namespace Ferramentas_DLM.Menus
             Core.CADPurlin.Mapear();
         }
 
+        private void terca_suporte_Click(object sender, RoutedEventArgs e)
+        {
+            var s = Ut.SelecionarPurlinSuporte();
 
+            if (s != null)
+            {
+                Core.CADPurlin.SetPurlinSuporte(s.id_db);
+                this.terca_suporte.Content = s.COD_DB;
+            }
+        }
 
+        private void corrente_suporte_Click(object sender, RoutedEventArgs e)
+        {
+            var s = Ut.SelecionarCorrenteSuporte();
 
+            if (s != null)
+            {
+                Core.CADPurlin.SetCorrenteSuporte(s.id_db);
+                this.corrente_suporte.Content = s.COD_DB;
+            }
+        }
+
+        private void tirante_suporte_Click(object sender, RoutedEventArgs e)
+        {
+            var s = Ut.SelecionarTiranteSuporte();
+
+            if (s != null)
+            {
+                Core.CADPurlin.SetTiranteSuporte(s.id_db);
+                this.tirante_suporte.Content = s.COD_DB;
+            }
+        }
     }
 }

@@ -145,7 +145,7 @@ namespace Ferramentas_DLM.Menus
         {
             this.confirmado = true;
             this.Close();
-            Core.CADPurlin.Inserir(this.grade);
+            Core.CADPurlin.InserirBlocos(this.grade);
         }
 
         private void set_corrente(object sender, RoutedEventArgs e)
