@@ -226,8 +226,8 @@ namespace Ferramentas_DLM
                 {
                     retorno =
                           "Ch. " + this.Linha.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
-                          " x " + this.Linha.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "") +
-                          " x " + this.Linha.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "");
+                          " x " + this.Linha.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "");
+                          /*" x " + this.Linha.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "")*/;
 
 
                 }
