@@ -1482,7 +1482,7 @@ namespace Ferramentas_DLM
                     // Start a transaction
                     using (Transaction acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
                     {
-                        ptss.AddRange(GetPontosAgrupados(obj).SelectMany(x => x));
+                        ptss.AddRange(GetPontosAgrupados(obj,acTrans).SelectMany(x => x));
                     }
                 }
             }

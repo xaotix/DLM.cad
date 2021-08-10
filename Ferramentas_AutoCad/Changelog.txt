@@ -1,6 +1,8 @@
 
 Suporte: daniel.maciel@medabil.com.br
 
+V 1.2.6
+> Corrigido bug ao gerar Tabela
 V 1.2.3
 > Adicionado função "rodarmacros" e "limpardesenho"
 > Atualizar CAMs grava o peso da DBF no CAM

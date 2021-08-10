@@ -1306,8 +1306,18 @@ namespace Ferramentas_DLM
                 var selo = Ut.Filtrar(blocos, new List<string> { "SELO" }, false);
                 foreach (var s in selo)
                 {
+                    var offset = -7.01;
                     var pts = Ut.GetPontos(s);
-                    retorno = new Point2d(pts.Max(x => x.X) - 7.01, pts.Max(x => x.Y) - 7.01);
+                    if (pts.Count > 0)
+                    {
+                        retorno = new Point2d(pts.Max(x => x.X) + offset, pts.Max(x => x.Y) + offset);
+                    }
+                    else
+                    {
+                        var ptsb = s.Bounds.Value.MaxPoint;
+                        retorno = new Point2d(ptsb.X + offset, ptsb.Y + offset);
+                    }
+                  
              
                     break;
                 }
