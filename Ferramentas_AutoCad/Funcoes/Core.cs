@@ -531,6 +531,7 @@ namespace Ferramentas_DLM
         [CommandMethod("medabil")]
         public static void medabil()
         {
+            
             MenuMarcas.Iniciar();
         }
 

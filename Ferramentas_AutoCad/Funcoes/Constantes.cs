@@ -84,8 +84,8 @@ namespace Ferramentas_DLM
 
 
         public static string DLL_Local { get; set; } = @"C:\Medabil\Ferramentas_DLM\Ferramentas_DLM.dll";
-        public static string DLL_Rede { get; set; } = @"\\10.54.0.4\BancoDeDados\Lisps\Ferramentas_DLM\FLS\C#'Medabil'Ferramentas_DLM'\Ferramentas_DLM.dll";
-        public static string App_Atualizar { get; set; } = @"\\10.54.0.4\BancoDeDados\Lisps\Ferramentas_DLM\Updater.exe";
+        public static string DLL_Rede { get; set; } = Raiz_Rede + @"Lisps\Ferramentas_DLM\FLS\C#'Medabil'Ferramentas_DLM'\Ferramentas_DLM.dll";
+        public static string App_Atualizar { get; set; } = Raiz_Rede + @"Lisps\Ferramentas_DLM\Updater.exe";
 
         public static string PastaPlugin
         {
@@ -142,17 +142,17 @@ namespace Ferramentas_DLM
         //public static string Raiz { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
 
         //public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
-        public static string Raiz { get; set; } = @"R:\";
-        public static string Raiz_Blocos { get; set; } = Raiz + @"Blocos\";
+        public static string Raiz_Rede { get; set; } = @"R:\";
+        public static string Raiz_Blocos { get; set; } = Raiz_Rede + @"Blocos\";
         public static string Raiz_Blocos_A2 { get; set; } = Raiz_Blocos + @"SELO A2\";
         public static string Raiz_MlStyles { get; set; } = Raiz_Blocos + @"Multilines\";
         public static string Raiz_Blocos_Listagem { get; set; } = Raiz_Blocos_A2 + @"Listagem\";
         public static string Raiz_Blocos_Soldas { get; set; } = Raiz_Blocos_A2 + @"Solda\";
         public static string Raiz_Blocos_Pcs { get; set; } = Raiz_Blocos_Listagem + @"Peças Mapeáveis\";
         public static string Raiz_Blocos_Indicacao { get; set; } = Raiz_Blocos_A2 + @"Indicação\";
-        public static string Raiz_Blocos_TecnoMetal_Marcacao { get; set; } = Raiz + @"Simbologias\usr\";
-        public static string Raiz_Blocos_TecnoMetal_Simbologias { get; set; } = Raiz + @"Simbologias\";
-        public static string DBPROF { get; set; } = Raiz + @"\DB2011\DBPROF.dbf";
+        public static string Raiz_Blocos_TecnoMetal_Marcacao { get; set; } = Raiz_Rede + @"Simbologias\usr\";
+        public static string Raiz_Blocos_TecnoMetal_Simbologias { get; set; } = Raiz_Rede + @"Simbologias\";
+        public static string DBPROF { get; set; } = Raiz_Rede + @"\DB2011\DBPROF.dbf";
 
         public static string Arquivo_CTV { get; set; } = RaizApp + "DE_PARA_CTV.CFG";
         public static string Arquivo_Ignorar { get; set; } = RaizApp + "IGNORAR.CFG";
@@ -327,7 +327,7 @@ namespace Ferramentas_DLM
         public static string Marca_Composta { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_Composta}.dwg";
         public static string Marca_Perfil { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_PERF}.dwg";
         public static string Marca_Chapa { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_CH}.dwg";
-        public static string Marca_Arremate { get; set; } = Raiz + $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_ARR}.dwg";
+        public static string Marca_Arremate { get; set; } = Raiz_Rede + $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_ARR}.dwg";
         public static string Marca_Elemento_M2 { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_ELEM2}.dwg";
         public static string Marca_Elemento_Unitario { get; set; } = $@"{Raiz_Blocos_TecnoMetal_Marcacao }{BL_M_ELUNIT}.dwg";
 

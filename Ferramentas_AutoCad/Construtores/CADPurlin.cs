@@ -1241,26 +1241,42 @@ namespace Ferramentas_DLM
             p.Corrente_SBR = SBR;
 
             p.Origem = new System.Windows.Media.Media3D.Point3D(bloco.Position.X, bloco.Position.Y, 0);
-        
+
             //CORRENTES RÍGIDAS
-            foreach(var s in CRE.Split(';').Select(x=> Conexoes.Utilz.Double(x)).OrderBy(x=>x).ToList().Distinct().ToList())
+            if (CRE.Length > 0)
             {
-                p.Correntes_Esquerda.Add(s);
+                foreach (var s in CRE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                {
+                    if (s > 0)
+                        p.Correntes_Esquerda.Add(s);
+                }
             }
-            foreach (var s in CRD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+            if (CRD.Length > 0)
             {
-                p.Correntes_Direita.Add(s);
+                foreach (var s in CRD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                {
+                    if (s > 0)
+                        p.Correntes_Direita.Add(s);
+                }
             }
             p.Tipo_Corrente = Conexoes.Tipo_Corrente_Purlin.Manual;
 
             //FURO MANUAL
-            foreach (var s in FE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+            if (FE.Length > 0)
             {
-                p.Esquerda.Furos_Manuais.Add(s);
+                foreach (var s in FE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                {
+                    if (s > 0)
+                        p.Esquerda.Furos_Manuais.Add(s);
+                }
             }
-            foreach (var s in FD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+            if (FD.Length > 0)
             {
-                p.Direita.Furos_Manuais.Add(s);
+                foreach (var s in FD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                {
+                    if (s > 0)
+                        p.Direita.Furos_Manuais.Add(s);
+                }
             }
 
             p.Esquerda.Tipo_Furo_FB = Conexoes.Tipo_Furo_FB.Manual;
@@ -1268,14 +1284,24 @@ namespace Ferramentas_DLM
 
 
             //FLANGE BRACES
-            foreach (var s in FBE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+            if(FBE.Length>0)
             {
-                p.Esquerda.Flange_Braces.Add(s);
+                foreach (var s in FBE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                {
+                    if (s > 0)
+                        p.Esquerda.Flange_Braces.Add(s);
+                }
             }
-            foreach (var s in FD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+
+            if(FBD.Length>0)
             {
-                p.Direita.Flange_Braces.Add(s);
+                foreach (var s in FD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                {
+                    if (s > 0)
+                        p.Direita.Flange_Braces.Add(s);
+                }
             }
+
 
 
             if (AE>0)
