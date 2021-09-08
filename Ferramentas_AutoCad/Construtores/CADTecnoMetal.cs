@@ -154,7 +154,7 @@ namespace Ferramentas_DLM
             int pranchas_por_page_setup = 50;
             string config_layout = "PDF-A3-PAISAGEM";
             string config_model = "PDF_A3_PAISAGEM";
-            string arquivo_dwg = @"R:\Lisps\Plot_pdf\CFG\Selo_2017.dwg";
+            string arquivo_dwg = Constantes.Raiz_Rede + @"Lisps\Plot_pdf\CFG\Selo_2017.dwg";
 
             if(!File.Exists(arquivo_dwg))
             {

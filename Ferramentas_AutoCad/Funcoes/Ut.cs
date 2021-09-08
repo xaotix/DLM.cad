@@ -1658,7 +1658,7 @@ namespace Ferramentas_DLM
             {
                 return fam;
             }
-            return new RMLiteFamilia("");
+            return new RMLiteFamilia();
         }
 
         public static RMLiteFamilia GetPURLINS()
@@ -1669,7 +1669,7 @@ namespace Ferramentas_DLM
             {
                 return fam;
             }
-            return new RMLiteFamilia("");
+            return new RMLiteFamilia();
         }
         public static RMLiteFamilia GetTIRANTES()
         {
@@ -1679,7 +1679,7 @@ namespace Ferramentas_DLM
             {
                 return fam;
             }
-            return new RMLiteFamilia("");
+            return new RMLiteFamilia();
         }
         public static RMLiteFamilia GetCORRENTES()
         {
@@ -1689,7 +1689,7 @@ namespace Ferramentas_DLM
             {
                 return fam;
             }
-            return new RMLiteFamilia("");
+            return new RMLiteFamilia();
         }
 
         public static RMLiteFamilia GetSUPORTES_CORRENTES()
@@ -1700,7 +1700,7 @@ namespace Ferramentas_DLM
             {
                 return fam;
             }
-            return new RMLiteFamilia("");
+            return new RMLiteFamilia();
         }
         public static RMLiteFamilia GetSUPORTES_PURLIN()
         {
@@ -1710,7 +1710,7 @@ namespace Ferramentas_DLM
             {
                 return fam;
             }
-            return new RMLiteFamilia("");
+            return new RMLiteFamilia();
         }
         public static RMLiteFamilia GetSUPORTES_TIRANTE()
         {
@@ -1720,7 +1720,7 @@ namespace Ferramentas_DLM
             {
                 return fam;
             }
-            return new RMLiteFamilia("");
+            return new RMLiteFamilia();
         }
         public static RMLite SelecionarPurlin(RMLite purlin)
         {
@@ -1734,27 +1734,27 @@ namespace Ferramentas_DLM
             parecidas = GetPURLINS().GetPecas().FindAll(x => x.GRUPO == x.GRUPO);
 
             }
-            return Conexoes.Utilz.SelecionarObjeto(parecidas, null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(parecidas);
         }
         public static RMLite SelecionarPurlinSuporte()
         {
-            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_PURLIN().GetPecas(), null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_PURLIN().GetPecas().FindAll(x => x.COMP_VAR));
         }
         public static RMLite SelecionarCorrente()
         {
-            return Conexoes.Utilz.SelecionarObjeto(GetCORRENTES().GetPecas(), null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(GetCORRENTES().GetPecas().FindAll(x=>x.COMP_VAR));
         }
         public static RMLite SelecionarCorrenteSuporte()
         {
-            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_CORRENTES().GetPecas(), null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_CORRENTES().GetPecas().FindAll(x => x.COMP_VAR));
         }
         public static RMLite SelecionarTirante()
         {
-            return Conexoes.Utilz.SelecionarObjeto(GetTIRANTES().GetPecas(), null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(GetTIRANTES().GetPecas().FindAll(x => x.COMP_VAR));
         }
         public static RMLite SelecionarTiranteSuporte()
         {
-            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_TIRANTE().GetPecas(), null, "Selecione");
+            return Conexoes.Utilz.SelecionarObjeto(GetSUPORTES_TIRANTE().GetPecas().FindAll(x => x.COMP_VAR));
         }
     }
 }

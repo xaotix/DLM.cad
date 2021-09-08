@@ -141,8 +141,8 @@ namespace Ferramentas_DLM
         public static string RaizApp { get; set; } =@"C:\Medabil\Ferramentas_DLM\";
         //public static string Raiz { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
 
-        //public static string Raiz { get; set; } = @"\\10.54.0.4\BancoDeDados\";
-        public static string Raiz_Rede { get; set; } = @"R:\";
+        public static string Raiz_Rede { get; set; } = @"\\10.54.0.4\BancoDeDados\";
+        //public static string Raiz_Rede { get; set; } = @"R:\";
         public static string Raiz_Blocos { get; set; } = Raiz_Rede + @"Blocos\";
         public static string Raiz_Blocos_A2 { get; set; } = Raiz_Blocos + @"SELO A2\";
         public static string Raiz_MlStyles { get; set; } = Raiz_Blocos + @"Multilines\";
