@@ -2031,7 +2031,7 @@ namespace Ferramentas_DLM
         {
             if (_materiais == null)
             {
-                _materiais = Conexoes.DBases.GetBancoRM().GetMateriais();
+                _materiais = Conexoes.DBases.GetBancoRM().GetMateriais().Select(x=>x.nome).ToList();
             }
             return _materiais;
         }
