@@ -454,7 +454,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_FIC, tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(Constantes.ATT_PES, Math.Round(perfil.PESO * comprimento / 1000, 4).ToString("N4").Replace(",", ""));
+                    ht.Add(Constantes.ATT_PES, Math.Round(perfil.PESO * comprimento / 1000, Constantes.DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -463,7 +463,7 @@ namespace Ferramentas_DLM
 
                 if (superficie == 0)
                 {
-                    ht.Add(Constantes.ATT_SUP, Math.Round(perfil.SUPERFICIE * comprimento / 1000 / 1000 / 100, 4).ToString("N4").Replace(",", ""));
+                    ht.Add(Constantes.ATT_SUP, Math.Round(perfil.SUPERFICIE * comprimento / 1000 / 1000 / 100, Constantes.DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -594,8 +594,8 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_CMP, comp.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_LRG, larg.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_FIC, ficha);
-                ht.Add(Constantes.ATT_PES, Math.Round(pf.PESO * area / 1000 / 1000 / 100, 3));
-                ht.Add(Constantes.ATT_SUP, Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, 3));
+                ht.Add(Constantes.ATT_PES, Math.Round(pf.PESO * area / 1000 / 1000 / 100, Constantes.DECIMAIS));
+                ht.Add(Constantes.ATT_SUP, Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Constantes.DECIMAIS));
                 ht.Add(Constantes.ATT_VOL, $"{comp}*{larg}");
                 ht.Add(Constantes.ATT_SAP, pf.SAP);
                 ht.Add(Constantes.ATT_MAT, material);
@@ -936,7 +936,7 @@ namespace Ferramentas_DLM
             var atributos = Atributos.GetBlocoTag(bloco);
 
             Hashtable ht = new Hashtable();
-            foreach (var cel in atributos.Celulas)
+            foreach (var cel in atributos.Atributos)
             {
                 ht.Add(cel.Coluna, cel.Valor);
             }

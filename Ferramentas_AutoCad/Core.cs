@@ -293,7 +293,7 @@ namespace Ferramentas_DLM
         {
 
             CADBase b = new CADBase();
-            b.SetLts();
+            Ut.SetLts(10);
         }
 
 
@@ -331,6 +331,38 @@ namespace Ferramentas_DLM
         {
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.InserirTabela();
+        }
+
+        [CommandMethod("AtualizarPesoChapaFina")]
+        public static void AtualizarPesoChapaFina()
+        {
+            CADTecnoMetal pp = new CADTecnoMetal();
+
+            List<BlockReference> blks = null;
+            if (!Conexoes.Utilz.Pergunta("Selecionar tudo?"))
+            {
+                if (pp.SelecionarObjetos(Tipo_Selecao.Blocos).Status == PromptStatus.OK)
+                {
+                    blks = pp.GetBlocos();
+                    if(blks.Count==0)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            var err = pp.AtualizarPesoChapaFina(blks);
+            if (err.Count == 0)
+            {
+                if (Conexoes.Utilz.Pergunta("Pesos Atualizados! Deseja gerar/atualizar a tabela?}"))
+                {
+                    pp.InserirTabelaAuto();
+                }
+            }
         }
 
         [CommandMethod("tabelatecnometalauto")]
@@ -613,23 +645,21 @@ namespace Ferramentas_DLM
 
         static public void preenche()
         {
-            TecnoMetal.IrLayout();
-            TecnoMetal.SetLts(10);
-            TecnoMetal.ZoomExtend();
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            TecnoMetal.InserirTabelaAuto(ref erros);
+            Ut.IrLayout();
+            Ut.SetLts(10);
+            Ut.ZoomExtend();
+            TecnoMetal.InserirTabelaAuto();
             TecnoMetal.PreencheSelo();
 
-            Conexoes.Utilz.ShowReports(erros);
         }
 
         [CommandMethod("limpa")]
 
         static public void limpa()
         {
-            TecnoMetal.IrLayout();
-            TecnoMetal.SetLts(10);
-            TecnoMetal.ZoomExtend();
+            Ut.IrLayout();
+            Ut.SetLts(10);
+            Ut.ZoomExtend();
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
             TecnoMetal.ApagarTabelaAuto();
             TecnoMetal.PreencheSelo(true);

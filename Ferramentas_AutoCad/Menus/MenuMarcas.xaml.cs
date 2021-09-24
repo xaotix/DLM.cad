@@ -561,8 +561,7 @@ namespace Ferramentas_DLM
         private void insere_tabela_auto(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            MenuMarcas.TecnoMetal.InserirTabelaAuto(ref erros);
+            MenuMarcas.TecnoMetal.InserirTabelaAuto();
         }
 
         private void gerar_dbf(object sender, RoutedEventArgs e)
@@ -902,6 +901,12 @@ namespace Ferramentas_DLM
             this.Close();
             Core.CADPurlin.GerarCroquis();
 
+        }
+
+        private void atualiza_peso_arremate(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+           Core.AtualizarPesoChapaFina();
         }
     }
 }

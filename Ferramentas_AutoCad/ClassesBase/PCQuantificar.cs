@@ -24,7 +24,7 @@ namespace Ferramentas_DLM
 
         public List<string> GetAtributos()
         {
-            var s = this.Blocos.SelectMany(x => x.Celulas).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
+            var s = this.Blocos.SelectMany(x => x.Atributos).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
             return s;
         }
         public BlocoTag Atributos
@@ -35,7 +35,7 @@ namespace Ferramentas_DLM
                 {
                     return Blocos[0];
                 }
-                return new BlocoTag();
+                return new BlocoTag(null);
             }
         }
         public string Nome { get; set; } = "";
@@ -55,7 +55,7 @@ namespace Ferramentas_DLM
 
            if(atributoNome.Count>0)
             {
-                var ss = blocos.GroupBy(x => string.Join("|",(atributoNome.Select(y=> x.Get(y).valor).Distinct().ToList()))).ToList();
+                var ss = blocos.GroupBy(x => string.Join("|",(atributoNome.Select(y=> x.Get(y).Valor).Distinct().ToList()))).ToList();
 
                 foreach (var s in ss.ToList())
                 {
@@ -79,7 +79,7 @@ namespace Ferramentas_DLM
 
         public void SetDescPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if(s!="")
             {
                 this.Descricao = s;
@@ -87,7 +87,7 @@ namespace Ferramentas_DLM
         }
         public void SetNumeroPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if (s != "")
             {
                 this.Numero = s;
@@ -95,7 +95,7 @@ namespace Ferramentas_DLM
         }
         public void SetDestinoPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if (s != "")
             {
                 this.Destino = s;
@@ -103,7 +103,7 @@ namespace Ferramentas_DLM
         }
         public void SetCompPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if (s != "")
             {
                 this.Comprimento = Conexoes.Utilz.Double(s);
@@ -111,7 +111,7 @@ namespace Ferramentas_DLM
         }
         public void SetIdPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if (s != "")
             {
                 this.id = Conexoes.Utilz.Int(s);
@@ -119,7 +119,7 @@ namespace Ferramentas_DLM
         }
         public void SetPerfilPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if (s != "")
             {
                 this.Perfil = s;
@@ -128,7 +128,7 @@ namespace Ferramentas_DLM
 
         public void SetMaterialPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if (s != "")
             {
                 this.Material = s;
@@ -155,7 +155,7 @@ namespace Ferramentas_DLM
 
         public void SetFamiliaPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).ToString();
+            var s = this.Atributos.Get(tag).Valor;
             if (s != "")
             {
                 this.Familia = s;
@@ -180,7 +180,7 @@ namespace Ferramentas_DLM
 
             if(Tipo== Tipo_Objeto.Texto)
             {
-                List<string> atts = this.Blocos.Select(x => x.Get("VALOR").ToString()).ToList();
+                List<string> atts = this.Blocos.Select(x => x.Get("VALOR").Valor).ToList();
 
              
 

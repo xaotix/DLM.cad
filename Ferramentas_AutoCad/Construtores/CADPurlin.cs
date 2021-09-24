@@ -1205,29 +1205,29 @@ namespace Ferramentas_DLM
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
             var atributos = Atributos.GetBlocoTag(bloco);
-            var N = atributos.Get(Constantes.ATT_N).ToString();
+            var N = atributos.Get(Constantes.ATT_N).Valor;
             var ESP = atributos.Get(Constantes.ATT_Espessura).Double();
             var SECAO = atributos.Get("SECAO").Double();
-            var TIPO = atributos.Get(Constantes.ATT_Tipo).ToString();
+            var TIPO = atributos.Get(Constantes.ATT_Tipo).Valor;
             var ID_PECA = atributos.Get("ID_PECA").Int;
-            var PINTURA = atributos.Get("PINTURA").ToString();
+            var PINTURA = atributos.Get("PINTURA").Valor;
             var ID_DB = atributos.Get("ID_DB").Int;
             var VAO = atributos.Get(Constantes.ATT_Vao).Double();
             var TRE = atributos.Get(Constantes.ATT_Transp_Esq).Double();
             var TRD = atributos.Get(Constantes.ATT_Transp_Dir).Double();
             var AD = atributos.Get("AD").Double();
             var AE = atributos.Get("AE").Double();
-            var REB = atributos.Get("REB").ToString().ToUpper() == "SIM";
-            var SBR = atributos.Get("SBR").ToString().ToUpper() == "SIM";
+            var REB = atributos.Get("REB").Valor.ToUpper() == "SIM";
+            var SBR = atributos.Get("SBR").Valor.ToUpper() == "SIM";
 
-            var NOME = atributos.Get("NOME").ToString();
-            var FE = atributos.Get("FE").ToString();
-            var FD = atributos.Get("FD").ToString();
-            var FBE = atributos.Get("FBE").ToString();
-            var FBD = atributos.Get("FBD").ToString();
+            var NOME = atributos.Get("NOME").Valor;
+            var FE = atributos.Get("FE").Valor;
+            var FD = atributos.Get("FD").Valor;
+            var FBE = atributos.Get("FBE").Valor;
+            var FBD = atributos.Get("FBD").Valor;
 
-            var CRE = atributos.Get("CRE").ToString();
-            var CRD = atributos.Get("CRD").ToString();
+            var CRE = atributos.Get("CRE").Valor;
+            var CRD = atributos.Get("CRD").Valor;
 
             Conexoes.Macros.Purlin p = new Conexoes.Macros.Purlin();
 
@@ -1324,9 +1324,9 @@ namespace Ferramentas_DLM
         public Conexoes.Macros.Tirante GetTirante(BlockReference bloco)
         {
             var atributos = Atributos.GetBlocoTag(bloco);
-            var SFTA = atributos.Get("SFTA").ToString();
-            var SFTB = atributos.Get("SFTB").ToString();
-            var TIP = atributos.Get("TIP").ToString();
+            var SFTA = atributos.Get("SFTA").Valor;
+            var SFTB = atributos.Get("SFTB").Valor;
+            var TIP = atributos.Get("TIP").Valor;
             var OFF1 = atributos.Get("OFF1").Double();
             var OFF2 = atributos.Get("OFF2").Double();
             var COMP = atributos.Get(Constantes.ATT_Comprimento).Double();
@@ -1345,10 +1345,10 @@ namespace Ferramentas_DLM
         {
             var atributos = Atributos.GetBlocoTag(bloco);
 
-            var TIP = atributos.Get("TIP").ToString();
+            var TIP = atributos.Get("TIP").Valor;
             var DESC = atributos.Get(Constantes.ATT_Descricao).Double();
             var COMP = atributos.Get(Constantes.ATT_Comprimento).Double();
-            var FIX = atributos.Get("FIX").ToString();
+            var FIX = atributos.Get("FIX").Valor;
 
             Conexoes.Macros.Corrente p = new Conexoes.Macros.Corrente();
             p.Vao = COMP;

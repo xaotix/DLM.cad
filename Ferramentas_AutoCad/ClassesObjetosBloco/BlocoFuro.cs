@@ -16,18 +16,8 @@ namespace Ferramentas_DLM.Classes
         }
         public double Diametro { get; private set; } = 0;
         public double Oblongo { get; private set; } = 0;
-        public BlocoFuro()
+        public BlocoFuro(BlockReference vv):base(vv,true)
         {
-
-        }
-        public BlocoFuro(BlockReference vv)
-        {
-
-            this.Bloco = vv;
-
-            this.Celulas = Atributos.GetBlocoTag(vv).Celulas;
-
-
             this.Diametro = 0;
             this.Oblongo = 0;
 

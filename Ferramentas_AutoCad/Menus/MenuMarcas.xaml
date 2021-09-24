@@ -285,6 +285,7 @@
                    
                     <GroupBox Header="TecnoMetal">
                         <StackPanel>
+                            <Button Content="Atualizar Pesos Arremates"  Click="atualiza_peso_arremate"/>
                             <Button Content="Inserir Tabela TecnoMetal"  Click="insere_tabela_auto"/>
                             <Button Content="Solda de composição"  Click="composicao"/>
                             <Separator></Separator>

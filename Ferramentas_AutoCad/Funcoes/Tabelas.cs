@@ -284,7 +284,7 @@ namespace Ferramentas_DLM
                             //    bl.Add(obj.Coluna, obj.Valor);
                             //}
                            
-                            bl.Add(Constantes.ATT_N, p.Atributos.Get(Constantes.ATT_N).valor);
+                            bl.Add(Constantes.ATT_N, p.Atributos.Get(Constantes.ATT_N).Valor);
                             bl.Add(Constantes.ATT_Familia, p.Familia);
                             bl.Add(Constantes.ATT_Tipo, p.Tipo);
                             bl.Add(Constantes.ATT_Comprimento, p.Comprimento);

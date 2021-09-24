@@ -155,6 +155,8 @@ namespace Ferramentas_DLM
                 _Largura = value;
             }
         }
+
+
         public double Espessura
         {
             get
@@ -189,10 +191,46 @@ namespace Ferramentas_DLM
                 {
                     return this.SubItens.Sum(x => x.Superficie * x.Quantidade);
                 }
+                else if(_Superficie>0)
+                {
                 return _Superficie;
+                }
+                else
+                {
+
+                    return CalcularSuperficieLinear();
+                }
             }
         }
-
+        /// <summary>
+        /// Retorna o peso da peça sem descontar recortes
+        /// </summary>
+        /// <returns></returns>
+        public double CalcularSuperficieLinear()
+        {
+            double ret = (this.Comprimento * this.Largura * 2) + (this.Espessura * this.Comprimento * 2) + (this.Espessura * this.Largura * 2);
+            double sup = Math.Round(ret / 1000 / 1000 / 1000, Constantes.DECIMAIS_SUP);
+            return sup;
+        }
+        public double CalcularPesoLinear()
+        {
+            if (this.Tipo_Bloco == Tipo_Bloco.Arremate | this.Tipo_Bloco == Tipo_Bloco.Chapa | this.Tipo_Bloco == Tipo_Bloco.Elemento_M2)
+            {
+                if (this.Tipo_Bloco == Tipo_Bloco.Arremate)
+                {
+                    var bob = this.GetBobina();
+                    if (bob != null)
+                    {
+                        return Math.Round(this.Espessura * this.Area * bob.Peso_Especifico / 1000 / 1000, Constantes.DECIMAIS);
+                    }
+                }
+                else
+                {
+                    return Math.Round(this.Espessura * this.Area * 7.85 / 1000 / 1000, Constantes.DECIMAIS);
+                }
+            }
+            return 0;
+        }
         public Conexoes.TecnoMetal_Perfil GetPerfil()
         {
             return Conexoes.DBases.GetdbTecnoMetal().Get(this.Perfil);
@@ -217,6 +255,15 @@ namespace Ferramentas_DLM
             }
         }
 
+        public double Area
+        {
+            get
+            {
+              return  this.Comprimento * this.Largura;
+            }
+        }
+
+
         public string Descricao
         {
             get
@@ -225,8 +272,8 @@ namespace Ferramentas_DLM
                  if (retorno == "")
                 {
                     retorno =
-                          "Ch. " + this.Linha.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
-                          " x " + this.Linha.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "");
+                          "Ch. " + this.Bloco.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
+                          " x " + this.Bloco.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "");
                           /*" x " + this.Linha.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "")*/;
 
 
@@ -246,23 +293,45 @@ namespace Ferramentas_DLM
 
             foreach(var pc in pcs)
             {
-                marcaTecnoMetals.Add(new MarcaTecnoMetal(pc.ToList()));
+                marcaTecnoMetals.Add(new MarcaTecnoMetal(pc.ToList(),this));
             }
 
             return marcaTecnoMetals;
         }
         public List<MarcaTecnoMetal> SubItens { get; private set; } = new List<MarcaTecnoMetal>();
-        public DB.Linha Linha { get; set; } = new DB.Linha();
+        public BlocoTag Bloco { get; set; }
+
+
+        private Conexoes.Bobina _bobina { get; set; }
+
+        public Conexoes.Bobina GetBobina()
+        {
+            string sap = this.SAP;
+            if(this.Tipo_Marca == Tipo_Marca.MarcaSimples)
+            {
+                sap = this.SubItens[0].SAP;
+            }
+            if(_bobina==null && this.SAP!= sap)
+            {
+                _bobina = Conexoes.DBases.GetBancoRM().GetBobina(sap);
+            }
+            
+            return _bobina;
+        }
+
+
+
 
         public List<MarcaTecnoMetal> Posicoes_Iguais { get; set; } = new List<MarcaTecnoMetal>();
-        public MarcaTecnoMetal(List<MarcaTecnoMetal> posicoes_iguais)
+        public MarcaTecnoMetal(List<MarcaTecnoMetal> posicoes_iguais, MarcaTecnoMetal pai)
         {
+            this.Pai = pai;
             var m = posicoes_iguais[0];
             this.Marca = string.Join(";", posicoes_iguais.Select(x => x.Marca));
             this.Comprimento = m.Comprimento;
             this.Espessura = m.Espessura;
             this.Largura = m.Largura;
-            this.Linha = m.Linha;
+            this.Bloco = m.Bloco;
             this.Mercadoria = m.Mercadoria;
             this.Material = m.Material;
             this.Tratamento = m.Tratamento;
@@ -274,27 +343,27 @@ namespace Ferramentas_DLM
             this.Prancha = m.Prancha;
             this.Quantidade = posicoes_iguais.Sum(x => x.Quantidade);
             this._Superficie = m.Superficie;
-            this.Linha = m.Linha;
+            this.Bloco = m.Bloco;
             this.Posicoes_Iguais = posicoes_iguais;
         }
-        public MarcaTecnoMetal(DB.Linha l)
+        public MarcaTecnoMetal(BlocoTag l)
         {
-            this.Linha = l;
-            this.Marca = l.Get(Constantes.ATT_MAR).ToString();
-            this.Posicao = l.Get(Constantes.ATT_POS).ToString();
+            this.Bloco = l;
+            this.Marca = l.Get(Constantes.ATT_MAR).Valor;
+            this.Posicao = l.Get(Constantes.ATT_POS).Valor;
             this.Quantidade = l.Get(Constantes.ATT_QTD).Double();
-            this.NomeBloco = l.Get(Constantes.ATT_BLK).ToString();
-            this.Prancha = l.Get(Constantes.ATT_DWG).ToString();
+            this.NomeBloco = l.Get(Constantes.ATT_BLK).Valor;
+            this.Prancha = l.Get(Constantes.ATT_DWG).Valor;
 
             this.Comprimento = l.Get(Constantes.ATT_CMP).Double();
             this.Largura = l.Get(Constantes.ATT_LRG).Double();
             this.Espessura = l.Get(Constantes.ATT_ESP).Double(2);
-            this.Perfil = l.Get(Constantes.ATT_PER).ToString();
+            this.Perfil = l.Get(Constantes.ATT_PER).Valor;
 
-            this.Mercadoria = l.Get(Constantes.ATT_MER).ToString();
-            this.Material = l.Get(Constantes.ATT_MAT).ToString();
-            this.Tratamento = l.Get(Constantes.ATT_FIC).ToString();
-            this.SAP = l.Get(Constantes.ATT_SAP).ToString();
+            this.Mercadoria = l.Get(Constantes.ATT_MER).Valor;
+            this.Material = l.Get(Constantes.ATT_MAT).Valor;
+            this.Tratamento = l.Get(Constantes.ATT_FIC).Valor;
+            this.SAP = l.Get(Constantes.ATT_SAP).Valor;
 
             this._PesoUnit = l.Get(Constantes.ATT_PES).Double();
             this._Superficie = l.Get(Constantes.ATT_SUP).Double();

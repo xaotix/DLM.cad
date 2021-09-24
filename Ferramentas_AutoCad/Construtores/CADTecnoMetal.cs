@@ -96,8 +96,8 @@ namespace Ferramentas_DLM
 
             if(retorno.Count>0)
             {
-                IrLayout();
-                ZoomExtend();
+                Ut.IrLayout();
+                Ut.ZoomExtend();
                 Menus.SoldaComposicao mm = new Menus.SoldaComposicao();
                 mm.lista.ItemsSource = retorno;
 
@@ -772,13 +772,13 @@ namespace Ferramentas_DLM
                             }
 
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,"",s.ToList().Select(x=> new BlocoTag(new List<DB.Celula> { new DB.Celula("VALOR", x.Text) })).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,"",s.ToList().Select(x=> new BlocoTag(new List<CelulaTag> { new CelulaTag("VALOR", x.Text,null) })).ToList());
                             pecas.Add(npc);
 
                         }
                         foreach (var s in this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")))
                         {
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTag(new List<DB.Celula> { new DB.Celula("VALOR", x.TextString) })).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTag(new List<CelulaTag> { new CelulaTag("VALOR", x.TextString,null) })).ToList());
                             pecas.Add(npc);
 
                         }
@@ -981,36 +981,36 @@ namespace Ferramentas_DLM
 
                 }
 
-                IrLayout();
+                    Ut.IrLayout();
 
-                using (docToWorkOn.LockDocument())
-                {
-                    
-                    if (cfg.GerarTabela)
+                    using (docToWorkOn.LockDocument())
                     {
-                        InserirTabelaAuto(ref erros);
-                    }
 
-                    if (cfg.AjustarMViews)
-                    {
-                        SetViewport();
-                    }
+                        if (cfg.GerarTabela)
+                        {
+                            InserirTabelaAuto(ref erros);
+                        }
 
-                    if (cfg.AjustarLTS)
-                    {
-                        SetLts();
-                    }
+                        if (cfg.AjustarMViews)
+                        {
+                            SetViewport();
+                        }
 
-                    if (cfg.PreencheSelos)
-                    {
-                        PreencheSelo();
-                    }
+                        if (cfg.AjustarLTS)
+                        {
+                            Ut.SetLts();
+                        }
 
-                    if(cfg.LimparDesenhos)
-                    {
-                        Ut.LimparDesenho();
+                        if (cfg.PreencheSelos)
+                        {
+                            PreencheSelo();
+                        }
+
+                        if (cfg.LimparDesenhos)
+                        {
+                            Ut.LimparDesenho();
+                        }
                     }
-                }
 
                 if (drawing.Endereco.ToUpper() == this.Endereco.ToUpper())
                 {
@@ -1055,7 +1055,7 @@ namespace Ferramentas_DLM
             Conexoes.Utilz.Alerta("Finalizado","", System.Windows.MessageBoxImage.Information);
         }
 
-        public List<MarcaTecnoMetal> GetMarcas(ref List<Conexoes.Report> erros, DB.Tabela pcs = null)
+        public List<MarcaTecnoMetal> GetMarcas(ref List<Conexoes.Report> erros, TabelaBlocoTag pcs = null, List<BlockReference> blocos = null)
         {
             var _Marcas = new List<MarcaTecnoMetal>();
 
@@ -1064,10 +1064,49 @@ namespace Ferramentas_DLM
 
             if (pcs == null)
             {
-                pcs = GetPecas(ref erros, true);
+                TabelaBlocoTag marcas = new TabelaBlocoTag();
+                TabelaBlocoTag posicoes = new TabelaBlocoTag();
+                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
+                if (blocos == null)
+                {
+                    blocos = new List<BlockReference>();
+                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                    {
+                        BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                        BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+
+                        foreach (ObjectId objId in acBlkTblRec)
+                        {
+                            Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
+                            if (ent is BlockReference)
+                            {
+                                var s = ent as BlockReference;
+                                blocos.Add(s);
+                            }
+                        }
+                    }
+                }
+
+
+
+
+                List<BlockReference> mss = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
+                List<BlockReference> pos = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
+
+
+                foreach (var m in mss)
+                {
+                    marcas.Blocos.Add(GetDadosBloco(m, this.Endereco, this.Nome, ultima_edicao, false));
+                }
+
+                foreach (var m in pos)
+                {
+                    posicoes.Blocos.Add(GetDadosBloco(m, this.Endereco, this.Nome, ultima_edicao, false));
+                }
+                pcs = ConverterParaDBF(ref erros, marcas, posicoes);
             }
 
-            foreach (var pc in pcs.Linhas)
+            foreach (var pc in pcs.Blocos)
             {
                 mm.Add(new MarcaTecnoMetal(pc));
             }
@@ -1089,8 +1128,6 @@ namespace Ferramentas_DLM
                     {
                         pos.Pai = marca;
                     }
-
-
                     _Marcas.Add(marca);
                 }
                 else if(marcas.Count>1)
@@ -1098,10 +1135,7 @@ namespace Ferramentas_DLM
                     erros.Add(new Conexoes.Report("Marcas duplicadas", $" {marcas[0].Prancha} - M: {m}"));
                 }
             }
-
-
             var posp = _Marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao);
-
             foreach(var p in posp)
             {
                 var hashes = p.ToList().GroupBy(x => x.GetInfo()).ToList();
@@ -1110,14 +1144,20 @@ namespace Ferramentas_DLM
                     erros.Add(new Conexoes.Report($"{p.Key} => Posição com divergências", string.Join("\n",hashes.Select(x=>x.Key)), Conexoes.TipoReport.Crítico));
                 }
             }
-
-
             return _Marcas;
-
         }
-        public List<MarcaTecnoMetal> GetMarcasCompostas(ref List<Conexoes.Report> erros, bool update)
+
+        public List<MarcaTecnoMetal> GetMarcas()
         {
-            return this.GetMarcas(ref erros).FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).ToList();
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+
+            return GetMarcas(ref erros);
+        }
+
+
+        public List<MarcaTecnoMetal> GetMarcasCompostas()
+        {
+            return this.GetMarcas().FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).ToList();
         }
         private Conexoes.SubEtapaTecnoMetal _subetapa { get; set; }
         private Conexoes.ObraTecnoMetal _obra { get; set; }
@@ -1216,14 +1256,21 @@ namespace Ferramentas_DLM
         }
         public void ApagarTabelaAuto()
         {
-            IrLayout();
-            ZoomExtend();
+            Ut.IrLayout();
+            Ut.ZoomExtend();
             CleanTabela();
+        }
+
+        public void InserirTabelaAuto()
+        {
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            InserirTabelaAuto(ref erros);
+            Conexoes.Utilz.ShowReports(erros);
         }
         public void InserirTabelaAuto(ref List<Conexoes.Report> erros)
         {
-            IrLayout();
-            ZoomExtend();
+            Ut.IrLayout();
+            Ut.ZoomExtend();
 
             DB.Tabela marcas = new DB.Tabela();
             DB.Tabela posicoes = new DB.Tabela();
@@ -1341,8 +1388,8 @@ namespace Ferramentas_DLM
         public void PreencheSelo(bool limpar = false)
         {
             if (!E_Tecnometal()) { return; }
-            IrLayout();
-            ZoomExtend();
+            Ut.IrLayout();
+            Ut.ZoomExtend();
 
             List<Conexoes.Report> erros = new List<Conexoes.Report>();
 
@@ -1438,7 +1485,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public DB.Linha GetLinha(BlockReference bloco,  string arquivo, string nome, string ultima_edicao, bool somente_visiveis = true, Database acCurDb = null)
+        public BlocoTag GetDadosBloco(BlockReference bloco,  string arquivo, string nome, string ultima_edicao, bool somente_visiveis = true, Database acCurDb = null)
         {
             try
             {
@@ -1447,91 +1494,42 @@ namespace Ferramentas_DLM
                     acCurDb = CAD.acCurDb;
                 }
                 var att = Atributos.GetBlocoTag(bloco,somente_visiveis, acCurDb);
-                att.Add(Constantes.ATT_ARQ, arquivo);
+                att.Set(Constantes.ATT_ARQ, arquivo);
                 if (this.E_Tecnometal(false))
                 {
                     try
                     {
-                        att.Add(Constantes.ATT_PED, this.GetPedido().NomePedido);
-                        att.Add(Constantes.ATT_OBR, this.GetObra().Nome);
-                        att.Add(Constantes.ATT_ETP, this.GetSubEtapa().NomeEtapa);
+                        att.Set(Constantes.ATT_PED, this.GetPedido().NomePedido);
+                        att.Set(Constantes.ATT_OBR, this.GetObra().Nome);
+                        att.Set(Constantes.ATT_ETP, this.GetSubEtapa().NomeEtapa);
                     }
                     catch (Exception)
                     {
                     }
                 }
 
-                att.Add(Constantes.ATT_NUM, nome);
-                att.Add(Constantes.ATT_DWG, nome);
-                att.Add(Constantes.ATT_REC, att.Get(Constantes.ATT_POS).ToString() == "" ? Constantes.ATT_REC_MARCA : Constantes.ATT_REC_POSICAO);
-                att.Add(Constantes.ATT_DAT, ultima_edicao);
-                att.Add(Constantes.ATT_BLK, bloco.Name.ToUpper());
+                att.Set(Constantes.ATT_NUM, nome);
+                att.Set(Constantes.ATT_DWG, nome);
+                att.Set(Constantes.ATT_REC, att.Get(Constantes.ATT_POS).Valor == "" ? Constantes.ATT_REC_MARCA : Constantes.ATT_REC_POSICAO);
+                att.Set(Constantes.ATT_DAT, ultima_edicao);
+                att.Set(Constantes.ATT_BLK, bloco.Name.ToUpper());
 
                 return att;
             }
             catch (Exception ex)
             {
-                DB.Linha att = new DB.Linha();
-                att.Add(Constantes.ATT_BLK, bloco.Name.ToUpper());
-                att.Add(Constantes.ATT_DWG, nome);
-                att.Add("ERRO", ex.Message);
-                att.Add(Constantes.ATT_ARQ, arquivo);
+                BlocoTag att = new BlocoTag(bloco,false);
+                att.Set(Constantes.ATT_BLK, bloco.Name.ToUpper());
+                att.Set(Constantes.ATT_DWG, nome);
+                att.Set("ERRO", ex.Message);
+                att.Set(Constantes.ATT_ARQ, arquivo);
 
                 return att;
             }
         }
-        public DB.Tabela GetPecas(ref List<Conexoes.Report> erros, bool converter_padrao_dbf = true)
-        {
-            DB.Tabela marcas = new DB.Tabela();
-            DB.Tabela posicoes = new DB.Tabela();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-
-                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
-                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
-                List<BlockReference> blocos = new List<BlockReference>();
-                foreach (ObjectId objId in acBlkTblRec)
-                {
-                    Entity ent = (Entity)acTrans.GetObject(objId, OpenMode.ForRead);
-                    if (ent is BlockReference)
-                    {
-                        var s = ent as BlockReference;
-                        blocos.Add(s);
-                    }
-                }
-
-                var nomes = blocos.Select(x => x.Name).Distinct().ToList();
-                List<BlockReference> ms = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
-                List<BlockReference> pos = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
 
 
-                foreach (var m in ms)
-                {
-                    marcas.Linhas.Add(GetLinha(m, this.Endereco, this.Nome, ultima_edicao,false));
-                }
 
-                foreach (var m in pos)
-                {
-                    posicoes.Linhas.Add(GetLinha(m, this.Endereco, this.Nome, ultima_edicao,false));
-                }
-
-            }
-
-            DB.Tabela retorno = new DB.Tabela();
-            if (converter_padrao_dbf)
-            {
-                retorno = ConverterParaDBF(ref erros ,marcas, posicoes);
-            }
-            else
-            {
-                retorno = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
-            }
-
-   
-
-            return retorno;
-        }
         public List<MarcaTecnoMetal> GetMarcasPranchas(ref List<Conexoes.Report> erros)
         {
             if(!this.E_Tecnometal())
@@ -1541,11 +1539,11 @@ namespace Ferramentas_DLM
             var pcs = GetPecasPranchas(ref erros);
             return GetMarcas(ref erros,pcs);
         }
-        public DB.Tabela GetPecasPranchas(ref List<Conexoes.Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
+        public TabelaBlocoTag GetPecasPranchas(ref List<Conexoes.Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
         {
-  
-            DB.Tabela marcas = new DB.Tabela();
-            DB.Tabela posicoes = new DB.Tabela();
+
+            TabelaBlocoTag marcas = new TabelaBlocoTag();
+            TabelaBlocoTag posicoes = new TabelaBlocoTag();
             try
             {
                 List<FileInfo> arquivos = new List<FileInfo>();
@@ -1568,7 +1566,7 @@ namespace Ferramentas_DLM
                 if (arquivos.Count == 0)
                 {
                     erros.Add(new Conexoes.Report("Erro", "Operação abortada - Nada Selecionado."));
-                    return new DB.Tabela();
+                    return new TabelaBlocoTag();
                 }
 
                 Conexoes.Wait w = new Conexoes.Wait(arquivos.Count(), "Carregando...");
@@ -1587,7 +1585,6 @@ namespace Ferramentas_DLM
                             acTmpDb.ReadDwgFile(arquivo, FileOpenMode.OpenForReadAndAllShare, false, null);
                             using (var acTrans = acTmpDb.TransactionManager.StartOpenCloseTransaction())
                             {
-
                                 BlockTable acBlkTbl = acTrans.GetObject(acTmpDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
                                 List<BlockReference> blocos = new List<BlockReference>();
@@ -1605,15 +1602,14 @@ namespace Ferramentas_DLM
                                 List<BlockReference> ms = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
                                 List<BlockReference> pos = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
 
-
                                 foreach (var m in ms)
                                 {
-                                    marcas.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao,false, acTmpDb));
+                                    marcas.Blocos.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao,false, acTmpDb));
                                 }
 
                                 foreach (var m in pos)
                                 {
-                                    posicoes.Linhas.Add(GetLinha(m, arquivo, nome_arq, ultima_edicao, false, acTmpDb));
+                                    posicoes.Blocos.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao, false, acTmpDb));
                                 }
 
                             }
@@ -1624,7 +1620,7 @@ namespace Ferramentas_DLM
                     {
                         w.Close();
                         erros.Add(new Conexoes.Report("Erro fatal", ex.Message + "\n" + ex.StackTrace, Conexoes.TipoReport.Crítico));
-                        return new DB.Tabela();
+                        return new TabelaBlocoTag();
                     }
 
                 }
@@ -1641,17 +1637,57 @@ namespace Ferramentas_DLM
             }
             else
             {
-                var lista = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
+                var lista = new TabelaBlocoTag(new List<TabelaBlocoTag> { marcas, posicoes });
                 return lista;
             }
 
         }
 
-
-
-        private DB.Tabela ConverterParaDBF(ref List<Conexoes.Report> erros, DB.Tabela marcas, DB.Tabela posicoes)
+        public List<Conexoes.Report> AtualizarPesoChapaFina(List<BlockReference> blocos =null)
         {
-            var lista = new DB.Tabela(new List<DB.Tabela> { marcas, posicoes });
+            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+
+            var pcs = GetMarcas(ref erros, null, blocos);
+
+            using (var acTrans = CAD.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+
+                if (erros.Count == 0 && pcs.Count > 0)
+                {
+                    foreach (var m in pcs)
+                    {
+                        if (m.Tipo_Marca == Tipo_Marca.MarcaSimples && m.Tipo_Bloco == Tipo_Bloco.Arremate)
+                        {
+                            var bob = m.GetBobina();
+                            if (bob != null)
+                            {
+                                var peso = m.CalcularPesoLinear();
+                                var sup = m.CalcularSuperficieLinear();
+
+                                Hashtable att = new Hashtable();
+                                att.Add(Constantes.ATT_PES, peso.ToString("N4").Replace(",", "."));
+                                att.Add(Constantes.ATT_SUP, m.CalcularSuperficieLinear().ToString().Replace(",", "."));
+                                att.Add(Constantes.ATT_VOL, $"{m.Comprimento}*{m.Espessura}*{m.Largura}");
+                                att.Add(Constantes.ATT_ESP, m.Espessura.ToString("N2"));
+
+                                Ferramentas_DLM.Atributos.Set(m.Bloco.Bloco, acTrans, att);
+                            }
+                            else
+                            {
+                                erros.Add(new Conexoes.Report("Bobina não existe ou está em branco", $"Marca: {m.Marca}", Conexoes.TipoReport.Crítico));
+                            }
+                        }
+                    }
+                    acTrans.Commit();
+                }
+            }
+            Conexoes.Utilz.ShowReports(erros);
+            return erros;
+        }
+
+        private TabelaBlocoTag ConverterParaDBF(ref List<Conexoes.Report> erros, TabelaBlocoTag marcas, TabelaBlocoTag posicoes)
+        {
+            var lista = new TabelaBlocoTag(new List<TabelaBlocoTag> { marcas, posicoes });
             List<string> colunas = new List<string>();
             colunas.Add(Constantes.ATT_REC);
             colunas.Add(Constantes.ATT_PED);
@@ -1701,23 +1737,23 @@ namespace Ferramentas_DLM
             colunas.Add(Constantes.ATT_BLK);
 
 
-            DB.Tabela tab_pecas = new DB.Tabela();
-            var grp_blocos = lista.Linhas.GroupBy(x => x.Get(Constantes.ATT_MAR).ToString()).ToList().ToList();
-            foreach (var s in lista.Linhas)
+            TabelaBlocoTag tab_pecas = new TabelaBlocoTag();
+            var grp_blocos = lista.Blocos.GroupBy(x => x.Get(Constantes.ATT_MAR).Valor).ToList().ToList();
+            foreach (var s in lista.Blocos)
             {
-                DB.Linha l = new DB.Linha();
+                BlocoTag l = new BlocoTag(s.Bloco,false);
                 foreach (var c in colunas)
                 {
                     var igual = s.Get(c);
-                    l.Add(c, igual.valor);
+                    l.Atributos.Add(igual);
                 }
-                tab_pecas.Linhas.Add(l);
+                tab_pecas.Blocos.Add(l);
             }
 
-            tab_pecas.Linhas = tab_pecas.Linhas.OrderBy(x => x.Descricao).ToList();
+            tab_pecas.Blocos = tab_pecas.Blocos.OrderBy(x => x.Descricao).ToList();
 
-            List<DB.Linha> l_marcas = new List<DB.Linha>();
-            var agrupado = tab_pecas.Linhas.GroupBy(x => x.Get(Constantes.ATT_MAR).ToString()).Select(x => x.ToList()).ToList();
+            List<BlocoTag> l_marcas = new List<BlocoTag>();
+            var agrupado = tab_pecas.Blocos.GroupBy(x => x.Get(Constantes.ATT_MAR).Valor).Select(x => x.ToList()).ToList();
 
 
             foreach (var m in agrupado)
@@ -1750,9 +1786,9 @@ namespace Ferramentas_DLM
                     m_simples.Set(Constantes.ATT_SUP, "");
                     m_simples.Set(Constantes.ATT_PRE, "");
                     
-                    p_simples.Set(Constantes.ATT_QTD, 1);
+                    p_simples.Set(Constantes.ATT_QTD, "1");
                     p_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_POSICAO);
-                    p_simples.Set(Constantes.ATT_POS, p_simples.Get(Constantes.ATT_MAR).valor);
+                    p_simples.Set(Constantes.ATT_POS, p_simples.Get(Constantes.ATT_MAR).Valor);
                     p_simples.Set(Constantes.ATT_BLK, "DUMMY");
 
                     l_marcas.Add(m_simples);
@@ -1763,10 +1799,10 @@ namespace Ferramentas_DLM
                 else
                 {
                     //junta posições iguais
-                    var marca = m.FindAll(x => x.Get(Constantes.ATT_POS).valor == "");
+                    var marca = m.FindAll(x => x.Get(Constantes.ATT_POS).Valor == "");
                     if (marca.Count > 1)
                     {
-                        string mm = marca[0].Get(Constantes.ATT_MAR).ToString();
+                        string mm = marca[0].Get(Constantes.ATT_MAR).Valor;
                         erros.Add(new Conexoes.Report("Marca Duplicada",
                             $"\n{mm}" +
                             $"\nMarca duplicada ou se encontra em mais de uma prancha." +
@@ -1777,12 +1813,12 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-                        var posicoes_tbl = m.FindAll(x => x.Get(Constantes.ATT_POS).valor != "").GroupBy(x => x.Get(Constantes.ATT_POS).valor).Select(X => X.ToList());
+                        var posicoes_tbl = m.FindAll(x => x.Get(Constantes.ATT_POS).Valor != "").GroupBy(x => x.Get(Constantes.ATT_POS).Valor).Select(X => X.ToList());
                         l_marcas.AddRange(marca);
                         foreach (var pos in posicoes_tbl)
                         {
                             var lfim = pos[0].Clonar();
-                            lfim.Set(Constantes.ATT_QTD, pos.Sum(x => x.Get(Constantes.ATT_QTD).Double()));
+                            lfim.Set(Constantes.ATT_QTD, pos.Sum(x => x.Get(Constantes.ATT_QTD).Double()).ToString().Replace(",","."));
                             l_marcas.Add(lfim);
                         }
                     }
@@ -1794,25 +1830,25 @@ namespace Ferramentas_DLM
             }
 
             //ordena as peças, colocando as marcas antes das posições
-            l_marcas = l_marcas.OrderBy(x => x.Get("FLG_REC").valor.PadLeft(2, '0') + x.Descricao).ToList();
+            l_marcas = l_marcas.OrderBy(x => x.Get("FLG_REC").Valor.PadLeft(2, '0') + x.Descricao).ToList();
 
-            DB.Tabela lista_convertida = new DB.Tabela();
-            lista_convertida.Linhas.AddRange(l_marcas);
+            TabelaBlocoTag lista_convertida = new TabelaBlocoTag();
+            lista_convertida.Blocos.AddRange(l_marcas);
 
             return lista_convertida;
         }
 
-        public DB.Tabela GerarDBF(ref List<Conexoes.Report> erros, bool atualizar_cams,string destino = null, List<Conexoes.Arquivo> pranchas = null)
+        public TabelaBlocoTag GerarDBF(ref List<Conexoes.Report> erros, bool atualizar_cams,string destino = null, List<Conexoes.Arquivo> pranchas = null)
         {
             if(!E_Tecnometal())
             {
-                return new DB.Tabela();
+                return new TabelaBlocoTag();
             }
             if (!this.Pasta.ToUpper().EndsWith(@".TEC\"))
             {
                 erros.Add(new Conexoes.Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {this.Pasta}", Conexoes.TipoReport.Crítico));
-                return new DB.Tabela();
+                return new TabelaBlocoTag();
             }
 
             var etapa = this.GetSubEtapa();
@@ -1835,7 +1871,7 @@ namespace Ferramentas_DLM
                     else
                     {
                         erros.Add(new Conexoes.Report("Cancelado", "Nome da DBF inválido", Conexoes.TipoReport.Crítico));
-                        return new DB.Tabela();
+                        return new TabelaBlocoTag();
                     }
                 }
                 destino = etapa.PastaDBF + nome_dbf + ".DBF";
@@ -1843,20 +1879,20 @@ namespace Ferramentas_DLM
 
 
 
-           
 
 
-            var lista_pecas = GetPecasPranchas(ref erros, pranchas);
+
+            TabelaBlocoTag lista_pecas = GetPecasPranchas(ref erros, pranchas);
 
 
             Conexoes.Wait w = new Conexoes.Wait(5, "Fazendo Verificações...");
             w.Show();
 
-            if (lista_pecas.Linhas.Count == 0)
+            if (lista_pecas.Blocos.Count == 0)
             {
                 erros.Add(new Conexoes.Report("Erro", "Nenhuma peça encontrada nas pranchas selecionadas", Conexoes.TipoReport.Crítico));
                 w.Close();
-                return new DB.Tabela();
+                return new TabelaBlocoTag();
             }
 
             var marcas = GetMarcas(ref erros, lista_pecas);
@@ -1989,9 +2025,9 @@ namespace Ferramentas_DLM
 
             w.Close();
 
-            if (destino != "" && destino != null && lista_pecas.Linhas.Count > 0)
+            if (destino != "" && destino != null && lista_pecas.Blocos.Count > 0)
             {
-                if (!Conexoes.Utilz.GerarDBF(lista_pecas, destino))
+                if (!Conexoes.Utilz.GerarDBF(lista_pecas.GetTabela(), destino))
                 {
                     lista_pecas.Banco = "";
                     return lista_pecas;
@@ -2125,8 +2161,8 @@ namespace Ferramentas_DLM
                         return;
                     }
                     Ut.GetInfo(pl, out comprimento, out largura, out area, out perimetro);
-                    comprimento = Math.Round(comprimento, 4);
-                    largura = Math.Round(largura, 4);
+                    comprimento = Math.Round(comprimento, 0);
+                    largura = Math.Round(largura, 0);
 
 
 
@@ -2157,8 +2193,8 @@ namespace Ferramentas_DLM
         }
         public string PromptMarca(string prefix = "ARR-")
         {
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
-            var marcas = this.GetMarcas(ref erros);
+
+            var marcas = this.GetMarcas();
             var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count +1;
             retentar:
             var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", "Nome da marca", prefix + nnn.ToString().PadLeft(2,'0'), false, "", false, 12).ToUpper().Replace(" ","");
@@ -2626,7 +2662,7 @@ namespace Ferramentas_DLM
                 bool status;
                 double comprimento = Ut.PedirDistancia("Defina o comprimento", out status);
 
-                comprimento = Math.Round(comprimento, 4);
+                comprimento = Math.Round(comprimento,0);
 
 
 
@@ -2727,7 +2763,7 @@ namespace Ferramentas_DLM
                             Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
                          
 
-                            return this.GetMarcasCompostas(ref erros,true).Find(x=>x.Marca == nome);
+                            return this.GetMarcasCompostas().Find(x=>x.Marca == nome);
                         }
                     }
                 }

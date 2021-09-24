@@ -60,7 +60,7 @@ namespace Ferramentas_DLM
                 {
                     return _Peso_Unitario;
                 }
-                return Math.Round(this.Espessura * this.Area * this.Peso_Especifico /1000/1000,3);
+                return Math.Round(this.Espessura * this.Area * this.Peso_Especifico /1000/1000,Constantes.DECIMAIS);
             }
         }
 
@@ -88,7 +88,7 @@ namespace Ferramentas_DLM
                 }
 
                 double ret = (this.Comprimento * this.Largura * 2) + (this.Espessura * Comprimento * 2) + (this.Espessura * Largura * 2);
-                double sup = Math.Round(ret / 1000 / 1000 / 1000, 4);
+                double sup = Math.Round(ret / 1000 / 1000 / 1000, Constantes.DECIMAIS_SUP);
                 return sup;
             }
         }

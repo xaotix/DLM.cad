@@ -35,7 +35,7 @@ namespace Ferramentas_DLM
             }
             return retorno;
         }
-        public static void Set(List<Autodesk.AutoCAD.DatabaseServices.BlockReference> blocos, Transaction tr, Hashtable t)
+        public static void Set(List<Autodesk.AutoCAD.DatabaseServices.BlockReference> blocos, Transaction tr, Hashtable valores)
         {
 
             using (DocumentLock acLckDoc = acDoc.LockDocument())
@@ -47,10 +47,10 @@ namespace Ferramentas_DLM
                     {
 
                         AttributeReference att = tr.GetObject(attId, OpenMode.ForRead, false) as AttributeReference;
-                        if (t.ContainsKey(att.Tag.ToUpper()))
+                        if (valores.ContainsKey(att.Tag.ToUpper()))
                         {
                             att.UpgradeOpen();
-                            att.TextString = t[att.Tag.ToUpper()].ToString();
+                            att.TextString = valores[att.Tag.ToUpper()].ToString();
                         }
                     }
                 }
@@ -58,7 +58,7 @@ namespace Ferramentas_DLM
         }
         public static void Set(BlockReference myBlockRef, Transaction tr, string tag, string valor)
         {
-           
+           if(myBlockRef == null) { return; }
             using (DocumentLock acLckDoc = acDoc.LockDocument())
             {
                 AttributeCollection attCol = myBlockRef.AttributeCollection;
@@ -94,9 +94,7 @@ namespace Ferramentas_DLM
         public static BlocoTag GetBlocoTag(BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
         {
 
-            BlocoTag retorno = new BlocoTag();
-
-            retorno.Bloco = bloco;
+            BlocoTag retorno = new BlocoTag(bloco,false);
 
             if (acCurDb == null)
             {
@@ -105,38 +103,29 @@ namespace Ferramentas_DLM
 
 
 
-
-            using (DocumentLock acLckDoc = acDoc.LockDocument())
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                //var attCol = btr.AttributeCollection;
+
+                var attCol = bloco.AttributeCollection;
+                foreach (ObjectId objID in attCol)
                 {
-                    //var attCol = btr.AttributeCollection;
+                    AttributeReference acAttRef = acTrans.GetObject(objID, OpenMode.ForRead) as AttributeReference;
 
-                    var attCol = bloco.AttributeCollection;
-                    foreach (ObjectId objID in attCol)
+                    if (!acAttRef.Visible && somente_visiveis)
                     {
-                        AttributeReference acAttRef = acTrans.GetObject(objID, OpenMode.ForRead) as AttributeReference;
-
-                        if (!acAttRef.Visible && somente_visiveis)
-                        {
-                            /*é pra evitar de puxar os dados de atributos ocultos das sets do bloco dinamico*/
-                        }
-                        else
-                        {
-                            retorno.Add(acAttRef.Tag, acAttRef.TextString);
-                        }
-
+                        /*é pra evitar de puxar os dados de atributos ocultos das sets do bloco dinamico*/
                     }
-
-
-
+                    else
+                    {
+                        retorno.Atributos.Add(new CelulaTag(acAttRef.Tag, acAttRef.TextString, acAttRef));
+                    }
                 }
             }
 
-            retorno.Tabela = bloco.Name;
             return retorno;
         }
-        public static DB.Valor GetValor(BlockReference bloco, string atributo)
+        public static CelulaTag GetValor(BlockReference bloco, string atributo)
         {
             var s = GetBlocoTag(bloco);
             return s.Get(atributo);

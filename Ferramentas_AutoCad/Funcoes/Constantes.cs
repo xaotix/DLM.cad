@@ -53,6 +53,9 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
+        public static int DECIMAIS { get; set; } = 3;
+        public static int DECIMAIS_TON { get; set; } = 4;
+        public static int DECIMAIS_SUP { get; set; } = 3;
         public static bool Online { get; set; } = false;
         public static string ATT_Corrente_Fixador { get; set; } = "FIX";
         public static string ATT_Ficha_Pintura { get; set; } = "FICHA";

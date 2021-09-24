@@ -1415,9 +1415,41 @@ namespace Ferramentas_DLM
 
         public static void LimparDesenho()
         {
-            Ut.Purge();
+
+            editor.Command("-SCALELISTEDIT", "R", "Y", "e","");
+            editor.Command("-SCALELISTEDIT", "d", "*", "e","");
+            editor.Command("-purge", "all", "*", "N","");
+            Ut.IrModel();
+            editor.Command("-overkill", "all", "", "");
+            Ut.IrLayout();
+            editor.Command("-overkill", "all", "", "");
             editor.Command("AUDIT", "Y", "");
-            editor.Command("_.-scalelistedit", "_R", "_Y", "_E","");
+            
+            //Ut.Purge();
+        }
+        public static void IrLayout()
+        {
+            var lista = Ut.GetLayouts().Select(x => x.LayoutName).ToList().FindAll(x => x.ToUpper() != "MODEL");
+            if (lista.Count > 0)
+            {
+                using (acDoc.LockDocument())
+                {
+                    LayoutManager.Current.CurrentLayout = lista[0];
+                }
+            }
+
+        }
+        public static void ZoomExtend()
+        {
+            CAD.acadApp.ZoomExtents();
+        }
+        public static void SetLts(int valor = 10)
+        {
+            var st = editor.Command("LTSCALE", valor, "");
+        }
+        public static void IrModel()
+        {
+            LayoutManager.Current.CurrentLayout = "Model";
         }
         public static int Purge(Database acCurDb = null)
         {

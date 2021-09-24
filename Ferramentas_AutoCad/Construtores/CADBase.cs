@@ -55,7 +55,7 @@ namespace Ferramentas_DLM
         public  void SetViewport(bool block = true, string layer = "MV")
         {
 
-            IrLayout();
+            Ut.IrLayout();
             FLayer.Criar(layer, System.Drawing.Color.Gray);
             FLayer.Set("0");
             var view = Ut.GetViewports(layer);
@@ -126,26 +126,8 @@ namespace Ferramentas_DLM
 
             return arquivos;
         }
-        public void IrLayout()
-        {
-            var lista = Ut.GetLayouts().Select(x=>x.LayoutName).ToList().FindAll(x=> x.ToUpper()!="MODEL");
-            if(lista.Count>0)
-            {
-                using (acDoc.LockDocument())
-                {
-                    LayoutManager.Current.CurrentLayout = lista[0];
-                }
-            }
-         
-        }
-        public void IrModel()
-        {
-            LayoutManager.Current.CurrentLayout = "Model";
-        }
-        public void ZoomExtend()
-        {
-            CAD.acadApp.ZoomExtents();
-        }
+
+
 
         private List<Entity> _entities_blocos { get; set; }
         public List<Entity> GetEntitiesdeBlocos()
@@ -844,10 +826,7 @@ namespace Ferramentas_DLM
             }
         }
 
-        public void SetLts(int valor = 10)
-        {
-            var st = editor.Command("LTSCALE", valor, "");
-        }
+
 
         public void RenomeiaBlocos()
         {
