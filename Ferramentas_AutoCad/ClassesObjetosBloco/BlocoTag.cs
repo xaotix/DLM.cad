@@ -11,6 +11,10 @@ namespace Ferramentas_DLM
 {
    public class BlocoTag
     {
+        public override string ToString()
+        {
+            return this.Descricao;
+        }
         public string Descricao { get; set; } = "";
         public void Set(string coluna, string valor)
         {

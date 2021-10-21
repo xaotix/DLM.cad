@@ -340,16 +340,16 @@ namespace Ferramentas_DLM
                     int decimais = 4;
                     string dec_str = "N4";
 
-                    var pecas = pecas_tecnometal.GroupBy(x => x.Get(Constantes.ATT_MAR).valor).Select(X => X.ToList());
+                    var pecas = pecas_tecnometal.GroupBy(x => x.Get(Constantes.ATT_MAR).Valor).Select(X => X.ToList());
                     double total_superficie = 0;
                     double total_peso = 0;
                     foreach (var pc in pecas)
                     {
-                        var marca = pc.FindAll(x => x.Get(Constantes.ATT_POS).valor == "");
-                        var posics = pc.FindAll(x => x.Get(Constantes.ATT_POS).valor != "");
-                        int qtd = marca[0].Get(Constantes.ATT_QTD).Int;
-                        double peso_unit = posics.Sum(x => x.Get(Constantes.ATT_PES).Double() * x.Get(Constantes.ATT_QTD).Int);
-                        double sup_unit = posics.Sum(x => x.Get(Constantes.ATT_SUP).Double() * x.Get(Constantes.ATT_QTD).Int);
+                        var marca = pc.FindAll(x => x.Get(Constantes.ATT_POS).Valor == "");
+                        var posics = pc.FindAll(x => x.Get(Constantes.ATT_POS).Valor != "");
+                        int qtd = marca[0].Get(Constantes.ATT_QTD).Int();
+                        double peso_unit = posics.Sum(x => x.Get(Constantes.ATT_PES).Double() * x.Get(Constantes.ATT_QTD).Int());
+                        double sup_unit = posics.Sum(x => x.Get(Constantes.ATT_SUP).Double() * x.Get(Constantes.ATT_QTD).Int());
                         marca[0].Set(Constantes.ATT_PES, peso_unit);
                         marca[0].Set(Constantes.ATT_SUP, sup_unit);
                         total_superficie += (sup_unit * qtd);
@@ -370,10 +370,10 @@ namespace Ferramentas_DLM
 
                         foreach (var Pos in Marca)
                         {
-                            string descricao = Pos.Get(Constantes.ATT_MER).valor;
-                            if(Pos.Get(Constantes.ATT_POS).valor != "")
+                            string descricao = Pos.Get(Constantes.ATT_MER).Valor;
+                            if(Pos.Get(Constantes.ATT_POS).Valor != "")
                             {
-                                descricao = Pos.Get(Constantes.ATT_PER).valor;
+                                descricao = Pos.Get(Constantes.ATT_PER).Valor;
                                 if (descricao == "")
                                 {
                                     descricao =
@@ -392,7 +392,7 @@ namespace Ferramentas_DLM
                             ht.Add(Constantes.ATT_Material, Pos.Get(Constantes.ATT_MAT));
                             ht.Add(Constantes.ATT_Cod_SAP, Pos.Get(Constantes.ATT_SAP));
                             ht.Add("PESO_UNIT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
-                            ht.Add("PESO_TOT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000 * Pos.Get(Constantes.ATT_QTD).Int, decimais).ToString(dec_str).Replace(",", ""));
+                            ht.Add("PESO_TOT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000 * Pos.Get(Constantes.ATT_QTD).Int(), decimais).ToString(dec_str).Replace(",", ""));
                             ht.Add(Constantes.ATT_Ficha_Pintura, Pos.Get(Constantes.ATT_FIC));
 
                             Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, ht);

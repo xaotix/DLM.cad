@@ -639,7 +639,7 @@ namespace Ferramentas_DLM
                 ht.Add(Constantes.ATT_QTD, quantidade.ToString().Replace(",", ""));
                 ht.Add(Constantes.ATT_MAT, pf.NORMA);
                 ht.Add(Constantes.ATT_FIC, pf.TRATAMENTO);
-                ht.Add(Constantes.ATT_PES, pf.PESO);
+                ht.Add(Constantes.ATT_PES, pf.PESOUNIT);
 
 
                 ht.Add(Constantes.ATT_SAP, pf.SAP);

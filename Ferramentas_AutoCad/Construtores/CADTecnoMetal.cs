@@ -185,7 +185,6 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            Conexoes.Wait w;
 
             string destino = this.Pasta + @"PDF";
 
@@ -234,13 +233,13 @@ namespace Ferramentas_DLM
             }
             var pacotes = Conexoes.Utilz.quebrar_lista(arquivos, pranchas_por_page_setup);
 
-            w = new Conexoes.Wait(arquivos.Count);
-            w.Show();
+
+            Core.Getw().Show();
             int c = 1;
 
 
             List<string> arquivos_dsd = new List<string>();
-            w.SetProgresso(1, arquivos.Count, $"Gerando PDF (Pacote) {c}/{pacotes.Count}");
+            Core.Getw().SetProgresso(1, arquivos.Count, $"Gerando PDF (Pacote) {c}/{pacotes.Count}");
             foreach (var pacote in pacotes)
             {
                 string arquivo_dsd = pasta_dsd + $@"\Plotagem_{c}.dsd";
@@ -264,7 +263,7 @@ namespace Ferramentas_DLM
                             var pdf = destino + @"\" + arquivo.Nome + ".PDF";
                             if (!Conexoes.Utilz.Apagar(pdf))
                             {
-                                w.Close();
+                                Core.Getw().Close();
                                 return;
                             }
                             string nome = "";
@@ -314,7 +313,7 @@ namespace Ferramentas_DLM
                         }
 
 
-                        w.somaProgresso();
+                        Core.Getw().somaProgresso();
                     }
 
 
@@ -364,7 +363,7 @@ namespace Ferramentas_DLM
                 c++;
             }
 
-            w.SetProgresso(1, arquivos_dsd.Count, "Gerando PDFs...");
+            Core.Getw().SetProgresso(1, arquivos_dsd.Count, "Gerando PDFs...");
             foreach (var arquivo_dsd in arquivos_dsd)
             {
                 PlotConfig plotConfig = Autodesk.AutoCAD.PlottingServices.PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
@@ -380,11 +379,11 @@ namespace Ferramentas_DLM
                 dsdData.DestinationName = destino + @"\arquivo.pdf";
                 publisher.PublishExecute(dsdData, plotConfig);
 
-                w.somaProgresso();
+                Core.Getw().somaProgresso();
             }
 
 
-            w.Close();
+            Core.Getw().Close();
             Conexoes.Utilz.Alerta("Plotagem finalizada!","Finalizado", System.Windows.MessageBoxImage.Information);
 
 
@@ -474,14 +473,14 @@ namespace Ferramentas_DLM
                 var tipos = tirantes.GroupBy(x => x.Perfil).ToList().OrderBy(x=>x.Key).ToList();
                 //List<Autodesk.AutoCAD.DatabaseServices.BlockReference> excluir = new List<Autodesk.AutoCAD.DatabaseServices.BlockReference>();
 
-                Conexoes.Wait w = new Conexoes.Wait(tipos.Count);
-                w.Show();
+                Core.Getw().SetProgresso(1,tipos.Count);
+                Core.Getw().Show();
 
                 List<BlocoTag> final = new List<BlocoTag>();
                 List<BlocoTag> desagrupado = new List<BlocoTag>();
                 foreach (var tipo_por_perfil in tipos)
                 {
-                    w.somaProgresso();
+                    Core.Getw().somaProgresso();
                     string perfil = tipo_por_perfil.Key;
                     var igual = perfis_mapeaveis.Find(x => x.Perfil.ToUpper().Replace(" ","") == perfil.ToUpper().Replace(" ",""));
                     var comps = tipo_por_perfil.ToList().GroupBy(x => Conexoes.Utilz.ArredondarMultiplo(x.Comprimento, arredon)).ToList().OrderBy(x=>x.Key).ToList();
@@ -583,24 +582,24 @@ namespace Ferramentas_DLM
                 acDoc.Editor.Regen();
 
 
-                
 
-                w.Close();
+
+                Core.Getw().Close();
 
             }
 
             if(outros.Count>0 && mapear_pecas)
             {
                 var tot = outros.Sum(x => x.Blocos.Count);
-                Conexoes.Wait w = new Conexoes.Wait(tot,  $"Inserindo {tot} blocos de outras peças");
-                w.Show();
+                Core.Getw().SetProgresso(1,tot,  $"Inserindo {tot} blocos de outras peças");
+                Core.Getw().Show();
                 foreach (var pc in outros)
                 {
                     pc.Numero = seq.ToString().PadLeft(2, '0');
                     seq++;
                     foreach (var s in pc.Blocos)
                     {
-                        w.somaProgresso();
+                        Core.Getw().somaProgresso();
 
                         Hashtable ht = new Hashtable();
                         ht.Add(Constantes.ATT_N, pc.Numero);
@@ -617,7 +616,7 @@ namespace Ferramentas_DLM
                     }
 
                 }
-                w.Close();
+                Core.Getw().Close();
             }
 
             if (Conexoes.Utilz.Pergunta("Mapeamento finalizado! Deseja inserir a tabela?"))
@@ -870,15 +869,15 @@ namespace Ferramentas_DLM
             {
                 var sub = this.GetSubEtapa();
                 var cams = Conexoes.Utilz.GetArquivos(sub.PastaCAM, "*.CAM");
-                Conexoes.Wait w = new Conexoes.Wait(cams.Count, "Carregando CAMs...");
-                w.Show();
+                Core.Getw().SetProgresso(1,cams.Count, "Carregando CAMs...");
+                Core.Getw().Show();
 
                 foreach(var CAM in cams)
                 {
                     _cams.Add(new DLMCam.ReadCam(CAM));
-                    w.somaProgresso();
+                    Core.Getw().somaProgresso();
                 }
-                w.Close();
+                Core.Getw().Close();
             }
             return _cams;
         }
@@ -967,19 +966,19 @@ namespace Ferramentas_DLM
 
             if (cfg.GerarTabela | cfg.AjustarMViews | cfg.AjustarLTS | cfg.PreencheSelos | cfg.LimparDesenhos)
             {
-            Conexoes.Wait w = new Conexoes.Wait(Arquivos.Count);
-            w.Show();
+                Core.Getw().SetProgresso(1, Arquivos.Count);
+                Core.Getw().Show();
 
-            foreach (var drawing in Arquivos)
-            {
-
-                Document docToWorkOn = CAD.acDoc;
-
-                if (drawing.Endereco.ToUpper() != this.Endereco.ToUpper())
+                foreach (var drawing in Arquivos)
                 {
-                    docToWorkOn = CAD.documentManager.Open(drawing.Endereco, false);
 
-                }
+                    Document docToWorkOn = CAD.acDoc;
+
+                    if (drawing.Endereco.ToUpper() != this.Endereco.ToUpper())
+                    {
+                        docToWorkOn = CAD.documentManager.Open(drawing.Endereco, false);
+
+                    }
 
                     Ut.IrLayout();
 
@@ -1012,26 +1011,26 @@ namespace Ferramentas_DLM
                         }
                     }
 
-                if (drawing.Endereco.ToUpper() == this.Endereco.ToUpper())
-                {
-                    CAD.editor.Command("qsave", "");
-                    //using (docToWorkOn.LockDocument())
-                    //{
-                    //    Autodesk.AutoCAD.DatabaseServices.DwgVersion tVersion = Autodesk.AutoCAD.DatabaseServices.DwgVersion.Current;
-                    //    docToWorkOn.Database.SaveAs(drawing.Endereco, tVersion);
-                    //}
+                    if (drawing.Endereco.ToUpper() == this.Endereco.ToUpper())
+                    {
+                        CAD.editor.Command("qsave", "");
+                        //using (docToWorkOn.LockDocument())
+                        //{
+                        //    Autodesk.AutoCAD.DatabaseServices.DwgVersion tVersion = Autodesk.AutoCAD.DatabaseServices.DwgVersion.Current;
+                        //    docToWorkOn.Database.SaveAs(drawing.Endereco, tVersion);
+                        //}
+                    }
+                    else
+                    {
+
+                        docToWorkOn.CloseAndSave(drawing.Endereco);
+                    }
+
+
+
+                    Core.Getw().somaProgresso("1/3 - Rodando macros " + drawing.Nome);
                 }
-                else
-                {
-
-                    docToWorkOn.CloseAndSave(drawing.Endereco);
-                }
-
-
-
-                w.somaProgresso("1/3 - Rodando macros " + drawing.Nome);
-            }
-            w.Close();
+                Core.Getw().Close();
 
             }
 
@@ -1212,15 +1211,15 @@ namespace Ferramentas_DLM
             if(cams.Count>0)
             {
                 var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
-                Conexoes.Wait w = new Conexoes.Wait(dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM}");
-                w.Show();
+                Core.Getw().SetProgresso(1,dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM}");
+                Core.Getw().Show();
 
                 foreach(var s in dxfs)
                 {
                     Conexoes.Utilz.Apagar(s.Endereco);
-                    w.somaProgresso();
+                    Core.Getw().somaProgresso();
                 }
-                w.Close();
+                Core.Getw().Close();
 
 
                 Conexoes.Utilz.GerarDXF(cams.Select(x => new Conexoes.Arquivo(x.Arquivo)).ToList());
@@ -1569,11 +1568,11 @@ namespace Ferramentas_DLM
                     return new TabelaBlocoTag();
                 }
 
-                Conexoes.Wait w = new Conexoes.Wait(arquivos.Count(), "Carregando...");
-                w.Show();
+                Core.Getw().SetProgresso(1,arquivos.Count(), "Carregando...");
+                Core.Getw().Show();
                 foreach (FileInfo file in arquivos)
                 {
-                    w.somaProgresso($"Mapeando peças: {file.Name}");
+                    Core.Getw().somaProgresso($"Mapeando peças: {file.Name}");
                     var ultima_edicao = System.IO.File.GetLastWriteTime(file.FullName).ToString("dd/MM/yyyy");
 
                     var nome_arq = Conexoes.Utilz.getNome(file.FullName);
@@ -1618,16 +1617,17 @@ namespace Ferramentas_DLM
                     }
                     catch (Exception ex)
                     {
-                        w.Close();
+                        Core.Getw().Close();
                         erros.Add(new Conexoes.Report("Erro fatal", ex.Message + "\n" + ex.StackTrace, Conexoes.TipoReport.Crítico));
                         return new TabelaBlocoTag();
                     }
 
                 }
-                w.Close();
+                Core.Getw().Close();
             }
             catch (System.Exception ex)
             {
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
             }
 
 
@@ -1758,75 +1758,86 @@ namespace Ferramentas_DLM
 
             foreach (var m in agrupado)
             {
-                //CRIA A LINHA DA MARCA SIMPLES
-                if (m.Count() == 1)
+
+                var blocos_marca = m.FindAll(x => x.Get(Constantes.ATT_POS).Valor == "");
+                if (blocos_marca.Count > 1)
                 {
-
-
-                    var m_simples = m[0].Clonar();
-
+                    string mm = blocos_marca[0].Get(Constantes.ATT_MAR).Valor;
+                    erros.Add(new Conexoes.Report("Marca Duplicada",
+                        $"\n{mm}" +
+                        $"\nMarca duplicada ou se encontra em mais de uma prancha." +
+                        $"\nOcorrências: {blocos_marca.Count} x\n" +
+                        $"{string.Join("\n", blocos_marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
+                       Conexoes.TipoReport.Crítico
+                        ));
+                }
+                else if(blocos_marca.Count==1)
+                {
+                    var m_simples = blocos_marca[0].Clonar();
                     var marca = new MarcaTecnoMetal(m_simples);
-                    if(marca.Tipo_Marca == Tipo_Marca.MarcaComposta)
-                    {
-                        erros.Add(new Conexoes.Report("Marca composta sem posições", marca.Marca, Conexoes.TipoReport.Crítico));
-                        continue;
-                    }
-
-                    var p_simples = m[0].Clonar();
-
-                    m_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_MARCA);
-                    m_simples.Set(Constantes.ATT_POS, "");
-                    m_simples.Set(Constantes.ATT_SAP, "");
-                    m_simples.Set(Constantes.ATT_PER, "");
-                    m_simples.Set(Constantes.ATT_CMP, "");
-                    m_simples.Set(Constantes.ATT_LRG, "");
-                    m_simples.Set(Constantes.ATT_ESP, "");
-                    m_simples.Set(Constantes.ATT_MAT, "");
-                    m_simples.Set(Constantes.ATT_PES, "");
-                    m_simples.Set(Constantes.ATT_SUP, "");
-                    m_simples.Set(Constantes.ATT_PRE, "");
-                    
-                    p_simples.Set(Constantes.ATT_QTD, "1");
-                    p_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_POSICAO);
-                    p_simples.Set(Constantes.ATT_POS, p_simples.Get(Constantes.ATT_MAR).Valor);
-                    p_simples.Set(Constantes.ATT_BLK, "DUMMY");
 
                     l_marcas.Add(m_simples);
-                    l_marcas.Add(p_simples);
+
+                    var posicoes_tbl = m.FindAll(x => x.Get(Constantes.ATT_POS).Valor != "").GroupBy(x => x.Get(Constantes.ATT_POS).Valor).Select(X => X.ToList());
 
 
-                }
-                else
-                {
-                    //junta posições iguais
-                    var marca = m.FindAll(x => x.Get(Constantes.ATT_POS).Valor == "");
-                    if (marca.Count > 1)
+                    //CRIA A LINHA DA MARCA SIMPLES
+                    if (marca.Tipo_Marca == Tipo_Marca.MarcaSimples)
                     {
-                        string mm = marca[0].Get(Constantes.ATT_MAR).Valor;
-                        erros.Add(new Conexoes.Report("Marca Duplicada",
-                            $"\n{mm}" +
-                            $"\nMarca duplicada ou se encontra em mais de uma prancha." +
-                            $"\nOcorrências: {marca.Count} x\n" +
-                            $"{string.Join("\n", marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
-                           Conexoes.TipoReport.Crítico
-                            ));
+                        var p_simples = m_simples.Clonar();
+
+                        m_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_MARCA);
+                        m_simples.Set(Constantes.ATT_POS, "");
+                        m_simples.Set(Constantes.ATT_SAP, "");
+                        m_simples.Set(Constantes.ATT_PER, "");
+                        m_simples.Set(Constantes.ATT_CMP, "");
+                        m_simples.Set(Constantes.ATT_LRG, "");
+                        m_simples.Set(Constantes.ATT_ESP, "");
+                        m_simples.Set(Constantes.ATT_MAT, "");
+                        m_simples.Set(Constantes.ATT_PES, "");
+                        m_simples.Set(Constantes.ATT_SUP, "");
+                        m_simples.Set(Constantes.ATT_PRE, "");
+
+                        p_simples.Set(Constantes.ATT_QTD, "1");
+                        p_simples.Set(Constantes.ATT_REC, Constantes.ATT_REC_POSICAO);
+                        p_simples.Set(Constantes.ATT_POS, p_simples.Get(Constantes.ATT_MAR).Valor);
+                        p_simples.Set(Constantes.ATT_BLK, "DUMMY");
+
+                        l_marcas.Add(p_simples);
+
+
                     }
                     else
                     {
-                        var posicoes_tbl = m.FindAll(x => x.Get(Constantes.ATT_POS).Valor != "").GroupBy(x => x.Get(Constantes.ATT_POS).Valor).Select(X => X.ToList());
-                        l_marcas.AddRange(marca);
+                        //adiciona as posições
                         foreach (var pos in posicoes_tbl)
                         {
                             var lfim = pos[0].Clonar();
-                            lfim.Set(Constantes.ATT_QTD, pos.Sum(x => x.Get(Constantes.ATT_QTD).Double()).ToString().Replace(",","."));
+                            lfim.Set(Constantes.ATT_QTD, pos.Sum(x => x.Get(Constantes.ATT_QTD).Double()).ToString().Replace(",", "."));
                             l_marcas.Add(lfim);
                         }
+
                     }
                 }
+                else
+                {
+                    erros.Add(new Conexoes.Report("Marca Não existe",
+                                           $"\n{string.Join("\n",m.Select(x=>x.Get(Constantes.ATT_MAR).Valor + @"/" + x.Get(Constantes.ATT_MAR).Valor))}" +
+                                           $"\nMarca indicada nas posições não existe." +
+                                           $"{string.Join("\n", blocos_marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
+                                          Conexoes.TipoReport.Crítico
+                                           ));
+                }
+
             }
             foreach (var l in l_marcas)
             {
-                l.Descricao = l.Get(Constantes.ATT_MAR) + " - P = " + l.Get(Constantes.ATT_POS);
+                var pos = l.Get(Constantes.ATT_POS).Valor;
+                l.Descricao = l.Get(Constantes.ATT_MAR).Valor;
+                if(pos!="")
+                {
+                    l.Descricao = l.Descricao + " - P = " + pos;
+                }
             }
 
             //ordena as peças, colocando as marcas antes das posições
@@ -1885,18 +1896,18 @@ namespace Ferramentas_DLM
             TabelaBlocoTag lista_pecas = GetPecasPranchas(ref erros, pranchas);
 
 
-            Conexoes.Wait w = new Conexoes.Wait(5, "Fazendo Verificações...");
-            w.Show();
+            Core.Getw().SetProgresso(1,5, "Fazendo Verificações...");
+            Core.Getw().Show();
 
             if (lista_pecas.Blocos.Count == 0)
             {
                 erros.Add(new Conexoes.Report("Erro", "Nenhuma peça encontrada nas pranchas selecionadas", Conexoes.TipoReport.Crítico));
-                w.Close();
+                Core.Getw().Close();
                 return new TabelaBlocoTag();
             }
 
             var marcas = GetMarcas(ref erros, lista_pecas);
-            w.somaProgresso();
+            Core.Getw().somaProgresso();
 
 
             var marcas_simples = marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaSimples);
@@ -1959,7 +1970,7 @@ namespace Ferramentas_DLM
             erros.AddRange(marcas.FindAll(x => x.Marca.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Conexoes.Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", Conexoes.TipoReport.Crítico)));
 
 
-            w.somaProgresso();
+            Core.Getw().somaProgresso();
             if(atualizar_cams)
             {
                 var cams = GetCams();
@@ -2021,9 +2032,9 @@ namespace Ferramentas_DLM
                     }
                 }
             }
-           
 
-            w.Close();
+
+            Core.Getw().Close();
 
             if (destino != "" && destino != null && lista_pecas.Blocos.Count > 0)
             {

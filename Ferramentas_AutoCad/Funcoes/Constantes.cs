@@ -53,10 +53,12 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
+        public static string RaizApp { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
+        public static string Raiz_Rede { get; set; } = @"\\10.54.0.4\BancoDeDados\";
         public static int DECIMAIS { get; set; } = 3;
         public static int DECIMAIS_TON { get; set; } = 4;
         public static int DECIMAIS_SUP { get; set; } = 3;
-        public static bool Online { get; set; } = false;
+        public static bool Online { get; set; } = true;
         public static string ATT_Corrente_Fixador { get; set; } = "FIX";
         public static string ATT_Ficha_Pintura { get; set; } = "FICHA";
         public static string ATT_Comprimento { get; set; } = "COMP";
@@ -141,11 +143,7 @@ namespace Ferramentas_DLM
 
         public static string LineType_Eixos { get; set; } = "DASHDOT";
         public static string LineType_ByLayer { get; set; } = "BYLAYER";
-        public static string RaizApp { get; set; } =@"C:\Medabil\Ferramentas_DLM\";
-        //public static string Raiz { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
 
-        public static string Raiz_Rede { get; set; } = @"\\10.54.0.4\BancoDeDados\";
-        //public static string Raiz_Rede { get; set; } = @"R:\";
         public static string Raiz_Blocos { get; set; } = Raiz_Rede + @"Blocos\";
         public static string Raiz_Blocos_A2 { get; set; } = Raiz_Blocos + @"SELO A2\";
         public static string Raiz_MlStyles { get; set; } = Raiz_Blocos + @"Multilines\";
@@ -156,7 +154,6 @@ namespace Ferramentas_DLM
         public static string Raiz_Blocos_TecnoMetal_Marcacao { get; set; } = Raiz_Rede + @"Simbologias\usr\";
         public static string Raiz_Blocos_TecnoMetal_Simbologias { get; set; } = Raiz_Rede + @"Simbologias\";
         public static string DBPROF { get; set; } = Raiz_Rede + @"\DB2011\DBPROF.dbf";
-
         public static string Arquivo_CTV { get; set; } = RaizApp + "DE_PARA_CTV.CFG";
         public static string Arquivo_Ignorar { get; set; } = RaizApp + "IGNORAR.CFG";
         private static List<CTV_de_para> _cts { get; set; }

@@ -194,7 +194,7 @@
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <RadioButton VerticalAlignment="Center"  x:Name="rad_m_simples" IsChecked="True" Content="Simples" Checked="rad_m_simples_Checked" Unchecked="rad_m_simples_Checked" ></RadioButton>
-                                <RadioButton VerticalAlignment="Center" x:Name="rad_m_composta" Grid.Column="1" IsChecked="False" Content="Composta"></RadioButton>
+                                <RadioButton VerticalAlignment="Center" x:Name="rad_m_composta" Grid.Column="1" IsChecked="False" Content="Composta"  ></RadioButton>
                                 <ComboBox Visibility="Collapsed" Grid.Column="2" Grid.Row="0" x:Name="seleciona_marca_composta" IsEnabled="{Binding ElementName=m_composta, Path=IsChecked,TargetNullValue=false}" ></ComboBox>
                                 <Button Grid.Column="3" Grid.Row="0" x:Name="nova_marca" IsEnabled="{Binding ElementName=m_composta, Path=IsChecked,TargetNullValue=false}" Content="Nova..." Click="nova_marca_Click"/>
 

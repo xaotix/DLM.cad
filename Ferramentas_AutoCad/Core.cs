@@ -25,10 +25,22 @@ namespace Ferramentas_DLM
 {
     public class Core
     {
-        private static Menus.Menu_Bloco_Peca menu_bloco { get; set; }
-        private static CADCotagem _Cotas { get; set; }
-        public static CADMonitoramento monitoramento { get; set; }
+        private static Conexoes.ControleWait _w { get; set; }
+
+        public static Conexoes.ControleWait Getw()
+        {
+            if (_w == null)
+            {
+                _w = Conexoes.Utilz.Wait(100, "");
+            }
+            return _w;
+        }
         private static MenuMarcas _MenuMarcas { get; set; }
+        private static CADCotagem _Cotas { get; set; }
+        private static CADTecnoMetal _TecnMetal { get; set; }
+        private static Menus.Menu_Bloco_Peca menu_bloco { get; set; }
+        public static CADMonitoramento monitoramento { get; set; }
+
         public static MenuMarcas MenuMarcas
         {
             get
@@ -51,7 +63,7 @@ namespace Ferramentas_DLM
                 return _Cotas;
             }
         }
-        private static CADTecnoMetal _TecnMetal { get; set; }
+
         public static CADTecnoMetal TecnoMetal
         {
             get
