@@ -1365,7 +1365,7 @@ namespace Ferramentas_DLM
 
         public void SetFicha()
         {
-            var valor = Conexoes.Utilz.SelecionarObjeto(new Conexoes.its.TipoPintura().GetValues().Select(x => x.Value.ToString()).ToList(),null,"Selecione a ficha");
+            var valor = Conexoes.Utilz.Selecao.SelecionarObjeto(new Conexoes.its.TipoPintura().GetValues().Select(x => x.Value.ToString()).ToList(),null,"Selecione a ficha");
             if (valor == null)
             {
                 return;
@@ -1388,7 +1388,7 @@ namespace Ferramentas_DLM
         }
         public void SetTranspasse()
         {
-            var trs = Conexoes.Utilz.SelecionarObjeto(new List<string> { "Esquerda", "Direita", "Ambos" }, null, "Selecione");
+            var trs = Conexoes.Utilz.Selecao.SelecionarObjeto(new List<string> { "Esquerda", "Direita", "Ambos" }, null, "Selecione");
             if (trs == null)
             {
                 return;
@@ -1423,13 +1423,13 @@ namespace Ferramentas_DLM
         }
         public void SetSuporte()
         {
-            var trs = Conexoes.Utilz.SelecionarObjeto(new List<string> { "Esquerda", "Direita", "Ambos" }, null, "Selecione");
+            var trs = Conexoes.Utilz.Selecao.SelecionarObjeto(new List<string> { "Esquerda", "Direita", "Ambos" }, null, "Selecione");
             if (trs == null)
             {
                 return;
             }
 
-            var tip = Conexoes.Utilz.SelecionarObjeto(new List<string> { "Centralizado", "Offset" }, null, "Selecione");
+            var tip = Conexoes.Utilz.Selecao.SelecionarObjeto(new List<string> { "Centralizado", "Offset" }, null, "Selecione");
             if (tip == null)
             {
                 return;
@@ -1594,7 +1594,7 @@ namespace Ferramentas_DLM
         }
         public void SetCorrenteSuporte()
         {
-            var valor = Conexoes.Utilz.SelecionarObjeto(CorrenteFixadores, null, "Selecione");
+            var valor = Conexoes.Utilz.Selecao.SelecionarObjeto(CorrenteFixadores, null, "Selecione");
             if (valor == null)
             {
                 return;

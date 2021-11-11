@@ -93,7 +93,7 @@ namespace Ferramentas_DLM
 
             if (polylines.Count == 0) { return; }
 
-            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
             if (estilo != null)
             {
                 var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
@@ -128,7 +128,7 @@ namespace Ferramentas_DLM
             var estilos = Multiline.GetMlineStyles(multiline).Select(x => x.Name).OrderBy(x => x).ToList();
 
             if (estilos.Count == 0) { return; }
-            var estilo_subst = Conexoes.Utilz.SelecionaCombo(estilos, null);
+            var estilo_subst = Conexoes.Utilz.Selecao.SelecionaCombo(estilos, null);
             if (estilo_subst == null)
             {
                 return;
@@ -141,7 +141,7 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
             if (estilo != null)
             {
                 var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);

@@ -79,7 +79,7 @@ namespace Ferramentas_DLM.Menus
 
             if (cols.Count>0)
             {
-                string col = Conexoes.Utilz.SelecionaCombo(cols, null);
+                string col = Conexoes.Utilz.Selecao.SelecionaCombo(cols, null);
                 if(col!=null && col!="")
                 {
                     try
@@ -122,7 +122,7 @@ namespace Ferramentas_DLM.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -177,7 +177,7 @@ namespace Ferramentas_DLM.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -213,7 +213,7 @@ namespace Ferramentas_DLM.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -246,7 +246,7 @@ namespace Ferramentas_DLM.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -279,7 +279,7 @@ namespace Ferramentas_DLM.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.SelecionaCombo(sel.GetAtributos(), null);
+                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
                 if (col != null)
                 {
                     lista.ItemsSource = null;

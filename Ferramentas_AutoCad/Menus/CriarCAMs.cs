@@ -104,7 +104,7 @@ namespace Ferramentas_DLM
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Conexoes.Utilz.ColarExcel(this.myDataGridView);
+            Conexoes.Utilz.Excel.ColarExcel(this.myDataGridView);
         }
     }
 }

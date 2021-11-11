@@ -121,7 +121,7 @@ namespace Ferramentas_DLM
 
                 selecao.AddRange(Conexoes.Utilz.GetArquivos(etapa.PastaCAM, "*.DXF").Select(x=>new Conexoes.Arquivo(x)));
             }
-            var arquivos = Conexoes.Utilz.SelecionarObjetos(resto, selecao, "Selecione as pranchas.");
+            var arquivos = Conexoes.Utilz.Selecao.SelecionarObjetos(resto, selecao, "Selecione as pranchas.");
 
 
             return arquivos;

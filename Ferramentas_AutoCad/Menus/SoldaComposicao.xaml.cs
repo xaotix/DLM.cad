@@ -48,21 +48,10 @@ namespace Ferramentas_DLM.Menus
             this.DialogResult = false;
             this.Close();
         }
-
         private void inserir(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
             this.Close();
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

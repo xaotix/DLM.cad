@@ -823,7 +823,7 @@ namespace Ferramentas_DLM
 
         private void InserirTabelaQuantificacao(List<PCQuantificar> pecas)
         {
-            List<PCQuantificar> pcs = Conexoes.Utilz.SelecionarObjetos(new List<PCQuantificar> { }, pecas, "Determine quais peças deseja que apareçam na tabela");
+            List<PCQuantificar> pcs = Conexoes.Utilz.Selecao.SelecionarObjetos(new List<PCQuantificar> { }, pecas, "Determine quais peças deseja que apareçam na tabela");
 
 
             Menus.Quantificar_Menu_Configuracao mm = new Menus.Quantificar_Menu_Configuracao(pcs);
@@ -1201,7 +1201,7 @@ namespace Ferramentas_DLM
                 var cms = this.GetSubEtapa().GetPacote().GetCAMsNaoRM();
 
                 
-                var subs = cams.SelectMany(x => x.Filhos).ToList();
+                var subs = cams.SelectMany(x => x.GetFilhos()).ToList();
                 cams.AddRange(cms);
                 cams.AddRange(subs);
                 
@@ -2001,7 +2001,7 @@ namespace Ferramentas_DLM
                         }
                         cam.Peso = p0.PesoUnit;
 
-                        foreach (var s in cam.SubCams)
+                        foreach (var s in cam.GetSubCams())
                         {
                             var arq = this.GetSubEtapa().PastaCAM + s + ".CAM";
                             if (!File.Exists(arq))
@@ -2038,7 +2038,7 @@ namespace Ferramentas_DLM
 
             if (destino != "" && destino != null && lista_pecas.Blocos.Count > 0)
             {
-                if (!Conexoes.Utilz.GerarDBF(lista_pecas.GetTabela(), destino))
+                if (!Conexoes.Utilz.DBF.Gerar(lista_pecas.GetTabela(), destino))
                 {
                     lista_pecas.Banco = "";
                     return lista_pecas;
@@ -2100,7 +2100,7 @@ namespace Ferramentas_DLM
             {
                 bobinas = bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte);
             }
-            var sel = Conexoes.Utilz.SelecionarObjeto(bobinas, null, "Selecione uma bobina");
+            var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(bobinas, null, "Selecione uma bobina");
             if (sel != null)
             {
                 bobina_sel = sel;
@@ -2122,7 +2122,7 @@ namespace Ferramentas_DLM
                 chapas = chapas.FindAll(x => !x.GetChapa_Fina());
             }
 
-            var sel = Conexoes.Utilz.SelecionaCombo(chapas, chapa_sel, "Selecione uma espessura");
+            var sel = Conexoes.Utilz.Selecao.SelecionaCombo(chapas, chapa_sel, "Selecione uma espessura");
 
             if (sel != null)
             {
@@ -2132,7 +2132,7 @@ namespace Ferramentas_DLM
         }
         public string PromptMaterial()
         {
-            string sel = Conexoes.Utilz.SelecionaCombo(GetMateriais(), material_sel, "Selecione o Material");
+            string sel = Conexoes.Utilz.Selecao.SelecionaCombo(GetMateriais(), material_sel, "Selecione o Material");
             if (sel != null)
             {
                 material_sel = sel;
@@ -2141,7 +2141,7 @@ namespace Ferramentas_DLM
         }
         public string PromptMercadoria()
         {
-            var sel = Conexoes.Utilz.SelecionaCombo(GetMercadorias(), mercadoria_sel, "Selecione a Mercadoria");
+            var sel = Conexoes.Utilz.Selecao.SelecionaCombo(GetMercadorias(), mercadoria_sel, "Selecione a Mercadoria");
             if (sel != null)
             {
                 mercadoria_sel = sel;
@@ -2539,7 +2539,7 @@ namespace Ferramentas_DLM
             
             if(peca==null)
             {
-            peca = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione uma peça");
+            peca = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione uma peça");
             }
 
             if (peca != null)
@@ -2627,7 +2627,7 @@ namespace Ferramentas_DLM
                     {
                         if (perfil == null)
                         {
-                            perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
+                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
                         }
 
                         if (perfil != null)
@@ -2698,7 +2698,7 @@ namespace Ferramentas_DLM
                         {
                             if (perfil == null)
                             {
-                                perfil = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
+                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
                             }
 
 

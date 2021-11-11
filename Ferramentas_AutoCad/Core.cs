@@ -151,7 +151,7 @@ namespace Ferramentas_DLM
         [CommandMethod("desenharmline")]
         public static void desenharmline()
         {
-            var estilo = Conexoes.Utilz.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
             if(estilo!=null)
             {
                 var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);

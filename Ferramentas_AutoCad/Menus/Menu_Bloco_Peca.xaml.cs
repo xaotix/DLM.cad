@@ -207,7 +207,7 @@ namespace Ferramentas_DLM.Menus
         {
             if (tipo_selecionado == Constantes.ATT_RMA)
             {
-                var sel = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione");
+                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione");
                 if (sel != null)
                 {
                     this.rma_sel = sel;
@@ -215,7 +215,7 @@ namespace Ferramentas_DLM.Menus
             }
             else if (tipo_selecionado == Constantes.ATT_RME)
             {
-                var sel = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMEs(), null, "Selecione");
+                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMEs(), null, "Selecione");
                 if (sel != null)
                 {
                     this.rme_sel = sel;
@@ -223,7 +223,7 @@ namespace Ferramentas_DLM.Menus
             }
             else if (tipo_selecionado == Constantes.ATT_RMU)
             {
-                var sel = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMUs(), null, "Selecione");
+                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMUs(), null, "Selecione");
                 if (sel != null)
                 {
                     this.rmu_sel = sel;
@@ -231,7 +231,7 @@ namespace Ferramentas_DLM.Menus
             }
             else if (tipo_selecionado == Constantes.ATT_RMT)
             {
-                var sel = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMTs(), null, "Selecione");
+                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMTs(), null, "Selecione");
                 if (sel != null)
                 {
                     this.rmt_sel = sel;
@@ -243,7 +243,7 @@ namespace Ferramentas_DLM.Menus
                 marcas_tecnometal = this.TecnoMetal.GetMarcasPranchas(ref erros);
                 if (marcas_tecnometal.Count > 0)
                 {
-                    this.marca_sel = Conexoes.Utilz.SelecionarObjeto(marcas_tecnometal, null, "Selecione");
+                    this.marca_sel = Conexoes.Utilz.Selecao.SelecionarObjeto(marcas_tecnometal, null, "Selecione");
                 }
             }
             set_titulo_peca_selecionar();

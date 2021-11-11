@@ -189,7 +189,7 @@ namespace Ferramentas_DLM
                     }
                     break;
                 case Tipo_Bloco.Perfil:
-                    db_perfil = Conexoes.Utilz.SelecionarPerfil();
+                    db_perfil = Conexoes.Utilz.Selecao.SelecionarPerfil();
                     if (db_perfil != null)
                     {
                         perfil.Content = db_perfil.ToString();
@@ -197,14 +197,14 @@ namespace Ferramentas_DLM
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
-                    db_perfil_m2 = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis().FindAll(x => x.Tipo == DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione");
+                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis().FindAll(x => x.Tipo == DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione");
                     if (db_perfil_m2 != null)
                     {
                         perfil.Content = db_perfil_m2.ToString();
                     }
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    db_unitario = Conexoes.Utilz.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione");
+                    db_unitario = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione");
                     if (db_unitario != null)
                     {
                         perfil.Content = db_unitario.ToString();
@@ -375,7 +375,7 @@ namespace Ferramentas_DLM
             {
                 case Tipo_Bloco.Chapa:
 
-                    var sel = Conexoes.Utilz.SelecionaCombo(new List<string> { "Sem Dobras", "Com Dobras" }, null);
+                    var sel = Conexoes.Utilz.Selecao.SelecionaCombo(new List<string> { "Sem Dobras", "Com Dobras" }, null);
                     if(sel == "Com Dobras")
                     {
                         this.combo_mercadoria.Text = "PERFIL DOBRADO";
@@ -397,7 +397,7 @@ namespace Ferramentas_DLM
                     Core.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.db_mercadoria, MenuMarcas.db_unitario);
                     break;
                 case Tipo_Bloco.Arremate:
-                    var sel2 = Conexoes.Utilz.SelecionaCombo(new List<string> { "Corte", "Vista" }, null);
+                    var sel2 = Conexoes.Utilz.Selecao.SelecionaCombo(new List<string> { "Corte", "Vista" }, null);
                     if (sel2 == "Corte")
                     {
                         Core.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, true, this.db_mercadoria);
