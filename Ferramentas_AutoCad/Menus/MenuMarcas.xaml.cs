@@ -113,8 +113,8 @@ namespace Ferramentas_DLM
         public static Conexoes.Chapa db_chapa { get; set; }
         public static Conexoes.RMA db_unitario { get; set; }
         public static Conexoes.Bobina db_bobina { get; set; }
-        public static Conexoes.TecnoMetal_Perfil db_perfil { get; set; }
-        public static Conexoes.TecnoMetal_Perfil db_perfil_m2 { get; set; }
+        public static Conexoes.TecnoMetal_PerfilDBF db_perfil { get; set; }
+        public static Conexoes.TecnoMetal_PerfilDBF db_perfil_m2 { get; set; }
 
 
 

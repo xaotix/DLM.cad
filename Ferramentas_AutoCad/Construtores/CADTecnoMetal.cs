@@ -55,7 +55,7 @@ namespace Ferramentas_DLM
 
 
                     var cmp = Conexoes.DBases.GetSoldaComposicao().Get(esp_m, esp_alm, altura, mesa, false).Clonar();
-                    cmp.Perfil = new Conexoes.TecnoMetal_Perfil(altura, mesa, esp_alm, esp_m);
+                    cmp.Perfil = new Conexoes.TecnoMetal_PerfilDBF(altura, mesa, esp_alm, esp_m);
                     cmp.Nome_Pos = m.Key;
                     retorno.Add(cmp);
                 }
@@ -2587,7 +2587,7 @@ namespace Ferramentas_DLM
                 Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, escala, posicao,mercadoria);
             }
         }
-        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_Perfil perfil = null, string mercadoria = null)
+        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_PerfilDBF perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2659,7 +2659,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_Perfil perfil = null, string mercadoria = null)
+        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_PerfilDBF perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")

@@ -439,7 +439,7 @@ namespace Ferramentas_DLM
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
         }
-        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, Conexoes.TecnoMetal_Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
+        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, Conexoes.TecnoMetal_PerfilDBF perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -577,7 +577,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void MarcaElemM2(Point2d p0, Conexoes.TecnoMetal_Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemM2(Point2d p0, Conexoes.TecnoMetal_PerfilDBF pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -675,7 +675,7 @@ namespace Ferramentas_DLM
 
             if (cam.Familia == DLMCam.Familia.Dobrado | cam.Familia == DLMCam.Familia.Laminado | cam.Familia == DLMCam.Familia.Soldado && !cam.Nome.Contains("_"))
             {
-                TecnoMetal_Perfil perfil = Conexoes.DBases.GetdbTecnoMetal().Get(cam.Descricao);
+                TecnoMetal_PerfilDBF perfil = Conexoes.DBases.GetdbTecnoMetal().Get(cam.Descricao);
                 if (perfil != null)
                 {
                     if (perfil.Nome == "")

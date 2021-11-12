@@ -231,7 +231,7 @@ namespace Ferramentas_DLM
             }
             return 0;
         }
-        public Conexoes.TecnoMetal_Perfil GetPerfil()
+        public Conexoes.TecnoMetal_PerfilDBF GetPerfil()
         {
             return Conexoes.DBases.GetdbTecnoMetal().Get(this.Perfil);
         }

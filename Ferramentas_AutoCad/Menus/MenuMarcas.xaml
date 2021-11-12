@@ -330,6 +330,9 @@
                             <Button Content="Linha de Vida"  Click="linha_de_vida"/>
                             <Button Content="Apagar Linha de Vida"  Click="linha_de_vida_apaga"/>
                             <Button Content="Alinhar Linha de Vida"  Click="linha_de_vida_alinha"/>
+                            <Separator/>
+                            <Separator/>
+                            <Button Content="Gerar Tabela de quantitativos"  Click="exporta_rma"/>
 
                         </StackPanel>
                     </GroupBox>
