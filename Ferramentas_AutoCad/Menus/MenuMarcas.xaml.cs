@@ -180,7 +180,7 @@ namespace Ferramentas_DLM
 
                 case Tipo_Bloco.Chapa:
                     db_chapa = Core.TecnoMetal.PromptChapa(Tipo_Chapa.Grossa);
-                    db_bobina = Conexoes.Utilz.Clonar(Conexoes.DBases.GetBobinaDummy());
+                    db_bobina = Conexoes.Extensoes.Clonar(Conexoes.DBases.GetBobinaDummy());
                     if (db_chapa != null)
                     {
                         perfil.Content = db_chapa.ToString();

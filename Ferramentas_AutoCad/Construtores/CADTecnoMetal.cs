@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoeditorInput;
+using Conexoes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -119,7 +120,7 @@ namespace Ferramentas_DLM
                                 nome = Constantes.BL_Solda_2;
                             }
                             /*agrupa as posições de 1 em 1 para inserir o bloco*/
-                            var pcs = Conexoes.Utilz.quebrar_lista(filete.ToList().Select(x => x.Nome_Pos).ToList(),1).Select(x=> string.Join(",",x)).ToList();
+                            var pcs = Conexoes.Extensoes.Quebrar(filete.ToList().Select(x => x.Nome_Pos).ToList(),1).Select(x=> string.Join(",",x)).ToList();
 
                             foreach(var pc in pcs)
                             {
@@ -231,7 +232,7 @@ namespace Ferramentas_DLM
             {
                 return;
             }
-            var pacotes = Conexoes.Utilz.quebrar_lista(arquivos, pranchas_por_page_setup);
+            var pacotes = arquivos.Quebrar(pranchas_por_page_setup);
 
 
             Core.Getw().Show();
@@ -1597,9 +1598,14 @@ namespace Ferramentas_DLM
                                     }
                                 }
 
-                                var nomes = blocos.Select(x => x.Name).Distinct().ToList();
+                                //var nomes = blocos.Select(x => x.Name).Distinct().ToList();
                                 List<BlockReference> ms = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalMarcas);
                                 List<BlockReference> pos = Ut.Filtrar(blocos, Constantes.BlocosTecnoMetalPosicoes);
+
+                                if(ms.Count==0)
+                                {
+                                    erros.Add(new Report("Prancha não tem marcas", $"{file.Name}", TipoReport.Crítico));
+                                }
 
                                 foreach (var m in ms)
                                 {
@@ -1618,18 +1624,22 @@ namespace Ferramentas_DLM
                     catch (Exception ex)
                     {
                         Core.Getw().Close();
-                        erros.Add(new Conexoes.Report("Erro fatal", ex.Message + "\n" + ex.StackTrace, Conexoes.TipoReport.Crítico));
+                        string msg = $"Erro ao tentar ler a prancha {file.Name}:\n {ex.Message}\n{ex.StackTrace}";
+                        erros.Add(new Conexoes.Report("Erro fatal", msg, Conexoes.TipoReport.Crítico));
+                        Conexoes.Utilz.Alerta(msg, "Abortado - Erro fatal", System.Windows.MessageBoxImage.Error);
                         return new TabelaBlocoTag();
                     }
 
                 }
-                Core.Getw().Close();
+              
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Core.Getw().Close();
+                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace, "Abortado - Erro fatal", System.Windows.MessageBoxImage.Error);
+                return new TabelaBlocoTag();
             }
-
+            Core.Getw().Close();
 
             if (converter_padrao_dbf)
             {
@@ -2437,7 +2447,7 @@ namespace Ferramentas_DLM
                     bool chapa_fina = espessura.GetChapa_Fina();
                     if (bobina==null)
                     {
-                        bobina = Conexoes.Utilz.Clonar(Conexoes.DBases.GetBobinaDummy());
+                        bobina = Conexoes.Extensoes.Clonar(Conexoes.DBases.GetBobinaDummy());
                  
                         if (chapa_fina)
                         {

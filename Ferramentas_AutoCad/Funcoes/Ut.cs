@@ -402,26 +402,35 @@ namespace Ferramentas_DLM
 
             foreach (var b in blocos)
             {
-                var nome = b.Name.ToUpper();
-                foreach (var s in nomes)
+                try
                 {
-                    if (exato)
+                    var nome = b.Name.ToUpper();
+                    foreach (var s in nomes)
                     {
-                        if (nome.ToUpper() == s.ToUpper())
+                        if (exato)
                         {
-                            marcas.Add(b);
-                            break;
+                            if (nome.ToUpper() == s.ToUpper())
+                            {
+                                marcas.Add(b);
+                                break;
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (nome.ToUpper().Contains(s.ToUpper()))
+                        else
                         {
-                            marcas.Add(b);
-                            break;
+                            if (nome.ToUpper().Contains(s.ToUpper()))
+                            {
+                                marcas.Add(b);
+                                break;
+                            }
                         }
                     }
                 }
+                catch (System.Exception ex)
+                {
+                   
+                    Conexoes.Utilz.Alerta($"AutoCAD retornou erro ao tentar ler um bloco. Rode um AUDIT e PURGE na prancha.\n\n\n{ex.Message}\n{ex.StackTrace}","Erro", MessageBoxImage.Error);
+                }
+                
             }
 
             return marcas;
