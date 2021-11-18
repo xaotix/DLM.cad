@@ -169,7 +169,11 @@ namespace Ferramentas_DLM
             this.Nome_Bloco = nome_bloco;
             if(desc.Length>0)
             {
-                this.Descricao = desc.Replace(this.Nome, "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").Replace("*", "").TrimStart();
+                if(this.Nome.Length>0)
+                {
+                    desc = desc.Replace(this.Nome, "");
+                }
+                this.Descricao = desc.Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").Replace("*", "").TrimStart();
                 this.Descricao = Conexoes.Utilz.CortarString(this.Descricao, 25, false);
             }
 
@@ -189,16 +193,22 @@ namespace Ferramentas_DLM
                 foreach (var att in atts)
                 {
                     double qtd_pc = 1;
+                    string strn = att.ToUpper();
 
-                    var strn = att.ToUpper()
-                        .Replace(this.Nome.ToUpper(), "")
+                    if (this.Nome.Length>0)
+                    {
+                        strn = att.ToUpper().Replace(this.Nome.ToUpper(), "");
+                    }
+
+                     var  str2 = strn
                         .Replace("("," ")
                         .Replace(")"," ")
                         .Replace("X"," ")
                         .Replace("*"," ")
                         .TrimEnd().TrimStart()
                         .Split(' ').ToList().FindAll(x=>x!="");
-                    foreach(var st in strn)
+
+                    foreach(var st in str2)
                     {
                         if(Conexoes.Utilz.ESoNumero(st))
                         {

@@ -738,19 +738,20 @@ namespace Ferramentas_DLM
 
                     if(opt.Textos)
                     {
-
-                        foreach (var s in this.GetMtexts().GroupBy(x => x.Text
+                        var txt00 = this.GetMtexts().GroupBy(x => x.Text
                         .TrimStart()
                         .TrimEnd()
                         .Replace("*", " ")
-                        .Replace("@"," ")
-                        .Replace(","," ")
+                        .Replace("@", " ")
+                        .Replace(",", " ")
                         .Replace("(", " ")
                         .Replace(")", " ")
                         .Replace("\r", " ")
                         .Replace("\t", " ")
-                        .Replace("\n"," ")
-                        .Split(' ')[0]))
+                        .Replace("\n", " ")
+                        .Split(' ')[0]).ToList().FindAll(x=>x.Key.Length>0);
+
+                        foreach (var s in txt00)
                         {
 
       
@@ -776,7 +777,8 @@ namespace Ferramentas_DLM
                             pecas.Add(npc);
 
                         }
-                        foreach (var s in this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")))
+                        var txtss = this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")).ToList().FindAll(x=>x.Key.Length>0);
+                        foreach (var s in txtss)
                         {
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTag(new List<CelulaTag> { new CelulaTag("VALOR", x.TextString,null) })).ToList());
                             pecas.Add(npc);

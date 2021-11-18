@@ -134,7 +134,7 @@ namespace Ferramentas_DLM
                 {
                     if(!File.Exists(App_Atualizar))
                     {
-                        Conexoes.Utilz.Alerta($"Arquivo de atualização {App_Atualizar}\nEntre em contato com suporte: daniel.maciel@medabil.com.br");
+                        Conexoes.Utilz.Alerta($"Arquivo de atualização {App_Atualizar} não encontrado.\nEntre em contato com suporte: daniel.maciel@medabil.com.br");
                     }
                     Conexoes.Utilz.Abrir(App_Atualizar);
                 }
