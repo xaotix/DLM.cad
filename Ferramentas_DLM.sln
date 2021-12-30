@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31112.23
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1684
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferramentas_DLM", "Ferramentas_AutoCad\Ferramentas_DLM.csproj", "{76F7DEC0-9A49-4F71-9008-B3329F4BD1BD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conexoes", "..\Conexoes\Conexoes.csproj", "{DEF82547-9FAB-457E-89BF-C10ED1DD9162}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZoomAndPan", "..\ZoomAndPan\ZoomAndPan.csproj", "{468ADEDE-6F5E-40C0-99C9-C6DAC4FAC934}"
 EndProject
@@ -19,10 +17,6 @@ Global
 		{76F7DEC0-9A49-4F71-9008-B3329F4BD1BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76F7DEC0-9A49-4F71-9008-B3329F4BD1BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76F7DEC0-9A49-4F71-9008-B3329F4BD1BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEF82547-9FAB-457E-89BF-C10ED1DD9162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEF82547-9FAB-457E-89BF-C10ED1DD9162}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEF82547-9FAB-457E-89BF-C10ED1DD9162}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEF82547-9FAB-457E-89BF-C10ED1DD9162}.Release|Any CPU.Build.0 = Release|Any CPU
 		{468ADEDE-6F5E-40C0-99C9-C6DAC4FAC934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{468ADEDE-6F5E-40C0-99C9-C6DAC4FAC934}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{468ADEDE-6F5E-40C0-99C9-C6DAC4FAC934}.Release|Any CPU.ActiveCfg = Release|Any CPU

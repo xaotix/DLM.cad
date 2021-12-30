@@ -1200,7 +1200,6 @@ namespace Ferramentas_DLM
 
             if(camsext == null)
             {
-                this.GetSubEtapa().GetPacote().SetStatus(true);
                 var cms = this.GetSubEtapa().GetPacote().GetCAMsNaoRM();
 
                 
@@ -1225,7 +1224,7 @@ namespace Ferramentas_DLM
                 Core.Getw().Close();
 
 
-                Conexoes.Utilz.GerarDXF(cams.Select(x => new Conexoes.Arquivo(x.Arquivo)).ToList());
+                Conexoes.Utilz.TecnoPlotGerarDXF(cams.Select(x => new Conexoes.Arquivo(x.Arquivo)).ToList());
 
             }
             return this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();

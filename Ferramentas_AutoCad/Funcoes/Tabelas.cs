@@ -22,8 +22,8 @@ namespace Ferramentas_DLM
                 return;
             }
 
-            var purlins = dbase.RM_Macros.FindAll(x => x.Objeto is Conexoes.Macros.Purlin).Select(X => X.Objeto as Conexoes.Macros.Purlin).ToList();
-            var tirantes = dbase.RM_Macros.FindAll(x => x.Objeto is Conexoes.Macros.Tirante).Select(X => X.Objeto as Conexoes.Macros.Tirante).ToList();
+            var purlins = dbase.RM_Macros.FindAll(x => x.GetObjeto() is Conexoes.Macros.Purlin).Select(X => X.GetObjeto() as Conexoes.Macros.Purlin).ToList();
+            var tirantes = dbase.RM_Macros.FindAll(x => x.GetObjeto() is Conexoes.Macros.Tirante).Select(X => X.GetObjeto() as Conexoes.Macros.Tirante).ToList();
 
             Purlins(purlins,p0);
             double larg = 119.81;
