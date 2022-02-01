@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public partial class Tela : Form
     {
@@ -17,7 +17,7 @@ namespace Ferramentas_DLM
         {
             this.mm = mm;
             InitializeComponent();
-            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
+            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
             opcoes.SelectedObject = this.mm;
             getvars(this.mm);
 

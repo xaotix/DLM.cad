@@ -4,20 +4,21 @@ using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoeditorInput;
 using Conexoes;
+using DLM.encoder;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class CADTecnoMetal : CADBase
     {
 
-        public List<MarcaTecnoMetal> Getposicoes(ref List<Conexoes.Report> erros, bool update)
+        public List<MarcaTecnoMetal> Getposicoes(ref List<Report> erros, bool update)
         {
             var marcas = GetMarcas(ref erros);
             var pos = marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao).Select(x => x.First()).ToList();
@@ -26,10 +27,10 @@ namespace Ferramentas_DLM
         public List<Conexoes.Filete> InserirSoldaComposicao()
         {
             List<Conexoes.Filete> retorno = new List<Conexoes.Filete>();
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
           
             var pos = Getposicoes(ref erros, true);
-            var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLMCam.Familia.Soldado).ToList();
+            var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
             var montar_desmembrado = pos.FindAll(y =>
             y.Posicao.Contains("_1") |
@@ -56,13 +57,13 @@ namespace Ferramentas_DLM
 
 
                     var cmp = Conexoes.DBases.GetSoldaComposicao().Get(esp_m, esp_alm, altura, mesa, false).Clonar();
-                    cmp.Perfil = new Conexoes.TecnoMetal_PerfilDBF(altura, mesa, esp_alm, esp_m);
+                    cmp.Perfil = new DLM.cam.PerfilTecnoMetal(altura, mesa, esp_alm, esp_m);
                     cmp.Nome_Pos = m.Key;
                     retorno.Add(cmp);
                 }
                 else
                 {
-                    erros.Add(new Conexoes.Report(m.Key, "Não foi possível montar o perfil. não há mesas / almas suficientes"));
+                    erros.Add(new Report(m.Key, "Não foi possível montar o perfil. não há mesas / almas suficientes"));
                 }
             }
 
@@ -71,7 +72,7 @@ namespace Ferramentas_DLM
             foreach(var pf in perfis)
             {
                 var pp = pf.First().GetPerfil();
-                if(pp.Familia == DLMCam.Familia.Soldado)
+                if(pp.Familia == DLM.vars.CAM_FAMILIA.Soldado)
                 {
                 
                     var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.ESP_MESA, pp.ESP, pp.H, pp.ABA, false);
@@ -83,9 +84,10 @@ namespace Ferramentas_DLM
                         retorno.Add(np);
                     }
                 }
-                else if(pp.Familia == DLMCam.Familia._Desconhecido)
+                
+                else if(pp.Familia == DLM.vars.CAM_FAMILIA._Desconhecido)
                 {
-                    erros.Add(new Conexoes.Report($"{pf.Key} {pp.Nome}", "Perfil não encontrado."));
+                    erros.Add(new Report($"{pf.Key} {pp.Nome}", "Perfil não encontrado."));
                 }
             }
 
@@ -660,7 +662,7 @@ namespace Ferramentas_DLM
                         {
                             var att = Atributos.GetBlocoTag(s.First());
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetBlocoTag(x)).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => DLM.cad.Atributos.GetBlocoTag(x)).ToList());
                             if (npc.Nome.StartsWith(Constantes.PC_Quantificar))
                             {
                                 var blcs = npc.Agrupar(new List<string> { "CODIGO", Constantes.ATT_N }, npc.Nome_Bloco);
@@ -865,8 +867,8 @@ namespace Ferramentas_DLM
         }
 
 
-        private List<DLMCam.ReadCam> _cams { get; set; } = new List<DLMCam.ReadCam>();
-        public List<DLMCam.ReadCam> GetCams(bool atualizar = false)
+        private List<DLM.cam.ReadCam> _cams { get; set; } = new List<DLM.cam.ReadCam>();
+        public List<DLM.cam.ReadCam> GetCams(bool atualizar = false)
         {
             if(_cams.Count==0 && this.E_Tecnometal(false) | atualizar && this.E_Tecnometal(false))
             {
@@ -877,7 +879,7 @@ namespace Ferramentas_DLM
 
                 foreach(var CAM in cams)
                 {
-                    _cams.Add(new DLMCam.ReadCam(CAM));
+                    _cams.Add(new DLM.cam.ReadCam(CAM));
                     Core.Getw().somaProgresso();
                 }
                 Core.Getw().Close();
@@ -950,7 +952,7 @@ namespace Ferramentas_DLM
 
             if (!status) { return; }
 
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
 
 
             if (cfg.GerarDBF)
@@ -1057,7 +1059,7 @@ namespace Ferramentas_DLM
             Conexoes.Utilz.Alerta("Finalizado","", System.Windows.MessageBoxImage.Information);
         }
 
-        public List<MarcaTecnoMetal> GetMarcas(ref List<Conexoes.Report> erros, TabelaBlocoTag pcs = null, List<BlockReference> blocos = null)
+        public List<MarcaTecnoMetal> GetMarcas(ref List<Report> erros, TabelaBlocoTag pcs = null, List<BlockReference> blocos = null)
         {
             var _Marcas = new List<MarcaTecnoMetal>();
 
@@ -1134,7 +1136,7 @@ namespace Ferramentas_DLM
                 }
                 else if(marcas.Count>1)
                 {
-                    erros.Add(new Conexoes.Report("Marcas duplicadas", $" {marcas[0].Prancha} - M: {m}"));
+                    erros.Add(new Report("Marcas duplicadas", $" {marcas[0].Prancha} - M: {m}"));
                 }
             }
             var posp = _Marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao);
@@ -1143,7 +1145,7 @@ namespace Ferramentas_DLM
                 var hashes = p.ToList().GroupBy(x => x.GetInfo()).ToList();
                 if(hashes.Count>1)
                 {
-                    erros.Add(new Conexoes.Report($"{p.Key} => Posição com divergências", string.Join("\n",hashes.Select(x=>x.Key)), Conexoes.TipoReport.Crítico));
+                    erros.Add(new Report($"{p.Key} => Posição com divergências", string.Join("\n",hashes.Select(x=>x.Key)), DLM.vars.TipoReport.Crítico));
                 }
             }
             return _Marcas;
@@ -1151,7 +1153,7 @@ namespace Ferramentas_DLM
 
         public List<MarcaTecnoMetal> GetMarcas()
         {
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
 
             return GetMarcas(ref erros);
         }
@@ -1190,9 +1192,9 @@ namespace Ferramentas_DLM
         }
 
 
-        public List<Conexoes.Arquivo> GerarDXFs(List<DLMCam.ReadCam> camsext = null)
+        public List<Conexoes.Arquivo> GerarDXFs(List<DLM.cam.ReadCam> camsext = null)
         {
-            List<DLMCam.ReadCam> cams = new List<DLMCam.ReadCam>();
+            List<DLM.cam.ReadCam> cams = new List<DLM.cam.ReadCam>();
 
 
             if (!E_Tecnometal()) { return new List<Conexoes.Arquivo>(); }
@@ -1207,7 +1209,7 @@ namespace Ferramentas_DLM
                 cams.AddRange(cms);
                 cams.AddRange(subs);
                 
-               //cams = Conexoes.Utilz.SelecionarObjetos(new List<DLMCam.ReadCam>(), cams);
+               //cams = Conexoes.Utilz.SelecionarObjetos(new List<DLM.cam.ReadCam>(), cams);
             }
 
             if(cams.Count>0)
@@ -1240,7 +1242,7 @@ namespace Ferramentas_DLM
 
             if (!cancelado)
             {
-                List<Conexoes.Report> erros = new List<Conexoes.Report>();
+                List<Report> erros = new List<Report>();
                 var pcs = GetMarcas(ref erros);
                 if(pcs.Count > 0)
                 {
@@ -1264,17 +1266,17 @@ namespace Ferramentas_DLM
 
         public void InserirTabelaAuto()
         {
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             InserirTabelaAuto(ref erros);
             Conexoes.Utilz.ShowReports(erros);
         }
-        public void InserirTabelaAuto(ref List<Conexoes.Report> erros)
+        public void InserirTabelaAuto(ref List<Report> erros)
         {
             Ut.IrLayout();
             Ut.ZoomExtend();
 
-            DB.Tabela marcas = new DB.Tabela();
-            DB.Tabela posicoes = new DB.Tabela();
+            DLM.db.Tabela marcas = new DLM.db.Tabela();
+            DLM.db.Tabela posicoes = new DLM.db.Tabela();
 
 
 
@@ -1392,7 +1394,7 @@ namespace Ferramentas_DLM
             Ut.IrLayout();
             Ut.ZoomExtend();
 
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
 
             var marcas = GetMarcas(ref erros);
 
@@ -1531,7 +1533,7 @@ namespace Ferramentas_DLM
 
 
 
-        public List<MarcaTecnoMetal> GetMarcasPranchas(ref List<Conexoes.Report> erros)
+        public List<MarcaTecnoMetal> GetMarcasPranchas(ref List<Report> erros)
         {
             if(!this.E_Tecnometal())
             {
@@ -1540,7 +1542,7 @@ namespace Ferramentas_DLM
             var pcs = GetPecasPranchas(ref erros);
             return GetMarcas(ref erros,pcs);
         }
-        public TabelaBlocoTag GetPecasPranchas(ref List<Conexoes.Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
+        public TabelaBlocoTag GetPecasPranchas(ref List<Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true, bool converter_padrao_dbf = true)
         {
 
             TabelaBlocoTag marcas = new TabelaBlocoTag();
@@ -1566,7 +1568,7 @@ namespace Ferramentas_DLM
 
                 if (arquivos.Count == 0)
                 {
-                    erros.Add(new Conexoes.Report("Erro", "Operação abortada - Nada Selecionado."));
+                    erros.Add(new Report("Erro", "Operação abortada - Nada Selecionado."));
                     return new TabelaBlocoTag();
                 }
 
@@ -1605,7 +1607,7 @@ namespace Ferramentas_DLM
 
                                 if(ms.Count==0)
                                 {
-                                    erros.Add(new Report("Prancha não tem marcas", $"{file.Name}", TipoReport.Crítico));
+                                    erros.Add(new Report("Prancha não tem marcas", $"{file.Name}", DLM.vars.TipoReport.Crítico));
                                 }
 
                                 foreach (var m in ms)
@@ -1626,7 +1628,7 @@ namespace Ferramentas_DLM
                     {
                         Core.Getw().Close();
                         string msg = $"Erro ao tentar ler a prancha {file.Name}:\n {ex.Message}\n{ex.StackTrace}";
-                        erros.Add(new Conexoes.Report("Erro fatal", msg, Conexoes.TipoReport.Crítico));
+                        erros.Add(new Report("Erro fatal", msg, DLM.vars.TipoReport.Crítico));
                         Conexoes.Utilz.Alerta(msg, "Abortado - Erro fatal", System.Windows.MessageBoxImage.Error);
                         return new TabelaBlocoTag();
                     }
@@ -1654,9 +1656,9 @@ namespace Ferramentas_DLM
 
         }
 
-        public List<Conexoes.Report> AtualizarPesoChapaFina(List<BlockReference> blocos =null)
+        public List<Report> AtualizarPesoChapaFina(List<BlockReference> blocos =null)
         {
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
 
             var pcs = GetMarcas(ref erros, null, blocos);
 
@@ -1681,11 +1683,11 @@ namespace Ferramentas_DLM
                                 att.Add(Constantes.ATT_VOL, $"{m.Comprimento}*{m.Espessura}*{m.Largura}");
                                 att.Add(Constantes.ATT_ESP, m.Espessura.ToString("N2"));
 
-                                Ferramentas_DLM.Atributos.Set(m.Bloco.Bloco, acTrans, att);
+                                DLM.cad.Atributos.Set(m.Bloco.Bloco, acTrans, att);
                             }
                             else
                             {
-                                erros.Add(new Conexoes.Report("Bobina não existe ou está em branco", $"Marca: {m.Marca}", Conexoes.TipoReport.Crítico));
+                                erros.Add(new Report("Bobina não existe ou está em branco", $"Marca: {m.Marca}", DLM.vars.TipoReport.Crítico));
                             }
                         }
                     }
@@ -1696,7 +1698,7 @@ namespace Ferramentas_DLM
             return erros;
         }
 
-        private TabelaBlocoTag ConverterParaDBF(ref List<Conexoes.Report> erros, TabelaBlocoTag marcas, TabelaBlocoTag posicoes)
+        private TabelaBlocoTag ConverterParaDBF(ref List<Report> erros, TabelaBlocoTag marcas, TabelaBlocoTag posicoes)
         {
             var lista = new TabelaBlocoTag(new List<TabelaBlocoTag> { marcas, posicoes });
             List<string> colunas = new List<string>();
@@ -1774,12 +1776,12 @@ namespace Ferramentas_DLM
                 if (blocos_marca.Count > 1)
                 {
                     string mm = blocos_marca[0].Get(Constantes.ATT_MAR).Valor;
-                    erros.Add(new Conexoes.Report("Marca Duplicada",
+                    erros.Add(new Report("Marca Duplicada",
                         $"\n{mm}" +
                         $"\nMarca duplicada ou se encontra em mais de uma prancha." +
                         $"\nOcorrências: {blocos_marca.Count} x\n" +
                         $"{string.Join("\n", blocos_marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
-                       Conexoes.TipoReport.Crítico
+                       DLM.vars.TipoReport.Crítico
                         ));
                 }
                 else if(blocos_marca.Count==1)
@@ -1832,11 +1834,11 @@ namespace Ferramentas_DLM
                 }
                 else
                 {
-                    erros.Add(new Conexoes.Report("Marca Não existe",
+                    erros.Add(new Report("Marca Não existe",
                                            $"\n{string.Join("\n",m.Select(x=>x.Get(Constantes.ATT_MAR).Valor + @"/" + x.Get(Constantes.ATT_MAR).Valor))}" +
                                            $"\nMarca indicada nas posições não existe." +
                                            $"{string.Join("\n", blocos_marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
-                                          Conexoes.TipoReport.Crítico
+                                          DLM.vars.TipoReport.Crítico
                                            ));
                 }
 
@@ -1860,7 +1862,7 @@ namespace Ferramentas_DLM
             return lista_convertida;
         }
 
-        public TabelaBlocoTag GerarDBF(ref List<Conexoes.Report> erros, bool atualizar_cams,string destino = null, List<Conexoes.Arquivo> pranchas = null)
+        public TabelaBlocoTag GerarDBF(ref List<Report> erros, bool atualizar_cams,string destino = null, List<Conexoes.Arquivo> pranchas = null)
         {
             if(!E_Tecnometal())
             {
@@ -1868,8 +1870,8 @@ namespace Ferramentas_DLM
             }
             if (!this.Pasta.ToUpper().EndsWith(@".TEC\"))
             {
-                erros.Add(new Conexoes.Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
-                    $"\nPasta atual: {this.Pasta}", Conexoes.TipoReport.Crítico));
+                erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                    $"\nPasta atual: {this.Pasta}", DLM.vars.TipoReport.Crítico));
                 return new TabelaBlocoTag();
             }
 
@@ -1892,7 +1894,7 @@ namespace Ferramentas_DLM
                     }
                     else
                     {
-                        erros.Add(new Conexoes.Report("Cancelado", "Nome da DBF inválido", Conexoes.TipoReport.Crítico));
+                        erros.Add(new Report("Cancelado", "Nome da DBF inválido", DLM.vars.TipoReport.Crítico));
                         return new TabelaBlocoTag();
                     }
                 }
@@ -1912,7 +1914,7 @@ namespace Ferramentas_DLM
 
             if (lista_pecas.Blocos.Count == 0)
             {
-                erros.Add(new Conexoes.Report("Erro", "Nenhuma peça encontrada nas pranchas selecionadas", Conexoes.TipoReport.Crítico));
+                erros.Add(new Report("Erro", "Nenhuma peça encontrada nas pranchas selecionadas", DLM.vars.TipoReport.Crítico));
                 Core.Getw().Close();
                 return new TabelaBlocoTag();
             }
@@ -1933,16 +1935,16 @@ namespace Ferramentas_DLM
             var mats = posicoes.FindAll(x => x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).GroupBy(x => x.Material);
             var posicoes_grp = posicoes.FindAll(x=> x.Tipo_Bloco!= Tipo_Bloco.Arremate && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).GroupBy(x => x.Posicao).ToList();
            
-            erros.AddRange(marcas_compostas.FindAll(x => x.SubItens.Count == 0).Select(x => new Conexoes.Report("Marca Composta sem posições", $"{x.Prancha} - {x.Marca}", Conexoes.TipoReport.Crítico)));
+            erros.AddRange(marcas_compostas.FindAll(x => x.SubItens.Count == 0).Select(x => new Report("Marca Composta sem posições", $"{x.Prancha} - {x.Marca}", DLM.vars.TipoReport.Crítico)));
                    
 
-            erros.AddRange(marcas_elemento_unit.FindAll(x => !x.Marca.ToUpper().EndsWith("_A")).Select(x => new Conexoes.Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", Conexoes.TipoReport.Crítico)));
-            erros.AddRange(posicoes_elem_unit.FindAll(x => !x.Posicao.ToUpper().EndsWith("_A")).Select(x => new Conexoes.Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", Conexoes.TipoReport.Crítico)));
+            erros.AddRange(marcas_elemento_unit.FindAll(x => !x.Marca.ToUpper().EndsWith("_A")).Select(x => new Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", DLM.vars.TipoReport.Crítico)));
+            erros.AddRange(posicoes_elem_unit.FindAll(x => !x.Posicao.ToUpper().EndsWith("_A")).Select(x => new Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", DLM.vars.TipoReport.Crítico)));
 
 
-            erros.AddRange(marcas.GroupBy(x => x.Marca).ToList().FindAll(x => x.Count() > 1).Select(x => new Conexoes.Report("Mesma marca em pranchas diferentes.", $"Marca: {x.Key} nas pranchas: {string.Join("\n", x.Select(y => y.Prancha))}", Conexoes.TipoReport.Crítico)));
-            erros.AddRange(marcas.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Marca.Replace("-","").Replace("_","")) | x.Marca.Contains(" ")).Select(x => x.Marca).Distinct().ToList().Select(x => new Conexoes.Report("Nome de marca com caracteres inválidos.", $"Marca: {x}", Conexoes.TipoReport.Crítico)));
-            erros.AddRange(posicoes.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Posicao.Replace("-","").Replace("_","")) | x.Marca.Contains(" ") | x.Marca.Replace(" ","").Length==0).Select(x=>"M: " + x.Marca + "Pos: " + x.Posicao).Distinct().ToList().Select(x => new Conexoes.Report("Nome de posição com caracteres inválidos ou em branco.", $"{x}", Conexoes.TipoReport.Crítico)));
+            erros.AddRange(marcas.GroupBy(x => x.Marca).ToList().FindAll(x => x.Count() > 1).Select(x => new Report("Mesma marca em pranchas diferentes.", $"Marca: {x.Key} nas pranchas: {string.Join("\n", x.Select(y => y.Prancha))}", DLM.vars.TipoReport.Crítico)));
+            erros.AddRange(marcas.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Marca.Replace("-","").Replace("_","")) | x.Marca.Contains(" ")).Select(x => x.Marca).Distinct().ToList().Select(x => new Report("Nome de marca com caracteres inválidos.", $"Marca: {x}", DLM.vars.TipoReport.Crítico)));
+            erros.AddRange(posicoes.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Posicao.Replace("-","").Replace("_","")) | x.Marca.Contains(" ") | x.Marca.Replace(" ","").Length==0).Select(x=>"M: " + x.Marca + "Pos: " + x.Posicao).Distinct().ToList().Select(x => new Report("Nome de posição com caracteres inválidos ou em branco.", $"{x}", DLM.vars.TipoReport.Crítico)));
 
 
             var ppos = posicoes.GroupBy(x => x.Posicao);
@@ -1957,28 +1959,28 @@ namespace Ferramentas_DLM
 
                 if (pos_perfis.Count > 1)
                 {
-                    erros.AddRange(pos_perfis.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Perfil: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                    erros.AddRange(pos_perfis.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Perfil: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
 
                 if (pos_larguras.Count > 1)
                 {
-                    erros.AddRange(pos_larguras.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Largura: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                    erros.AddRange(pos_larguras.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Largura: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
 
                 if (pos_materiais.Count > 1)
                 {
-                    erros.AddRange(pos_materiais.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Material: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                    erros.AddRange(pos_materiais.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Material: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
 
 
                 if (pos_sap.Count > 1)
                 {
-                    erros.AddRange(pos_sap.Select(x => new Conexoes.Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> SAP: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", Conexoes.TipoReport.Crítico)));
+                    erros.AddRange(pos_sap.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> SAP: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
             }
         
-            erros.AddRange(posicoes.FindAll(x => x.Posicao.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Conexoes.Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", Conexoes.TipoReport.Crítico)));
-            erros.AddRange(marcas.FindAll(x => x.Marca.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Conexoes.Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", Conexoes.TipoReport.Crítico)));
+            erros.AddRange(posicoes.FindAll(x => x.Posicao.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", DLM.vars.TipoReport.Crítico)));
+            erros.AddRange(marcas.FindAll(x => x.Marca.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", DLM.vars.TipoReport.Crítico)));
 
 
             Core.Getw().somaProgresso();
@@ -2017,11 +2019,11 @@ namespace Ferramentas_DLM
                             var arq = this.GetSubEtapa().PastaCAM + s + ".CAM";
                             if (!File.Exists(arq))
                             {
-                                erros.Add(new Conexoes.Report("Falta CAM Desmembrado", $"{s}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", Conexoes.TipoReport.Alerta));
+                                erros.Add(new Report("Falta CAM Desmembrado", $"{s}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", DLM.vars.TipoReport.Alerta));
                             }
                             else
                             {
-                                DLMCam.ReadCam sub = new DLMCam.ReadCam(arq);
+                                DLM.cam.ReadCam sub = new DLM.cam.ReadCam(arq);
                                 sub.Obra = this.GetObra().Descrição;
                                 sub.Pedido = this.GetPedido().NomePedido;
                                 sub.Etapa = this.GetSubEtapa().Nome;
@@ -2038,7 +2040,7 @@ namespace Ferramentas_DLM
                     {
                         if (p0.Espessura >= 1.55)
                         {
-                            erros.Add(new Conexoes.Report("Falta CAM", $"{p0.Posicao}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", Conexoes.TipoReport.Alerta));
+                            erros.Add(new Report("Falta CAM", $"{p0.Posicao}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", DLM.vars.TipoReport.Alerta));
                         }
                     }
                 }
@@ -2388,11 +2390,11 @@ namespace Ferramentas_DLM
                             }
                             if (Directory.Exists(destino))
                             {
-                                DLMCam.Chapa pp = new DLMCam.Chapa(pa.Comprimento, pa.Largura, pa.Espessura);
+                                DLM.cam.Chapa pp = new DLM.cam.Chapa(pa.Comprimento, pa.Largura, pa.Espessura);
 
                                 string arquivo = destino + pa.Marca + ".CAM";
 
-                                DLMCam.Cam pcam = new DLMCam.Cam(arquivo, pp);
+                                DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, pp);
                                 double x = 0;
 
                                 for (int i = 0; i < angulos.Count; i++)
@@ -2400,7 +2402,7 @@ namespace Ferramentas_DLM
                                     var s = segmentos[i];
                                     x = x + s.Length - (chapa_fina ? 0 : pa.Espessura);
                                     var a = angulos[i];
-                                    pcam.Dobras.Liv1.Add(new DLMCam.Estrutura.Dobra(a, x, pcam, false));
+                                    pcam.Dobras.Liv1.Add(new DLM.cam.Estrutura.Dobra(a, x, pcam, false));
                                 }
 
                                 pcam.Cabecalho.TRA_PEZ = pa.Ficha;
@@ -2517,11 +2519,11 @@ namespace Ferramentas_DLM
                                 }
                                 if (Directory.Exists(destino))
                                 {
-                                    DLMCam.Chapa pp = new DLMCam.Chapa(pa.Comprimento, pa.Largura, pa.Espessura);
+                                    DLM.cam.Chapa pp = new DLM.cam.Chapa(pa.Comprimento, pa.Largura, pa.Espessura);
 
                                     string arquivo = destino + pa.Marca + ".CAM";
 
-                                    DLMCam.Cam pcam = new DLMCam.Cam(arquivo, pp);
+                                    DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, pp);
 
                                     pcam.Cabecalho.TRA_PEZ = pa.Ficha;
                                     pcam.Cabecalho.Quantidade = pa.Quantidade;
@@ -2598,7 +2600,7 @@ namespace Ferramentas_DLM
                 Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, escala, posicao,mercadoria);
             }
         }
-        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_PerfilDBF perfil = null, string mercadoria = null)
+        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, DLM.cam.PerfilTecnoMetal perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2638,7 +2640,8 @@ namespace Ferramentas_DLM
                     {
                         if (perfil == null)
                         {
-                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
+                            
+                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
                         }
 
                         if (perfil != null)
@@ -2670,7 +2673,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, Conexoes.TecnoMetal_PerfilDBF perfil = null, string mercadoria = null)
+        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.PerfilTecnoMetal perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2709,7 +2712,7 @@ namespace Ferramentas_DLM
                         {
                             if (perfil == null)
                             {
-                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione um perfil");
+                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
                             }
 
 
@@ -2760,7 +2763,7 @@ namespace Ferramentas_DLM
         }
         public MarcaTecnoMetal InserirMarcaComposta(double escala)
         {
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             this.SetEscala(escala);
             bool cancelado = true;
             var origem = Ut.PedirPonto2D("Selecione a origem", out cancelado);

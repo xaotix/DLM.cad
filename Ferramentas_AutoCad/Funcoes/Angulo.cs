@@ -3,13 +3,13 @@ using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public static class Angulo
     {
         public static double Get(Xline s)
         {
-            return Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(0, 0, 0), new Calculos.Ponto3D(s.UnitDir.X, s.UnitDir.Y, 0)));
+            return Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(0, 0, 0), new DLM.desenho.Ponto3D(s.UnitDir.X, s.UnitDir.Y, 0)));
         }
         public static double Get(Point2d pt1, Point2d pt2)
         {

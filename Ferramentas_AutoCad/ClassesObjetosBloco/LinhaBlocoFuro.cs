@@ -3,7 +3,7 @@ using Autodesk.AutoCAD.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ferramentas_DLM.Classes
+namespace DLM.cad
 {
     public class LinhaBlocoFuro
     {

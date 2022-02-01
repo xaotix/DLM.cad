@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Ferramentas_DLM.Menus
+namespace DLM.cad.Menus
 {
     /// <summary>
     /// Interação lógica para SoldaComposicao.xam
@@ -23,7 +23,7 @@ namespace Ferramentas_DLM.Menus
         public SoldaComposicao()
         {
             InitializeComponent();
-            this.Title = $"Soldas de composição V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"Soldas de composição V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
         {

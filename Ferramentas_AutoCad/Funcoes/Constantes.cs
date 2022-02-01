@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     internal static class CAD
     {
@@ -53,7 +53,7 @@ namespace Ferramentas_DLM
     }
     internal static class Constantes
     {
-        public static string RaizApp { get; set; } = @"C:\Medabil\Ferramentas_DLM\";
+        public static string RaizApp { get; set; } = @"C:\Medabil\DLM.cad\";
         public static string Raiz_Rede { get; set; } = @"\\10.54.0.4\BancoDeDados\";
         public static int DECIMAIS { get; set; } = 3;
         public static int DECIMAIS_TON { get; set; } = 4;
@@ -88,9 +88,9 @@ namespace Ferramentas_DLM
         public static string ATT_Peca { get; set; } ="PECA";
 
 
-        public static string DLL_Local { get; set; } = @"C:\Medabil\Ferramentas_DLM\Ferramentas_DLM.dll";
-        public static string DLL_Rede { get; set; } = Raiz_Rede + @"Lisps\Ferramentas_DLM\FLS\C#'Medabil'Ferramentas_DLM'\Ferramentas_DLM.dll";
-        public static string App_Atualizar { get; set; } = Raiz_Rede + @"Lisps\Ferramentas_DLM\Updater.exe";
+        public static string DLL_Local { get; set; } = @"C:\Medabil\DLM.cad\DLM.cad.dll";
+        public static string DLL_Rede { get; set; } = Raiz_Rede + @"Lisps\DLM.cad\FLS\C#'Medabil'DLM.cad'\DLM.cad.dll";
+        public static string App_Atualizar { get; set; } = Raiz_Rede + @"Lisps\DLM.cad\Updater.exe";
 
         public static string PastaPlugin
         {

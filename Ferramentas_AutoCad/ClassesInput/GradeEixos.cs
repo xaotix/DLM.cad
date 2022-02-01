@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class GradeEixos
     {
@@ -181,7 +181,7 @@ namespace Ferramentas_DLM
 
            foreach(var obj in objetos)
             {
-                Conexoes.FuncoesCanvas.SetCor(obj, Conexoes.FuncoesCanvas.Cores.DarkGray);
+                DLM.desenho.FuncoesCanvas.SetCor(obj, DLM.desenho.FuncoesCanvas.Cores.DarkGray);
             }
 
             retorno.AddRange(objetos);
@@ -198,22 +198,22 @@ namespace Ferramentas_DLM
                     /*linha do eixo*/
                     var p1 = new Point((x - P0.X) * Escala, (y - P0.Y) * Escala);
                     var p2 = new Point((x - P0.X) * Escala, (y2 - P0.Y) * Escala);
-                    var l = Conexoes.FuncoesCanvas.Linha(p1, p2, Conexoes.FuncoesCanvas.Cores.Magenta,espessura, Conexoes.FuncoesCanvas.TipoLinha.Traco_Ponto);
+                    var l = DLM.desenho.FuncoesCanvas.Linha(p1, p2, DLM.desenho.FuncoesCanvas.Cores.Magenta,espessura, DLM.vars.TipoLinhaCanvas.Traco_Ponto);
                     retorno.Add(l);
 
                     /*bolota do eixo*/
                     var centro_circulo = new Point((x - P0.X) * Escala, (y - P0.Y + raio) * Escala);
-                    var c = Conexoes.FuncoesCanvas.Circulo(centro_circulo, raio, espessura, Conexoes.FuncoesCanvas.Cores.Red);
+                    var c = DLM.desenho.FuncoesCanvas.Circulo(centro_circulo, raio, espessura, DLM.desenho.FuncoesCanvas.Cores.Red);
                     retorno.Add(c);
 
-                    var ptexto = Conexoes.FuncoesCanvas.Label(eixo.Nome, centro_circulo, Conexoes.FuncoesCanvas.Cores.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
+                    var ptexto = DLM.desenho.FuncoesCanvas.Label(eixo.Nome, centro_circulo, DLM.desenho.FuncoesCanvas.Cores.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
                     retorno.Add(ptexto);
                 }
 
                 /*correntes, tirantes e purlins (somente linhas*/
-                //retorno.AddRange(Comandos.CADPurlin.GetMultLinesCorrentes().Select(x => x.GetCanvas(p0, escala, espessura, Conexoes.FuncoesCanvas.Cores.Green)));
-                //retorno.AddRange(Comandos.CADPurlin.GetMultLinesTirantes().Select(x => x.GetCanvas(p0, escala, espessura, Conexoes.FuncoesCanvas.Cores.White)));
-                //retorno.AddRange(Comandos.CADPurlin.GetMultLinePurlins().Select(x => x.GetCanvas(p0, escala, espessura, Conexoes.FuncoesCanvas.Cores.Yellow)));
+                //retorno.AddRange(Comandos.CADPurlin.GetMultLinesCorrentes().Select(x => x.GetCanvas(p0, escala, espessura, DLM.desenho.FuncoesCanvas.Cores.Green)));
+                //retorno.AddRange(Comandos.CADPurlin.GetMultLinesTirantes().Select(x => x.GetCanvas(p0, escala, espessura, DLM.desenho.FuncoesCanvas.Cores.White)));
+                //retorno.AddRange(Comandos.CADPurlin.GetMultLinePurlins().Select(x => x.GetCanvas(p0, escala, espessura, DLM.desenho.FuncoesCanvas.Cores.Yellow)));
 
 
                 /*cotas horizontais 
@@ -234,7 +234,7 @@ namespace Ferramentas_DLM
                             if(pp.DistBaixo>0)
                             {
                                 var pt = new System.Windows.Point((this.GetXmin() - P0.X - Core.CADPurlin.Canvas_Offset) * Escala, (pp.CentroBloco.Y- P0.Y - (pp.DistBaixo/2)) * Escala);
-                                var cota = Conexoes.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, Conexoes.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
+                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
                                 cota.ToolTip = pp;
@@ -254,7 +254,7 @@ namespace Ferramentas_DLM
                             if (pp.DistBaixo > 0)
                             {
                                 var pt = new System.Windows.Point((this.GetXMax() - P0.X) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
-                                var cota = Conexoes.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, Conexoes.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
+                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
                                 retorno.Add(cota);
@@ -271,10 +271,10 @@ namespace Ferramentas_DLM
             if(niveis.Count>0)
             {
                 
-                var linha = Conexoes.FuncoesCanvas.Linha(
+                var linha = DLM.desenho.FuncoesCanvas.Linha(
                     new Point((this.GetXmin() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala),
                     new Point((this.GetXMax() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala), 
-                    Conexoes.FuncoesCanvas.Cores.Blue);
+                    DLM.desenho.FuncoesCanvas.Cores.Blue);
 
                 retorno.Add(linha);
             }
@@ -346,12 +346,12 @@ namespace Ferramentas_DLM
 
         public void evento_Botao_Sai(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Conexoes.FuncoesCanvas.SetCor(sender as UIElement, Conexoes.FuncoesCanvas.Cores.Cyan, Conexoes.FuncoesCanvas.Cores.Black);
+            DLM.desenho.FuncoesCanvas.SetCor(sender as UIElement, DLM.desenho.FuncoesCanvas.Cores.Cyan, DLM.desenho.FuncoesCanvas.Cores.Black);
         }
 
         public void evento_Botao_Sobre(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Conexoes.FuncoesCanvas.SetCor(sender as UIElement, Conexoes.FuncoesCanvas.Cores.Black, Conexoes.FuncoesCanvas.Cores.Cyan);
+            DLM.desenho.FuncoesCanvas.SetCor(sender as UIElement, DLM.desenho.FuncoesCanvas.Cores.Black, DLM.desenho.FuncoesCanvas.Cores.Cyan);
         }
 
         public double GetComprimento()

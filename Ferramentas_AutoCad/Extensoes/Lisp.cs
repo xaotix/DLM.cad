@@ -4,7 +4,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoeditorInput;
 
-namespace Ferramentas_DLM.Lisp
+namespace DLM.cad.Lisp
 {
     // Credits to Tony Tanzillo, Alexander Rivillis, Kerry Brown...
 

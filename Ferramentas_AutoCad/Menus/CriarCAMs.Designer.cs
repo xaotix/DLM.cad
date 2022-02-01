@@ -1,4 +1,4 @@
-﻿namespace Ferramentas_DLM
+﻿namespace DLM.cad
 {
     partial class CriarMarcas
     {

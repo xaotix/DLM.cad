@@ -5,7 +5,7 @@ using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Internal.PropertyInspector;
 using Autodesk.AutoCAD.Runtime;
-using Ferramentas_DLM.Classes;
+using DLM.cad;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,11 +17,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     [Serializable]
     public class CADBase
@@ -677,7 +677,7 @@ namespace Ferramentas_DLM
 
             foreach(var s in blocos)
             {
-                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => Ferramentas_DLM.Atributos.GetBlocoTag(x)).ToList());
+                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => DLM.cad.Atributos.GetBlocoTag(x)).ToList());
                 if (npc.Nome.StartsWith(Constantes.PC_Quantificar))
                 {
                     var blcs = npc.Agrupar(new List<string> { Constantes.ATT_Codigo, Constantes.ATT_N }, npc.Nome_Bloco);

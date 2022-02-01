@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Ferramentas_DLM.Menus
+namespace DLM.cad.Menus
 {
     /// <summary>
     /// Interação lógica para Quantificar_Menu_Configuracao.xam
@@ -29,7 +29,7 @@ namespace Ferramentas_DLM.Menus
             original = pecas;
             filtro.AddRange(pecas);
             InitializeComponent();
-            this.Title = $"Gerar Tabela (Editor) V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"Gerar Tabela (Editor) V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
             this.Update();
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)

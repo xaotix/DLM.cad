@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
 
     public class Coordenada
@@ -75,7 +75,7 @@ namespace Ferramentas_DLM
 
         public double Angulo(Coordenada v)
         {
-          return  Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(this.X, this.Y, this.Z), new Calculos.Ponto3D(v.X, v.Y, v.Z));
+          return  DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(this.X, this.Y, this.Z), new DLM.desenho.Ponto3D(v.X, v.Y, v.Z));
         }
         public double Angulo(Point3d v)
         {
@@ -85,7 +85,7 @@ namespace Ferramentas_DLM
        
         public Coordenada Mover(double angulo, double distancia)
         {
-            var s = Calculos.Trigonometria.Mover(new System.Windows.Point(this.X, this.Y), angulo, distancia);
+            var s = DLM.desenho.Trigonometria.Mover(new System.Windows.Point(this.X, this.Y), angulo, distancia);
 
             return new Coordenada(s.X, s.Y, 0);
         }

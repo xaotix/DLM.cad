@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Ferramentas_DLM.Menus
+namespace DLM.cad.Menus
 {
     /// <summary>
     /// Interação lógica para MenuConfigurarVaos.xam

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class Tabelas
     {
@@ -317,7 +317,7 @@ namespace Ferramentas_DLM
             return new Point2d(x0, y0);
 
         }
-        public static Point2d TecnoMetal(List<DB.Linha> pecas_tecnometal, Point2d p0, double mover_direita = 0, double escala = 1)
+        public static Point2d TecnoMetal(List<DLM.db.Linha> pecas_tecnometal, Point2d p0, double mover_direita = 0, double escala = 1)
         {
             double x0 = 0;
             double y0 = 0;

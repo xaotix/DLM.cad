@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class CADMline
     {
@@ -34,7 +34,7 @@ namespace Ferramentas_DLM
         {
             var p1 = new System.Windows.Point((this.Inicio.X - p0.X) * escala, (this.Inicio.Y - p0.Y) * escala);
             var p2 = new System.Windows.Point((this.Fim.X - p0.X) * escala, (this.Fim.Y - p0.Y) * escala);
-            var l = Conexoes.FuncoesCanvas.Linha(p1, p2, cor, espessura, Conexoes.FuncoesCanvas.TipoLinha.Continua);
+            var l = DLM.desenho.FuncoesCanvas.Linha(p1, p2, cor, espessura, DLM.vars.TipoLinhaCanvas.Continua);
 
             return l;
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class ConfiguracaoChapa_Dobrada
     {
@@ -182,7 +182,7 @@ namespace Ferramentas_DLM
             this.Comprimento = comprimento;
             this.Descricao = $"Ch #{this.Espessura.ToString("N2")}x{this.Largura.ToString("N0")}x{this.Comprimento.ToString("N0")}";
         }
-        public ConfiguracaoChapa_Dobrada(DLMCam.ReadCam cam)
+        public ConfiguracaoChapa_Dobrada(DLM.cam.ReadCam cam)
         {
             this.Comprimento = cam.Comprimento;
             this.Espessura = cam.Espessura;

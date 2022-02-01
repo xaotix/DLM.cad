@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public partial class CriarMarcas : Form
     {

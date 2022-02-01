@@ -1,21 +1,14 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoeditorInput;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Internal;
 using Conexoes;
-using Ferramentas_DLM.Classes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     [Serializable]
     public class CADTelhas : CADBase

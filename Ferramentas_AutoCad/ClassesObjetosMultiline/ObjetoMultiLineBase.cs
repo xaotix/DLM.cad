@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class ObjetoMultiLineBase : INotifyPropertyChanged
     {
@@ -65,7 +65,7 @@ namespace Ferramentas_DLM
         {
             get
             {
-                return Ferramentas_DLM.Angulo.Get(
+                return DLM.cad.Angulo.Get(
                     this.Origem_Esquerda,
                     this.Origem_Direita
                     );
@@ -247,7 +247,7 @@ namespace Ferramentas_DLM
 
             p1 = new Point((p1.X - this.Grade.P0.X) * this.Grade.Escala, (p1.Y - this.Grade.P0.Y) * this.Grade.Escala);
             p2 = new Point((p2.X - this.Grade.P0.X) * this.Grade.Escala, (p2.Y - this.Grade.P0.Y) * this.Grade.Escala);
-            _linha = Conexoes.FuncoesCanvas.Linha(p1, p2, this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
+            _linha = DLM.desenho.FuncoesCanvas.Linha(p1, p2, this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;
@@ -262,7 +262,7 @@ namespace Ferramentas_DLM
                 angulo = 90;
             }
 
-            _botao = Conexoes.FuncoesCanvas.Botao(this.Nome + $"\n#{this.Espessura.ToString("N2")}", pt, this.GetCor().Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, Conexoes.FuncoesCanvas.Cores.Black);
+            _botao = DLM.desenho.FuncoesCanvas.Botao(this.Nome + $"\n#{this.Espessura.ToString("N2")}", pt, this.GetCor().Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, DLM.desenho.FuncoesCanvas.Cores.Black);
 
             _botao.MouseRightButtonUp += Botao_Direito;
             _botao.MouseMove += Evento_Sobre;
@@ -351,12 +351,12 @@ namespace Ferramentas_DLM
 
         public void Evento_Sair(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Conexoes.FuncoesCanvas.SetCor(_linha, this.GetCor(), Conexoes.FuncoesCanvas.Cores.Black);
+            DLM.desenho.FuncoesCanvas.SetCor(_linha, this.GetCor(), DLM.desenho.FuncoesCanvas.Cores.Black);
             _botao.Visibility = Visibility.Collapsed;
             _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline;
-            Conexoes.FuncoesCanvas.SetCor(_botao, this.GetCor(), Conexoes.FuncoesCanvas.Cores.Black);
-            Conexoes.FuncoesCanvas.TrazerPraFrente(_linha);
-            Conexoes.FuncoesCanvas.TrazerPraFrente(_botao);
+            DLM.desenho.FuncoesCanvas.SetCor(_botao, this.GetCor(), DLM.desenho.FuncoesCanvas.Cores.Black);
+            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_linha);
+            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_botao);
         }
 
         public void Evento_Sobre(object sender, System.Windows.Input.MouseEventArgs e)
@@ -365,8 +365,8 @@ namespace Ferramentas_DLM
 
             _botao.Visibility = Visibility.Visible;
             _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline * 4;
-            Conexoes.FuncoesCanvas.TrazerPraFrente(_linha);
-            Conexoes.FuncoesCanvas.TrazerPraFrente(_botao);
+            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_linha);
+            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_botao);
 
         }
 
@@ -387,19 +387,19 @@ namespace Ferramentas_DLM
             {
                 if (this.Tipo == Tipo_ObjetoBase.Purlin)
                 {
-                    _Cor = Conexoes.FuncoesCanvas.Cores.Yellow.Clone();
+                    _Cor = DLM.desenho.FuncoesCanvas.Cores.Yellow.Clone();
                 }
                 else if (this.Tipo == Tipo_ObjetoBase.Corrente)
                 {
-                    _Cor = Conexoes.FuncoesCanvas.Cores.Red.Clone();
+                    _Cor = DLM.desenho.FuncoesCanvas.Cores.Red.Clone();
                 }
                 else if (this.Tipo == Tipo_ObjetoBase.Tirante)
                 {
-                    _Cor = Conexoes.FuncoesCanvas.Cores.White.Clone();
+                    _Cor = DLM.desenho.FuncoesCanvas.Cores.White.Clone();
                 }
                 else
                 {
-                    return Conexoes.FuncoesCanvas.Cores.White.Clone();
+                    return DLM.desenho.FuncoesCanvas.Cores.White.Clone();
                 }
             }
             return _Cor;

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class ObjetoPurlin : ObjetoMultiLineBase
     {

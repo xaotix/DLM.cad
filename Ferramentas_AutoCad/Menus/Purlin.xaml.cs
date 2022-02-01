@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Ferramentas_DLM.Menus
+namespace DLM.cad.Menus
 {
     /// <summary>
     /// Interação lógica para Purlin.xam
@@ -25,9 +25,8 @@ namespace Ferramentas_DLM.Menus
         {
 
             InitializeComponent();
-            this.Title = $"xPurlin V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
-
-
+            this.Title = $"xPurlin V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            
         }
 
         private void terca_Click(object sender, RoutedEventArgs e)

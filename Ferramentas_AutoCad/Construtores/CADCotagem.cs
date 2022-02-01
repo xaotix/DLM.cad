@@ -4,7 +4,7 @@ using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
-using Ferramentas_DLM.Classes;
+using DLM.cad;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,10 +14,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     [Serializable]
     public class CADCotagem :CADBase
@@ -498,9 +498,9 @@ namespace Ferramentas_DLM
             }
             try
             {
-                var pts = s.Select(x => new Calculos.Contorno.Node(Math.Round(x.X, 1), Math.Round(x.Y,1), 0)).ToList();
+                var pts = s.Select(x => new DLM.desenho.Contorno.Node(Math.Round(x.X, 1), Math.Round(x.Y,1), 0)).ToList();
 
-                var contorno = new Calculos.Contorno.ContornoPontos(pts);
+                var contorno = new DLM.desenho.Contorno.ContornoPontos(pts);
 
                 var contorno_perfil = contorno.Calcular(this.concavidade_contorno, escala_contorno).SelectMany(x => x.nodes).Select(x => new Point3d(x.x, x.y, 0)).ToList();
 
@@ -512,8 +512,8 @@ namespace Ferramentas_DLM
             
                 if (tipo_desenho.StartsWith("C") && s2.Count>0)
                 {
-                    var pts_projecao = s2.Select(x => new Calculos.Contorno.Node(Math.Round(x.X, 1), Math.Round(x.Y, 1), 0)).ToList();
-                    var contorno_pr = new Calculos.Contorno.ContornoPontos(pts_projecao);
+                    var pts_projecao = s2.Select(x => new DLM.desenho.Contorno.Node(Math.Round(x.X, 1), Math.Round(x.Y, 1), 0)).ToList();
+                    var contorno_pr = new DLM.desenho.Contorno.ContornoPontos(pts_projecao);
 
 
                     //var contorno_projecao = contorno_pr.Calcular(this.concavidade_contorno, escala_contorno).SelectMany(x => x.nodes).Select(x => new Point3d(x.x, x.y, 0)).ToList();
@@ -995,7 +995,7 @@ namespace Ferramentas_DLM
             {
             sss = ArredondarJuntar(Getpts_linhas_perfil().Select(x=> new Coordenada(x)).ToList());
             }
-            var c = Calculos.Contorno.GrahamScan.convexHull(sss.Select(x => new Calculos.Contorno.Node(x.X, x.Y, 0)).ToList()).Select(x => new Point3d(x.x, x.y, 0)).ToList();
+            var c = DLM.desenho.Contorno.GrahamScan.convexHull(sss.Select(x => new DLM.desenho.Contorno.Node(x.X, x.Y, 0)).ToList()).Select(x => new Point3d(x.x, x.y, 0)).ToList();
             return c.Select(x=> new Coordenada(x)).ToList();
         }
 

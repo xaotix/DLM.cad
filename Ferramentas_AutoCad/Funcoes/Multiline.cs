@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 using System.IO;
 using Autodesk.AutoCAD.ApplicationServices;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
    public static class Multiline
     {
@@ -294,8 +294,8 @@ namespace Ferramentas_DLM
                 List<Point3d> lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
-                    var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
-                    var comp = Math.Abs(Calculos.Trigonometria.Distancia(lista.Max(x => x.X), lista.Max(x => x.Y), lista.Min(x => x.X), lista.Min(x => x.Y)));
+                    var angulo = Math.Round(Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new DLM.desenho.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
+                    var comp = Math.Abs(DLM.desenho.Trigonometria.Distancia(lista.Max(x => x.X), lista.Max(x => x.Y), lista.Min(x => x.X), lista.Min(x => x.Y)));
                     if (angulo >= 180)
                     {
                         angulo = angulo - 180;
@@ -318,7 +318,7 @@ namespace Ferramentas_DLM
                 List<Point3d> lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
-                    var angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new Calculos.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
+                    var angulo = Math.Round(Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new DLM.desenho.Ponto3D(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
                     var comp = lista.Max(x => x.X) - lista.Min(x => x.X);
                     if (angulo >= 180)
                     {

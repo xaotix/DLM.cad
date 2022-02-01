@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class PCQuantificar
     {
@@ -13,6 +13,7 @@ namespace Ferramentas_DLM
         {
             get
             {
+                
                 return this.Tipo == Tipo_Objeto.Bloco;
             }
         }

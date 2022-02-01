@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Ferramentas_DLM")]
+[assembly: AssemblyTitle("DLM.cad")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Ferramentas_DLM")]
+[assembly: AssemblyProduct("DLM.cad")]
 [assembly: AssemblyCopyright("Copyright ©  2021 - Daniel Lins Maciel")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public  class CADLine
     {
@@ -94,7 +94,7 @@ namespace Ferramentas_DLM
             this.EndPoint  = L.EndPoint;
             this.Layer = L.Layer;
             this.Linetype = L.Linetype;
-            this.Angulo = Ferramentas_DLM.Angulo.RadianosParaGraus(L.Angle);
+            this.Angulo = DLM.cad.Angulo.RadianosParaGraus(L.Angle);
             this.ObjectId = L.ObjectId;
         }
     }

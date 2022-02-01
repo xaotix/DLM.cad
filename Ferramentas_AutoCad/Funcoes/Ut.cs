@@ -6,7 +6,7 @@ using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using Conexoes;
-using Ferramentas_DLM.Classes;
+using DLM.cad;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,15 +18,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Ferramentas_DLM.Constantes;
+using static DLM.cad.Constantes;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.Internal.PropertyInspector;
 using System.Windows;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public static class Ut
     {
@@ -683,7 +683,7 @@ namespace Ferramentas_DLM
             if (s is Mline)
             {
                 Multiline.GetOrigens(s as Mline, out p1, out p2, out largura);
-                comprimento = Calculos.Trigonometria.Distancia(p1.X, p1.Y, p2.X, p2.Y);
+                comprimento = DLM.desenho.Trigonometria.Distancia(p1.X, p1.Y, p2.X, p2.Y);
             }
             else if (s is Line)
             {
@@ -701,7 +701,7 @@ namespace Ferramentas_DLM
                 largura = ((double)l.LineWeight);
             }
 
-            angulo = Math.Round(Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(p1.X, p1.Y, p1.Z), new Calculos.Ponto3D(p2.X, p2.Y, p2.Z))), 2);
+            angulo = Math.Round(Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(p1.X, p1.Y, p1.Z), new DLM.desenho.Ponto3D(p2.X, p2.Y, p2.Z))), 2);
             if (angulo > 180)
             {
                 angulo = angulo - 180;
@@ -723,7 +723,7 @@ namespace Ferramentas_DLM
             List<Line> retorno = new List<Line>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z), new Calculos.Ponto3D(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
+                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z), new DLM.desenho.Ponto3D(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -760,7 +760,7 @@ namespace Ferramentas_DLM
             List<Polyline> retorno = new List<Polyline>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(s.StartPoint.X, s.StartPoint.Y, 0), new Calculos.Ponto3D(s.EndPoint.X, s.EndPoint.Y, 0)));
+                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(s.StartPoint.X, s.StartPoint.Y, 0), new DLM.desenho.Ponto3D(s.EndPoint.X, s.EndPoint.Y, 0)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -779,7 +779,7 @@ namespace Ferramentas_DLM
             List<RotatedDimension> retorno = new List<RotatedDimension>();
             foreach (var s in LS.FindAll(x => x is RotatedDimension).Select(x => x as RotatedDimension))
             {
-                var angulo = Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(s.XLine1Point.X, s.XLine1Point.Y, 0), new Calculos.Ponto3D(s.XLine2Point.X, s.XLine2Point.Y, 0)));
+                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(s.XLine1Point.X, s.XLine1Point.Y, 0), new DLM.desenho.Ponto3D(s.XLine2Point.X, s.XLine2Point.Y, 0)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -1005,7 +1005,7 @@ namespace Ferramentas_DLM
             List<RotatedDimension> retorno = new List<RotatedDimension>();
             foreach (var s in LS.FindAll(x => x is RotatedDimension).Select(x => x as RotatedDimension))
             {
-                var angulo = Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(s.XLine1Point.X, s.XLine1Point.Y, s.XLine1Point.Z), new Calculos.Ponto3D(s.XLine2Point.X, s.XLine2Point.Y, s.XLine2Point.Z)));
+                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(s.XLine1Point.X, s.XLine1Point.Y, s.XLine1Point.Z), new DLM.desenho.Ponto3D(s.XLine2Point.X, s.XLine2Point.Y, s.XLine2Point.Z)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -1026,7 +1026,7 @@ namespace Ferramentas_DLM
             List<Line> retorno = new List<Line>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(s.StartPoint.X, s.StartPoint.Y, 0), new Calculos.Ponto3D(s.EndPoint.X, s.EndPoint.Y, 0)));
+                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(s.StartPoint.X, s.StartPoint.Y, 0), new DLM.desenho.Ponto3D(s.EndPoint.X, s.EndPoint.Y, 0)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -1045,7 +1045,7 @@ namespace Ferramentas_DLM
             List<Polyline> retorno = new List<Polyline>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(Calculos.Trigonometria.Angulo(new Calculos.Ponto3D(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z), new Calculos.Ponto3D(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
+                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z), new DLM.desenho.Ponto3D(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -1062,7 +1062,7 @@ namespace Ferramentas_DLM
 
         public static List<UIElement> GetCanvas(object obj, Point p0, double escala, Transaction tr, double opacidade, double comp_min = 50)
         {
-            var cor = Conexoes.FuncoesCanvas.Cores.White;
+            var cor = DLM.desenho.FuncoesCanvas.Cores.White;
             List<UIElement> retorno = new List<UIElement>();
             if (obj is BlockReference)
             {
@@ -1094,7 +1094,7 @@ namespace Ferramentas_DLM
                                     p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
                                     p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
 
-                                    retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                                    retorno.Add(DLM.desenho.FuncoesCanvas.Linha(p1, p2, cor));
                                 }
                              
                             }
@@ -1120,7 +1120,7 @@ namespace Ferramentas_DLM
                             p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
                             p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
                             cor.Opacity = opacidade;
-                            retorno.Add(Conexoes.FuncoesCanvas.Linha(p1, p2, cor));
+                            retorno.Add(DLM.desenho.FuncoesCanvas.Linha(p1, p2, cor));
                         }
 
                     }
@@ -1545,7 +1545,7 @@ namespace Ferramentas_DLM
         {
             List<List<Point3d>> pts2 = new List<List<Point3d>>();
             List<Point3d> pts = new List<Point3d>();
-            var cor = Conexoes.FuncoesCanvas.Cores.White;
+            var cor = DLM.desenho.FuncoesCanvas.Cores.White;
             if (obj is Line)
             {
                 var tt = obj as Line;

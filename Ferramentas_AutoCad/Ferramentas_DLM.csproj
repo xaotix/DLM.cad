@@ -83,7 +83,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Conexoes, Version=4.19.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Conexoes, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\Conexoes.dll</HintPath>
     </Reference>
@@ -95,27 +95,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\DataGridFilterLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\..\DLLS\Ionic.Zip.dll</HintPath>
-    </Reference>
     <Reference Include="MIConvexHull, Version=1.1.19.1018, Culture=neutral, PublicKeyToken=2644b6f8be52c998, processorArchitecture=MSIL">
       <HintPath>..\packages\MIConvexHull.1.1.19.1019\lib\netstandard1.0\MIConvexHull.dll</HintPath>
-    </Reference>
-    <Reference Include="mysql.data, Version=6.9.10.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\DLLS\mysql.data.dll</HintPath>
-    </Reference>
-    <Reference Include="MySqlBackup, Version=2.0.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\DLLS\MySqlBackup.dll</HintPath>
-    </Reference>
-    <Reference Include="NDbfReader, Version=2.0.0.0, Culture=neutral, PublicKeyToken=421d1ecd09787b1d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\DLLS\NDbfReader.dll</HintPath>
-    </Reference>
-    <Reference Include="netDxf, Version=2.3.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\DLLS\netDxf.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

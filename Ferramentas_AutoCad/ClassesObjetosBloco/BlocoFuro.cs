@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ferramentas_DLM.Classes
+namespace DLM.cad
 {
     public class BlocoFuro:BlocoTag
     {

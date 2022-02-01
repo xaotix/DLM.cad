@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     /// <summary>
     /// Interação lógica para App.xaml

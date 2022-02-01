@@ -1,13 +1,13 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using DB;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
    public class BlocoTag
     {
@@ -113,7 +113,7 @@ namespace Ferramentas_DLM
 
             if (carregar)
             {
-                var bl = Ferramentas_DLM.Atributos.GetBlocoTag(bloco);
+                var bl = DLM.cad.Atributos.GetBlocoTag(bloco);
 
                 this.Atributos =new List<CelulaTag>();
                 this.Atributos.AddRange(bl.Atributos);
@@ -125,12 +125,12 @@ namespace Ferramentas_DLM
     public class TabelaBlocoTag
     {
 
-        public DB.Tabela GetTabela()
+        public DLM.db.Tabela GetTabela()
         {
-            DB.Tabela tb = new Tabela(this.Nome);
+            DLM.db.Tabela tb = new DLM.db.Tabela(this.Nome);
             foreach(BlocoTag bl in this.Blocos)
             {
-                tb.Linhas.Add(new DB.Linha(bl.Atributos.Select(x=> new Celula(x.Coluna,x.Valor)).ToList()));
+                tb.Linhas.Add(new DLM.db.Linha(bl.Atributos.Select(x=> new DLM.db.Celula(x.Coluna,x.Valor)).ToList()));
             }
             return tb;
         }

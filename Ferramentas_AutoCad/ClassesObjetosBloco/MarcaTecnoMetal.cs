@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Ferramentas_DLM.Constantes;
+using static DLM.cad.Constantes;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class MarcaTecnoMetal
     {
@@ -231,7 +231,7 @@ namespace Ferramentas_DLM
             }
             return 0;
         }
-        public Conexoes.TecnoMetal_PerfilDBF GetPerfil()
+        public DLM.cam.PerfilTecnoMetal GetPerfil()
         {
             return Conexoes.DBases.GetdbTecnoMetal().Get(this.Perfil);
         }

@@ -2,7 +2,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
-using Ferramentas_DLM.Classes;
+using DLM.cad;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,10 +11,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
+using DLM.vars;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     [Serializable]
     public class CADPurlin : CADBase
@@ -1236,7 +1237,7 @@ namespace Ferramentas_DLM
             p.id_peca = ID_PECA;
             //p.SetPeca(Conexoes.DBases.GetBancoRM().GetTercas().Find(x => x.id_db == ID_PECA));
             p.Objeto = bloco;
-            p.Tipo_Corrente = Conexoes.Tipo_Corrente_Purlin.Manual;
+            p.Tipo_Corrente = Tipo_Corrente_Purlin.Manual;
             p.Rebater_Furos = REB;
             p.Corrente_SBR = SBR;
 
@@ -1259,7 +1260,7 @@ namespace Ferramentas_DLM
                         p.Correntes_Direita.Add(s);
                 }
             }
-            p.Tipo_Corrente = Conexoes.Tipo_Corrente_Purlin.Manual;
+            p.Tipo_Corrente = Tipo_Corrente_Purlin.Manual;
 
             //FURO MANUAL
             if (FE.Length > 0)
@@ -1279,8 +1280,8 @@ namespace Ferramentas_DLM
                 }
             }
 
-            p.Esquerda.Tipo_Furo_FB = Conexoes.Tipo_Furo_FB.Manual;
-            p.Direita.Tipo_Furo_FB = Conexoes.Tipo_Furo_FB.Manual;
+            p.Esquerda.Tipo_Furo_FB = Tipo_Furo_FB.Manual;
+            p.Direita.Tipo_Furo_FB = Tipo_Furo_FB.Manual;
 
 
             //FLANGE BRACES
@@ -1306,13 +1307,13 @@ namespace Ferramentas_DLM
 
             if (AE>0)
             {
-                p.Esquerda.Tipo_Furo_Apoio = Conexoes.Tipo_Furo_Purlin.Espelhado;
+                p.Esquerda.Tipo_Furo_Apoio = Tipo_Furo_Purlin.Espelhado;
                 p.Esquerda.Furo_Apoio_Offset = AE;
             }
 
             if (AD > 0)
             {
-                p.Esquerda.Tipo_Furo_Apoio = Conexoes.Tipo_Furo_Purlin.Espelhado;
+                p.Esquerda.Tipo_Furo_Apoio = Tipo_Furo_Purlin.Espelhado;
                 p.Esquerda.Furo_Apoio_Offset = AD;
             }
             /*falta ajustar pra buscar pela espessura e pela secao*/

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DLM.db;
+using DLM.encoder;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     /// <summary>
     /// Interação lógica para MenuMarcas.xam
@@ -55,7 +57,7 @@ namespace Ferramentas_DLM
         public double Quantidade { get; set; } = 1;
         public double Escala { get; set; } = 1;
 
-        public static List<DB.Valor> lista_mercadorias { get; set; } = new List<DB.Valor>();
+        public static List<Valor> lista_mercadorias { get; set; } = new List<Valor>();
         public string NomeFim
         {
             get
@@ -113,8 +115,8 @@ namespace Ferramentas_DLM
         public static Conexoes.Chapa db_chapa { get; set; }
         public static Conexoes.RMA db_unitario { get; set; }
         public static Conexoes.Bobina db_bobina { get; set; }
-        public static Conexoes.TecnoMetal_PerfilDBF db_perfil { get; set; }
-        public static Conexoes.TecnoMetal_PerfilDBF db_perfil_m2 { get; set; }
+        public static DLM.cam.PerfilTecnoMetal db_perfil { get; set; }
+        public static DLM.cam.PerfilTecnoMetal db_perfil_m2 { get; set; }
 
 
 
@@ -126,7 +128,7 @@ namespace Ferramentas_DLM
             try
             {
 
-                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
+                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
 
                 this.combo_mercadoria.ItemsSource = Core.TecnoMetal.GetMercadorias();
                 this.combo_material.ItemsSource = Core.TecnoMetal.GetMateriais();
@@ -165,7 +167,7 @@ namespace Ferramentas_DLM
         public List<MarcaTecnoMetal> Posicoes { get; set; } = new List<MarcaTecnoMetal>();
         public void GetMarcas()
         {
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             Marcas = Core.TecnoMetal.GetMarcas(ref erros).ToList();
             Posicoes = Marcas.SelectMany(x => x.GetPosicoes()).ToList();
         }
@@ -197,7 +199,7 @@ namespace Ferramentas_DLM
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
-                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis().FindAll(x => x.Tipo == DLMCam.TipoPerfil.Chapa_Xadrez), null, "Selecione");
+                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis().FindAll(x => x.Tipo == DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione");
                     if (db_perfil_m2 != null)
                     {
                         perfil.Content = db_perfil_m2.ToString();
@@ -237,7 +239,7 @@ namespace Ferramentas_DLM
                 Conexoes.Utilz.Alerta("Valor escala inválido.");
                 return;
             }
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             var ms = Core.TecnoMetal.GetMarcas(ref erros).ToList();
             var pos = ms.SelectMany(x => x.GetPosicoes()).ToList();
 
@@ -588,35 +590,35 @@ namespace Ferramentas_DLM
         private void gerar_dbf(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             Core.gerardbf();
         }
 
         private void gerar_dbf_3d(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             Core.gerardbf3d();
         }
 
         private void mercadorias(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             Core.mercadorias();
         }
 
         private void materiais(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             Core.materiais();
         }
 
         private void tratamentos(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             Core.tratamentos();
         }
 

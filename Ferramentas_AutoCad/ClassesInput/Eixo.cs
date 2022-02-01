@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class Eixo
     {

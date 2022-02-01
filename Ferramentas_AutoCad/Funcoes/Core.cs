@@ -3,7 +3,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
-using Ferramentas_DLM.Lisp;
+using DLM.cad.Lisp;
 using MIConvexHull;
 using System;
 using System.Collections;
@@ -13,15 +13,16 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.EditorInput;
 using System.Runtime.InteropServices;
 using Autodesk.AutoCAD.Internal.Reactors;
+using DLM.encoder;
 
-[assembly: CommandClass(typeof(Ferramentas_DLM.Core))]
+[assembly: CommandClass(typeof(DLM.cad.Core))]
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class Core
     {
@@ -381,7 +382,7 @@ namespace Ferramentas_DLM
         public static void tabelatecnometalauto()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             pp.InserirTabelaAuto(ref erros);
 
             Conexoes.Utilz.ShowReports(erros);
@@ -423,13 +424,13 @@ namespace Ferramentas_DLM
         {
 
 
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             var tbl = TecnoMetal.GerarDBF(ref erros,Conexoes.Utilz.Pergunta("Atualizar CAMs?\nAo ativar essa opção também será verificado CAM x Projeto"));
 
             if (File.Exists(tbl.Banco))
             {
           
-                if(erros.FindAll(x=>x.Tipo == Conexoes.TipoReport.Crítico).Count>0)
+                if(erros.FindAll(x=>x.Tipo == DLM.vars.TipoReport.Crítico).Count>0)
                 {
                     Conexoes.Utilz.ShowReports(erros);
                 }
@@ -526,7 +527,7 @@ namespace Ferramentas_DLM
                     foreach (var s in arqs)
                     {
 
-                        DLMCam.ReadCam cam = new DLMCam.ReadCam(s);
+                        DLM.cam.ReadCam cam = new DLM.cam.ReadCam(s);
                         Blocos.CamToMarcaSimples(cam, p0, Cotas.GetEscala());
 
                         p0 = new Point2d(p0.X + offset, p0.Y);
@@ -672,7 +673,7 @@ namespace Ferramentas_DLM
             Ut.IrLayout();
             Ut.SetLts(10);
             Ut.ZoomExtend();
-            List<Conexoes.Report> erros = new List<Conexoes.Report>();
+            List<Report> erros = new List<Report>();
             TecnoMetal.ApagarTabelaAuto();
             TecnoMetal.PreencheSelo(true);
 

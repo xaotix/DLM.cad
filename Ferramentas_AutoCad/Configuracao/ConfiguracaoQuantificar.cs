@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class ConfiguracaoQuantificar
     {

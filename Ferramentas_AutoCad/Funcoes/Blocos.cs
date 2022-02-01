@@ -10,12 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public static class Blocos
     {
@@ -439,7 +439,7 @@ namespace Ferramentas_DLM
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
         }
-        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, Conexoes.TecnoMetal_PerfilDBF perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
+        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, DLM.cam.PerfilTecnoMetal perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -577,7 +577,7 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void MarcaElemM2(Point2d p0, Conexoes.TecnoMetal_PerfilDBF pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemM2(Point2d p0, DLM.cam.PerfilTecnoMetal pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -670,12 +670,12 @@ namespace Ferramentas_DLM
             }
 
         }
-        public static void CamToMarcaSimples(DLMCam.ReadCam cam, Point2d origem, double escala)
+        public static void CamToMarcaSimples(DLM.cam.ReadCam cam, Point2d origem, double escala)
         {
 
-            if (cam.Familia == DLMCam.Familia.Dobrado | cam.Familia == DLMCam.Familia.Laminado | cam.Familia == DLMCam.Familia.Soldado && !cam.Nome.Contains("_"))
+            if (cam.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contains("_"))
             {
-                TecnoMetal_PerfilDBF perfil = Conexoes.DBases.GetdbTecnoMetal().Get(cam.Descricao);
+                var perfil = Conexoes.DBases.GetdbTecnoMetal().Get(cam.Descricao);
                 if (perfil != null)
                 {
                     if (perfil.Nome == "")
@@ -690,7 +690,7 @@ namespace Ferramentas_DLM
 
 
             }
-            else if (cam.Familia == DLMCam.Familia.Chapa)
+            else if (cam.Familia == DLM.vars.CAM_FAMILIA.Chapa)
             {
                 MarcaChapa(origem, new ConfiguracaoChapa_Dobrada(cam), Tipo_Bloco.Chapa, escala);
             }

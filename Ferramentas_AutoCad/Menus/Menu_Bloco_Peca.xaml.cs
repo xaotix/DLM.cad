@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DLM.encoder;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Ferramentas_DLM.Menus
+namespace DLM.cad.Menus
 {
     /// <summary>
     /// Interação lógica para Menu_Bloco_Peca.xam
@@ -61,7 +62,7 @@ namespace Ferramentas_DLM.Menus
             this.lista_perfis_ctv.ItemsSource = perfis_mapeaveis;
 
 
-            this.Title = $"Indicações Montagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{Conexoes.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"Indicações Montagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
         }
         public string arquivo { get; set; } = "";
         private void set_imagem(object sender, SelectionChangedEventArgs e)
@@ -239,7 +240,7 @@ namespace Ferramentas_DLM.Menus
             }
             else if(tipo_selecionado == Constantes.ATT_TECNOMETAL)
             {
-                List<Conexoes.Report> erros = new List<Conexoes.Report>();
+                List<Report> erros = new List<Report>();
                 marcas_tecnometal = this.TecnoMetal.GetMarcasPranchas(ref erros);
                 if (marcas_tecnometal.Count > 0)
                 {

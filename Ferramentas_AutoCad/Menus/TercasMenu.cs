@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public partial class TercasMenu : Form
     {
@@ -16,7 +16,7 @@ namespace Ferramentas_DLM
         {
             InitializeComponent();
             Conexoes.DBases.GetBancoRM().GetTercas();
-            this.Text = $"xPurlin V.{Conexoes.Utilz.GetVersao(Constantes.DLL_Local)} [{Conexoes.Cfg.Init.MySQL_Servidor}]";
+            this.Text = $"xPurlin V.{Conexoes.Utilz.GetVersao(Constantes.DLL_Local)} [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
         }
         public string acao { get; set; } = "";
         public int id_terca { get; set; } = 1763;

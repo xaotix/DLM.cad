@@ -7,9 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Ferramentas_DLM.CAD;
+using static DLM.cad.CAD;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class CADMonitoramento :CADBase
     {
