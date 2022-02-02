@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using DLM.vars;
 using System;
 using System.Collections.Generic;
 
@@ -58,7 +59,7 @@ namespace DLM.cad
             {
                 var tolerancia = this.Get("TOLE").Double();
 
-                double diametro = Conexoes.Utilz.Double(this.Bloco.Name.Replace("M", "").Replace(Constantes.ATT_N, ""));
+                double diametro = Conexoes.Utilz.Double(this.Bloco.Name.Replace("M", "").Replace(CADVars.ATT_N, ""));
                 this.Diametro = diametro;
                 if (tolerancia !=0)
                 {

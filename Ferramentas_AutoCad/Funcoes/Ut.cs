@@ -18,7 +18,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static DLM.cad.Constantes;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;

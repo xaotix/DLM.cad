@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DLM.vars;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,7 @@ namespace DLM.cad.Menus
         {
 
             InitializeComponent();
-            this.Title = $"xPurlin V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"xPurlin V." + Conexoes.Utilz.GetVersao(CADVars.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
             
         }
 

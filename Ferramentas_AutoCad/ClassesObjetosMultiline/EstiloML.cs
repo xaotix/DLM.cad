@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DLM.vars;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace DLM.cad
         }
         public EstilosML()
         {
-            this.Arquivos = Conexoes.Utilz.GetArquivos(Constantes.Raiz_MlStyles, "*.mln").Select(x => new EstiloML(x)).ToList();
+            this.Arquivos = Conexoes.Utilz.GetArquivos(CADVars.Raiz_MlStyles, "*.mln").Select(x => new EstiloML(x)).ToList();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using DLM.vars;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -64,7 +65,7 @@ namespace DLM.cad
                     }
                     if (pf.Nome != "")
                     {
-                        Blocos.MarcaPerfil(p0, marca, comprimento, pf,1,"CIVIL 350", "SEM PINTURA");
+                        Blocos.MarcaPerfil(p0, marca, comprimento, pf,1, Cfg.Init.Material, "SEM PINTURA");
 
                         if (c == 5)
                         {

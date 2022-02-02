@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DLM.vars;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,7 +18,7 @@ namespace DLM.cad
         {
             this.mm = mm;
             InitializeComponent();
-            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(CADVars.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
             opcoes.SelectedObject = this.mm;
             getvars(this.mm);
 

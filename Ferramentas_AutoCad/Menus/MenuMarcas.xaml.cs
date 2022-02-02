@@ -1,5 +1,6 @@
 ﻿using DLM.db;
 using DLM.encoder;
+using DLM.vars;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +129,7 @@ namespace DLM.cad
             try
             {
 
-                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Constantes.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(CADVars.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
 
                 this.combo_mercadoria.ItemsSource = Core.TecnoMetal.GetMercadorias();
                 this.combo_material.ItemsSource = Core.TecnoMetal.GetMateriais();
@@ -415,7 +416,7 @@ namespace DLM.cad
 
             if(this.Sufix_Count ==1)
             {
-                FLayer.Desligar(Constantes.LayersMarcasDesligar);
+                FLayer.Desligar(CADVars.LayersMarcasDesligar);
             }
 
             this.GetMarcas();
@@ -509,7 +510,7 @@ namespace DLM.cad
                         perfil.Content = db_chapa.ToString();
                     }
                     combo_mercadoria.Text = "CHAPA";
-                    combo_material.Text = "CIVIL 350";
+                    combo_material.Text = Cfg.Init.Material;
                     this.tratamento.Visibility = Visibility.Visible;
                     break;
                 case Tipo_Bloco.Perfil:
@@ -517,7 +518,7 @@ namespace DLM.cad
                     {
                         perfil.Content = db_perfil.ToString();
                     }
-                    combo_material.Text = "CIVIL 350";
+                    combo_material.Text = Cfg.Init.Material;
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     if (db_perfil_m2 != null)
@@ -565,13 +566,13 @@ namespace DLM.cad
         private void desliga_layer(object sender, RoutedEventArgs e)
         {
 
-            FLayer.Desligar(Constantes.LayersMarcasDesligar);
+            FLayer.Desligar(CADVars.LayersMarcasDesligar);
             this.Visibility = Visibility.Collapsed;
         }
 
         private void liga_layer(object sender, RoutedEventArgs e)
         {
-            FLayer.Ligar(Constantes.LayersMarcasDesligar);
+            FLayer.Ligar(CADVars.LayersMarcasDesligar);
             this.Visibility = Visibility.Collapsed;
         }
 
@@ -797,7 +798,7 @@ namespace DLM.cad
 
         private void abre_versionamento(object sender, RoutedEventArgs e)
         {
-            Constantes.Versionamento();
+            CADVars.Versionamento();
         }
 
         private void rodar_macros(object sender, RoutedEventArgs e)

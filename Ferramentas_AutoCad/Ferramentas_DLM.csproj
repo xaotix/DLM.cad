@@ -134,6 +134,7 @@
     <Compile Include="ClassesObjetosMultiline\ObjetoPurlin.cs" />
     <Compile Include="ClassesInput\GradeEixos.cs" />
     <Compile Include="ClassesInput\VaoObra.cs" />
+    <Compile Include="Funcoes\CADVars.cs" />
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />
     <Compile Include="Funcoes\Linha.cs" />

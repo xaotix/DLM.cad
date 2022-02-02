@@ -19,6 +19,7 @@ using Autodesk.AutoCAD.EditorInput;
 using System.Runtime.InteropServices;
 using Autodesk.AutoCAD.Internal.Reactors;
 using DLM.encoder;
+using DLM.vars;
 
 [assembly: CommandClass(typeof(DLM.cad.Core))]
 
@@ -152,10 +153,10 @@ namespace DLM.cad
         [CommandMethod("desenharmline")]
         public static void desenharmline()
         {
-            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(FuncoesCAD.GetArquivosMlStyles().GetEstilos(), null);
             if(estilo!=null)
             {
-                var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
+                var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);
                 if (ml!=null)
                 {
                     var pts = Ut.PedirPontos3D();
@@ -604,7 +605,7 @@ namespace DLM.cad
         [CommandMethod("offtec")]
         public static void offtec()
         {
-            FLayer.Desligar(Constantes.LayersMarcasDesligar);
+            FLayer.Desligar(CADVars.LayersMarcasDesligar);
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using DLM.vars;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,18 +64,18 @@ namespace DLM.cad
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE TERÇAS");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Tercas_Titulo, p0, escala, 0, ht);
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
                     foreach (var p in purlins)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add(Constantes.ATT_N, p.Sequencia.ToString().PadLeft(2, '0'));
-                        hp.Add(Constantes.ATT_Perfil, p.Nome);
-                        hp.Add(Constantes.ATT_Quantidade, p.Quantidade.ToString().PadLeft(3,'0'));
-                        hp.Add(Constantes.ATT_Comprimento, p.Comprimento.ToString().PadLeft(5,'0'));
-                        hp.Add(Constantes.ATT_Espessura, p.Espessura.ToString("N2").PadLeft(5, '0'));
-                        hp.Add(Constantes.ATT_Destino, Constantes.ATT_RME);
-                        Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
+                        hp.Add(CADVars.ATT_N, p.Sequencia.ToString().PadLeft(2, '0'));
+                        hp.Add(CADVars.ATT_Perfil, p.Nome);
+                        hp.Add(CADVars.ATT_Quantidade, p.Quantidade.ToString().PadLeft(3,'0'));
+                        hp.Add(CADVars.ATT_Comprimento, p.Comprimento.ToString().PadLeft(5,'0'));
+                        hp.Add(CADVars.ATT_Espessura, p.Espessura.ToString("N2").PadLeft(5, '0'));
+                        hp.Add(CADVars.ATT_Destino, CADVars.ATT_RME);
+                        Blocos.Inserir(acDoc, CADVars.BLK_TAB_Tercas, p0, escala, 0, hp);
                         p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
                     }
                 
@@ -99,16 +100,16 @@ namespace DLM.cad
                 y0 = p0.Y;
                 Hashtable htt = new Hashtable();
                 htt.Add("TITULO", "LISTA DE TIRANTES");
-                Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes_Titulo, p0, escala, 0, htt);
+                Blocos.Inserir(acDoc, CADVars.BLK_TAB_Tirantes_Titulo, p0, escala, 0, htt);
                 p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
                 foreach (var p in trs)
                 {
                     Hashtable ht = new Hashtable();
                     ht.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
-                    ht.Add(Constantes.ATT_Peca, p.Marca);
-                    ht.Add(Constantes.ATT_Quantidade, p.Qtd.ToString().PadLeft(3, '0'));
-                    ht.Add(Constantes.ATT_Comprimento, p.Comprimento.ToString().PadLeft(5, '0'));
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Tirantes, p0, escala, 0, ht);
+                    ht.Add(CADVars.ATT_Peca, p.Marca);
+                    ht.Add(CADVars.ATT_Quantidade, p.Qtd.ToString().PadLeft(3, '0'));
+                    ht.Add(CADVars.ATT_Comprimento, p.Comprimento.ToString().PadLeft(5, '0'));
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_Tirantes, p0, escala, 0, ht);
                     p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
                 }
             }
@@ -132,16 +133,16 @@ namespace DLM.cad
                 y0 = p0.Y;
                 Hashtable ht = new Hashtable();
                 ht.Add("TITULO", "LISTA DE TIRANTES");
-                Blocos.Inserir(acDoc, Constantes.Tabela_Correntes_Titulo, p0, escala, 0, ht);
+                Blocos.Inserir(acDoc, CADVars.BLK_TAB_Correntes_Titulo, p0, escala, 0, ht);
                 p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
                 foreach (var p in trs)
                 {
                     Hashtable hp = new Hashtable();
-                    hp.Add(Constantes.ATT_N, p.Sequencia);
-                    hp.Add(Constantes.ATT_Perfil, p.Marca);
-                    hp.Add(Constantes.ATT_Quantidade, p.Qtd.ToString().PadLeft(3,'0'));
-                    hp.Add(Constantes.ATT_Vao, p.Vao.ToString());
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Correntes, p0, escala, 0, hp);
+                    hp.Add(CADVars.ATT_N, p.Sequencia);
+                    hp.Add(CADVars.ATT_Perfil, p.Marca);
+                    hp.Add(CADVars.ATT_Quantidade, p.Qtd.ToString().PadLeft(3,'0'));
+                    hp.Add(CADVars.ATT_Vao, p.Vao.ToString());
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_Correntes, p0, escala, 0, hp);
                     p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
                 }
             }
@@ -168,19 +169,19 @@ namespace DLM.cad
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Tercas_Titulo, p0, escala, 0, ht);
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
                     int seq = 1;
                     foreach (var p in RMES)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add(Constantes.ATT_N, seq.ToString().PadLeft(2, '0'));
-                        hp.Add(Constantes.ATT_Perfil, p.CODIGOFIM);
-                        hp.Add(Constantes.ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
-                        hp.Add(Constantes.ATT_Comprimento, p.COMP.ToString().PadLeft(5, '0'));
-                        hp.Add(Constantes.ATT_Espessura, p.ESP.ToString("N2").PadLeft(5, '0'));
-                        hp.Add(Constantes.ATT_Destino, "RM");
-                        Blocos.Inserir(acDoc, Constantes.Tabela_Tercas, p0, escala, 0, hp);
+                        hp.Add(CADVars.ATT_N, seq.ToString().PadLeft(2, '0'));
+                        hp.Add(CADVars.ATT_Perfil, p.CODIGOFIM);
+                        hp.Add(CADVars.ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
+                        hp.Add(CADVars.ATT_Comprimento, p.COMP.ToString().PadLeft(5, '0'));
+                        hp.Add(CADVars.ATT_Espessura, p.ESP.ToString("N2").PadLeft(5, '0'));
+                        hp.Add(CADVars.ATT_Destino, "RM");
+                        Blocos.Inserir(acDoc, CADVars.BLK_TAB_Tercas, p0, escala, 0, hp);
                         p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
                         seq++;
                     }
@@ -209,18 +210,18 @@ namespace DLM.cad
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Almox_Titulo, p0, escala, 0, ht);
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_Almox_Titulo, p0, escala, 0, ht);
                     p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
                     int seq = 1;
                     foreach (var p in RMAS)
                     {
                         Hashtable htt = new Hashtable();
-                        htt.Add(Constantes.ATT_Quantidade, p.Quantidade);
-                        htt.Add(Constantes.ATT_Descricao, p.DESC);
+                        htt.Add(CADVars.ATT_Quantidade, p.Quantidade);
+                        htt.Add(CADVars.ATT_Descricao, p.DESC);
                         htt.Add("UNID", p.UNIDADE);
-                        htt.Add(Constantes.ATT_Cod_SAP, p.SAP);
+                        htt.Add(CADVars.ATT_Cod_SAP, p.SAP);
 
-                        Blocos.Inserir(acDoc, Constantes.Tabela_Almox, p0, escala, 0, htt);
+                        Blocos.Inserir(acDoc, CADVars.BLK_TAB_Almox, p0, escala, 0, htt);
                         p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
                         seq++;
                     }
@@ -267,15 +268,15 @@ namespace DLM.cad
                     y0 = p1.Y;
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA " + pacote[0].Familia.ToUpper());
-                    Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Titulo, p1, escala, 0, ht);
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_Pecas_Titulo, p1, escala, 0, ht);
                     p1 = new Point2d(p1.X, p1.Y - (escala * 12.86));
                     int seq = 1;
                     var linhas = pacote.OrderBy(x => x.Numero + "|" + x.Nome).ToList();
                     foreach (var p in linhas)
                     {
                         Hashtable hp = new Hashtable();
-                        hp.Add(Constantes.ATT_Marca, p.Nome);
-                        if (p.Nome_Bloco.StartsWith(Constantes.PC_Quantificar) && !p.Nome_Bloco.Contains(Constantes.ATT_Texto))
+                        hp.Add(CADVars.ATT_Marca, p.Nome);
+                        if (p.Nome_Bloco.StartsWith(CADVars.PC_Quantificar) && !p.Nome_Bloco.Contains(CADVars.ATT_Texto))
                         {
                             Point2d pcentro = new Point2d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152));
                             Hashtable bl = new Hashtable();
@@ -284,26 +285,26 @@ namespace DLM.cad
                             //    bl.Add(obj.Coluna, obj.Valor);
                             //}
                            
-                            bl.Add(Constantes.ATT_N, p.Atributos.Get(Constantes.ATT_N).Valor);
-                            bl.Add(Constantes.ATT_Familia, p.Familia);
-                            bl.Add(Constantes.ATT_Tipo, p.Tipo);
-                            bl.Add(Constantes.ATT_Comprimento, p.Comprimento);
-                            bl.Add(Constantes.ATT_Descricao, p.Descricao);
-                            bl.Add(Constantes.ATT_Destino, p.Destino);
-                            bl.Add(Constantes.ATT_Quantidade, p.Quantidade);
+                            bl.Add(CADVars.ATT_N, p.Atributos.Get(CADVars.ATT_N).Valor);
+                            bl.Add(CADVars.ATT_Familia, p.Familia);
+                            bl.Add(CADVars.ATT_Tipo, p.Tipo);
+                            bl.Add(CADVars.ATT_Comprimento, p.Comprimento);
+                            bl.Add(CADVars.ATT_Descricao, p.Descricao);
+                            bl.Add(CADVars.ATT_Destino, p.Destino);
+                            bl.Add(CADVars.ATT_Quantidade, p.Quantidade);
 
                             Blocos.Inserir(acDoc, p.Nome_Bloco, pcentro, escala * .8, 0, bl);
 
                         }
                         else
                         {
-                            hp.Add(Constantes.ATT_N, p.Numero);
+                            hp.Add(CADVars.ATT_N, p.Numero);
                         }
-                        hp.Add(Constantes.ATT_Quantidade, p.Quantidade);
-                        hp.Add(Constantes.ATT_Destino, p.Destino);
+                        hp.Add(CADVars.ATT_Quantidade, p.Quantidade);
+                        hp.Add(CADVars.ATT_Destino, p.Destino);
                         hp.Add("DESCRICAO", p.Descricao);
 
-                        Blocos.Inserir(acDoc, Constantes.Tabela_Pecas_Linha, p1, escala, 0, hp);
+                        Blocos.Inserir(acDoc, CADVars.BLK_TAB_Pecas_Linha, p1, escala, 0, hp);
                         p1 = new Point2d(p1.X, p1.Y - (escala * 6.43));
                         seq++;
                     }
@@ -340,18 +341,18 @@ namespace DLM.cad
                     int decimais = 4;
                     string dec_str = "N4";
 
-                    var pecas = pecas_tecnometal.GroupBy(x => x.Get(Constantes.ATT_MAR).Valor).Select(X => X.ToList());
+                    var pecas = pecas_tecnometal.GroupBy(x => x.Get(T_DBF1.MAR_PEZ.ToString()).Valor).Select(X => X.ToList());
                     double total_superficie = 0;
                     double total_peso = 0;
                     foreach (var pc in pecas)
                     {
-                        var marca = pc.FindAll(x => x.Get(Constantes.ATT_POS).Valor == "");
-                        var posics = pc.FindAll(x => x.Get(Constantes.ATT_POS).Valor != "");
-                        int qtd = marca[0].Get(Constantes.ATT_QTD).Int();
-                        double peso_unit = posics.Sum(x => x.Get(Constantes.ATT_PES).Double() * x.Get(Constantes.ATT_QTD).Int());
-                        double sup_unit = posics.Sum(x => x.Get(Constantes.ATT_SUP).Double() * x.Get(Constantes.ATT_QTD).Int());
-                        marca[0].Set(Constantes.ATT_PES, peso_unit);
-                        marca[0].Set(Constantes.ATT_SUP, sup_unit);
+                        var marca = pc.FindAll(x => x.Get(T_DBF1.POS_PEZ.ToString()).Valor == "");
+                        var posics = pc.FindAll(x => x.Get(T_DBF1.POS_PEZ.ToString()).Valor != "");
+                        int qtd = marca[0].Get(T_DBF1.QTA_PEZ.ToString()).Int();
+                        double peso_unit = posics.Sum(x => x.Get(T_DBF1.PUN_LIS.ToString()).Double() * x.Get(T_DBF1.QTA_PEZ.ToString()).Int());
+                        double sup_unit = posics.Sum(x => x.Get(T_DBF1.SUN_LIS.ToString()).Double() * x.Get(T_DBF1.QTA_PEZ.ToString()).Int());
+                        marca[0].Set(T_DBF1.PUN_LIS.ToString(), peso_unit);
+                        marca[0].Set(T_DBF1.SUN_LIS.ToString(), sup_unit);
                         total_superficie += (sup_unit * qtd);
                         total_peso += (peso_unit * qtd);
                     }
@@ -361,7 +362,7 @@ namespace DLM.cad
 
                     htt.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
                     htt.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, htt);
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal_Titulo, p0, fator_escala, 0, htt);
                     p0 = new Point2d(p0.X, p0.Y - (fator_escala * 20.4));
                     int seq = 1;
                     foreach(var Marca in pecas)
@@ -370,36 +371,36 @@ namespace DLM.cad
 
                         foreach (var Pos in Marca)
                         {
-                            string descricao = Pos.Get(Constantes.ATT_MER).Valor;
-                            if(Pos.Get(Constantes.ATT_POS).Valor != "")
+                            string descricao = Pos.Get(T_DBF1.DES_PEZ.ToString()).Valor;
+                            if(Pos.Get(T_DBF1.POS_PEZ.ToString()).Valor != "")
                             {
-                                descricao = Pos.Get(Constantes.ATT_PER).Valor;
+                                descricao = Pos.Get(T_DBF1.NOM_PRO.ToString()).Valor;
                                 if (descricao == "")
                                 {
                                     descricao =
-                                        "Ch. " + Pos.Get(Constantes.ATT_ESP).Double().ToString("N2").Replace(",", "") +
-                                        " x " + Pos.Get(Constantes.ATT_LRG).Double().ToString("N1").Replace(",", "") +
-                                        " x " + Pos.Get(Constantes.ATT_CMP).Double().ToString("N1").Replace(",", "");
+                                        "Ch. " + Pos.Get(T_DBF1.SPE_PRO.ToString()).Double().ToString("N2").Replace(",", "") +
+                                        " x " + Pos.Get(T_DBF1.LAR_PRO.ToString()).Double().ToString("N1").Replace(",", "") +
+                                        " x " + Pos.Get(T_DBF1.LUN_PRO.ToString()).Double().ToString("N1").Replace(",", "");
                                 }
                             }
 
-                            var tipo = Pos.Get(Constantes.ATT_REC).ToString();
+                            var tipo = Pos.Get(T_DBF1.FLG_REC.ToString()).ToString();
                             
                             Hashtable ht = new Hashtable();
-                            ht.Add(Constantes.ATT_Marca, tipo == Constantes.ATT_REC_MARCA?Pos.Get(Constantes.ATT_MAR): Pos.Get(Constantes.ATT_POS));
-                            ht.Add(Constantes.ATT_Quantidade, Pos.Get(Constantes.ATT_QTD));
-                            ht.Add(Constantes.ATT_Descricao, descricao );
-                            ht.Add(Constantes.ATT_Material, Pos.Get(Constantes.ATT_MAT));
-                            ht.Add(Constantes.ATT_Cod_SAP, Pos.Get(Constantes.ATT_SAP));
-                            ht.Add("PESO_UNIT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
-                            ht.Add("PESO_TOT", Math.Round(Pos.Get(Constantes.ATT_PES).Double() /1000 * Pos.Get(Constantes.ATT_QTD).Int(), decimais).ToString(dec_str).Replace(",", ""));
-                            ht.Add(Constantes.ATT_Ficha_Pintura, Pos.Get(Constantes.ATT_FIC));
+                            ht.Add(CADVars.ATT_Marca, tipo == CADVars.ATT_REC_MARCA?Pos.Get(T_DBF1.MAR_PEZ.ToString()): Pos.Get(T_DBF1.POS_PEZ.ToString()));
+                            ht.Add(CADVars.ATT_Quantidade, Pos.Get(T_DBF1.QTA_PEZ.ToString()));
+                            ht.Add(CADVars.ATT_Descricao, descricao );
+                            ht.Add(CADVars.ATT_Material, Pos.Get(T_DBF1.MAT_PRO.ToString()));
+                            ht.Add(CADVars.ATT_Cod_SAP, Pos.Get(T_DBF1.COD_PEZ.ToString()));
+                            ht.Add("PESO_UNIT", Math.Round(Pos.Get(T_DBF1.PUN_LIS.ToString()).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
+                            ht.Add("PESO_TOT", Math.Round(Pos.Get(T_DBF1.PUN_LIS.ToString()).Double() /1000 * Pos.Get(T_DBF1.QTA_PEZ.ToString()).Int(), decimais).ToString(dec_str).Replace(",", ""));
+                            ht.Add(CADVars.ATT_Ficha_Pintura, Pos.Get(T_DBF1.TRA_PEZ.ToString()));
 
-                            Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, ht);
+                            Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal, p0, fator_escala, 0, ht);
                             p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
                             seq++;
                         }
-                        Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
+                        Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
                         p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
                     }
                    
@@ -443,39 +444,39 @@ namespace DLM.cad
                     Hashtable ht = new Hashtable();
                     ht.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
                     ht.Add("SUPERFICIE_TOTAL", total_superficie.ToString("N1").Replace(",", "") + " m²");
-                    Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
+                    Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
                     p0 = new Point2d(p0.X, p0.Y - (fator_escala * 20.4));
                     foreach (var Marca in pecas_tecnometal)
                     {
 
                         Hashtable mp = new Hashtable();
-                        mp.Add(Constantes.ATT_Marca, Marca.Marca);
-                        mp.Add(Constantes.ATT_Quantidade, Marca.Quantidade);
-                        mp.Add(Constantes.ATT_Descricao, Marca.Mercadoria);
-                        mp.Add(Constantes.ATT_Material, Marca.Material);
-                        mp.Add(Constantes.ATT_Cod_SAP, Marca.SAP);
+                        mp.Add(CADVars.ATT_Marca, Marca.Marca);
+                        mp.Add(CADVars.ATT_Quantidade, Marca.Quantidade);
+                        mp.Add(CADVars.ATT_Descricao, Marca.Mercadoria);
+                        mp.Add(CADVars.ATT_Material, Marca.Material);
+                        mp.Add(CADVars.ATT_Cod_SAP, Marca.SAP);
                         mp.Add("PESO_UNIT", Math.Round(Marca.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
                         mp.Add("PESO_TOT", Math.Round(Marca.PesoUnit * Marca.Quantidade / 1000 , decimais).ToString(dec_str).Replace(",", ""));
-                        mp.Add(Constantes.ATT_Ficha_Pintura, Marca.Tratamento);
+                        mp.Add(CADVars.ATT_Ficha_Pintura, Marca.Tratamento);
 
-                        Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, mp);
+                        Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal, p0, fator_escala, 0, mp);
                         p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
                         foreach (var Pos in Marca.GetPosicoes())
                         {
                             Hashtable hp = new Hashtable();
-                            hp.Add(Constantes.ATT_Marca, Pos.Posicao);
-                            hp.Add(Constantes.ATT_Quantidade, Math.Round(Pos.Quantidade * Marca.Quantidade,decimais).ToString().Replace(",","."));
-                            hp.Add(Constantes.ATT_Descricao, Pos.Descricao);
-                            hp.Add(Constantes.ATT_Material, Pos.Material);
-                            hp.Add(Constantes.ATT_Cod_SAP, Pos.SAP);
+                            hp.Add(CADVars.ATT_Marca, Pos.Posicao);
+                            hp.Add(CADVars.ATT_Quantidade, Math.Round(Pos.Quantidade * Marca.Quantidade,decimais).ToString().Replace(",","."));
+                            hp.Add(CADVars.ATT_Descricao, Pos.Descricao);
+                            hp.Add(CADVars.ATT_Material, Pos.Material);
+                            hp.Add(CADVars.ATT_Cod_SAP, Pos.SAP);
                             hp.Add("PESO_UNIT", Math.Round(Pos.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
                             hp.Add("PESO_TOT", Math.Round(Pos.PesoUnit/1000 * Pos.Quantidade, decimais).ToString(dec_str).Replace(",", ""));
-                            hp.Add(Constantes.ATT_Ficha_Pintura, Pos.Tratamento);
+                            hp.Add(CADVars.ATT_Ficha_Pintura, Pos.Tratamento);
 
-                            Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal, p0, fator_escala, 0, hp);
+                            Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal, p0, fator_escala, 0, hp);
                             p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
                         }
-                        Blocos.Inserir(acDoc, Constantes.Tabela_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
+                        Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
                         p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
                     }
 

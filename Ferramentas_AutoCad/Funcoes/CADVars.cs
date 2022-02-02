@@ -1,61 +1,12 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoeditorInput;
-using DLM.vars;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DLM.cad
 {
-    internal static class CAD
-    {
-        public static DocumentCollection documentManager
-        {
-            get
-            {
-                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
-            }
-        }
-        public static Document acDoc
-        {
-            get
-            {
-                return Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            }
-        }
-        public static Editor editor
-        {
-            get
-            {
-                return acDoc.Editor;
-            }
-        }
-        public static Database acCurDb
-        {
-            get
-            {
-                return acDoc.Database;
-            }
-        }
-        public static dynamic acadApp
-        {
-            get
-            {
-                dynamic acadApp = Autodesk.AutoCAD.ApplicationServices.Application.AcadApplication;
-                return acadApp;
-            }
-        }
-    }
-    public static class Constantes
+    internal static class FuncoesCAD
     {
         private static List<CTV_de_para> _cts { get; set; }
-
-
         public static List<CTV_de_para> CTVs()
         {
             if (_cts == null)
@@ -89,12 +40,12 @@ namespace DLM.cad
         private static EstilosML _estilosML { get; set; }
         public static EstilosML GetArquivosMlStyles()
         {
-            if (_estilosML == null)
+            if(_estilosML==null)
             {
                 _estilosML = new EstilosML();
             }
             return _estilosML;
         }
-    }
 
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DLM.vars;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,7 +17,7 @@ namespace DLM.cad
         {
             InitializeComponent();
             Conexoes.DBases.GetBancoRM().GetTercas();
-            this.Text = $"xPurlin V.{Conexoes.Utilz.GetVersao(Constantes.DLL_Local)} [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Text = $"xPurlin V.{Conexoes.Utilz.GetVersao(CADVars.DLL_Local)} [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
         }
         public string acao { get; set; } = "";
         public int id_terca { get; set; } = 1763;

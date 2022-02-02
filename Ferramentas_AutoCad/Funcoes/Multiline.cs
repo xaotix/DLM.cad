@@ -9,6 +9,7 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using static DLM.cad.CAD;
 using System.IO;
 using Autodesk.AutoCAD.ApplicationServices;
+using DLM.vars;
 
 namespace DLM.cad
 {
@@ -93,10 +94,10 @@ namespace DLM.cad
 
             if (polylines.Count == 0) { return; }
 
-            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(FuncoesCAD.GetArquivosMlStyles().GetEstilos(), null);
             if (estilo != null)
             {
-                var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
+                var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);
                 if(ml!=null)
                 {
                     List<Entity> apagar = new List<Entity>();
@@ -141,10 +142,10 @@ namespace DLM.cad
                 return;
             }
 
-            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(Constantes.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(FuncoesCAD.GetArquivosMlStyles().GetEstilos(), null);
             if (estilo != null)
             {
-                var ml = Constantes.GetArquivosMlStyles().GetEstilo(estilo);
+                var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);
 
                 if (ml != null)
                 {

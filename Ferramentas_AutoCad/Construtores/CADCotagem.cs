@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
+using DLM.vars;
 
 namespace DLM.cad
 {
@@ -72,8 +73,8 @@ namespace DLM.cad
         public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
             return GetBlocos().FindAll(x =>
-                 Constantes.BlocosTecnoMetalMarcas.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null |
-                 Constantes.BlocosTecnoMetalPosicoes.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null 
+                 CADVars.BlocosTecnoMetalMarcas.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null |
+                 CADVars.BlocosTecnoMetalPosicoes.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null 
                                     );
         }
         public List<BlockReference> GetFuros_corte()
