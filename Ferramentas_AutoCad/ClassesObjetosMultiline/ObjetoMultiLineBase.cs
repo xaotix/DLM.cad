@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ using System.Windows.Media;
 
 namespace DLM.cad
 {
-    public class ObjetoMultiLineBase : INotifyPropertyChanged
+    public class ObjetoMultiLineBase : Notificar
     {
         [Category("Geometria")]
         public double Comprimento
@@ -51,14 +52,7 @@ namespace DLM.cad
 
             }
         }
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
+
         [Category("Geometria")]
         [DisplayName("Ângulo")]
         public double Angulo

@@ -369,7 +369,7 @@ namespace DLM.cad.Menus
                     mm.COMP = comprimento;
                 }
                 mm.Quantidade = (int)qtd;
-                id = mm.id_db;
+                id = mm.id_codigo;
                 txt_codigo.Text = mm.CODIGOFIM;
 
             }
@@ -381,7 +381,7 @@ namespace DLM.cad.Menus
                     mm.COMP = comprimento;
                 }
                 mm.Quantidade = (int)qtd;
-                id = mm.id_db;
+                id = mm.id_codigo;
                 txt_codigo.Text = mm.CODIGOFIM;
             }
             else if (tipo_selecionado == CADVars.ATT_RMT && rmt_sel!=null)
