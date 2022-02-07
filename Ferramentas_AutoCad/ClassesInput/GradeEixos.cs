@@ -75,7 +75,6 @@ namespace DLM.cad
                         _vaos_verticais.Add(pp);
                     }
                 }
-                int c = 0;
                 var alturas = this._vaos_verticais.SelectMany(x => x.GetPurlins().Select(z => z.Y)).Distinct().ToList();
 
                

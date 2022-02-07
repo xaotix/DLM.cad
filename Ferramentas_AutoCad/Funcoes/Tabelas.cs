@@ -237,7 +237,6 @@ namespace DLM.cad
             double x0 = 0;
             double y0 = 0;
 
-            double x_tabela = 125;
 
 
             if (pcs.Count > 0)

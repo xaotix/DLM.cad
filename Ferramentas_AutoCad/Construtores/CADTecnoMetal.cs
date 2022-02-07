@@ -2214,7 +2214,7 @@ namespace DLM.cad
         }
         public  string PromptFicha()
         {
-            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", "SEM PINTURA", true, "FICHA", false, 20);
+            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", DLM.vars.rm.SEM_PINTURA, true, "FICHA", false, 20);
         }
         public string PromptMarca(string prefix = "ARR-")
         {
@@ -2457,7 +2457,7 @@ namespace DLM.cad
                         {
 
                             bobina = PromptBobina(espessura);
-                            ficha = "SEM PINTURA";
+                            ficha = DLM.vars.rm.SEM_PINTURA;
                         }
                         else
                         {

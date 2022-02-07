@@ -24,7 +24,6 @@ namespace DLM.cad
             {
                 return arq.Value;
             }
-           Document doc = null;
 
             try
             {

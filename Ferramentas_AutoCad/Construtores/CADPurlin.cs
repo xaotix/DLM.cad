@@ -145,7 +145,7 @@ namespace DLM.cad
         [DisplayName("Ficha de Pintura")]
         [ReadOnly(true)]
         [Browsable(false)]
-        public string FichaDePintura { get; set; } = "SEM PINTURA";
+        public string FichaDePintura { get; set; } = DLM.vars.rm.SEM_PINTURA;
         [Category("Purlin")]
         [DisplayName("Layer Fr. Manuais")]
         public string MapeiaFurosManuaisLayer { get; set; } = "FUROS_MANUAIS";

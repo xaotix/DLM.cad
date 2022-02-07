@@ -339,7 +339,7 @@
             this.ficha_de_pintura.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ficha_de_pintura.FormattingEnabled = true;
             this.ficha_de_pintura.Items.AddRange(new object[] {
-            "SEM PINTURA",
+            DLM.vars.rm.SEM_PINTURA,
             "FICHA 01",
             "FICHA 02",
             "FICHA 03",
