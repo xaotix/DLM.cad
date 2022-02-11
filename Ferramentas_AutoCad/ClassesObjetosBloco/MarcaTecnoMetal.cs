@@ -231,9 +231,9 @@ namespace DLM.cad
             }
             return 0;
         }
-        public DLM.cam.PerfilTecnoMetal GetPerfil()
+        public DLM.cam.perfilTecnoMetal GetPerfil()
         {
-            return Conexoes.DBases.GetdbTecnoMetal().Get(this.Perfil);
+            return Conexoes.DBases.GetdbPerfil().GetPerfilTecnoMetal(this.Perfil);
         }
         public string Perfil
         {

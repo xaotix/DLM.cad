@@ -206,7 +206,7 @@ namespace DLM.cad
 
                 if (!Directory.Exists(pasta))
                 {
-                    pasta = Conexoes.Utilz.RaizAppData();
+                    pasta = Cfg.Init.Raiz_AppData;
                 }
                 return pasta;
             }

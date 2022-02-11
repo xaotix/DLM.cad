@@ -31,7 +31,7 @@ namespace DLM.cad
             List<Report> erros = new List<Report>();
           
             var pos = Getposicoes(ref erros, true);
-            var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
+            var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().GetFamilia() == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
             var montar_desmembrado = pos.FindAll(y =>
             y.Posicao.Contains("_1") |
@@ -58,7 +58,7 @@ namespace DLM.cad
 
 
                     var cmp = Conexoes.DBases.GetSoldaComposicao().Get(esp_m, esp_alm, altura, mesa, false).Clonar();
-                    cmp.Perfil = new DLM.cam.PerfilTecnoMetal(altura, mesa, esp_alm, esp_m);
+                    cmp.Perfil = new DLM.cam.perfilTecnoMetal(altura, mesa, esp_alm, esp_m);
                     cmp.Nome_Pos = m.Key;
                     retorno.Add(cmp);
                 }
@@ -73,7 +73,7 @@ namespace DLM.cad
             foreach(var pf in perfis)
             {
                 var pp = pf.First().GetPerfil();
-                if(pp.Familia == DLM.vars.CAM_FAMILIA.Soldado)
+                if(pp.GetFamilia() == DLM.vars.CAM_FAMILIA.Soldado)
                 {
                 
                     var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.ESP_MESA, pp.ESP, pp.H, pp.ABA, false);
@@ -86,7 +86,7 @@ namespace DLM.cad
                     }
                 }
                 
-                else if(pp.Familia == DLM.vars.CAM_FAMILIA._Desconhecido)
+                else if(pp.GetFamilia() == DLM.vars.CAM_FAMILIA._Desconhecido)
                 {
                     erros.Add(new Report($"{pf.Key} {pp.Nome}", "Perfil não encontrado."));
                 }
@@ -868,8 +868,8 @@ namespace DLM.cad
         }
 
 
-        private List<DLM.cam.ReadCam> _cams { get; set; } = new List<DLM.cam.ReadCam>();
-        public List<DLM.cam.ReadCam> GetCams(bool atualizar = false)
+        private List<DLM.cam.ReadCAM> _cams { get; set; } = new List<DLM.cam.ReadCAM>();
+        public List<DLM.cam.ReadCAM> GetCams(bool atualizar = false)
         {
             if(_cams.Count==0 && this.E_Tecnometal(false) | atualizar && this.E_Tecnometal(false))
             {
@@ -880,7 +880,7 @@ namespace DLM.cad
 
                 foreach(var CAM in cams)
                 {
-                    _cams.Add(new DLM.cam.ReadCam(CAM));
+                    _cams.Add(new DLM.cam.ReadCAM(CAM));
                     Core.Getw().somaProgresso();
                 }
                 Core.Getw().Close();
@@ -1193,9 +1193,9 @@ namespace DLM.cad
         }
 
 
-        public List<Conexoes.Arquivo> GerarDXFs(List<DLM.cam.ReadCam> camsext = null)
+        public List<Conexoes.Arquivo> GerarDXFs(List<DLM.cam.ReadCAM> camsext = null)
         {
-            List<DLM.cam.ReadCam> cams = new List<DLM.cam.ReadCam>();
+            List<DLM.cam.ReadCAM> cams = new List<DLM.cam.ReadCAM>();
 
 
             if (!E_Tecnometal()) { return new List<Conexoes.Arquivo>(); }
@@ -2024,7 +2024,7 @@ namespace DLM.cad
                             }
                             else
                             {
-                                DLM.cam.ReadCam sub = new DLM.cam.ReadCam(arq);
+                                DLM.cam.ReadCAM sub = new DLM.cam.ReadCAM(arq);
                                 sub.Obra = this.GetObra().Descrição;
                                 sub.Pedido = this.GetPedido().NomePedido;
                                 sub.Etapa = this.GetSubEtapa().Nome;
@@ -2601,7 +2601,7 @@ namespace DLM.cad
                 Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, escala, posicao,mercadoria);
             }
         }
-        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, DLM.cam.PerfilTecnoMetal perfil = null, string mercadoria = null)
+        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, DLM.cam.perfilTecnoMetal perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2642,7 +2642,7 @@ namespace DLM.cad
                         if (perfil == null)
                         {
                             
-                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
+                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
                         }
 
                         if (perfil != null)
@@ -2674,7 +2674,7 @@ namespace DLM.cad
             }
 
         }
-        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.PerfilTecnoMetal perfil = null, string mercadoria = null)
+        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.perfilTecnoMetal perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2713,7 +2713,7 @@ namespace DLM.cad
                         {
                             if (perfil == null)
                             {
-                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbTecnoMetal().GetPerfis(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
+                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
                             }
 
 

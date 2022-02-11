@@ -528,7 +528,7 @@ namespace DLM.cad
                     foreach (var s in arqs)
                     {
 
-                        DLM.cam.ReadCam cam = new DLM.cam.ReadCam(s);
+                        DLM.cam.ReadCAM cam = new DLM.cam.ReadCAM(s);
                         Blocos.CamToMarcaSimples(cam, p0, Cotas.GetEscala());
 
                         p0 = new Point2d(p0.X + offset, p0.Y);

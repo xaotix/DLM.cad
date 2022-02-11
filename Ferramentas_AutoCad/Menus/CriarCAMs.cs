@@ -47,7 +47,7 @@ namespace DLM.cad
                     var marca = s.Cells[0].Value.ToString();
                     var perfil = s.Cells[1].Value.ToString();
                     var comprimento = Conexoes.Utilz.Double(s.Cells[2].Value.ToString());
-                    var pf = Conexoes.DBases.GetdbTecnoMetal().Get(perfil);
+                    var pf = Conexoes.DBases.GetdbPerfil().GetPerfilTecnoMetal(perfil);
                     if (marca == "")
                     {
                         s.Cells[3].Value = "Marca em Branco.";

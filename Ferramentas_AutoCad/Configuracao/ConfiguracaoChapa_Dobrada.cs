@@ -183,7 +183,7 @@ namespace DLM.cad
             this.Comprimento = comprimento;
             this.Descricao = $"Ch #{this.Espessura.ToString("N2")}x{this.Largura.ToString("N0")}x{this.Comprimento.ToString("N0")}";
         }
-        public ConfiguracaoChapa_Dobrada(DLM.cam.ReadCam cam)
+        public ConfiguracaoChapa_Dobrada(DLM.cam.ReadCAM cam)
         {
             this.Comprimento = cam.Comprimento;
             this.Espessura = cam.Espessura;
