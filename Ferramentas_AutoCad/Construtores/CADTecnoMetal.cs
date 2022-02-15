@@ -76,7 +76,7 @@ namespace DLM.cad
                 if(pp.Familia== DLM.vars.CAM_FAMILIA.Soldado)
                 {
                 
-                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.ESP_MESA, pp.A, pp.H, pp.ABA, false);
+                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.ME, pp.A, pp.H, pp.ABA, false);
                     foreach(var p in pf.ToList())
                     {
                         var np = cmp.Clonar();

@@ -464,13 +464,13 @@ namespace DLM.cad
 
                 if (superficie == 0)
                 {
-                    ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round(perfil.SUPERFICIE * comprimento / 1000 / 1000 / 100, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round(perfil.SUP_DB * comprimento / 1000 / 1000 / 100, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
                     ht.Add(T_DBF1.SUN_LIS.ToString(), superficie.ToString("N4").Replace(",", ""));
                 }
-                ht.Add(T_DBF1.ING_PEZ.ToString(), perfil.H + "*" + perfil.ABA_1 + "*" + comprimento);
+                ht.Add(T_DBF1.ING_PEZ.ToString(), perfil.H + "*" + perfil.ML + "*" + comprimento);
                 ht.Add(T_DBF2.DIM_PRO.ToString(), perfil.DIM_PRO);
 
                 if (posicao != "")
