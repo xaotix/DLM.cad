@@ -448,14 +448,14 @@ namespace DLM.cad
                 ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
                 ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
                 ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(T_DBF1.NOM_PRO.ToString(), perfil.Nome);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), perfil.Descricao);
                 ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.LUN_PRO.ToString(), comprimento.ToString("N0").Replace(",", ""));
                 ht.Add(T_DBF1.MAT_PRO.ToString(), material);
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(perfil.PESO * comprimento / 1000, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(perfil.PESO_DB * comprimento / 1000, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -590,12 +590,12 @@ namespace DLM.cad
                 ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
                 ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
                 ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.Nome);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.Descricao);
                 ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.LUN_PRO.ToString(), comp.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.LAR_PRO.ToString(), larg.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(pf.PESO * area / 1000 / 1000 / 100, CADVars.DECIMAIS));
+                ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(pf.PESO_DB * area / 1000 / 1000 / 100, CADVars.DECIMAIS));
                 ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, CADVars.DECIMAIS));
                 ht.Add(T_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
                 ht.Add(T_DBF1.COD_PEZ.ToString(), pf.SAP);
@@ -679,7 +679,7 @@ namespace DLM.cad
                 var perfil = Conexoes.DBases.GetdbPerfil().GetPerfilTecnoMetal(cam.Descricao);
                 if (perfil != null)
                 {
-                    if (perfil.Nome == "")
+                    if (perfil.Descricao == "")
                     {
                         Conexoes.Utilz.Alerta("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.TipoPerfil + "\nCadastre o perfil no tecnometal e tente novamente.");
                     }

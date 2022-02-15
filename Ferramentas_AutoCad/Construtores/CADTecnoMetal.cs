@@ -31,7 +31,7 @@ namespace DLM.cad
             List<Report> erros = new List<Report>();
           
             var pos = Getposicoes(ref erros, true);
-            var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().GetFamilia() == DLM.vars.CAM_FAMILIA.Soldado).ToList();
+            var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia== DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
             var montar_desmembrado = pos.FindAll(y =>
             y.Posicao.Contains("_1") |
@@ -73,10 +73,10 @@ namespace DLM.cad
             foreach(var pf in perfis)
             {
                 var pp = pf.First().GetPerfil();
-                if(pp.GetFamilia() == DLM.vars.CAM_FAMILIA.Soldado)
+                if(pp.Familia== DLM.vars.CAM_FAMILIA.Soldado)
                 {
                 
-                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.ESP_MESA, pp.ESP, pp.H, pp.ABA, false);
+                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.ESP_MESA, pp.A, pp.H, pp.ABA, false);
                     foreach(var p in pf.ToList())
                     {
                         var np = cmp.Clonar();
@@ -86,9 +86,9 @@ namespace DLM.cad
                     }
                 }
                 
-                else if(pp.GetFamilia() == DLM.vars.CAM_FAMILIA._Desconhecido)
+                else if(pp.Familia== DLM.vars.CAM_FAMILIA._Desconhecido)
                 {
-                    erros.Add(new Report($"{pf.Key} {pp.Nome}", "Perfil não encontrado."));
+                    erros.Add(new Report($"{pf.Key} {pp.Descricao}", "Perfil não encontrado."));
                 }
             }
 
