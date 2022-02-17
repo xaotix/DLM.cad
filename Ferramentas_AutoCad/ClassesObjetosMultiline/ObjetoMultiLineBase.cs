@@ -423,9 +423,7 @@ namespace DLM.cad
 
             this._pecaRME = rm;
 
-            this.NotifyPropertyChanged("Cor");
-            this.NotifyPropertyChanged("id");
-            this.NotifyPropertyChanged("Nome");
+            this.NotifyPropertyChanged(nameof(Nome));
 
             if (this._botao != null)
             {
