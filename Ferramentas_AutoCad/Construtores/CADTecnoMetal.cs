@@ -58,7 +58,7 @@ namespace DLM.cad
 
 
                     var cmp = Conexoes.DBases.GetSoldaComposicao().Get(esp_m, esp_alm, altura, mesa, false).Clonar();
-                    cmp.Perfil = new DLM.cam.PerfilTecnoMetal(altura, mesa, esp_alm, esp_m);
+                    cmp.Perfil = DLM.cam.Perfil.I_Soldado("",altura, mesa,mesa,esp_m,esp_m, esp_alm);
                     cmp.Nome_Pos = m.Key;
                     retorno.Add(cmp);
                 }
@@ -76,7 +76,7 @@ namespace DLM.cad
                 if(pp.Familia== DLM.vars.CAM_FAMILIA.Soldado)
                 {
                 
-                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.ME, pp.A, pp.H, pp.ABA, false);
+                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.Esp_M, pp.Esp, pp.Altura, pp.Aba, false);
                     foreach(var p in pf.ToList())
                     {
                         var np = cmp.Clonar();
@@ -2389,7 +2389,7 @@ namespace DLM.cad
                             }
                             if (Directory.Exists(destino))
                             {
-                                var Perfil = DLM.cam.PerfilCAM.Chapa(pa.Largura, pa.Espessura);
+                                var Perfil = DLM.cam.Perfil.Chapa(pa.Largura, pa.Espessura);
 
                                 string arquivo = destino + pa.Marca + ".CAM";
 
@@ -2518,7 +2518,7 @@ namespace DLM.cad
                                 }
                                 if (Directory.Exists(destino))
                                 {
-                                    var Perfil = DLM.cam.PerfilCAM.Chapa(pa.Largura, pa.Espessura);
+                                    var Perfil = DLM.cam.Perfil.Chapa(pa.Largura, pa.Espessura);
 
                                     string arquivo = destino + pa.Marca + ".CAM";
 
@@ -2599,7 +2599,7 @@ namespace DLM.cad
                 Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, escala, posicao,mercadoria);
             }
         }
-        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, DLM.cam.PerfilTecnoMetal perfil = null, string mercadoria = null)
+        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material =null, string ficha = null, int quantidade = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2672,7 +2672,7 @@ namespace DLM.cad
             }
 
         }
-        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.PerfilTecnoMetal perfil = null, string mercadoria = null)
+        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")

@@ -116,8 +116,8 @@ namespace DLM.cad
         public static Conexoes.Chapa db_chapa { get; set; }
         public static Conexoes.RMA db_unitario { get; set; }
         public static Conexoes.Bobina db_bobina { get; set; }
-        public static DLM.cam.PerfilTecnoMetal db_perfil { get; set; }
-        public static DLM.cam.PerfilTecnoMetal db_perfil_m2 { get; set; }
+        public static DLM.cam.Perfil db_perfil { get; set; }
+        public static DLM.cam.Perfil db_perfil_m2 { get; set; }
 
 
 
@@ -200,7 +200,7 @@ namespace DLM.cad
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
-                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.TipoCAM== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione");
+                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione");
                     if (db_perfil_m2 != null)
                     {
                         perfil.Content = db_perfil_m2.ToString();
