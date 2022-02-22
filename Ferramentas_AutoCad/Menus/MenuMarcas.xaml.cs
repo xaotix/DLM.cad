@@ -116,8 +116,8 @@ namespace DLM.cad
         public static Conexoes.Chapa db_chapa { get; set; }
         public static Conexoes.RMA db_unitario { get; set; }
         public static Conexoes.Bobina db_bobina { get; set; }
-        public static DLM.cam.perfilTecnoMetal db_perfil { get; set; }
-        public static DLM.cam.perfilTecnoMetal db_perfil_m2 { get; set; }
+        public static DLM.cam.PerfilTecnoMetal db_perfil { get; set; }
+        public static DLM.cam.PerfilTecnoMetal db_perfil_m2 { get; set; }
 
 
 

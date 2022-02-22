@@ -440,7 +440,7 @@ namespace DLM.cad
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
         }
-        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, DLM.cam.perfilTecnoMetal perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
+        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, DLM.cam.PerfilTecnoMetal perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -578,7 +578,7 @@ namespace DLM.cad
             }
 
         }
-        public static void MarcaElemM2(Point2d p0, DLM.cam.perfilTecnoMetal pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemM2(Point2d p0, DLM.cam.PerfilTecnoMetal pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
