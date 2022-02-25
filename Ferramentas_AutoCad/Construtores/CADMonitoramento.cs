@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoeditorInput;
+using Conexoes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,7 +58,7 @@ namespace DLM.cad
             {
                 Conexoes.Utilz.Arquivo.Gravar(destino, Log);
                 Log.Clear();
-                Conexoes.Utilz.Abrir(destino);
+                destino.Abrir();
             }
         }
 

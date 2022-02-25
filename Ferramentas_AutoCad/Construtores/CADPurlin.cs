@@ -14,6 +14,7 @@ using System.Xml.Serialization;
 using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using DLM.vars;
+using Conexoes;
 
 namespace DLM.cad
 {
@@ -745,7 +746,7 @@ namespace DLM.cad
                    if(textos.Count>0)
                     {
                         Conexoes.Utilz.Arquivo.Gravar(dest, textos);
-                        Conexoes.Utilz.Abrir(dest);
+                        dest.Abrir();
                     }
                    else
                     {

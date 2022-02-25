@@ -21,6 +21,7 @@ using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 using DLM.vars;
+using Conexoes;
 
 namespace DLM.cad
 {
@@ -244,7 +245,7 @@ namespace DLM.cad
 
         public void Comando(params object[] comando)
         {
-            Extensoes.Command(acDoc.Editor, comando);
+            Autodesk.AutoeditorInput.Extensoes.Command(acDoc.Editor, comando);
         }
         public List<Coordenada> RemoverRepetidos(List<Coordenada> pts)
         {
@@ -821,10 +822,7 @@ namespace DLM.cad
         }
         public void AbrePasta()
         {
-            if(Directory.Exists(this.Pasta))
-            {
-                Conexoes.Utilz.Abrir(this.Pasta);
-            }
+            this.Pasta.Abrir();
         }
 
 

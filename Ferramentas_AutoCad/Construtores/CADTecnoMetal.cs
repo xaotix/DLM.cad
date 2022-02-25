@@ -1880,7 +1880,7 @@ namespace DLM.cad
             if (destino == null | destino == "")
             {
             setar_nome:
-                var nome_dbf = Conexoes.Utilz.RemoverCaracteresEspeciais(Conexoes.Utilz.Prompt("Digine o nome do arquivo", "", $"{(etapa.Nome.Contains("B")?"T_":"")}{etapa.Nome}", false, "", false, 16)).ToUpper();
+                var nome_dbf = (Conexoes.Utilz.Prompt("Digine o nome do arquivo", "", $"{(etapa.Nome.Contains("B")?"T_":"")}{etapa.Nome}", false, "", false, 16)).RemoverCaracteresEspeciais().ToUpper();
 
                 if (!nome_dbf.Contains("ETAPA_") | nome_dbf.Length < 7 | nome_dbf.Length > 16)
                 {
@@ -2410,7 +2410,7 @@ namespace DLM.cad
                                 pcam.Cabecalho.Marca = pa.Marca;
                                 pcam.Nota = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
                                 pcam.Gerar();
-                                Conexoes.Utilz.Abrir(arquivo);
+                                arquivo.Abrir();
 
                             }
                         }
@@ -2529,7 +2529,7 @@ namespace DLM.cad
                                     pcam.Cabecalho.Material = pa.Material;
                                     pcam.Cabecalho.Marca = pa.Marca;
                                     pcam.Gerar();
-                                    Conexoes.Utilz.Abrir(destino);
+                                    destino.Abrir();
 
                                 }
                             }

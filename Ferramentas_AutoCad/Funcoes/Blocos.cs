@@ -2,7 +2,6 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
-using Conexoes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -455,7 +454,7 @@ namespace DLM.cad
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(perfil.PESO_DB * comprimento / 1000, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -464,7 +463,7 @@ namespace DLM.cad
 
                 if (superficie == 0)
                 {
-                    ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round(perfil.SUP_DB * comprimento / 1000 / 1000 / 100, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000 / 1000 / 100, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -595,7 +594,7 @@ namespace DLM.cad
                 ht.Add(T_DBF1.LUN_PRO.ToString(), comp.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.LAR_PRO.ToString(), larg.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(pf.PESO_DB * area / 1000 / 1000 / 100, CADVars.DECIMAIS));
+                ht.Add(T_DBF1.PUN_LIS.ToString(), Math.Round(pf.Peso * area / 1000 / 1000 / 100, CADVars.DECIMAIS));
                 ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, CADVars.DECIMAIS));
                 ht.Add(T_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
                 ht.Add(T_DBF1.COD_PEZ.ToString(), pf.SAP);
@@ -626,7 +625,7 @@ namespace DLM.cad
             }
 
         }
-        public static void MarcaElemUnitario(Point2d p0, RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemUnitario(Point2d p0, Conexoes.RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {

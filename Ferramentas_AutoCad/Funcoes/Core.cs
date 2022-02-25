@@ -20,6 +20,7 @@ using System.Runtime.InteropServices;
 using Autodesk.AutoCAD.Internal.Reactors;
 using DLM.encoder;
 using DLM.vars;
+using Conexoes;
 
 [assembly: CommandClass(typeof(DLM.cad.Core))]
 
@@ -438,7 +439,7 @@ namespace DLM.cad
                 else
                 {
                     Conexoes.Utilz.Alerta($"Arquivo {tbl.Banco} gerado!", "", System.Windows.MessageBoxImage.Information);
-                    Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
+                    Conexoes.Utilz.getPasta(tbl.Banco).Abrir();
                     //if(Conexoes.Utilz.Pergunta($"Arquivo {tbl.Banco} gerado! Deseja fazer um testlist?"))
                     //{
                     //    var etapa = TecnoMetal.GetSubEtapa();
