@@ -2392,7 +2392,7 @@ namespace DLM.cad
                                     var s = segmentos[i];
                                     x = x + s.Length - (chapa_fina ? 0 : pa.Espessura);
                                     var a = angulos[i];
-                                    pcam.Dobras.Liv1.Add(new DLM.cam.Estrutura.Dobra(a, x, pcam, false));
+                                    pcam.Dobras.Liv1.Add(new DLM.cam.Est.Dobra(a, x, pcam, false));
                                 }
 
                                 pcam.Cabecalho.TRA_PEZ = pa.Ficha;
