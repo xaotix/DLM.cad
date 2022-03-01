@@ -1193,24 +1193,15 @@ namespace DLM.cad
         }
 
 
-        public List<Conexoes.Arquivo> GerarDXFs(List<DLM.cam.ReadCAM> camsext = null)
+        public List<Conexoes.Arquivo> GerarDXFs(List<DLM.cam.ReadCAM> cams = null)
         {
-            List<DLM.cam.ReadCAM> cams = new List<DLM.cam.ReadCAM>();
-
-
             if (!E_Tecnometal()) { return new List<Conexoes.Arquivo>(); }
 
 
-            if(camsext == null)
+            if(cams == null)
             {
-                var cms = this.GetSubEtapa().GetPacote().GetCAMsNaoRM();
-
-                
-                var subs = cams.SelectMany(x => x.GetFilhos()).ToList();
-                cams.AddRange(cms);
-                cams.AddRange(subs);
-                
-               //cams = Conexoes.Utilz.SelecionarObjetos(new List<DLM.cam.ReadCam>(), cams);
+                cams = new List<cam.ReadCAM>();
+                cams.AddRange(this.GetSubEtapa().GetPacote().GetCAMsNaoRM());
             }
 
             if(cams.Count>0)
