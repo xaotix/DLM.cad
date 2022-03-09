@@ -9,7 +9,7 @@ namespace DLM.cad
     {
         public static double Get(Xline s)
         {
-            return Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(0, 0, 0), new DLM.desenho.Ponto3D(s.UnitDir.X, s.UnitDir.Y, 0)));
+            return Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(0, 0, 0), new DLM.desenho.P3d(s.UnitDir.X, s.UnitDir.Y, 0)));
         }
         public static double Get(Point2d pt1, Point2d pt2)
         {

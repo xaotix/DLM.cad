@@ -75,7 +75,7 @@ namespace DLM.cad
 
         public double Angulo(Coordenada v)
         {
-          return  DLM.desenho.Trigonometria.Angulo(new DLM.desenho.Ponto3D(this.X, this.Y, this.Z), new DLM.desenho.Ponto3D(v.X, v.Y, v.Z));
+          return  DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(this.X, this.Y, this.Z), new DLM.desenho.P3d(v.X, v.Y, v.Z));
         }
         public double Angulo(Point3d v)
         {
