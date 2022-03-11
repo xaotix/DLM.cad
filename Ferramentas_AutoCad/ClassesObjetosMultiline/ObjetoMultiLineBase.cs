@@ -326,9 +326,7 @@ namespace DLM.cad
 
         private void Botao_Direito(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            bool status = false;
-            Conexoes.Utilz.Propriedades(this,out status);
-            if(status)
+            if(this.Propriedades())
             {
                 Redraw();
             }

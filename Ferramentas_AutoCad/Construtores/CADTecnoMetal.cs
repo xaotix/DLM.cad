@@ -639,17 +639,20 @@ namespace DLM.cad
             var sel = SelecionarObjetos( Tipo_Selecao.Blocos_Textos);
             if(sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && this.selecoes.Count>0)
             {
-                bool status = true;
                 var opt = new ConfiguracaoQuantificar();
                 opt.Blocos = blocos;
                 opt.Textos = textos;
                 opt.Pecas_TecnoMetal = tecnometal;
                 if(configurar)
                 {
-                opt = Conexoes.Utilz.Propriedades(opt, out status);
+                    configurar = opt.Propriedades();
+                }
+                else
+                {
+                    configurar = true;
                 }
 
-                if(status)
+                if(configurar)
                 {
                     if(opt.Blocos | opt.Pecas_TecnoMetal)
                     {
@@ -948,10 +951,8 @@ namespace DLM.cad
 
 
             ConfiguracaoMacro cfg = new ConfiguracaoMacro();
-            bool status = false;
-            Conexoes.Utilz.Propriedades(cfg, out status);
 
-            if (!status) { return; }
+            if (!cfg.Propriedades()) { return; }
 
             List<Report> erros = new List<Report>();
 
