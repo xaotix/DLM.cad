@@ -87,7 +87,7 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex.Message + "\n\n" + ex.StackTrace);
+                    Conexoes.Utilz.Alerta(ex);
                 }
                 c++;
 

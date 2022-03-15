@@ -575,6 +575,107 @@ namespace DLM.cad
             MenuMarcas.Iniciar();
         }
 
+        [CommandMethod("converterDXF")]
+        public static void converterDXF()
+        {
+            List<Report> erros = new List<Report>();
+            var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
+            if(pasta.Existe())
+            {
+                var destino = Conexoes.Utilz.Selecao.SelecionarPasta("Selecione o destino", pasta);
+                if(destino.Existe())
+                {
+                    var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
+                    if (arquivos.Count > 0)
+                    {
+                        var w = Conexoes.Utilz.Wait(arquivos.Count, "Salvando...");
+                        foreach (var arq in arquivos)
+                        {
+                            var nome_fim = arq.Pasta + arq.Nome + ".dxf";
+
+                            try
+                            {
+                                var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arq.Endereco, true);
+                                try
+                                {
+                                    Ut.LimparDesenho();
+                                    Database db = doc.Database;
+                                    db.DxfOut(nome_fim, 16, DwgVersion.AC1021);
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    erros.Add(new Report(ex, arq.Endereco));
+                                    Conexoes.Utilz.Apagar(nome_fim);
+                                }
+
+                                doc.CloseAndDiscard();
+                                w.somaProgresso();
+                            }
+                            catch (System.Exception ex)
+                            {
+                                erros.Add(new Report(ex, arq.Endereco));
+                                Conexoes.Utilz.Apagar(nome_fim);
+                            }
+
+                        }
+                        w.Close();
+                        Conexoes.Utilz.ShowReports(erros);
+                    }
+                }
+
+            }
+        }
+        [CommandMethod("converterDWG")]
+        public static void converterDWG()
+        {
+            var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
+            if (pasta.Existe())
+            {
+                var destino = Conexoes.Utilz.Selecao.SelecionarPasta("Selecione o destino", pasta);
+                if (destino.Existe())
+                {
+                    var arquivos = pasta.GetArquivos("*.DXF").ListaSelecionarVarios();
+                    if (arquivos.Count > 0)
+                    {
+                        List<Report> erros = new List<Report>();
+                      var w=  Conexoes.Utilz.Wait(arquivos.Count, "Salvando...");
+
+                        foreach (var arq in arquivos)
+                        {
+                            var nome_fim = arq.Pasta + arq.Nome + ".dwg";
+
+                            try
+                            {
+                                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arq.Endereco, true);
+                                try
+                                {
+                                    Ut.LimparDesenho();
+                                    Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.SaveAs(nome_fim, DwgVersion.AC1021);
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    erros.Add(new Report(ex, arq.Endereco));
+                                    Conexoes.Utilz.Apagar(nome_fim);
+                                }
+                                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.CloseAndDiscard();
+                            }
+                            catch (System.Exception ex)
+                            {
+                                erros.Add(new Report(ex, arq.Endereco));
+                                Conexoes.Utilz.Apagar(nome_fim); erros.Add(new Report(ex));
+                            }
+
+                            w.somaProgresso();
+                        }
+                        w.Close();
+                        Conexoes.Utilz.ShowReports(erros);
+                    }
+                }
+
+            }
+        }
+
+
         [CommandMethod("medabil")]
         public static void medabil()
         {

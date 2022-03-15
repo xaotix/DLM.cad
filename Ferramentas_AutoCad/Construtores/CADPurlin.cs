@@ -337,9 +337,7 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-
-                    Conexoes.Utilz.JanelaTexto($"{ex.Message}\n{ex.StackTrace}\n\n\n{ex.Source}", "Erro interno");
-
+                    Conexoes.Utilz.Alerta(ex);
                 }
 
 
@@ -1122,7 +1120,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex);
             }
 
         }

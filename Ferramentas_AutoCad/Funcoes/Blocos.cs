@@ -673,14 +673,14 @@ namespace DLM.cad
         public static void CamToMarcaSimples(DLM.cam.ReadCAM cam, Point2d origem, double escala)
         {
 
-            if (cam.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contains("_"))
+            if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contains("_"))
             {
                 var perfil = Conexoes.DBases.GetdbPerfil().GetPerfilTecnoMetal(cam.Descricao);
                 if (perfil != null)
                 {
                     if (perfil.Descricao == "")
                     {
-                        Conexoes.Utilz.Alerta("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.TipoPerfil + "\nCadastre o perfil no tecnometal e tente novamente.");
+                        Conexoes.Utilz.Alerta("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.Perfil.Tipo + "\nCadastre o perfil no tecnometal e tente novamente.");
                     }
                     else
                     {
@@ -690,13 +690,13 @@ namespace DLM.cad
 
 
             }
-            else if (cam.Familia == DLM.vars.CAM_FAMILIA.Chapa)
+            else if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Chapa)
             {
                 MarcaChapa(origem, new ConfiguracaoChapa_Dobrada(cam), Tipo_Bloco.Chapa, escala);
             }
             else
             {
-                Conexoes.Utilz.Alerta("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.TipoPerfil);
+                Conexoes.Utilz.Alerta("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.Perfil.Tipo);
             }
         }
 

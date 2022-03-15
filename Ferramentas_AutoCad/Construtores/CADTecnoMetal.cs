@@ -362,7 +362,7 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                    Conexoes.Utilz.Alerta(ex);
                 }
                 c++;
             }
@@ -918,7 +918,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                AddMensagem($"\n{ex.Message}\n{ex.StackTrace}");
+                AddMensagem(Conexoes.Utilz.GetTexto(ex));
             }
         }
         public void GerarDBF3D()
@@ -1620,9 +1620,7 @@ namespace DLM.cad
                     catch (Exception ex)
                     {
                         Core.Getw().Close();
-                        string msg = $"Erro ao tentar ler a prancha {file.Name}:\n {ex.Message}\n{ex.StackTrace}";
-                        erros.Add(new Report("Erro fatal", msg, DLM.vars.TipoReport.Crítico));
-                        Conexoes.Utilz.Alerta(msg, "Abortado - Erro fatal", System.Windows.MessageBoxImage.Error);
+                        Conexoes.Utilz.Alerta(ex);
                         return new TabelaBlocoTag();
                     }
 
