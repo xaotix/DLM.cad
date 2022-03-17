@@ -570,7 +570,7 @@ namespace DLM.cad
                                 Hashtable att = new Hashtable();
                                 //att.Add("LUN_PRO", comp);
                                 att.Add("MARK", codigo);
-                                att.Add(T_DBF1.MAR_PEZ.ToString(), codigo);
+                                att.Add(TAB_DBF1.MAR_PEZ.ToString(), codigo);
                                 Atributos.Set(s.Blocos.Select(x => x.Bloco).ToList().ToList(), acTrans, att);
                                 Atributos.Set(s.Filhos_Ignorar.SelectMany(x => x.Blocos).Select(x => x.Bloco).ToList().ToList(), acTrans, att);
                             }
@@ -687,13 +687,13 @@ namespace DLM.cad
                             {
                                 if (opt.Pecas_TecnoMetal)
                                 {
-                                    var blcs = npc.Agrupar(new List<string> { T_DBF1.MAR_PEZ.ToString() }, npc.Nome_Bloco);
+                                    var blcs = npc.Agrupar(new List<string> { TAB_DBF1.MAR_PEZ.ToString() }, npc.Nome_Bloco);
                                     foreach (var bl in blcs)
                                     {
-                                        bl.SetPerfilPorAtributo(T_DBF1.NOM_PRO.ToString());
-                                        bl.SetCompPorAtributo(T_DBF1.LUN_PRO.ToString());
-                                        bl.SetMaterialPorAtributo(T_DBF1.MAT_PRO.ToString());
-                                        bl.SetDescPorAtributo(T_DBF1.NOM_PRO.ToString());
+                                        bl.SetPerfilPorAtributo(TAB_DBF1.NOM_PRO.ToString());
+                                        bl.SetCompPorAtributo(TAB_DBF1.LUN_PRO.ToString());
+                                        bl.SetMaterialPorAtributo(TAB_DBF1.MAT_PRO.ToString());
+                                        bl.SetDescPorAtributo(TAB_DBF1.NOM_PRO.ToString());
                                     }
                                     blocos_montagem_tecnometal.AddRange(blcs);
                                 }
@@ -1495,19 +1495,19 @@ namespace DLM.cad
                 {
                     try
                     {
-                        att.Set(T_DBF1.NUM_COM.ToString(), this.GetPedido().NomePedido);
-                        att.Set(T_DBF1.DES_COM.ToString(), this.GetObra().Nome);
-                        att.Set(T_DBF1.LOT_COM.ToString(), this.GetSubEtapa().NomeEtapa);
+                        att.Set(TAB_DBF1.NUM_COM.ToString(), this.GetPedido().NomePedido);
+                        att.Set(TAB_DBF1.DES_COM.ToString(), this.GetObra().Nome);
+                        att.Set(TAB_DBF1.LOT_COM.ToString(), this.GetSubEtapa().NomeEtapa);
                     }
                     catch (Exception)
                     {
                     }
                 }
 
-                att.Set(T_DBF1.NUM_DIS.ToString(), nome);
-                att.Set(T_DBF1.FLG_DWG.ToString(), nome);
-                att.Set(T_DBF1.FLG_REC.ToString(), att.Get(T_DBF1.POS_PEZ.ToString()).Valor == "" ? CADVars.ATT_REC_MARCA : CADVars.ATT_REC_POSICAO);
-                att.Set(T_DBF1.DAT_DIS.ToString(), ultima_edicao);
+                att.Set(TAB_DBF1.NUM_DIS.ToString(), nome);
+                att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
+                att.Set(TAB_DBF1.FLG_REC.ToString(), att.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? CADVars.ATT_REC_MARCA : CADVars.ATT_REC_POSICAO);
+                att.Set(TAB_DBF1.DAT_DIS.ToString(), ultima_edicao);
                 att.Set(CADVars.ATT_BLK, bloco.Name.ToUpper());
 
                 return att;
@@ -1516,7 +1516,7 @@ namespace DLM.cad
             {
                 BlocoTag att = new BlocoTag(bloco,false);
                 att.Set(CADVars.ATT_BLK, bloco.Name.ToUpper());
-                att.Set(T_DBF1.FLG_DWG.ToString(), nome);
+                att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
                 att.Set("ERRO", ex.Message);
                 att.Set(CADVars.ATT_ARQ, arquivo);
 
@@ -1669,10 +1669,10 @@ namespace DLM.cad
                                 var sup = m.CalcularSuperficieLinear();
 
                                 Hashtable att = new Hashtable();
-                                att.Add(T_DBF1.PUN_LIS.ToString(), peso.ToString("N4").Replace(",", "."));
-                                att.Add(T_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().ToString().Replace(",", "."));
-                                att.Add(T_DBF1.ING_PEZ.ToString(), $"{m.Comprimento}*{m.Espessura}*{m.Largura}");
-                                att.Add(T_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));
+                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.ToString("N4").Replace(",", "."));
+                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().ToString().Replace(",", "."));
+                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento}*{m.Espessura}*{m.Largura}");
+                                att.Add(TAB_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));
 
                                 DLM.cad.Atributos.Set(m.Bloco.Bloco, acTrans, att);
                             }
@@ -1693,47 +1693,47 @@ namespace DLM.cad
         {
             var lista = new TabelaBlocoTag(new List<TabelaBlocoTag> { marcas, posicoes });
             List<string> colunas = new List<string>();
-            colunas.Add(T_DBF1.FLG_REC.ToString());
-            colunas.Add(T_DBF1.NUM_COM.ToString());
-            colunas.Add(T_DBF1.DES_COM.ToString());
-            colunas.Add(T_DBF1.LOT_COM.ToString());
-            colunas.Add(T_DBF1.DLO_COM.ToString());
-            colunas.Add(T_DBF1.CLI_COM.ToString());
-            colunas.Add(T_DBF1.IND_COM.ToString());
-            colunas.Add(T_DBF1.DT1_COM.ToString());
-            colunas.Add(T_DBF1.DT2_COM.ToString());
-            colunas.Add(T_DBF1.NUM_DIS.ToString());
-            colunas.Add(T_DBF1.DES_DIS.ToString());
-            colunas.Add(T_DBF1.NOM_DIS.ToString());
-            colunas.Add(T_DBF1.REV_DIS.ToString());
-            colunas.Add(T_DBF1.DAT_DIS.ToString());
-            colunas.Add(T_DBF1.TRA_PEZ.ToString());
-            colunas.Add(T_DBF1.SBA_PEZ.ToString());
-            colunas.Add(T_DBF1.TIP_PEZ.ToString());
-            colunas.Add(T_DBF1.MAR_PEZ.ToString());
-            colunas.Add(T_DBF1.MBU_PEZ.ToString());
-            colunas.Add(T_DBF1.DES_PEZ.ToString());
-            colunas.Add(T_DBF1.POS_PEZ.ToString());
-            colunas.Add(T_DBF1.NOT_PEZ.ToString());
-            colunas.Add(T_DBF1.ING_PEZ.ToString());
-            colunas.Add(T_DBF1.QTA_PEZ.ToString());
-            colunas.Add(T_DBF1.QT1_PEZ.ToString());
-            colunas.Add(T_DBF1.MCL_PEZ.ToString());
-            colunas.Add(T_DBF1.COD_PEZ.ToString());
-            colunas.Add(T_DBF1.COS_PEZ.ToString());
-            colunas.Add(T_DBF1.NOM_PRO.ToString());
-            colunas.Add(T_DBF1.LUN_PRO.ToString());
-            colunas.Add(T_DBF1.LAR_PRO.ToString());
-            colunas.Add(T_DBF1.SPE_PRO.ToString());
-            colunas.Add(T_DBF1.MAT_PRO.ToString());
-            colunas.Add(T_DBF1.TIP_BUL.ToString());
-            colunas.Add(T_DBF1.DIA_BUL.ToString());
-            colunas.Add(T_DBF1.LUN_BUL.ToString());
-            colunas.Add(T_DBF1.PRB_BUL.ToString());
-            colunas.Add(T_DBF1.PUN_LIS.ToString());
-            colunas.Add(T_DBF1.SUN_LIS.ToString());
-            colunas.Add(T_DBF1.PRE_LIS.ToString());
-            colunas.Add(T_DBF1.FLG_DWG.ToString());
+            colunas.Add(TAB_DBF1.FLG_REC.ToString());
+            colunas.Add(TAB_DBF1.NUM_COM.ToString());
+            colunas.Add(TAB_DBF1.DES_COM.ToString());
+            colunas.Add(TAB_DBF1.LOT_COM.ToString());
+            colunas.Add(TAB_DBF1.DLO_COM.ToString());
+            colunas.Add(TAB_DBF1.CLI_COM.ToString());
+            colunas.Add(TAB_DBF1.IND_COM.ToString());
+            colunas.Add(TAB_DBF1.DT1_COM.ToString());
+            colunas.Add(TAB_DBF1.DT2_COM.ToString());
+            colunas.Add(TAB_DBF1.NUM_DIS.ToString());
+            colunas.Add(TAB_DBF1.DES_DIS.ToString());
+            colunas.Add(TAB_DBF1.NOM_DIS.ToString());
+            colunas.Add(TAB_DBF1.REV_DIS.ToString());
+            colunas.Add(TAB_DBF1.DAT_DIS.ToString());
+            colunas.Add(TAB_DBF1.TRA_PEZ.ToString());
+            colunas.Add(TAB_DBF1.SBA_PEZ.ToString());
+            colunas.Add(TAB_DBF1.TIP_PEZ.ToString());
+            colunas.Add(TAB_DBF1.MAR_PEZ.ToString());
+            colunas.Add(TAB_DBF1.MBU_PEZ.ToString());
+            colunas.Add(TAB_DBF1.DES_PEZ.ToString());
+            colunas.Add(TAB_DBF1.POS_PEZ.ToString());
+            colunas.Add(TAB_DBF1.NOT_PEZ.ToString());
+            colunas.Add(TAB_DBF1.ING_PEZ.ToString());
+            colunas.Add(TAB_DBF1.QTA_PEZ.ToString());
+            colunas.Add(TAB_DBF1.QT1_PEZ.ToString());
+            colunas.Add(TAB_DBF1.MCL_PEZ.ToString());
+            colunas.Add(TAB_DBF1.COD_PEZ.ToString());
+            colunas.Add(TAB_DBF1.COS_PEZ.ToString());
+            colunas.Add(TAB_DBF1.NOM_PRO.ToString());
+            colunas.Add(TAB_DBF1.LUN_PRO.ToString());
+            colunas.Add(TAB_DBF1.LAR_PRO.ToString());
+            colunas.Add(TAB_DBF1.SPE_PRO.ToString());
+            colunas.Add(TAB_DBF1.MAT_PRO.ToString());
+            colunas.Add(TAB_DBF1.TIP_BUL.ToString());
+            colunas.Add(TAB_DBF1.DIA_BUL.ToString());
+            colunas.Add(TAB_DBF1.LUN_BUL.ToString());
+            colunas.Add(TAB_DBF1.PRB_BUL.ToString());
+            colunas.Add(TAB_DBF1.PUN_LIS.ToString());
+            colunas.Add(TAB_DBF1.SUN_LIS.ToString());
+            colunas.Add(TAB_DBF1.PRE_LIS.ToString());
+            colunas.Add(TAB_DBF1.FLG_DWG.ToString());
 
 
             //propriedades que não vão para a DBF
@@ -1742,7 +1742,7 @@ namespace DLM.cad
 
 
             TabelaBlocoTag tab_pecas = new TabelaBlocoTag();
-            var grp_blocos = lista.Blocos.GroupBy(x => x.Get(T_DBF1.MAR_PEZ.ToString()).Valor).ToList().ToList();
+            var grp_blocos = lista.Blocos.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).ToList().ToList();
             foreach (var s in lista.Blocos)
             {
                 BlocoTag l = new BlocoTag(s.Bloco,false);
@@ -1757,16 +1757,16 @@ namespace DLM.cad
             tab_pecas.Blocos = tab_pecas.Blocos.OrderBy(x => x.Descricao).ToList();
 
             List<BlocoTag> l_marcas = new List<BlocoTag>();
-            var agrupado = tab_pecas.Blocos.GroupBy(x => x.Get(T_DBF1.MAR_PEZ.ToString()).Valor).Select(x => x.ToList()).ToList();
+            var agrupado = tab_pecas.Blocos.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).Select(x => x.ToList()).ToList();
 
 
             foreach (var m in agrupado)
             {
 
-                var blocos_marca = m.FindAll(x => x.Get(T_DBF1.POS_PEZ.ToString()).Valor == "");
+                var blocos_marca = m.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "");
                 if (blocos_marca.Count > 1)
                 {
-                    string mm = blocos_marca[0].Get(T_DBF1.MAR_PEZ.ToString()).Valor;
+                    string mm = blocos_marca[0].Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
                     erros.Add(new Report("Marca Duplicada",
                         $"\n{mm}" +
                         $"\nMarca duplicada ou se encontra em mais de uma prancha." +
@@ -1782,7 +1782,7 @@ namespace DLM.cad
 
                     l_marcas.Add(m_simples);
 
-                    var posicoes_tbl = m.FindAll(x => x.Get(T_DBF1.POS_PEZ.ToString()).Valor != "").GroupBy(x => x.Get(T_DBF1.POS_PEZ.ToString()).Valor).Select(X => X.ToList());
+                    var posicoes_tbl = m.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor != "").GroupBy(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor).Select(X => X.ToList());
 
 
                     //CRIA A LINHA DA MARCA SIMPLES
@@ -1790,21 +1790,21 @@ namespace DLM.cad
                     {
                         var p_simples = m_simples.Clonar();
 
-                        m_simples.Set(T_DBF1.FLG_REC.ToString(), CADVars.ATT_REC_MARCA);
-                        m_simples.Set(T_DBF1.POS_PEZ.ToString(), "");
-                        m_simples.Set(T_DBF1.COD_PEZ.ToString(), "");
-                        m_simples.Set(T_DBF1.NOM_PRO.ToString(), "");
-                        m_simples.Set(T_DBF1.LUN_PRO.ToString(), "");
-                        m_simples.Set(T_DBF1.LAR_PRO.ToString(), "");
-                        m_simples.Set(T_DBF1.SPE_PRO.ToString(), "");
-                        m_simples.Set(T_DBF1.MAT_PRO.ToString(), "");
-                        m_simples.Set(T_DBF1.PUN_LIS.ToString(), "");
-                        m_simples.Set(T_DBF1.SUN_LIS.ToString(), "");
-                        m_simples.Set(T_DBF1.PRE_LIS.ToString(), "");
+                        m_simples.Set(TAB_DBF1.FLG_REC.ToString(), CADVars.ATT_REC_MARCA);
+                        m_simples.Set(TAB_DBF1.POS_PEZ.ToString(), "");
+                        m_simples.Set(TAB_DBF1.COD_PEZ.ToString(), "");
+                        m_simples.Set(TAB_DBF1.NOM_PRO.ToString(), "");
+                        m_simples.Set(TAB_DBF1.LUN_PRO.ToString(), "");
+                        m_simples.Set(TAB_DBF1.LAR_PRO.ToString(), "");
+                        m_simples.Set(TAB_DBF1.SPE_PRO.ToString(), "");
+                        m_simples.Set(TAB_DBF1.MAT_PRO.ToString(), "");
+                        m_simples.Set(TAB_DBF1.PUN_LIS.ToString(), "");
+                        m_simples.Set(TAB_DBF1.SUN_LIS.ToString(), "");
+                        m_simples.Set(TAB_DBF1.PRE_LIS.ToString(), "");
 
-                        p_simples.Set(T_DBF1.QTA_PEZ.ToString(), "1");
-                        p_simples.Set(T_DBF1.FLG_REC.ToString(), CADVars.ATT_REC_POSICAO);
-                        p_simples.Set(T_DBF1.POS_PEZ.ToString(), p_simples.Get(T_DBF1.MAR_PEZ.ToString()).Valor);
+                        p_simples.Set(TAB_DBF1.QTA_PEZ.ToString(), "1");
+                        p_simples.Set(TAB_DBF1.FLG_REC.ToString(), CADVars.ATT_REC_POSICAO);
+                        p_simples.Set(TAB_DBF1.POS_PEZ.ToString(), p_simples.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor);
                         p_simples.Set(CADVars.ATT_BLK, "DUMMY");
 
                         l_marcas.Add(p_simples);
@@ -1817,7 +1817,7 @@ namespace DLM.cad
                         foreach (var pos in posicoes_tbl)
                         {
                             var lfim = pos[0].Clonar();
-                            lfim.Set(T_DBF1.QTA_PEZ.ToString(), pos.Sum(x => x.Get(T_DBF1.QTA_PEZ.ToString()).Double()).ToString().Replace(",", "."));
+                            lfim.Set(TAB_DBF1.QTA_PEZ.ToString(), pos.Sum(x => x.Get(TAB_DBF1.QTA_PEZ.ToString()).Double()).ToString().Replace(",", "."));
                             l_marcas.Add(lfim);
                         }
 
@@ -1826,7 +1826,7 @@ namespace DLM.cad
                 else
                 {
                     erros.Add(new Report("Marca Não existe",
-                                           $"\n{string.Join("\n",m.Select(x=>x.Get(T_DBF1.MAR_PEZ.ToString()).Valor + @"/" + x.Get(T_DBF1.MAR_PEZ.ToString()).Valor))}" +
+                                           $"\n{string.Join("\n",m.Select(x=>x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor + @"/" + x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor))}" +
                                            $"\nMarca indicada nas posições não existe." +
                                            $"{string.Join("\n", blocos_marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
                                           DLM.vars.TipoReport.Crítico
@@ -1836,8 +1836,8 @@ namespace DLM.cad
             }
             foreach (var l in l_marcas)
             {
-                var pos = l.Get(T_DBF1.POS_PEZ.ToString()).Valor;
-                l.Descricao = l.Get(T_DBF1.MAR_PEZ.ToString()).Valor;
+                var pos = l.Get(TAB_DBF1.POS_PEZ.ToString()).Valor;
+                l.Descricao = l.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
                 if(pos!="")
                 {
                     l.Descricao = l.Descricao + " - P = " + pos;
@@ -2801,7 +2801,7 @@ namespace DLM.cad
                     {
                         foreach(var bloco in marcas)
                         {
-                            Atributos.Set(bloco, acTrans, T_DBF1.DES_PEZ.ToString(), mercadoria);
+                            Atributos.Set(bloco, acTrans, TAB_DBF1.DES_PEZ.ToString(), mercadoria);
                         }
                     }
                     acTrans.Commit();
@@ -2824,7 +2824,7 @@ namespace DLM.cad
                     {
                         foreach (var bloco in marcas)
                         {
-                            Atributos.Set(bloco, acTrans, T_DBF1.MAT_PRO.ToString(), mercadoria);
+                            Atributos.Set(bloco, acTrans, TAB_DBF1.MAT_PRO.ToString(), mercadoria);
                         }
                     }
                     acTrans.Commit();
@@ -2849,7 +2849,7 @@ namespace DLM.cad
                     {
                         foreach (var bloco in marcas)
                         {
-                            Atributos.Set(bloco, acTrans, T_DBF1.TRA_PEZ.ToString(), mercadoria);
+                            Atributos.Set(bloco, acTrans, TAB_DBF1.TRA_PEZ.ToString(), mercadoria);
                         }
                     }
                     acTrans.Commit();

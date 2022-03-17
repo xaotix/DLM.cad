@@ -340,18 +340,18 @@ namespace DLM.cad
                     int decimais = 4;
                     string dec_str = "N4";
 
-                    var pecas = pecas_tecnometal.GroupBy(x => x.Get(T_DBF1.MAR_PEZ.ToString()).Valor).Select(X => X.ToList());
+                    var pecas = pecas_tecnometal.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).Select(X => X.ToList());
                     double total_superficie = 0;
                     double total_peso = 0;
                     foreach (var pc in pecas)
                     {
-                        var marca = pc.FindAll(x => x.Get(T_DBF1.POS_PEZ.ToString()).Valor == "");
-                        var posics = pc.FindAll(x => x.Get(T_DBF1.POS_PEZ.ToString()).Valor != "");
-                        int qtd = marca[0].Get(T_DBF1.QTA_PEZ.ToString()).Int();
-                        double peso_unit = posics.Sum(x => x.Get(T_DBF1.PUN_LIS.ToString()).Double() * x.Get(T_DBF1.QTA_PEZ.ToString()).Int());
-                        double sup_unit = posics.Sum(x => x.Get(T_DBF1.SUN_LIS.ToString()).Double() * x.Get(T_DBF1.QTA_PEZ.ToString()).Int());
-                        marca[0].Set(T_DBF1.PUN_LIS.ToString(), peso_unit);
-                        marca[0].Set(T_DBF1.SUN_LIS.ToString(), sup_unit);
+                        var marca = pc.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "");
+                        var posics = pc.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor != "");
+                        int qtd = marca[0].Get(TAB_DBF1.QTA_PEZ.ToString()).Int();
+                        double peso_unit = posics.Sum(x => x.Get(TAB_DBF1.PUN_LIS.ToString()).Double() * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
+                        double sup_unit = posics.Sum(x => x.Get(TAB_DBF1.SUN_LIS.ToString()).Double() * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
+                        marca[0].Set(TAB_DBF1.PUN_LIS.ToString(), peso_unit);
+                        marca[0].Set(TAB_DBF1.SUN_LIS.ToString(), sup_unit);
                         total_superficie += (sup_unit * qtd);
                         total_peso += (peso_unit * qtd);
                     }
@@ -370,30 +370,30 @@ namespace DLM.cad
 
                         foreach (var Pos in Marca)
                         {
-                            string descricao = Pos.Get(T_DBF1.DES_PEZ.ToString()).Valor;
-                            if(Pos.Get(T_DBF1.POS_PEZ.ToString()).Valor != "")
+                            string descricao = Pos.Get(TAB_DBF1.DES_PEZ.ToString()).Valor;
+                            if(Pos.Get(TAB_DBF1.POS_PEZ.ToString()).Valor != "")
                             {
-                                descricao = Pos.Get(T_DBF1.NOM_PRO.ToString()).Valor;
+                                descricao = Pos.Get(TAB_DBF1.NOM_PRO.ToString()).Valor;
                                 if (descricao == "")
                                 {
                                     descricao =
-                                        "Ch. " + Pos.Get(T_DBF1.SPE_PRO.ToString()).Double().ToString("N2").Replace(",", "") +
-                                        " x " + Pos.Get(T_DBF1.LAR_PRO.ToString()).Double().ToString("N1").Replace(",", "") +
-                                        " x " + Pos.Get(T_DBF1.LUN_PRO.ToString()).Double().ToString("N1").Replace(",", "");
+                                        "Ch. " + Pos.Get(TAB_DBF1.SPE_PRO.ToString()).Double().ToString("N2").Replace(",", "") +
+                                        " x " + Pos.Get(TAB_DBF1.LAR_PRO.ToString()).Double().ToString("N1").Replace(",", "") +
+                                        " x " + Pos.Get(TAB_DBF1.LUN_PRO.ToString()).Double().ToString("N1").Replace(",", "");
                                 }
                             }
 
-                            var tipo = Pos.Get(T_DBF1.FLG_REC.ToString()).ToString();
+                            var tipo = Pos.Get(TAB_DBF1.FLG_REC.ToString()).ToString();
                             
                             Hashtable ht = new Hashtable();
-                            ht.Add(CADVars.ATT_Marca, tipo == CADVars.ATT_REC_MARCA?Pos.Get(T_DBF1.MAR_PEZ.ToString()): Pos.Get(T_DBF1.POS_PEZ.ToString()));
-                            ht.Add(CADVars.ATT_Quantidade, Pos.Get(T_DBF1.QTA_PEZ.ToString()));
+                            ht.Add(CADVars.ATT_Marca, tipo == CADVars.ATT_REC_MARCA?Pos.Get(TAB_DBF1.MAR_PEZ.ToString()): Pos.Get(TAB_DBF1.POS_PEZ.ToString()));
+                            ht.Add(CADVars.ATT_Quantidade, Pos.Get(TAB_DBF1.QTA_PEZ.ToString()));
                             ht.Add(CADVars.ATT_Descricao, descricao );
-                            ht.Add(CADVars.ATT_Material, Pos.Get(T_DBF1.MAT_PRO.ToString()));
-                            ht.Add(CADVars.ATT_Cod_SAP, Pos.Get(T_DBF1.COD_PEZ.ToString()));
-                            ht.Add("PESO_UNIT", Math.Round(Pos.Get(T_DBF1.PUN_LIS.ToString()).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
-                            ht.Add("PESO_TOT", Math.Round(Pos.Get(T_DBF1.PUN_LIS.ToString()).Double() /1000 * Pos.Get(T_DBF1.QTA_PEZ.ToString()).Int(), decimais).ToString(dec_str).Replace(",", ""));
-                            ht.Add(CADVars.ATT_Ficha_Pintura, Pos.Get(T_DBF1.TRA_PEZ.ToString()));
+                            ht.Add(CADVars.ATT_Material, Pos.Get(TAB_DBF1.MAT_PRO.ToString()));
+                            ht.Add(CADVars.ATT_Cod_SAP, Pos.Get(TAB_DBF1.COD_PEZ.ToString()));
+                            ht.Add("PESO_UNIT", Math.Round(Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
+                            ht.Add("PESO_TOT", Math.Round(Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000 * Pos.Get(TAB_DBF1.QTA_PEZ.ToString()).Int(), decimais).ToString(dec_str).Replace(",", ""));
+                            ht.Add(CADVars.ATT_Ficha_Pintura, Pos.Get(TAB_DBF1.TRA_PEZ.ToString()));
 
                             Blocos.Inserir(acDoc, CADVars.BLK_TAB_TecnoMetal, p0, fator_escala, 0, ht);
                             p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
