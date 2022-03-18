@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\DLLS\Ferramentas_DLM\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Medabil\Ferramentas_DLM\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -284,6 +284,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /k /d /Y  /E /H /C /I "$(OutDir)*.*" "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
