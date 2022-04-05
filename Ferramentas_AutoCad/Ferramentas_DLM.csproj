@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\Medabil\Ferramentas_DLM\</OutputPath>
+    <OutputPath>C:\Medabil\Ferramentas_DLM\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,39 +38,31 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCui, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcCui.dll</HintPath>
+      <HintPath>..\..\DLLS\AcCui.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcDbMgd.dll</HintPath>
+      <HintPath>..\..\DLLS\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgdbrep, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\acdbmgdbrep.dll</HintPath>
+      <HintPath>..\..\DLLS\acdbmgdbrep.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDx, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcDx.dll</HintPath>
+      <HintPath>..\..\DLLS\AcDx.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcMgd.dll</HintPath>
+      <HintPath>..\..\DLLS\AcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMr, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcMr.dll</HintPath>
+      <HintPath>..\..\DLLS\AcMr.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcTcMgd, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcTcMgd.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AcWindows, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcWindows.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AdWindows, Version=3.2.23.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AdWindows.dll</HintPath>
+      <HintPath>..\..\DLLS\AcTcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Autodesk.AutoCAD.Interop, Version=18.2.0.0, Culture=neutral, PublicKeyToken=eed84259d7cbf30b, processorArchitecture=MSIL">
@@ -94,9 +86,6 @@
     <Reference Include="DataGridFilterLibrary, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\DataGridFilterLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="MIConvexHull, Version=1.1.19.1018, Culture=neutral, PublicKeyToken=2644b6f8be52c998, processorArchitecture=MSIL">
-      <HintPath>..\packages\MIConvexHull.1.1.19.1019\lib\netstandard1.0\MIConvexHull.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

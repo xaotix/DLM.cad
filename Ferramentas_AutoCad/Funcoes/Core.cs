@@ -4,7 +4,6 @@ using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using DLM.cad.Lisp;
-using MIConvexHull;
 using System;
 using System.Collections;
 using System.Collections.Generic;
