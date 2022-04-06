@@ -2,7 +2,6 @@
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using DLM.cad;
 using System;
@@ -1142,7 +1141,7 @@ namespace DLM.cad
         {
 
 
-            Comando(
+            Ut.Comando(
                     "_-style" ,
                     estilo_padrao ,
                     estilo_padrao_fonte,

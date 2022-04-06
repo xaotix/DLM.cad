@@ -111,6 +111,10 @@
     <Reference Include="Xceed.Wpf.Toolkit">
       <HintPath>..\..\DLLS\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
+    <Reference Include="ZoomAndPan, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLLS\ZoomAndPan.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -123,6 +127,7 @@
     <Compile Include="ClassesObjetosMultiline\ObjetoPurlin.cs" />
     <Compile Include="ClassesInput\GradeEixos.cs" />
     <Compile Include="ClassesInput\VaoObra.cs" />
+    <Compile Include="Extensoes\ChamarComandos.cs" />
     <Compile Include="Funcoes\CADVars.cs" />
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />
@@ -209,6 +214,9 @@
     <None Include="iniciar.scr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Limpar.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -221,12 +229,6 @@
     <EmbeddedResource Include="Menus\TercasMenu.resx">
       <DependentUpon>TercasMenu.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ZoomAndPan\ZoomAndPan.csproj">
-      <Project>{468adede-6f5e-40c0-99c9-c6dac4fac934}</Project>
-      <Name>ZoomAndPan</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Todo.TXT" />
@@ -273,7 +275,6 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>$(OutDir)Limpar.bat</PostBuildEvent>
   </PropertyGroup>
 </Project>

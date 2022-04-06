@@ -149,15 +149,7 @@ namespace DLM.cad
 
                         object[] data = { "_.BLOCKICON " + acBlkTblRec.Name + "\n" };
 
-                        ActiveDocument.GetType().InvokeMember(
-
-                          "SendCommand",
-
-                          System.Reflection.BindingFlags.InvokeMethod,
-
-                          null, ActiveDocument, data
-
-                        );
+                        ActiveDocument.GetType().InvokeMember("SendCommand",System.Reflection.BindingFlags.InvokeMethod,null, ActiveDocument, data);
 
                     }
 

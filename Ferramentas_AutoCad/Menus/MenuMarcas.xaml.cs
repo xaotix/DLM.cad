@@ -745,7 +745,7 @@ namespace DLM.cad
         private void limpar_selo_tabela(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.limpa();
+            Core.tabela_limpa();
         }
 
         private void purlin_muda_perfil(object sender, RoutedEventArgs e)

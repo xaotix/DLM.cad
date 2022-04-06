@@ -1,7 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Internal.PropertyInspector;
 using Autodesk.AutoCAD.Runtime;
@@ -56,16 +55,14 @@ namespace DLM.cad
         }
         public  void SetViewport(bool block = true, string layer = "MV")
         {
-
             Ut.IrLayout();
             FLayer.Criar(layer, System.Drawing.Color.Gray);
             FLayer.Set("0");
             var view = Ut.GetViewports(layer);
-            editor.Command("mview", "lock", block ? "ON" : "OFF", "all", "");
-            editor.Command("layer", block ? "off":"on", layer, "");
-            editor.Command("pspace", "");
-            editor.Command("zoom", "e","");
-
+            Ut.Comando("mview", "lock", block ? "ON" : "OFF", "all", "");
+            Ut.Comando("layer", block ? "off":"on", layer, "");
+            Ut.Comando("pspace", "");
+            Ut.Comando("zoom", "e","");
         }
         public bool E_Tecnometal3D(bool mensagem = true)
         {
@@ -243,10 +240,7 @@ namespace DLM.cad
             acDoc.Editor.Regen();
         }
 
-        public void Comando(params object[] comando)
-        {
-            Autodesk.AutoeditorInput.Extensoes.Command(acDoc.Editor, comando);
-        }
+
         public List<Coordenada> RemoverRepetidos(List<Coordenada> pts)
         {
             List<Coordenada> lista = new List<Coordenada>();
@@ -856,7 +850,10 @@ namespace DLM.cad
 
         public CADBase()
         {
-            CADVars.VerificarVersao();
+            if (Conexoes.DBases.GetUserAtual().ma.ToUpper() != "MA1516")
+            {
+                CADVars.VerificarVersao();
+            }
             SetUCSParaWorld();
             GetLayers();
             Multiline.GetMLStyles();

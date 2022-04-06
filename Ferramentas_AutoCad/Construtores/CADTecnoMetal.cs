@@ -2,7 +2,6 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.PlottingServices;
-using Autodesk.AutoeditorInput;
 using Conexoes;
 using DLM.encoder;
 using DLM.vars;
@@ -913,7 +912,7 @@ namespace DLM.cad
             {
                 if (!E_Tecnometal3D()) { return; }
 
-                editor.Command("tec_stsetvar3d", selecao.ObjectId, secao, propriedade, valor);
+                Ut.Comando("tec_stsetvar3d", selecao.ObjectId, secao, propriedade, valor);
 
             }
             catch (Exception ex)
@@ -924,11 +923,11 @@ namespace DLM.cad
         public void GerarDBF3D()
         {
             if (!E_Tecnometal3D()) { return; }
-            var st = editor.Command("TEC_ST3D2DBF", this.Nome, "t", CADVars.ATT_N, CADVars.ATT_N);
+            Ut.Comando("TEC_ST3D2DBF", this.Nome, "t", CADVars.ATT_N, CADVars.ATT_N);
         }
         public void RodarMacros(List<Conexoes.Arquivo> Arquivos = null)
         {
-            if (!E_Tecnometal()) { return; }
+            string arq_atual = this.Endereco;
             if (Arquivos == null)
             {
                 Arquivos = SelecionarDWGs();
@@ -959,7 +958,11 @@ namespace DLM.cad
 
             if (cfg.GerarDBF)
             {
-                var s = GerarDBF(ref erros, cfg.AtualizarCams, null, Arquivos);
+                if (E_Tecnometal())
+                {
+                    var s = GerarDBF(ref erros, cfg.AtualizarCams, null, Arquivos);
+                }
+
             }
 
             if(erros.Count>0)
@@ -979,61 +982,49 @@ namespace DLM.cad
                 foreach (var drawing in Arquivos)
                 {
 
-                    Document docToWorkOn = CAD.acDoc;
-
+                    Document doc = CAD.acDoc;
                     if (drawing.Endereco.ToUpper() != this.Endereco.ToUpper())
                     {
-                        docToWorkOn = CAD.documentManager.Open(drawing.Endereco, false);
-
+                        doc = CAD.documentManager.Open(drawing.Endereco, false);
                     }
 
                     Ut.IrLayout();
-
-                    using (docToWorkOn.LockDocument())
+                    using (doc.LockDocument())
                     {
-
                         if (cfg.GerarTabela)
                         {
-                            InserirTabelaAuto(ref erros);
+                            if ((E_Tecnometal()))
+                            {
+                                InserirTabelaAuto(ref erros);
+                            }
                         }
-
                         if (cfg.AjustarMViews)
                         {
                             SetViewport();
                         }
-
                         if (cfg.AjustarLTS)
                         {
-                            Ut.SetLts();
+                            Core.setarLTS();
                         }
-
                         if (cfg.PreencheSelos)
                         {
                             PreencheSelo();
                         }
-
                         if (cfg.LimparDesenhos)
                         {
-                            Ut.LimparDesenho();
+                            Core.LimparDesenho(doc);
                         }
                     }
 
-                    if (drawing.Endereco.ToUpper() == this.Endereco.ToUpper())
+                    doc.Comando("qsave", "");
+                    if (drawing.Endereco.ToUpper() == arq_atual.ToUpper())
                     {
-                        CAD.editor.Command("qsave", "");
-                        //using (docToWorkOn.LockDocument())
-                        //{
-                        //    Autodesk.AutoCAD.DatabaseServices.DwgVersion tVersion = Autodesk.AutoCAD.DatabaseServices.DwgVersion.Current;
-                        //    docToWorkOn.Database.SaveAs(drawing.Endereco, tVersion);
-                        //}
+                       
                     }
                     else
                     {
-
-                        docToWorkOn.CloseAndSave(drawing.Endereco);
+                        doc.Comando("_close");
                     }
-
-
 
                     Core.Getw().somaProgresso("1/3 - Rodando macros " + drawing.Nome);
                 }

@@ -1,6 +1,5 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using DLM.cad;
 using System;

@@ -1,6 +1,5 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using DLM.cad.Lisp;
@@ -305,7 +304,6 @@ namespace DLM.cad
         [CommandMethod("setarLTS")]
         public static void setarLTS()
         {
-
             CADBase b = new CADBase();
             Ut.SetLts(10);
         }
@@ -406,7 +404,7 @@ namespace DLM.cad
         }
 
         
-        [CommandMethod("rodarmacros")]
+        [CommandMethod("rodarmacros", CommandFlags.Session)]
         public static void rodarmacros()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
@@ -581,45 +579,58 @@ namespace DLM.cad
             var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
             if(pasta.Existe())
             {
-                var destino = Conexoes.Utilz.Selecao.SelecionarPasta("Selecione o destino", pasta);
-                if(destino.Existe())
+                var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
+                if (arquivos.Count > 0)
                 {
-                    var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
-                    if (arquivos.Count > 0)
+                    var w = Conexoes.Utilz.Wait(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                    foreach (var arq in arquivos)
                     {
-                        var w = Conexoes.Utilz.Wait(arquivos.Count, "Salvando...");
-                        foreach (var arq in arquivos)
+                        var nome_fim = $@"{arq.Pasta}\{arq.Nome}.dxf";
+                        using (var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arq.Endereco, true))
                         {
-                            var nome_fim = arq.Pasta + arq.Nome + ".dxf";
-
                             try
                             {
-                                var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arq.Endereco, true);
-                                try
-                                {
-                                    Ut.LimparDesenho();
-                                    Database db = doc.Database;
-                                    db.DxfOut(nome_fim, 16, DwgVersion.AC1021);
-                                }
-                                catch (System.Exception ex)
-                                {
-                                    erros.Add(new Report(ex, arq.Endereco));
-                                    Conexoes.Utilz.Apagar(nome_fim);
-                                }
 
-                                doc.CloseAndDiscard();
-                                w.somaProgresso();
+                                Core.LimparDesenho(doc);
+                                //Core.LimparDesenho();
+                                Database db = doc.Database;
+                                /*
+                                 MC0.0 - DWG Release 1.1
+                                 AC1.2 - DWG Release 1.2
+                                 AC1.4 - DWG Release 1.4
+                                 AC1.50 - DWG Release 2.0
+                                 AC2.10 - DWG Release 2.10
+                                 AC1002 - DWG Release 2.5
+                                 AC1003 - DWG Release 2.6
+                                 AC1004 - DWG Release 9
+                                 AC1006 - DWG Release 10
+                                 AC1009 - DWG Release 11/12 (LT R1/R2)
+                                 AC1012 - DWG Release 13 (LT95)
+                                 AC1014 - DWG Release 14, 14.01 (LT97/LT98)
+                                 AC1015 - DWG AutoCAD 2000/2000i/2002
+                                 AC1018 - DWG AutoCAD 2004/2005/2006
+                                 AC1021 - DWG AutoCAD 2007/2008/2009
+                                 AC1024 - DWG AutoCAD 2010/2011/2012
+                                 AC1027 - DWG AutoCAD 2013/2014/2015/2016/2017
+                                 AC1032 - DWG AutoCAD 2018/2019/2020
+                                 */
+
+
+                                db.DxfOut(nome_fim, 16, DwgVersion.AC1024);
                             }
                             catch (System.Exception ex)
                             {
-                                erros.Add(new Report(ex, arq.Endereco));
+                                erros.Add(new Report(ex, arq.Nome + ".DWG"));
                                 Conexoes.Utilz.Apagar(nome_fim);
+                                //Conexoes.Utilz.Alerta(ex);
                             }
-
+                            doc.CloseAndDiscard();
                         }
-                        w.Close();
-                        Conexoes.Utilz.ShowReports(erros);
+
+                        w.somaProgresso();
                     }
+                    w.Close();
+                    Conexoes.Utilz.ShowReports(erros);
                 }
 
             }
@@ -637,35 +648,39 @@ namespace DLM.cad
                     if (arquivos.Count > 0)
                     {
                         List<Report> erros = new List<Report>();
-                      var w=  Conexoes.Utilz.Wait(arquivos.Count, "Salvando...");
-
+                      var w=  Conexoes.Utilz.Wait(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                        List<string> arquivos_dwg = new List<string>();
                         foreach (var arq in arquivos)
                         {
-                            var nome_fim = arq.Pasta + arq.Nome + ".dwg";
+                            var nome_fim = $@"{destino}\{arq.Nome}.dwg";
+                            arquivos_dwg.Add(nome_fim);
 
                             try
                             {
-                                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arq.Endereco, true);
-                                try
+
+                                using (Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arq.Endereco, false))
                                 {
-                                    Ut.LimparDesenho();
-                                    Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.SaveAs(nome_fim, DwgVersion.AC1021);
+                                  
+                                    doc.Database.SaveAs(nome_fim, DwgVersion.AC1021);
+                                    doc.CloseAndDiscard();
                                 }
-                                catch (System.Exception ex)
+                                if(nome_fim.Existe())
                                 {
-                                    erros.Add(new Report(ex, arq.Endereco));
-                                    Conexoes.Utilz.Apagar(nome_fim);
+                                    using (Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(nome_fim, false))
+                                    {
+                                        Core.LimparDesenho(doc);
+                                        doc.CloseAndSave(nome_fim);
+                                    }
                                 }
-                                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.CloseAndDiscard();
                             }
                             catch (System.Exception ex)
                             {
                                 erros.Add(new Report(ex, arq.Endereco));
-                                Conexoes.Utilz.Apagar(nome_fim); erros.Add(new Report(ex));
                             }
 
                             w.somaProgresso();
                         }
+
                         w.Close();
                         Conexoes.Utilz.ShowReports(erros);
                     }
@@ -767,10 +782,10 @@ namespace DLM.cad
             TecnoMetal.PreencheSelo();
 
         }
+        /*Esse cara força o CAD rodar sincrono, CommandFlags.Session*/
+        [CommandMethod("tabela_limpa")]
 
-        [CommandMethod("limpa")]
-
-        static public void limpa()
+        static public void tabela_limpa()
         {
             Ut.IrLayout();
             Ut.SetLts(10);
@@ -807,11 +822,28 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("limpardesenho")]
-        public static void limpardesenho()
+        [CommandMethod("limpardesenho", CommandFlags.Session)]
+        public static void LimparDesenho(Document doc)
         {
-            Ut.LimparDesenho();
-            
+            if(doc == null) { doc = CAD.acDoc; }
+            doc.Comando("_tilemode", "0","");/*vai pro layout*/
+            doc.Comando("_layout", "r", "", "Layout", "");/*renomeia o layout para "Layout"*/
+            doc.Comando("_zoom", "e", "");
+            doc.Comando("-SCALELISTEDIT", "R", "Y", "e", "");
+            doc.Comando("-SCALELISTEDIT", "d", "*", "e", "");
+            doc.Comando("-overkill", "all", "", "");
+
+
+
+            doc.Comando("_tilemode", "1","");/*vai pro model*/
+            doc.Comando("-purge", "all", "*", "N", "");
+            doc.Comando("-overkill", "all", "", "");
+
+            doc.Comando("AUDIT", "Y", "");
+
+            doc.Comando("_tilemode", "0","");/*vai pro layout*/
+
+            //Ut.Comando("_QSAVE", "");
         }
 
 

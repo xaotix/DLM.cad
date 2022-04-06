@@ -2,7 +2,6 @@
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoeditorInput;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using Conexoes;
@@ -1421,20 +1420,7 @@ namespace DLM.cad
         }
 
 
-        public static void LimparDesenho()
-        {
 
-            editor.Command("-SCALELISTEDIT", "R", "Y", "e","");
-            editor.Command("-SCALELISTEDIT", "d", "*", "e","");
-            editor.Command("-purge", "all", "*", "N","");
-            Ut.IrModel();
-            editor.Command("-overkill", "all", "", "");
-            Ut.IrLayout();
-            editor.Command("-overkill", "all", "", "");
-            editor.Command("AUDIT", "Y", "");
-            
-            //Ut.Purge();
-        }
         public static void IrLayout()
         {
             var lista = Ut.GetLayouts().Select(x => x.LayoutName).ToList().FindAll(x => x.ToUpper() != "MODEL");
@@ -1453,65 +1439,82 @@ namespace DLM.cad
         }
         public static void SetLts(int valor = 10)
         {
-            var st = editor.Command("LTSCALE", valor, "");
+            Ut.Comando("LTSCALE", valor, "");
         }
         public static void IrModel()
         {
             LayoutManager.Current.CurrentLayout = "Model";
         }
-        public static int Purge(Database acCurDb = null)
+
+        public static void Purge(Document doc)
         {
-            int idCount = 0;
-            if(acCurDb == null)
-            {
-                acCurDb = CAD.acCurDb;
-            }
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
-            {
-                // Create the list of objects to "purge"
-                ObjectIdCollection idsToPurge = new ObjectIdCollection();
+            Database acCurDb = doc.Database;
 
-                // Add all the Registered Application names
-                RegAppTable rat = (RegAppTable)acTrans.GetObject(acCurDb.RegAppTableId, OpenMode.ForRead);
-                foreach (ObjectId raId in rat)
+            // Start a transaction
+            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                // Open the Layer table for read
+                LayerTable acLyrTbl;
+                acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId,
+                                             OpenMode.ForRead) as LayerTable;
+
+                // Create an ObjectIdCollection to hold the object ids for each table record
+                ObjectIdCollection acObjIdColl = new ObjectIdCollection();
+
+                // Step through each layer and add iterator to the ObjectIdCollection
+                foreach (ObjectId acObjId in acLyrTbl)
                 {
-                    if (raId.IsValid)
+                    acObjIdColl.Add(acObjId);
+                }
+
+                // Remove the layers that are in use and return the ones that can be erased
+                acCurDb.Purge(acObjIdColl);
+
+                // Step through the returned ObjectIdCollection
+                // and erase each unreferenced layer
+                foreach (ObjectId acObjId in acObjIdColl)
+                {
+                    SymbolTableRecord acSymTblRec;
+                    acSymTblRec = acTrans.GetObject(acObjId,
+                                                    OpenMode.ForWrite) as SymbolTableRecord;
+
+                    try
                     {
-                        idsToPurge.Add(raId);
+                        // Erase the unreferenced layer
+                        acSymTblRec.Erase(true);
+                    }
+                    catch (Autodesk.AutoCAD.Runtime.Exception Ex)
+                    {
+                        // Layer could not be deleted
+                        Application.ShowAlertDialog("Error:\n" + Ex.Message);
                     }
                 }
 
-
-                // Call the Purge function to filter the list
-                acCurDb.Purge(idsToPurge);
-
-                CAD.editor.WriteMessage("\nObjetos que foram eliminados com o purge: ");
-
-
-                // Erase each of the objects we've been
-                // allowed to
-                foreach (ObjectId id in idsToPurge)
-                {
-                    DBObject obj = acTrans.GetObject(id, OpenMode.ForWrite);
-
-                    RegAppTableRecord ratr = obj as RegAppTableRecord;
-                    if (ratr != null)
-                    {
-                        CAD.editor.WriteMessage("\"{0}\" ", ratr.Name);
-                    }
-                    obj.Erase();
-                }
-
-                idCount = idsToPurge.Count;
+                // Commit the changes and dispose of the transaction
                 acTrans.Commit();
             }
-            return idCount;
         }
 
 
+        public static int Comando(this Document doc, params object[] comando)
+        {
 
+            /*DEPOIS DE UMA CARALHADA DE TENTATIVAS E ERROS, CHEGUEI NESSA SOLUÇÃO SIMPLES.*/
+            try
+            {
+                doc.AcadDocument.GetType().InvokeMember("SendCommand", System.Reflection.BindingFlags.InvokeMethod, null, doc.AcadDocument,new object[] { string.Join("\n", comando)});
+            }
+            catch (System.Exception)
+            {
+                return -1;
+            }
+            return 1;
+        }
 
-
+        public static int Comando(params object[] comando)
+        {
+            return Comando(CAD.acDoc, comando);
+        }
         public static List<Point3d> GetPontos(object obj, Transaction tr = null)
         {
             List<Point3d> ptss = new List<Point3d>();
