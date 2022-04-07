@@ -51,157 +51,67 @@ namespace DLM.cad
         }
         public static void GenerateBlockPreviews()
         {
-            Editor ed =Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
-
-            PromptFileNameResult res =ed.GetFileNameForOpen("Select file for which to generate previews" );
-
+            PromptFileNameResult res =CAD.editor.GetFileNameForOpen("Select file for which to generate previews" );
             if (res.Status != PromptStatus.OK)
-
                 return;
 
 
 
             Document doc = null;
-
-
-
             try
-
             {
-
                 doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(res.StringResult, false);
-
             }
-
             catch
-
             {
-
-                ed.WriteMessage("\nUnable to read drawing.");
-
+                editor.WriteMessage("\nUnable to read drawing.");
                 return;
-
             }
-
-
 
             Database db = doc.Database;
-
-
-
-            string path = Path.GetDirectoryName(res.StringResult),
-
-                   name = Path.GetFileName(res.StringResult),
-
-                   iconPath = path + "\\" + name + " icons";
-
-
-
+            string path = Path.GetDirectoryName(res.StringResult),  name = Path.GetFileName(res.StringResult), iconPath = path + "\\" + name + " icons";
             int numIcons = 0;
-
-
-
-            Transaction tr =
-
-              doc.TransactionManager.StartTransaction();
-
-            using (tr)
-
+            using (var acTrans = doc.TransactionManager.StartTransaction())
             {
-
-                BlockTable table =
-
-                  (BlockTable)tr.GetObject(
-
-                    db.BlockTableId, OpenMode.ForRead
-
-                  );
-
-
+                BlockTable table = (BlockTable)acTrans.GetObject(db.BlockTableId, OpenMode.ForRead);
 
                 foreach (ObjectId blkId in table)
-
                 {
-
-                    BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject( blkId, OpenMode.ForRead);
-
-
+                    BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject( blkId, OpenMode.ForRead);
 
                     // Ignore layouts and anonymous blocks
-
-
-
                     if (acBlkTblRec.IsLayout || acBlkTblRec.IsAnonymous)
-
                         continue;
 
-
-
                     // Attempt to generate an icon, where one doesn't exist
-
-
-
                     if (acBlkTblRec.PreviewIcon == null)
-
                     {
-
                         object ActiveDocument = doc.AcadDocument;
-
                         object[] data = { "_.BLOCKICON " + acBlkTblRec.Name + "\n" };
-
                         ActiveDocument.GetType().InvokeMember("SendCommand",System.Reflection.BindingFlags.InvokeMethod,null, ActiveDocument, data);
-
                     }
 
-
-
                     // Hopefully we now have an icon
-
-
-
                     if (acBlkTblRec.PreviewIcon != null)
-
                     {
-
                         // Create the output directory, if it isn't yet there
-
-
-
                         if (!Directory.Exists(iconPath))
-
                             Directory.CreateDirectory(iconPath);
 
-
-
                         // Save the icon to our out directory
-
-
-
-                        acBlkTblRec.PreviewIcon.Save(
-
-                           iconPath + "\\" + acBlkTblRec.Name + ".bmp"
-
-                        );
-
-
+                        acBlkTblRec.PreviewIcon.Save(iconPath + "\\" + acBlkTblRec.Name + ".bmp");
 
                         // Increment our icon counter
-
-
-
                         numIcons++;
 
                     }
 
                 }
 
-                tr.Commit();
+                acTrans.Commit();
 
             }
-
             doc.CloseAndDiscard();
-
-
         }
     }
 }

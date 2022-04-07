@@ -110,7 +110,7 @@ namespace DLM.cad
                         }
                     }
 
-                    Ut.Apagar(apagar);
+                    acDoc.Apagar(apagar);
                 }
 
 
@@ -167,7 +167,7 @@ namespace DLM.cad
                                 }
                             }
                         }
-                        Ut.Apagar(apagar);
+                        acDoc.Apagar(apagar);
                     }
                 }
             }
@@ -187,11 +187,10 @@ namespace DLM.cad
                     {
                         if (File.Exists(destino))
                         {
-                            using (Transaction tr = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                             {
-                                CAD.acCurDb.LoadMlineStyleFile(estilo, destino);
-
-                                tr.Commit();
+                                acCurDb.LoadMlineStyleFile(estilo, destino);
+                                acTrans.Commit();
                             }
                         }
                         else
@@ -217,9 +216,9 @@ namespace DLM.cad
 
                 if (mlst != null)
                 {
-                    using (DocumentLock docLock = acDoc.LockDocument())
+                    using (var docLock = acDoc.LockDocument())
                     {
-                        using (Transaction tr = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                        using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                         {
                             //get the mline style
                             Mline line = new Mline();
@@ -233,13 +232,13 @@ namespace DLM.cad
 
                             //open modelpace
                             ObjectId ModelSpaceId = SymbolUtilityServices.GetBlockModelSpaceId(acCurDb);
-                            BlockTableRecord acBlkTblRec = tr.GetObject(ModelSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                            BlockTableRecord acBlkTblRec = acTrans.GetObject(ModelSpaceId, OpenMode.ForWrite) as BlockTableRecord;
 
                             acBlkTblRec.AppendEntity(line);
 
-                            tr.AddNewlyCreatedDBObject(line, true);
+                            acTrans.AddNewlyCreatedDBObject(line, true);
 
-                            tr.Commit();
+                            acTrans.Commit();
 
                         }
                     }
@@ -265,7 +264,7 @@ namespace DLM.cad
         public static List<MlineStyle> GetMLineStyles()
         {
             List<MlineStyle> retorno = new List<MlineStyle>();
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {

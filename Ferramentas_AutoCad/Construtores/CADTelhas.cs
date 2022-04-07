@@ -81,7 +81,7 @@ namespace DLM.cad
             list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
 
 
-            Ut.Apagar(list_apagar);
+            acDoc.Apagar(list_apagar);
         }
         public void ApagarPassarelas()
         {
@@ -92,7 +92,7 @@ namespace DLM.cad
             list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
 
 
-            Ut.Apagar(list_apagar);
+            acDoc.Apagar(list_apagar);
 
         }
 
@@ -233,7 +233,7 @@ namespace DLM.cad
                 Utils.SetUndoMark(false);
 
                 acTrans.Commit();
-                acDoc.Editor.Regen();
+                editor.Regen();
             }
 
         }
@@ -377,7 +377,7 @@ namespace DLM.cad
 
                 }
                 acTrans.Commit();
-                acDoc.Editor.Regen();
+                editor.Regen();
             }
         }
 
@@ -566,7 +566,7 @@ namespace DLM.cad
 
                 }
                 acTrans.Commit();
-                acDoc.Editor.Regen();
+                editor.Regen();
             }
         }
         public void ExportarRMAdeTabela()

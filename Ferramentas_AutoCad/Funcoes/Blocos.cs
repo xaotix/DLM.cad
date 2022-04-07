@@ -97,12 +97,10 @@ namespace DLM.cad
 
         public static void Renomear(string nome_antigo, string novo_nome, bool auto_cont = true)
         {
-
-
-            using (Transaction tr = CAD.acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 string nome = novo_nome;
-                var bt = (BlockTable)tr.GetObject(CAD.acCurDb.BlockTableId, OpenMode.ForRead);
+                var bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
                 if (bt.Has(nome_antigo))
                 {
                     if (auto_cont)
@@ -118,7 +116,7 @@ namespace DLM.cad
 
                     if (!bt.Has(nome))
                     {
-                        var btr = (BlockTableRecord)tr.GetObject(bt[nome_antigo], OpenMode.ForWrite);
+                        var btr = (BlockTableRecord)acTrans.GetObject(bt[nome_antigo], OpenMode.ForWrite);
                         btr.Name = nome;
                     }
                     else
@@ -128,7 +126,7 @@ namespace DLM.cad
 
                 }
 
-                tr.Commit();
+                acTrans.Commit();
             }
         }
 
@@ -151,10 +149,10 @@ namespace DLM.cad
         public static void Criar(string nome, List<Entity> Objetos, Point3d origem)
         {
             string nome_fim = nome;
-            using (var tr = CAD.acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
             {
                 // Get the block table from the drawing
-                BlockTable bt = (BlockTable)tr.GetObject(CAD.acCurDb.BlockTableId,OpenMode.ForRead);
+                BlockTable bt = (BlockTable)acTrans.GetObject(CAD.acCurDb.BlockTableId,OpenMode.ForRead);
 
                 int c = 1;
                 while (bt.Has(nome_fim))
@@ -169,20 +167,20 @@ namespace DLM.cad
                 bt.UpgradeOpen();
 
                 ObjectId btrId = bt.Add(btr);
-                tr.AddNewlyCreatedDBObject(btr, true);
+                acTrans.AddNewlyCreatedDBObject(btr, true);
 
                 foreach (Entity ent in Objetos)
                 {
                     btr.AppendEntity(ent);
-                    tr.AddNewlyCreatedDBObject(ent, true);
+                    acTrans.AddNewlyCreatedDBObject(ent, true);
                 }
                 // Insere o bloco
-                BlockTableRecord ms = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace],OpenMode.ForWrite);
+                BlockTableRecord ms = (BlockTableRecord)acTrans.GetObject(bt[BlockTableRecord.ModelSpace],OpenMode.ForWrite);
                 BlockReference br = new BlockReference(origem, btrId);
 
                 ms.AppendEntity(br);
-                tr.AddNewlyCreatedDBObject(br, true);
-                tr.Commit();
+                acTrans.AddNewlyCreatedDBObject(br, true);
+                acTrans.Commit();
             }
 
         }
@@ -928,7 +926,7 @@ namespace DLM.cad
         public static void Mover(BlockReference bloco, Point2d posicao)
         {
             Clonar(bloco, posicao);
-            Ut.Apagar(new List<Entity> { bloco });
+            acDoc.Apagar(new List<Entity> { bloco });
         }
         public static void Clonar(BlockReference bloco, Point2d novaposicao)
         {
@@ -955,7 +953,7 @@ namespace DLM.cad
                         }
                         acTrans.Commit();
                     }
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
 

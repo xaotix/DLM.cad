@@ -79,7 +79,7 @@ namespace DLM.cad
 
         public static CADPurlin CADPurlin { get; private set; }
 
-        [CommandMethod("listarcomandos")]
+        [CommandMethod(nameof(listarcomandos))]
         public static void listarcomandos()
         {
 
@@ -93,25 +93,25 @@ namespace DLM.cad
             }
         }
 
-        [CommandMethod("lcotas")]
-        public static void LimparCotas()
+        [CommandMethod(nameof(LCotas))]
+        public static void LCotas()
         {
             CADCotagem pp = new CADCotagem();
             pp.ApagarCotas();
         }
-        [CommandMethod("cotar")]
+        [CommandMethod(nameof(Cotar))]
         public static void Cotar()
         {
             Cotas.Cotar();
 
         }
-        [CommandMethod("cconfigurar")]
-        public static void configurar()
+        [CommandMethod(nameof(cconfigurar))]
+        public static void cconfigurar()
         {
 
             Cotas.Configurar();
         }
-        [CommandMethod("contornar")]
+        [CommandMethod(nameof(contornar))]
         public static void contornar()
         {
 
@@ -120,7 +120,7 @@ namespace DLM.cad
 
 
         }
-        [CommandMethod("cco")]
+        [CommandMethod(nameof(cco))]
         public static void cco()
         {
 
@@ -129,7 +129,7 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("ccb")]
+        [CommandMethod(nameof(ccb))]
         public static void ccb()
         {
 
@@ -138,7 +138,7 @@ namespace DLM.cad
 
 
         }
-        [CommandMethod("ccv")]
+        [CommandMethod(nameof(ccv))]
         public static void ccv()
         {
 
@@ -149,7 +149,7 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("desenharmline")]
+        [CommandMethod(nameof(desenharmline))]
         public static void desenharmline()
         {
             var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(FuncoesCAD.GetArquivosMlStyles().GetEstilos(), null);
@@ -170,13 +170,13 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("substituirpolylinepormultiline")]
+        [CommandMethod(nameof(substituirpolylinepormultiline))]
         public static void substituirpolylinepormultiline()
         {
             Multiline.MudarPolyline();
 
         }
-        [CommandMethod("mudarmultiline")]
+        [CommandMethod(nameof(mudarmultiline))]
         public static void mudarmultiline()
         {
             Multiline.MudarMultiline();
@@ -185,7 +185,7 @@ namespace DLM.cad
 
 
 
-        [CommandMethod("purlin")]
+        [CommandMethod(nameof(purlin))]
         public static void purlin()
         {
             CADPurlin = new CADPurlin();
@@ -193,7 +193,7 @@ namespace DLM.cad
             CADPurlin.Purlin();
         }
 
-        [CommandMethod("renomeiablocos")]
+        [CommandMethod(nameof(renomeiablocos))]
         public static void renomeiablocos()
         {
             CADPurlin = new CADPurlin();
@@ -202,14 +202,14 @@ namespace DLM.cad
 
 
 
-        [CommandMethod("ApagarBlocosPurlin")]
+        [CommandMethod(nameof(ApagarBlocosPurlin))]
         public static void ApagarBlocosPurlin()
         {
             CADPurlin = new CADPurlin();
             CADPurlin.ApagarBlocosPurlin();
 
         }
-        [CommandMethod("apagarpurlins")]
+        [CommandMethod(nameof(apagarpurlins))]
         public static void apagarpurlins()
         {
             CADPurlin = new CADPurlin();
@@ -217,13 +217,13 @@ namespace DLM.cad
 
         }
 
-        [CommandMethod("boneco")]
+        [CommandMethod(nameof(boneco))]
         public static void boneco()
         {
             CADPurlin = new CADPurlin();
             CADPurlin.GetBoneco_Purlin();
         }
-        [CommandMethod("mudaperfiltercas")]
+        [CommandMethod(nameof(mudaperfiltercas))]
         public static void mudaperfiltercas()
         {
             CADPurlin = new CADPurlin();
@@ -234,63 +234,118 @@ namespace DLM.cad
 
         
         
-        [CommandMethod("passarela")]
+        [CommandMethod(nameof(passarela))]
         public static void passarela()
         {
             CADTelhas pp = new CADTelhas();
             pp.InserirPassarela();
         }
-        [CommandMethod("apagapassarela")]
+        [CommandMethod(nameof(apagapassarela))]
         public static void apagapassarela()
         {
             CADTelhas pp = new CADTelhas();
             pp.ApagarPassarelas();
         }
-        [CommandMethod("linhadevida")]
+        [CommandMethod(nameof(linhadevida))]
         public static void linhadevida()
         {
             CADTelhas pp = new CADTelhas();
             pp.InserirLinhaDeVida();
         }
-        [CommandMethod("rlinhadevida")]
+        [CommandMethod(nameof(rlinhadevida))]
         public static void rlinhadevida()
         {
             CADTelhas pp = new CADTelhas();
             pp.InserirLinhaDeVida(true);
         }
-        [CommandMethod("apagalinhadevida")]
+        [CommandMethod(nameof(apagalinhadevida))]
         public static void apagalinhadevida()
         {
             CADTelhas pp = new CADTelhas();
             pp.ApagarLinhaDeVida();
         }
-        [CommandMethod("rpassarela")]
+        [CommandMethod(nameof(rpassarela))]
         public static void rpassarela()
         {
             CADTelhas pp = new CADTelhas();
             pp.InserirPassarela(true);
         }
-        [CommandMethod("alinharlinhadevida")]
+        [CommandMethod(nameof(alinharlinhadevida))]
         public static void alinharlinhadevida()
         {
             CADTelhas pp = new CADTelhas();
             pp.AlinharLinhaDeVida();
         }
-       
-        
-        
+
+
+        [CommandMethod(nameof(GetInfos))]
+        public static void GetInfos()
+        {
+            string msg = "";
+            var selecao = editor.GetEntity("\nSelecione: ");
+            if (selecao.Status != PromptStatus.OK)
+                return;
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                Entity obj = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
+
+                msg = string.Format("Propriedades de {0}:\n", selecao.GetType().Name);
+
+
+
+                msg += "\n\nPropriedades custom\n\n";
+
+                msg += Ut.RetornaCustomProperties(obj.ObjectId);
+
+                var props = Ut.GetOPMProperties(obj.ObjectId);
+
+                foreach (var pair in props)
+                {
+                    msg += string.Format("\t{0} = {1}\n", pair.Key, pair.Value);
+
+                    if (Marshal.IsComObject(pair.Value))
+                        Marshal.ReleaseComObject(pair.Value);
+                }
+
+
+                msg += "\n\nPropriedades padrao\n\n";
+                PropertyInfo[] piArr = obj.GetType().GetProperties();
+                foreach (PropertyInfo pi in piArr)
+                {
+                    object value = null;
+                    try
+                    {
+                        value = pi.GetValue(obj, null);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        msg += string.Format("\t{0}: {1}\n", pi.Name, "Erro ao tentar ler: " + ex.Message);
+                    }
+
+                    msg += string.Format("\t{0}: {1}\n", pi.Name, value);
+                }
+
+
+
+                //AddMensagem("\n" + msg);
+            }
+
+
+
+            Conexoes.Utilz.JanelaTexto(msg, "Propriedades");
+        }
 
 
 
 
-        [CommandMethod("monitorar")]
+        [CommandMethod(nameof(monitorar))]
         public static void monitorar()
         {
             monitoramento = new CADMonitoramento();
 
         }
 
-        [CommandMethod("salvarlog")]
+        [CommandMethod(nameof(salvarlog))]
         public static void salvarlog()
         {
             if (monitoramento != null)
@@ -301,16 +356,15 @@ namespace DLM.cad
         
         
         
-        [CommandMethod("setarLTS")]
+        [CommandMethod(nameof(setarLTS))]
         public static void setarLTS()
         {
-            CADBase b = new CADBase();
-            Ut.SetLts(10);
+            acDoc.SetLts(10);
         }
 
 
 
-        [CommandMethod("abrepasta")]
+        [CommandMethod(nameof(abrepasta))]
         public static void abrepasta()
         {
             CADBase pp = new CADBase();
@@ -318,13 +372,13 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("exportarma")]
+        [CommandMethod(nameof(exportarma))]
         public static void exportarma()
         {
             CADTelhas pp = new CADTelhas();
             pp.ExportarRMAdeTabela();
         }
-        [CommandMethod("importarm")]
+        [CommandMethod(nameof(importarm))]
         public static void importarm()
         {
             string arquivo = Conexoes.Utilz.Abrir_String("RM", "Selecione");
@@ -338,14 +392,14 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("tabelatecnometal")]
+        [CommandMethod(nameof(tabelatecnometal))]
         public static void tabelatecnometal()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.InserirTabela();
         }
 
-        [CommandMethod("AtualizarPesoChapaFina")]
+        [CommandMethod(nameof(AtualizarPesoChapaFina))]
         public static void AtualizarPesoChapaFina()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
@@ -377,7 +431,7 @@ namespace DLM.cad
             }
         }
 
-        [CommandMethod("tabelatecnometalauto")]
+        [CommandMethod(nameof(tabelatecnometalauto))]
         public static void tabelatecnometalauto()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
@@ -390,13 +444,13 @@ namespace DLM.cad
         
         
         
-        [CommandMethod("selopreenche")]
+        [CommandMethod(nameof(selopreenche))]
         public static void selopreenche()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.PreencheSelo();
         }
-        [CommandMethod("selolimpar")]
+        [CommandMethod(nameof(selolimpar))]
         public static void selolimpar()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
@@ -404,7 +458,7 @@ namespace DLM.cad
         }
 
         
-        [CommandMethod("rodarmacros", CommandFlags.Session)]
+        [CommandMethod(nameof(rodarmacros), CommandFlags.Session | CommandFlags.Modal)]
         public static void rodarmacros()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
@@ -412,13 +466,13 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("gerardbf3d")]
+        [CommandMethod(nameof(gerardbf3d))]
         public static void gerardbf3d()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.GerarDBF3D();
         }
-        [CommandMethod("gerardbf")]
+        [CommandMethod(nameof(gerardbf))]
         public static void gerardbf()
         {
 
@@ -461,21 +515,18 @@ namespace DLM.cad
 
         }
 
-        [CommandMethod("listarquantidadeblocos")]
-        public static void listarquantidadeblocos()
-        {
-            Ut.ListarQuantidadeBlocos();
-        }
+ 
 
 
-        [CommandMethod("arremate")]
+
+        [CommandMethod(nameof(arremate))]
         public static void arremate()
         {
 
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.InserirArremate(pp.GetEscala());
         }
-        [CommandMethod("chapa")]
+        [CommandMethod(nameof(chapa))]
         public  static void chapa()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
@@ -483,20 +534,20 @@ namespace DLM.cad
 
         }
 
-        [CommandMethod("unitario")]
+        [CommandMethod(nameof(unitario))]
         public static void unitario()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.InserirElementoUnitario(pp.GetEscala());
         }
-        [CommandMethod("elem2")]
+        [CommandMethod(nameof(elem2))]
         public static void elem2()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.InserirElementoM2(pp.GetEscala());
         }
 
-        [CommandMethod("criarmarcasdeexcel")]
+        [CommandMethod(nameof(criarmarcasdeexcel))]
         public static void criarmarcasdeexcel()
         {
 
@@ -507,7 +558,7 @@ namespace DLM.cad
             mm.Show();
 
         }
-        [CommandMethod("criarmarcasdecam")]
+        [CommandMethod(nameof(criarmarcasdecam))]
         public static void criarmarcasdecam()
         {
 
@@ -544,14 +595,14 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("bloqueiamviews")]
+        [CommandMethod(nameof(bloqueiamviews))]
         public static void bloqueiamviews()
         {
             CADBase b = new CADBase();
             b.SetViewport(true);
         }
 
-        [CommandMethod("desbloqueiamviews")]
+        [CommandMethod(nameof(desbloqueiamviews))]
         public static void desbloqueiamviews()
         {
             CADBase b = new CADBase();
@@ -560,19 +611,19 @@ namespace DLM.cad
 
 
 
-        [CommandMethod("teste")]
+        [CommandMethod(nameof(teste))]
         public static void teste()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
         }
 
-        [CommandMethod("marcar")]
+        [CommandMethod(nameof(marcar))]
         public static void marcar()
         {
             MenuMarcas.Iniciar();
         }
 
-        [CommandMethod("converterDXF")]
+        [CommandMethod(nameof(converterDXF))]
         public static void converterDXF()
         {
             List<Report> erros = new List<Report>();
@@ -635,7 +686,7 @@ namespace DLM.cad
 
             }
         }
-        [CommandMethod("converterDWG")]
+        [CommandMethod(nameof(converterDWG))]
         public static void converterDWG()
         {
             var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
@@ -690,20 +741,20 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("medabil")]
+        [CommandMethod(nameof(medabil))]
         public static void medabil()
         {
             
             MenuMarcas.Iniciar();
         }
 
-        [CommandMethod("quantificar")]
+        [CommandMethod(nameof(quantificar))]
         public static void quantificar()
         {
             TecnoMetal.Quantificar(true,false,true,true,false);
         }
 
-        [CommandMethod("marcarmontagem")]
+        [CommandMethod(nameof(marcarmontagem))]
         public static void marcarmontagem()
         {
          if(menu_bloco==null)
@@ -718,77 +769,67 @@ namespace DLM.cad
             }
         }
 
-        [CommandMethod("offtec")]
+        [CommandMethod(nameof(offtec))]
         public static void offtec()
         {
             FLayer.Desligar(CADVars.LayersMarcasDesligar);
         }
 
-
-
-        [CommandMethod("mercadorias21")]
-        public  static void mercadorias()
+        [CommandMethod(nameof(mercadorias21))]
+        public  static void mercadorias21()
         {
             CADTecnoMetal p = new CADTecnoMetal();
             p.Mercadorias();
         }
-        [CommandMethod("materiais21")]
-        public static void materiais()
+        [CommandMethod(nameof(materiais21))]
+        public static void materiais21()
         {
             CADTecnoMetal p = new CADTecnoMetal();
             p.Materiais();
         }
-        [CommandMethod("tratamentos21")]
-        public static void tratamentos()
+        [CommandMethod(nameof(tratamentos21))]
+        public static void tratamentos21()
         {
             CADTecnoMetal p = new CADTecnoMetal();
             p.Tratamentos();
         }
 
-
-        [CommandMethod("criarlayersPadrao")]
+        [CommandMethod(nameof(criarlayersPadrao))]
         public static void criarlayersPadrao()
         {
             CADBase p = new CADBase();
             p.CriarLayersPadrao();
         }
 
-
-
-        [CommandMethod("gerardxf")]
+        [CommandMethod(nameof(gerardxf))]
         public static void gerardxf()
         {
             TecnoMetal.GerarDXFs();
         }
 
-        [CommandMethod("testeinterseccao")]
+        [CommandMethod(nameof(testeinterseccao))]
         public static void testeinterseccao()
         {
             Ut.InterSectionPoint();
         }
 
-
-
-
-
-        [CommandMethod("preenche")]
-
-        static public void preenche()
+        [CommandMethod(nameof(preencheSelo))]
+        static public void preencheSelo()
         {
-            Ut.IrLayout();
-            Ut.SetLts(10);
+            acDoc.IrLayout();
+            acDoc.SetLts(10);
             Ut.ZoomExtend();
             TecnoMetal.InserirTabelaAuto();
             TecnoMetal.PreencheSelo();
 
         }
         /*Esse cara força o CAD rodar sincrono, CommandFlags.Session*/
-        [CommandMethod("tabela_limpa")]
+        [CommandMethod(nameof(tabela_limpa))]
 
         static public void tabela_limpa()
         {
-            Ut.IrLayout();
-            Ut.SetLts(10);
+            acDoc.IrLayout();
+            acDoc.SetLts(10);
             Ut.ZoomExtend();
             List<Report> erros = new List<Report>();
             TecnoMetal.ApagarTabelaAuto();
@@ -798,14 +839,14 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod("gerarPDFEtapa")]
+        [CommandMethod(nameof(gerarPDFEtapa))]
 
         static public void gerarPDFEtapa()
         {
             TecnoMetal.GerarPDF();
         }
 
-        [CommandMethod("gerarPDFEtapacarrega")]
+        [CommandMethod(nameof(gerarPDFEtapacarrega))]
 
         static public void gerarPDFEtapacarrega()
         {
@@ -814,38 +855,57 @@ namespace DLM.cad
             TecnoMetal.GerarPDF(arquivos);
         }
 
-        [CommandMethod("composicao")]
-
+        [CommandMethod(nameof(composicao))]
         static public void composicao()
         {
             TecnoMetal.InserirSoldaComposicao();
         }
 
 
-        [CommandMethod("limpardesenho", CommandFlags.Session)]
+        [CommandMethod(nameof(LimparDesenho), CommandFlags.Session | CommandFlags.Modal)]
         public static void LimparDesenho(Document doc)
         {
             if(doc == null) { doc = CAD.acDoc; }
-            doc.Comando("_tilemode", "0","");/*vai pro layout*/
-            doc.Comando("_layout", "r", "", "Layout", "");/*renomeia o layout para "Layout"*/
-            doc.Comando("_zoom", "e", "");
-            doc.Comando("-SCALELISTEDIT", "R", "Y", "e", "");
-            doc.Comando("-SCALELISTEDIT", "d", "*", "e", "");
-            doc.Comando("-overkill", "all", "", "");
-
-
-
-            doc.Comando("_tilemode", "1","");/*vai pro model*/
-            doc.Comando("-purge", "all", "*", "N", "");
-            doc.Comando("-overkill", "all", "", "");
-
-            doc.Comando("AUDIT", "Y", "");
-
-            doc.Comando("_tilemode", "0","");/*vai pro layout*/
-
-            //Ut.Comando("_QSAVE", "");
+            doc.Comando(
+                "_tilemode", "0",/*vai pro layout*/
+            "_layout", "r", "", "Layout",/*renomeia o layout para "Layout"*/
+            "_zoom", "e",
+            "-SCALELISTEDIT", "R", "Y", "e",
+            "-SCALELISTEDIT", "d", "*", "e",
+            "-overkill", "all",
+            "_tilemode", "1",/*vai pro model*/
+            "-purge", "A", "*", "N",
+            "-overkill", "all", "", "", "d",
+            "-layer", "set", "0","",
+            "-layer", "off", "mv","",
+            "AUDIT", "Y",
+            "_tilemode", "0",""
+            );/*vai pro layout*/
         }
 
 
+        [CommandMethod(nameof(ListarQuantidadeBlocos))]
+        public static void ListarQuantidadeBlocos()
+        {
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(acCurDb), OpenMode.ForRead);
+
+                var brclass = RXObject.GetClass(typeof(BlockReference));
+
+                var blocks = acBlkTblRec
+                    .Cast<ObjectId>()
+                    .Where(id => id.ObjectClass == brclass)
+                    .Select(id => (BlockReference)acTrans.GetObject(id, OpenMode.ForRead))
+                    .GroupBy(br => ((BlockTableRecord)acTrans.GetObject(
+                        br.DynamicBlockTableRecord, OpenMode.ForRead)).Name);
+
+                foreach (var group in blocks.OrderBy(x => x.Key))
+                {
+                    editor.WriteMessage($"\n{group.Key}: {group.Count()}");
+                }
+                acTrans.Commit();
+            }
+        }
     }
 }

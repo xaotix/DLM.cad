@@ -57,7 +57,7 @@ namespace DLM.cad
             double y0 = 0;
             if (purlins.Count > 0)
             {
-                double escala = acDoc.Database.Dimscale;
+                double escala = acCurDb.Dimscale;
                
 
                     x0 = p0.X;
@@ -89,7 +89,7 @@ namespace DLM.cad
             double y0 = 0;
             if (trs.Count > 0)
             {
-                double escala = acDoc.Database.Dimscale;
+                double escala = acCurDb.Dimscale;
 
                 if(mover_direita!=0)
                 {
@@ -122,7 +122,7 @@ namespace DLM.cad
             double y0 = 0;
             if (trs.Count > 0)
             {
-                double escala = acDoc.Database.Dimscale;
+                double escala = acCurDb.Dimscale;
 
                 if (mover_direita != 0)
                 {
@@ -155,7 +155,7 @@ namespace DLM.cad
             double y0 = 0;
             if (RMES.Count > 0)
             {
-                double escala = acDoc.Database.Dimscale;
+                double escala = acCurDb.Dimscale;
                 bool cancelado = false;
 
                 if (mover_direita != 0)
@@ -196,7 +196,7 @@ namespace DLM.cad
             double y0 = 0;
             if (RMAS.Count > 0)
             {
-                double escala = acDoc.Database.Dimscale;
+                double escala = acCurDb.Dimscale;
                 bool cancelado = false;
 
                 if (mover_direita != 0)
@@ -241,7 +241,7 @@ namespace DLM.cad
 
             if (pcs.Count > 0)
             {
-                double escala = acDoc.Database.Dimscale;
+                double escala = acCurDb.Dimscale;
 
                 Point2d p1 = new Point2d(p0.X, p0.Y);
                 if (mover_direita != 0)

@@ -1141,7 +1141,7 @@ namespace DLM.cad
         {
 
 
-            Ut.Comando(
+            acDoc.Comando(
                     "_-style" ,
                     estilo_padrao ,
                     estilo_padrao_fonte,
@@ -1152,25 +1152,6 @@ namespace DLM.cad
                     "No" ,
                     "No"
                 );
-            //using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
-            //{
-            //    // Open the current text style for write
-            //    TextStyleTableRecord acTextStyleTblRec;
-                
-            //    acTextStyleTblRec = acTrans.GetObject(acCurDb.Textstyle,
-            //                                          OpenMode.ForWrite) as TextStyleTableRecord;
-
-                
-            //    var s = acTextStyleTblRec.Name;
-            //    if(s.ToUpper()=="ROMANS")
-            //    {
-            //        // Save the changes and dispose of the transaction
-            //        acTextStyleTblRec.XScale = valor;
-
-            //        acTrans.Commit();
-            //        acDoc.Editor.Regen();
-            //    }
-            //}
         }
 
         public bool OpcoesComMenu()
@@ -1664,7 +1645,7 @@ namespace DLM.cad
         {
             // Get the current database
             // Start a transaction
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -1685,7 +1666,7 @@ namespace DLM.cad
 
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
                 else
                 {
@@ -1702,7 +1683,7 @@ namespace DLM.cad
             }
 
             //limpa as cotas atuais
-            Ut.Apagar(this.GetCotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
+            acDoc.Apagar(this.GetCotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
 
                 if (GetLinhas().Count == 0 | selecao.Status != PromptStatus.OK)
                 {

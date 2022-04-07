@@ -14,14 +14,12 @@ namespace DLM.cad
     {
         public static void Ligar(List<string> layers)
         {
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
-
                     LayerTable acLyrTbl;
                     acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
-
 
                     foreach (var layer in layers)
                     {
@@ -43,7 +41,7 @@ namespace DLM.cad
         }
         public static void Desligar(List<string> layers, bool congelar = true)
         {
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
@@ -55,8 +53,6 @@ namespace DLM.cad
                         if (acLyrTbl.Has(layer))
                         {
                             LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
-
-                            // Turn the layer off
                             acLyrTblRec.IsOff = true;
                             acLyrTblRec.IsFrozen = congelar;
                         }
@@ -71,18 +67,14 @@ namespace DLM.cad
         }
         public static void Set(string layer, bool on = true, bool criar_senao_existe = false)
         {
-            var layers = Get();
-            // Get the current document and database
-
+            var layers = Listar();
             if (layers.Find(x => x.ToUpper() == layer) == null && criar_senao_existe)
             {
                 Criar(layer, System.Drawing.Color.White);
             }
 
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
-                // Start a transaction
-                // Open the Layer table for read
                 LayerTable acLyrTbl;
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                 {
@@ -103,8 +95,6 @@ namespace DLM.cad
                     {
 
                     }
-  
-
                     acTrans.Commit();
                 }
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
@@ -118,10 +108,10 @@ namespace DLM.cad
         }
         public static void Criar(string nome, System.Drawing.Color cor)
         {
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
                 // Start a transaction
-                using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+                using (var acTrans = acCurDb.TransactionManager.StartTransaction())
                 {
                     // Open the Layer table for read
                     LayerTable acLyrTbl;
@@ -159,10 +149,10 @@ namespace DLM.cad
                 }
             }
         }
-        public static List<string> Get()
+        public static List<string> Listar()
         {
             List<string> lstlay = new List<string>();
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
                 LayerTableRecord layer;
                 using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())

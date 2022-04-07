@@ -48,21 +48,18 @@ namespace DLM.cad
                     remover.Add(acEnt);
                 }
             }
-
-            Ut.Apagar(remover);
-
-
+            acDoc.Apagar(remover);
         }
         public  void SetViewport(bool block = true, string layer = "MV")
         {
-            Ut.IrLayout();
+            acDoc.IrLayout();
             FLayer.Criar(layer, System.Drawing.Color.Gray);
             FLayer.Set("0");
             var view = Ut.GetViewports(layer);
-            Ut.Comando("mview", "lock", block ? "ON" : "OFF", "all", "");
-            Ut.Comando("layer", block ? "off":"on", layer, "");
-            Ut.Comando("pspace", "");
-            Ut.Comando("zoom", "e","");
+            acDoc.Comando("mview", "lock", block ? "ON" : "OFF", "all", "");
+            acDoc.Comando("layer", block ? "off":"on", layer, "");
+            acDoc.Comando("pspace", "");
+            Ut.ZoomExtend();
         }
         public bool E_Tecnometal3D(bool mensagem = true)
         {
@@ -103,7 +100,7 @@ namespace DLM.cad
             string nome = "LAYERS_PADRAO";
             
             Blocos.Inserir(CAD.acDoc, nome, new Point3d(), 0.001, 0, new Hashtable());
-            Ut.Apagar(Blocos.GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
+            acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
         }
         public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
@@ -237,7 +234,7 @@ namespace DLM.cad
         public void SetUCSParaWorld()
         {
             acDoc.Editor.CurrentUserCoordinateSystem = Matrix3d.Identity;
-            acDoc.Editor.Regen();
+            editor.Regen();
         }
 
 
@@ -725,7 +722,7 @@ namespace DLM.cad
         {
             if (_layers == null)
             {
-                _layers = FLayer.Get();
+                _layers = FLayer.Listar();
             }
             return _layers;
         }
@@ -783,8 +780,6 @@ namespace DLM.cad
 
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-
-
                 if (acSSPrompt.Status == PromptStatus.OK)
                 {
                     SelectionSet acSSet = acSSPrompt.Value;

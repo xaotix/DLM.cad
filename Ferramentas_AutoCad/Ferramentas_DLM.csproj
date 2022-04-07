@@ -127,7 +127,8 @@
     <Compile Include="ClassesObjetosMultiline\ObjetoPurlin.cs" />
     <Compile Include="ClassesInput\GradeEixos.cs" />
     <Compile Include="ClassesInput\VaoObra.cs" />
-    <Compile Include="Extensoes\ChamarComandos.cs" />
+    <Compile Include="Extensoes\ExtBlock.cs" />
+    <Compile Include="Extensoes\ExtDocument.cs" />
     <Compile Include="Funcoes\CADVars.cs" />
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />
@@ -170,7 +171,6 @@
     <Compile Include="Menus\CriarCAMs.Designer.cs">
       <DependentUpon>CriarCAMs.cs</DependentUpon>
     </Compile>
-    <Compile Include="Extensoes\Extensoes.cs" />
     <Compile Include="ClassesObjetosMultiline\EstiloML.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoTirante.cs" />
     <Compile Include="Funcoes\Core.cs" />
@@ -202,9 +202,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Configuracao_Mysql.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="DE_PARA_CTV.CFG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

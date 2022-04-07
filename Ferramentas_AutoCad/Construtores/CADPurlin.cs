@@ -145,7 +145,7 @@ namespace DLM.cad
         [DisplayName("Ficha de Pintura")]
         [ReadOnly(true)]
         [Browsable(false)]
-        public string FichaDePintura { get; set; } = DLM.vars.rm.SEM_PINTURA;
+        public string FichaDePintura { get; set; } = Cfg.Init.RM_SEM_PINTURA;
         [Category("Purlin")]
         [DisplayName("Layer Fr. Manuais")]
         public string MapeiaFurosManuaisLayer { get; set; } = "FUROS_MANUAIS";
@@ -288,8 +288,8 @@ namespace DLM.cad
             var sel = SelecionarObjetos();
             if (sel.Status == PromptStatus.OK)
             {
-                
-                Ut.Apagar(GetBlocosSecundariasIndicacao().Select(x=> x as Entity).ToList());
+
+                acDoc.Apagar(GetBlocosSecundariasIndicacao().Select(x=> x as Entity).ToList());
              
 
             }
@@ -381,7 +381,7 @@ namespace DLM.cad
                 blocos_excluir.AddRange(this.Getblocos_correntes());
             }
 
-            Ut.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
+            acDoc.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
 
             var fb = this.GetFlangeBracePadrao();
             for (int i = 0; i < verticais.Count; i++)
@@ -449,8 +449,8 @@ namespace DLM.cad
             var sel = SelecionarObjetos();
             if (sel.Status == PromptStatus.OK)
             {
-                Ut.Apagar(GetBlocosSecundariasIndicacao().Select(x => x as Entity).ToList());
-                Ut.Apagar(GetMLinesSecundarias().Select(x => x.Mline as Entity).ToList());
+                acDoc.Apagar(GetBlocosSecundariasIndicacao().Select(x => x as Entity).ToList());
+                acDoc.Apagar(GetMLinesSecundarias().Select(x => x.Mline as Entity).ToList());
             }
         }
 
@@ -866,7 +866,7 @@ namespace DLM.cad
                 blocos.AddRange(this.Getblocos_correntes());
                 blocos.AddRange(this.Getblocos_tirantes());
 
-                Ut.Apagar(blocos.Select(x => x as Entity).ToList());
+                acDoc.Apagar(blocos.Select(x => x as Entity).ToList());
             }
         }
         public void EdicaoCompleta()
@@ -893,7 +893,7 @@ namespace DLM.cad
                         }
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }
@@ -1113,7 +1113,7 @@ namespace DLM.cad
                         }
 
                         acTrans.Commit();
-                        acDoc.Editor.Regen();
+                        editor.Regen();
                     }
                 }
             }
@@ -1381,7 +1381,7 @@ namespace DLM.cad
                         Atributos.Set(s, acTrans, "PINTURA", valor);
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }
@@ -1416,7 +1416,7 @@ namespace DLM.cad
                         }
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }
@@ -1483,7 +1483,7 @@ namespace DLM.cad
                         }
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }
@@ -1539,7 +1539,7 @@ namespace DLM.cad
                         Atributos.Set(s, acTrans, ht);
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }
@@ -1563,7 +1563,7 @@ namespace DLM.cad
 
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }
@@ -1587,7 +1587,7 @@ namespace DLM.cad
 
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }
@@ -1611,7 +1611,7 @@ namespace DLM.cad
 
                     }
                     acTrans.Commit();
-                    acDoc.Editor.Regen();
+                    editor.Regen();
                 }
             }
         }

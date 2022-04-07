@@ -99,7 +99,7 @@ namespace DLM.cad
 
             if(retorno.Count>0)
             {
-                Ut.IrLayout();
+                acDoc.IrLayout();
                 Ut.ZoomExtend();
                 Menus.SoldaComposicao mm = new Menus.SoldaComposicao();
                 mm.lista.ItemsSource = retorno;
@@ -256,7 +256,6 @@ namespace DLM.cad
                     DsdData dsdData = new DsdData();
 
                     DsdEntryCollection collection = new DsdEntryCollection();
-                    Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                     /*todo = adicionar tela para configurar qual layout o usuário quer gerar*/
                     foreach (var arquivo in pacote)
                     {
@@ -278,7 +277,7 @@ namespace DLM.cad
                             {
 
 
-                                var layouts = Ut.GetLayouts();
+                                var layouts = acDoc.GetLayouts();
                                 if (layouts.Count > 0)
                                 {
                                     nome = layouts[0].LayoutName;
@@ -288,20 +287,16 @@ namespace DLM.cad
                             {
                                 Database db = new Database(false, true);
                                 db.ReadDwgFile(arquivo.Endereco, System.IO.FileShare.Read, true, "");
-                                System.IO.FileInfo fi = new System.IO.FileInfo(arquivo.Endereco);
 
-
-                                using (Transaction Tx = db.TransactionManager.StartTransaction())
+                                using (var acTrans = db.TransactionManager.StartTransaction())
                                 {
-
                                     var layouts = Ut.getLayoutIds(db);
                                     if (layouts.Count > 0)
                                     {
-                                        Layout layout = Tx.GetObject(layouts[0], OpenMode.ForRead) as Layout;
+                                        Layout layout = acTrans.GetObject(layouts[0], OpenMode.ForRead) as Layout;
                                         nome = layout.LayoutName;
                                     }
-
-                                    Tx.Commit();
+                                    acTrans.Commit();
                                 }
                             }
 
@@ -555,7 +550,7 @@ namespace DLM.cad
                         }
 
 
-                        using (var acTrans = CAD.acCurDb.TransactionManager.StartOpenCloseTransaction())
+                        using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
                         {
                             foreach (var s in atuais)
                             {
@@ -582,7 +577,7 @@ namespace DLM.cad
 
                 }
 
-                acDoc.Editor.Regen();
+                editor.Regen();
 
 
 
@@ -912,7 +907,7 @@ namespace DLM.cad
             {
                 if (!E_Tecnometal3D()) { return; }
 
-                Ut.Comando("tec_stsetvar3d", selecao.ObjectId, secao, propriedade, valor);
+                acDoc.Comando("tec_stsetvar3d", selecao.ObjectId, secao, propriedade, valor);
 
             }
             catch (Exception ex)
@@ -923,7 +918,7 @@ namespace DLM.cad
         public void GerarDBF3D()
         {
             if (!E_Tecnometal3D()) { return; }
-            Ut.Comando("TEC_ST3D2DBF", this.Nome, "t", CADVars.ATT_N, CADVars.ATT_N);
+            acDoc.Comando("TEC_ST3D2DBF", this.Nome, "t", CADVars.ATT_N, CADVars.ATT_N);
         }
         public void RodarMacros(List<Conexoes.Arquivo> Arquivos = null)
         {
@@ -988,7 +983,7 @@ namespace DLM.cad
                         doc = CAD.documentManager.Open(drawing.Endereco, false);
                     }
 
-                    Ut.IrLayout();
+                    acDoc.IrLayout();
                     using (doc.LockDocument())
                     {
                         if (cfg.GerarTabela)
@@ -1015,15 +1010,17 @@ namespace DLM.cad
                             Core.LimparDesenho(doc);
                         }
                     }
-
-                    doc.Comando("qsave", "");
+                    //dynamic acadDoc = doc.AcadDocument;
+                    //acadDoc.Save();
+                   
                     if (drawing.Endereco.ToUpper() == arq_atual.ToUpper())
                     {
                        
                     }
                     else
                     {
-                        doc.Comando("_close");
+
+                        //acadDoc.Close();
                     }
 
                     Core.Getw().somaProgresso("1/3 - Rodando macros " + drawing.Nome);
@@ -1087,8 +1084,8 @@ namespace DLM.cad
 
 
 
-                List<BlockReference> mss = Ut.Filtrar(blocos, CADVars.BlocosTecnoMetalMarcas);
-                List<BlockReference> pos = Ut.Filtrar(blocos, CADVars.BlocosTecnoMetalPosicoes);
+                List<BlockReference> mss = blocos.Filtrar(CADVars.BlocosTecnoMetalMarcas);
+                List<BlockReference> pos = blocos.Filtrar(CADVars.BlocosTecnoMetalPosicoes);
 
 
                 foreach (var m in mss)
@@ -1243,7 +1240,7 @@ namespace DLM.cad
         }
         public void ApagarTabelaAuto()
         {
-            Ut.IrLayout();
+            acDoc.IrLayout();
             Ut.ZoomExtend();
             CleanTabela();
         }
@@ -1256,7 +1253,7 @@ namespace DLM.cad
         }
         public void InserirTabelaAuto(ref List<Report> erros)
         {
-            Ut.IrLayout();
+            acDoc.IrLayout();
             Ut.ZoomExtend();
 
             DLM.db.Tabela marcas = new DLM.db.Tabela();
@@ -1333,11 +1330,11 @@ namespace DLM.cad
                     }
 
                 }
-                apagar.AddRange(Ut.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false));
+                apagar.AddRange(blocos.Filtrar(new List<string> { "TECNOMETAL_TAB" }, false));
 
 
 
-                var selo = Ut.Filtrar(blocos, new List<string> { "SELO" }, false);
+                var selo = blocos.Filtrar(new List<string> { "SELO" }, false);
                 foreach (var s in selo)
                 {
                     var offset = -7.01;
@@ -1375,7 +1372,7 @@ namespace DLM.cad
         public void PreencheSelo(bool limpar = false)
         {
             if (!E_Tecnometal()) { return; }
-            Ut.IrLayout();
+            acDoc.IrLayout();
             Ut.ZoomExtend();
 
             List<Report> erros = new List<Report>();
@@ -1405,8 +1402,8 @@ namespace DLM.cad
                         }
                     }
 
-                    List<BlockReference> tabela_tecno = Ut.Filtrar(blocos, new List<string> { "TECNOMETAL_TAB" }, false);
-                    List<BlockReference> selo = Ut.Filtrar(blocos, new List<string> { "SELO" }, false);
+                    List<BlockReference> tabela_tecno = blocos.Filtrar(new List<string> { "TECNOMETAL_TAB" }, false);
+                    List<BlockReference> selo = blocos.Filtrar(new List<string> { "SELO" }, false);
 
       
 
@@ -1462,7 +1459,7 @@ namespace DLM.cad
                     if (selo.Count > 0)
                     {
                         acTrans.Commit();
-                        acDoc.Editor.Regen();
+                        editor.Regen();
                     }
                     else
                     {
@@ -1586,8 +1583,8 @@ namespace DLM.cad
                                 }
 
                                 //var nomes = blocos.Select(x => x.Name).Distinct().ToList();
-                                List<BlockReference> ms = Ut.Filtrar(blocos, CADVars.BlocosTecnoMetalMarcas);
-                                List<BlockReference> pos = Ut.Filtrar(blocos, CADVars.BlocosTecnoMetalPosicoes);
+                                List<BlockReference> ms = blocos.Filtrar(CADVars.BlocosTecnoMetalMarcas);
+                                List<BlockReference> pos = blocos.Filtrar(CADVars.BlocosTecnoMetalPosicoes);
 
                                 if(ms.Count==0)
                                 {
@@ -2193,7 +2190,7 @@ namespace DLM.cad
         }
         public  string PromptFicha()
         {
-            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", DLM.vars.rm.SEM_PINTURA, true, "FICHA", false, 20);
+            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", Cfg.Init.RM_SEM_PINTURA, true, "FICHA", false, 20);
         }
         public string PromptMarca(string prefix = "ARR-")
         {
@@ -2436,7 +2433,7 @@ namespace DLM.cad
                         {
 
                             bobina = PromptBobina(espessura);
-                            ficha = DLM.vars.rm.SEM_PINTURA;
+                            ficha = Cfg.Init.RM_SEM_PINTURA;
                         }
                         else
                         {
@@ -2783,7 +2780,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Ut.Filtrar(this.GetBlocos(), CADVars.BlocosTecnoMetalMarcas);
+                var marcas = this.GetBlocos().Filtrar(CADVars.BlocosTecnoMetalMarcas);
 
                 if(marcas.Count>0)
                 {
@@ -2806,7 +2803,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Ut.Filtrar(this.GetBlocos(), CADVars.BlocosTecnoMetalMarcas);
+                var marcas = this.GetBlocos().Filtrar(CADVars.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
                 {
@@ -2827,11 +2824,8 @@ namespace DLM.cad
         {
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
-
-
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-
-                var marcas = Ut.Filtrar(this.GetBlocos(), CADVars.BlocosTecnoMetalMarcas);
+                var marcas = this.GetBlocos().Filtrar(CADVars.BlocosTecnoMetalMarcas);
 
                 if (marcas.Count > 0)
                 {

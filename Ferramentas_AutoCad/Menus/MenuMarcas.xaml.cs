@@ -606,21 +606,21 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             List<Report> erros = new List<Report>();
-            Core.mercadorias();
+            Core.mercadorias21();
         }
 
         private void materiais(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             List<Report> erros = new List<Report>();
-            Core.materiais();
+            Core.materiais21();
         }
 
         private void tratamentos(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             List<Report> erros = new List<Report>();
-            Core.tratamentos();
+            Core.tratamentos21();
         }
 
         private void quantificar(object sender, RoutedEventArgs e)
@@ -644,7 +644,7 @@ namespace DLM.cad
         private void limpar_cotas(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.LimparCotas();
+            Core.LCotas();
         }
 
         private void boneco(object sender, RoutedEventArgs e)
@@ -739,7 +739,7 @@ namespace DLM.cad
         private void preenche_selo_tabela(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.preenche();
+            Core.preencheSelo();
         }
 
         private void limpar_selo_tabela(object sender, RoutedEventArgs e)
@@ -775,7 +775,7 @@ namespace DLM.cad
         private void listar_quantidades(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.listarquantidadeblocos();
+            Core.ListarQuantidadeBlocos();
         }
 
         private void bloqueia_mviews(object sender, RoutedEventArgs e)

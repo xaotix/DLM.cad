@@ -136,7 +136,7 @@ namespace DLM.cad
 
 
         [Display(Order = 10, Name = "Ficha", GroupName = "Bobina")]
-        public string Ficha { get; set; } = DLM.vars.rm.SEM_PINTURA;
+        public string Ficha { get; set; } = Cfg.Init.RM_SEM_PINTURA;
 
         [Display(Order = 10, Name = "Cor", GroupName = "Bobina")]
         [ReadOnly(true)]
