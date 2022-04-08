@@ -75,7 +75,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Conexoes, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Conexoes, Version=5.1.8.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\Conexoes.dll</HintPath>
     </Reference>

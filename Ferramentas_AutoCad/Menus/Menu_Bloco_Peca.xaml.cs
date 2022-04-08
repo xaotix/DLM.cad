@@ -155,7 +155,7 @@ namespace DLM.cad.Menus
                         this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
                     }
                     this.txt_codigo.Text = pc.CODIGOFIM;
-                    this.txt_descricao.Text = pc.MAKTX;
+                    this.txt_descricao.Text = pc.DESC;
                 }
                 else if (tipo_selecionado == CADVars.ATT_RMU && this.rmu_sel != null)
                 {
@@ -172,7 +172,7 @@ namespace DLM.cad.Menus
                         this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
                     }
                     this.txt_codigo.Text = pc.CODIGOFIM;
-                    this.txt_descricao.Text = pc.MAKTX;
+                    this.txt_descricao.Text = pc.DESC;
                 }
                 else if (tipo_selecionado == CADVars.ATT_RMT && this.rmt_sel != null)
                 {
