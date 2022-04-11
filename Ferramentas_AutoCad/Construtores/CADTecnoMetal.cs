@@ -207,7 +207,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message);
+                Conexoes.Utilz.Alerta(ex);
                 return;
             }
 
@@ -307,7 +307,7 @@ namespace DLM.cad
                         }
                         catch (System.Exception ex)
                         {
-                            Conexoes.Utilz.Alerta($"Erro ao tentar ler o arquivo {arquivo} \n\n{ex.Message}\n{ex.StackTrace}");
+                            Conexoes.Utilz.Alerta(ex, $"Erro ao tentar ler o arquivo {arquivo}");
                         }
 
 
@@ -912,7 +912,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                AddMensagem(Conexoes.Utilz.GetTexto(ex));
+                Conexoes.Utilz.Alerta(ex);
             }
         }
         public void GerarDBF3D()
@@ -1487,8 +1487,9 @@ namespace DLM.cad
                         att.Set(TAB_DBF1.DES_COM.ToString(), this.GetObra().Nome);
                         att.Set(TAB_DBF1.LOT_COM.ToString(), this.GetSubEtapa().NomeEtapa);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        DLM.log.Log(ex);
                     }
                 }
 
@@ -1502,6 +1503,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
+                DLM.log.Log(ex);
                 BlocoTag att = new BlocoTag(bloco,false);
                 att.Set(CADVars.ATT_BLK, bloco.Name.ToUpper());
                 att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
@@ -1618,7 +1620,7 @@ namespace DLM.cad
             catch (System.Exception ex)
             {
                 Core.Getw().Close();
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace, "Abortado - Erro fatal", System.Windows.MessageBoxImage.Error);
+                Conexoes.Utilz.Alerta(ex, "Abortado - Erro fatal");
                 return new TabelaBlocoTag();
             }
             Core.Getw().Close();

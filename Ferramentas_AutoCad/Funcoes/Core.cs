@@ -319,6 +319,7 @@ namespace DLM.cad
                     }
                     catch (System.Exception ex)
                     {
+                        DLM.log.Log(ex);
                         msg += string.Format("\t{0}: {1}\n", pi.Name, "Erro ao tentar ler: " + ex.Message);
                     }
 

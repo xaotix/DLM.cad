@@ -202,7 +202,7 @@ namespace DLM.cad
                     }
                     catch (System.Exception ex)
                     {
-                        Conexoes.Utilz.Alerta($"Erro tentando carregar a MLStyle {estilo} \n do arquivo {arquivo}\n\n{ex.Message}\n{ex.StackTrace}");
+                        Conexoes.Utilz.Alerta(ex, $"Erro tentando carregar a MLStyle {estilo} \n do arquivo {arquivo}");
                         return false;
                     }
                 }
@@ -253,7 +253,7 @@ namespace DLM.cad
             catch (System.Exception ex)
             {
 
-                Conexoes.Utilz.Alerta($"Abortado.\n\nErro ao tentar inserir a MLine: \n{ex.Message}\n\n{ex.StackTrace}");
+                Conexoes.Utilz.Alerta(ex);
                 return false;
             }
 

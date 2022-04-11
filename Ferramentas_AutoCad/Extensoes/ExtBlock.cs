@@ -37,7 +37,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex, "Erro ao tentar ler um bloco.");
+                    Conexoes.Utilz.Alerta(ex, $"Erro ao tentar ler um bloco.");
                 }
 
             }

@@ -801,7 +801,7 @@ namespace DLM.cad
                         }
                         catch (System.Exception ex)
                         {
-                            Conexoes.Utilz.Alerta($"{ex.Message}\n{ex.StackTrace}");
+                            Conexoes.Utilz.Alerta(ex);
                         }
                     }
                 }

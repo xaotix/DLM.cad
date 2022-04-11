@@ -72,8 +72,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-
-                Conexoes.Utilz.Alerta($"{ex.Message}\n{ex.StackTrace}");
+                Conexoes.Utilz.Alerta(ex);
             }
             return pp0;
         }
@@ -227,9 +226,9 @@ namespace DLM.cad
                     }
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-
+                Conexoes.Utilz.Alerta(ex);
             }
 
             return retorno;
@@ -360,7 +359,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(i + "\n" + ex.Message + "\n" + ex.StackTrace);
+                    Conexoes.Utilz.Alerta(ex);
                 }
 
             }
@@ -384,7 +383,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(i + "\n" + ex.Message + "\n" + ex.StackTrace);
+                    Conexoes.Utilz.Alerta(ex);
                 }
 
             }

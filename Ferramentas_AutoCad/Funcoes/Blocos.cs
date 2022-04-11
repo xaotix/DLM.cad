@@ -201,7 +201,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex);
             }
 
         }
@@ -429,9 +429,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta($"Algo de errado aconteceu ao tentar inserir o bloco {endereco}\n\n" +
-                    $"{ex.Message}\n" +
-                    $"{ex.StackTrace}");
+                Conexoes.Utilz.Alerta( ex, $"Algo de errado aconteceu ao tentar inserir o bloco {endereco}");
                 return;
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
@@ -487,7 +485,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex);
 
             }
         }
@@ -570,7 +568,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex);
             }
 
         }
@@ -618,7 +616,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex);
             }
 
         }
@@ -663,7 +661,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex.Message + "\n" + ex.StackTrace);
+                Conexoes.Utilz.Alerta(ex);
             }
 
         }
@@ -721,9 +719,9 @@ namespace DLM.cad
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                DLM.log.Log(ex);
                 return null;
             }
 
@@ -761,14 +759,12 @@ namespace DLM.cad
 
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-              
+                DLM.log.Log(ex);
             }
 
             return retorno.FindAll(x=>x!=null);
-
         }
 
         public static List<Point2d> GetInterSeccao(BlockReference obj, Entity obj2)

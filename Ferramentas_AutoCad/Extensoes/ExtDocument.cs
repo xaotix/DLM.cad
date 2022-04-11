@@ -61,8 +61,9 @@ namespace DLM.cad
                 //doc.CommandWillStart -= new CommandEventHandler(ComandoIniciou);
                 //doc.CommandEnded -= new CommandEventHandler(ComandoFinalizou);
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
+                DLM.log.Log(ex);
                 return -1;
             }
 
