@@ -1,4 +1,5 @@
-﻿using DLM.vars;
+﻿using Conexoes;
+using DLM.vars;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,7 +17,7 @@ namespace DLM.cad
         public TercasMenu()
         {
             InitializeComponent();
-            Conexoes.DBases.GetBancoRM().GetTercas();
+            DBases.GetBancoRM().GetTercas();
             this.Text = $"xPurlin V.{Conexoes.Utilz.GetVersao(CADVars.DLL_Local)} [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
         }
         public string acao { get; set; } = "";

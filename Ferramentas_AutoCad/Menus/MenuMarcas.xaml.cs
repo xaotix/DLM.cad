@@ -1,4 +1,5 @@
-﻿using DLM.db;
+﻿using Conexoes;
+using DLM.db;
 using DLM.encoder;
 using DLM.vars;
 using System;
@@ -183,7 +184,7 @@ namespace DLM.cad
 
                 case Tipo_Bloco.Chapa:
                     db_chapa = Core.TecnoMetal.PromptChapa(Tipo_Chapa.Grossa);
-                    db_bobina = Conexoes.Extensoes.Clonar(Conexoes.DBases.GetBobinaDummy());
+                    db_bobina = Conexoes.Extensoes.Clonar(DBases.GetBobinaDummy());
                     if (db_chapa != null)
                     {
                         perfil.Content = db_chapa.ToString();
@@ -200,14 +201,14 @@ namespace DLM.cad
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
-                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione");
+                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione");
                     if (db_perfil_m2 != null)
                     {
                         perfil.Content = db_perfil_m2.ToString();
                     }
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    db_unitario = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione");
+                    db_unitario = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetBancoRM().GetRMAs(), null, "Selecione");
                     if (db_unitario != null)
                     {
                         perfil.Content = db_unitario.ToString();
