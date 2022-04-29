@@ -63,23 +63,23 @@ namespace DLM.cad
         {
             get
             {
-                if (NomeBloco == CADVars.BL_M_CH | NomeBloco == CADVars.BL_P_CH)
+                if (NomeBloco == Cfg.Init.CAD_BL_M_CH | NomeBloco == Cfg.Init.CAD_BL_P_CH)
                 {
                     return Tipo_Bloco.Chapa;
                 }
-                else if (NomeBloco == CADVars.BL_M_PERF | NomeBloco == CADVars.BL_P_PERF)
+                else if (NomeBloco == Cfg.Init.CAD_BL_M_PERF | NomeBloco == Cfg.Init.CAD_BL_P_PERF)
                 {
                     return Tipo_Bloco.Perfil;
                 }
-                else if (NomeBloco == CADVars.BL_M_ELEM2 | NomeBloco == CADVars.BL_P_ELEM2)
+                else if (NomeBloco == Cfg.Init.CAD_BL_M_ELEM2 | NomeBloco == Cfg.Init.CAD_BL_P_ELEM2)
                 {
                     return Tipo_Bloco.Elemento_M2;
                 }
-                else if (NomeBloco == CADVars.BL_M_ELUNIT | NomeBloco == CADVars.BL_P_ELUNIT)
+                else if (NomeBloco == Cfg.Init.CAD_BL_M_ELUNIT | NomeBloco == Cfg.Init.CAD_BL_P_ELUNIT)
                 {
                     return Tipo_Bloco.Elemento_Unitario;
                 }
-                else if (NomeBloco == CADVars.BL_M_ARR)
+                else if (NomeBloco == Cfg.Init.CAD_BL_M_ARR)
                 {
                     return Tipo_Bloco.Arremate;
                 }
@@ -102,15 +102,15 @@ namespace DLM.cad
         {
             get
             {
-                if (NomeBloco == CADVars.BL_M_Composta)
+                if (NomeBloco == Cfg.Init.CAD_BL_M_Composta)
                 {
                     return Tipo_Marca.MarcaComposta;
                 }
-                else if (NomeBloco == CADVars.BL_M_PERF | NomeBloco == CADVars.BL_M_CH | NomeBloco == CADVars.BL_M_ARR | NomeBloco == CADVars.BL_M_ELEM2 | NomeBloco == CADVars.BL_M_ELUNIT)
+                else if (NomeBloco == Cfg.Init.CAD_BL_M_PERF | NomeBloco == Cfg.Init.CAD_BL_M_CH | NomeBloco == Cfg.Init.CAD_BL_M_ARR | NomeBloco == Cfg.Init.CAD_BL_M_ELEM2 | NomeBloco == Cfg.Init.CAD_BL_M_ELUNIT)
                 {
                     return Tipo_Marca.MarcaSimples;
                 }
-                else if (NomeBloco == CADVars.BL_P_PERF | NomeBloco == CADVars.BL_P_CH | NomeBloco == CADVars.BL_P_ELEM2 | NomeBloco == CADVars.BL_P_ELUNIT)
+                else if (NomeBloco == Cfg.Init.CAD_BL_P_PERF | NomeBloco == Cfg.Init.CAD_BL_P_CH | NomeBloco == Cfg.Init.CAD_BL_P_ELEM2 | NomeBloco == Cfg.Init.CAD_BL_P_ELUNIT)
                 {
                     return Tipo_Marca.Posicao;
                 }
@@ -209,7 +209,7 @@ namespace DLM.cad
         public double CalcularSuperficieLinear()
         {
             double ret = (this.Comprimento * this.Largura * 2) + (this.Espessura * this.Comprimento * 2) + (this.Espessura * this.Largura * 2);
-            double sup = Math.Round(ret / 1000 / 1000 / 1000, CADVars.DECIMAIS_SUP);
+            double sup = Math.Round(ret / 1000 / 1000 / 1000, Cfg.Init.CAD_DECIMAIS_SUP);
             return sup;
         }
         public double CalcularPesoLinear()
@@ -221,12 +221,12 @@ namespace DLM.cad
                     var bob = this.GetBobina();
                     if (bob != null)
                     {
-                        return Math.Round(this.Espessura * this.Area * bob.Peso_Especifico / 1000 / 1000, CADVars.DECIMAIS);
+                        return Math.Round(this.Espessura * this.Area * bob.Peso_Especifico / 1000 / 1000, Cfg.Init.CAD_DECIMAIS);
                     }
                 }
                 else
                 {
-                    return Math.Round(this.Espessura * this.Area * 7.85 / 1000 / 1000, CADVars.DECIMAIS);
+                    return Math.Round(this.Espessura * this.Area * 7.85 / 1000 / 1000, Cfg.Init.CAD_DECIMAIS);
                 }
             }
             return 0;
@@ -352,7 +352,7 @@ namespace DLM.cad
             this.Marca =        l.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
             this.Posicao =      l.Get(TAB_DBF1.POS_PEZ.ToString()).Valor;
             this.Quantidade =   l.Get(TAB_DBF1.QTA_PEZ.ToString()).Double();
-            this.NomeBloco =    l.Get(CADVars.ATT_BLK).Valor;
+            this.NomeBloco =    l.Get(Cfg.Init.CAD_ATT_BLK).Valor;
             this.Prancha =      l.Get(TAB_DBF1.FLG_DWG.ToString()).Valor;
 
             this.Comprimento =  l.Get(TAB_DBF1.LUN_PRO.ToString()).Double();

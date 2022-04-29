@@ -72,8 +72,8 @@ namespace DLM.cad
         public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
             return GetBlocos().FindAll(x =>
-                 CADVars.BlocosTecnoMetalMarcas.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null |
-                 CADVars.BlocosTecnoMetalPosicoes.Find(y=> y.ToUpper() == x.Name.ToUpper())!=null 
+                 Cfg.Init.GetBlocosTecnoMetalMarcas().Find(y=> y.ToUpper() == x.Name.ToUpper())!=null |
+                 Cfg.Init.GetBlocosTecnoMetalPosicoes().Find(y=> y.ToUpper() == x.Name.ToUpper())!=null 
                                     );
         }
         public List<BlockReference> GetFuros_corte()

@@ -130,7 +130,7 @@ namespace DLM.cad
             try
             {
 
-                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(CADVars.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
 
                 this.combo_mercadoria.ItemsSource = Core.TecnoMetal.GetMercadorias();
                 this.combo_material.ItemsSource = Core.TecnoMetal.GetMateriais();
@@ -417,7 +417,7 @@ namespace DLM.cad
 
             if(this.Sufix_Count ==1)
             {
-                FLayer.Desligar(CADVars.LayersMarcasDesligar);
+                FLayer.Desligar(Cfg.Init.GetLayersMarcasDesligar());
             }
 
             this.GetMarcas();
@@ -567,13 +567,13 @@ namespace DLM.cad
         private void desliga_layer(object sender, RoutedEventArgs e)
         {
 
-            FLayer.Desligar(CADVars.LayersMarcasDesligar);
+            FLayer.Desligar(Cfg.Init.GetLayersMarcasDesligar());
             this.Visibility = Visibility.Collapsed;
         }
 
         private void liga_layer(object sender, RoutedEventArgs e)
         {
-            FLayer.Ligar(CADVars.LayersMarcasDesligar);
+            FLayer.Ligar(Cfg.Init.GetLayersMarcasDesligar());
             this.Visibility = Visibility.Collapsed;
         }
 
@@ -799,7 +799,7 @@ namespace DLM.cad
 
         private void abre_versionamento(object sender, RoutedEventArgs e)
         {
-            CADVars.Versionamento();
+            Cfg.Init.CAD_Versionamento();
         }
 
         private void rodar_macros(object sender, RoutedEventArgs e)

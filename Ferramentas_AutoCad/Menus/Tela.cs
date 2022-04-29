@@ -18,7 +18,7 @@ namespace DLM.cad
         {
             this.mm = mm;
             InitializeComponent();
-            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(CADVars.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Text = $"Cotagem V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
             opcoes.SelectedObject = this.mm;
             getvars(this.mm);
 

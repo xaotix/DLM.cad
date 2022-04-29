@@ -134,15 +134,15 @@ namespace DLM.cad
         public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point2d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
         {
             Hashtable ht = new Hashtable();
-            ht.Add(CADVars.ATT_N, N);
-            ht.Add(CADVars.ATT_Familia, FAMILIA);
-            ht.Add(CADVars.ATT_Tipo, TIPO);
-            ht.Add(CADVars.ATT_Comprimento, COMP);
+            ht.Add(Cfg.Init.CAD_ATT_N, N);
+            ht.Add(Cfg.Init.CAD_ATT_Familia, FAMILIA);
+            ht.Add(Cfg.Init.CAD_ATT_Tipo, TIPO);
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, COMP);
             ht.Add("CODIGO", CODIGO);
-            ht.Add(CADVars.ATT_id, ID);
-            ht.Add(CADVars.ATT_Descricao, DESC);
-            ht.Add(CADVars.ATT_Destino, DESTINO);
-            ht.Add(CADVars.ATT_Quantidade, QTD);
+            ht.Add(Cfg.Init.CAD_ATT_id, ID);
+            ht.Add(Cfg.Init.CAD_ATT_Descricao, DESC);
+            ht.Add(Cfg.Init.CAD_ATT_Destino, DESTINO);
+            ht.Add(Cfg.Init.CAD_ATT_Quantidade, QTD);
 
             Inserir(CAD.acDoc, Bloco, origem, escala, rotacao, ht);
         }
@@ -197,7 +197,7 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
 
-                Inserir(acDoc, CADVars.Marca_Composta, p0, escala, 0, ht);
+                Inserir(acDoc, Cfg.Init.CAD_Marca_Composta, p0, escala, 0, ht);
             }
             catch (System.Exception ex)
             {
@@ -218,33 +218,33 @@ namespace DLM.cad
                 {
                     nome = Conexoes.Utilz.getNome(nome);
                 }
-                var s = Conexoes.Utilz.GetArquivos(CADVars.Raiz_Blocos_TecnoMetal_Marcacao, nome + ".dwg");
+                var s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Marcacao, nome + ".dwg");
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(CADVars.Raiz_Blocos_TecnoMetal_Simbologias, nome + ".dwg"); ;
+                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Simbologias, nome + ".dwg"); ;
                 }
 
                 if(s.Count==0)
                 {
-                s = Conexoes.Utilz.GetArquivos(CADVars.Raiz_Blocos_Indicacao, nome + ".dwg");
+                s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_Indicacao, nome + ".dwg");
 
                 }
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(CADVars.Raiz_Blocos_Pcs, nome + ".dwg"); ;
+                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_Pcs, nome + ".dwg"); ;
                 }
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(CADVars.Raiz_Blocos_A2, nome + ".dwg", SearchOption.AllDirectories);
+                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_A2, nome + ".dwg", SearchOption.AllDirectories);
                 }
 
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(CADVars.Raiz_Blocos, nome + ".dwg", SearchOption.TopDirectoryOnly);
+                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos, nome + ".dwg", SearchOption.TopDirectoryOnly);
                 }
                 if (s.Count == 0)
                 {
@@ -449,7 +449,7 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000, Cfg.Init.CAD_DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -458,7 +458,7 @@ namespace DLM.cad
 
                 if (superficie == 0)
                 {
-                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000 / 1000 / 100, CADVars.DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000 / 1000 / 100, Cfg.Init.CAD_DECIMAIS_TON).ToString("N4").Replace(",", ""));
                 }
                 else
                 {
@@ -475,11 +475,11 @@ namespace DLM.cad
 
                 if (posicao == "")
                 {
-                    Inserir(acDoc, CADVars.Marca_Perfil, p0, escala, 0, ht);
+                    Inserir(acDoc, Cfg.Init.CAD_Marca_Perfil, p0, escala, 0, ht);
                 }
                 else
                 {
-                    Inserir(acDoc, CADVars.Posicao_Perfil, p0, escala, 0, ht);
+                    Inserir(acDoc, Cfg.Init.CAD_Posicao_Perfil, p0, escala, 0, ht);
 
                 }
             }
@@ -493,7 +493,7 @@ namespace DLM.cad
         {
             try
             {
-                var bloco = CADVars.Marca_Chapa;
+                var bloco = Cfg.Init.CAD_Marca_Chapa;
                 Hashtable ht = new Hashtable();
                 //Pairs of tag-value:
                 ht.Add(TAB_DBF1.MAR_PEZ.ToString(), pf.Marca);
@@ -522,33 +522,33 @@ namespace DLM.cad
                 {
                     if (posicao != "")
                     {
-                        bloco = CADVars.Posicao_Chapa;
+                        bloco = Cfg.Init.CAD_Posicao_Chapa;
                     }
                     else
                     {
-                        bloco = CADVars.Marca_Arremate;
+                        bloco = Cfg.Init.CAD_Marca_Arremate;
                     }
                 }
                 else if (tipo == Tipo_Bloco.Chapa)
                 {
                     if (posicao != "")
                     {
-                        bloco = CADVars.Posicao_Chapa;
+                        bloco = Cfg.Init.CAD_Posicao_Chapa;
                     }
                     else
                     {
-                        bloco = CADVars.Marca_Chapa;
+                        bloco = Cfg.Init.CAD_Marca_Chapa;
                     }
                 }
                 else if (tipo == Tipo_Bloco.Elemento_M2)
                 {
                     if (posicao != "")
                     {
-                        bloco = CADVars.Posicao_Elemento_M2;
+                        bloco = Cfg.Init.CAD_Posicao_Elemento_M2;
                     }
                     else
                     {
-                        bloco = CADVars.Marca_Elemento_M2;
+                        bloco = Cfg.Init.CAD_Marca_Elemento_M2;
                     }
                 }
                 else
@@ -576,7 +576,7 @@ namespace DLM.cad
         {
             try
             {
-                var bloco = CADVars.Marca_Chapa;
+                var bloco = Cfg.Init.CAD_Marca_Chapa;
                 Hashtable ht = new Hashtable();
 
                 double superficie = area * 2 / 1000 / 100;
@@ -589,8 +589,8 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.LUN_PRO.ToString(), comp.ToString().Replace(",", ""));
                 ht.Add(TAB_DBF1.LAR_PRO.ToString(), larg.ToString().Replace(",", ""));
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), Math.Round(pf.Peso * area / 1000 / 1000 / 100, CADVars.DECIMAIS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, CADVars.DECIMAIS));
+                ht.Add(TAB_DBF1.PUN_LIS.ToString(), Math.Round(pf.Peso * area / 1000 / 1000 / 100, Cfg.Init.CAD_DECIMAIS));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.CAD_DECIMAIS));
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
                 ht.Add(TAB_DBF1.COD_PEZ.ToString(), pf.SAP);
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), material);
@@ -598,11 +598,11 @@ namespace DLM.cad
 
                 if (posicao != "")
                 {
-                    bloco = CADVars.BL_P_ELEM2;
+                    bloco = Cfg.Init.CAD_BL_P_ELEM2;
                 }
                 else
                 {
-                    bloco = CADVars.BL_M_ELEM2;
+                    bloco = Cfg.Init.CAD_BL_M_ELEM2;
                 }
 
 
@@ -624,7 +624,7 @@ namespace DLM.cad
         {
             try
             {
-                var bloco = CADVars.Marca_Chapa;
+                var bloco = Cfg.Init.CAD_Marca_Chapa;
                 Hashtable ht = new Hashtable();
                 //Pairs of tag-value:
                 ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
@@ -643,11 +643,11 @@ namespace DLM.cad
 
                 if (posicao != "")
                 {
-                    bloco = CADVars.BL_P_ELUNIT;
+                    bloco = Cfg.Init.CAD_BL_P_ELUNIT;
                 }
                 else
                 {
-                    bloco = CADVars.BL_M_ELUNIT;
+                    bloco = Cfg.Init.CAD_BL_M_ELUNIT;
                 }
 
 

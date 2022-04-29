@@ -59,7 +59,7 @@ namespace DLM.cad
             {
                 var tolerancia = this.Get("TOLE").Double();
 
-                double diametro = Conexoes.Utilz.Double(this.Bloco.Name.Replace("M", "").Replace(CADVars.ATT_N, ""));
+                double diametro = Conexoes.Utilz.Double(this.Bloco.Name.Replace("M", "").Replace(Cfg.Init.CAD_ATT_N, ""));
                 this.Diametro = diametro;
                 if (tolerancia !=0)
                 {

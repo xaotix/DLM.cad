@@ -61,7 +61,7 @@ namespace DLM.cad
                 {
                     return _Peso_Unitario;
                 }
-                return Math.Round(this.Espessura * this.Area * this.Peso_Especifico /1000/1000,CADVars.DECIMAIS);
+                return Math.Round(this.Espessura * this.Area * this.Peso_Especifico /1000/1000,Cfg.Init.CAD_DECIMAIS);
             }
         }
 
@@ -89,7 +89,7 @@ namespace DLM.cad
                 }
 
                 double ret = (this.Comprimento * this.Largura * 2) + (this.Espessura * Comprimento * 2) + (this.Espessura * Largura * 2);
-                double sup = Math.Round(ret / 1000 / 1000 / 1000, CADVars.DECIMAIS_SUP);
+                double sup = Math.Round(ret / 1000 / 1000 / 1000, Cfg.Init.CAD_DECIMAIS_SUP);
                 return sup;
             }
         }

@@ -12,7 +12,7 @@ namespace DLM.cad
             if (_cts == null)
             {
                 _cts = new List<CTV_de_para>();
-                var arq = DLM.vars.CADVars.Arquivo_CTV;
+                var arq = DLM.vars.Cfg.Init.CAD_Arquivo_CTV;
                 var linhas = Conexoes.Utilz.Arquivo.Ler(arq);
                 if (linhas.Count > 1)
                 {

@@ -116,10 +116,10 @@ namespace DLM.cad
                     {
                         foreach(var filete in filetes)
                         {
-                            string nome = CADVars.BL_Solda_1;
+                            string nome = Cfg.Init.CAD_BL_Solda_1;
                             if(filete.First().Filete_Duplo)
                             {
-                                nome = CADVars.BL_Solda_2;
+                                nome = Cfg.Init.CAD_BL_Solda_2;
                             }
                             /*agrupa as posições de 1 em 1 para inserir o bloco*/
                             var pcs = Conexoes.Extensoes.Quebrar(filete.ToList().Select(x => x.Nome_Pos).ToList(),1).Select(x=> string.Join(",",x)).ToList();
@@ -463,7 +463,7 @@ namespace DLM.cad
             {
                 if (perfis_mapeaveis.Count == 0)
                 {
-                    Conexoes.Utilz.Alerta($"Não foi possível carregar o arquivo de configuração de contraventos. Contacte suporte. \n{CADVars.Arquivo_CTV}");
+                    Conexoes.Utilz.Alerta($"Não foi possível carregar o arquivo de configuração de contraventos. Contacte suporte. \n{Cfg.Init.CAD_Arquivo_CTV}");
 
                     return seq;
                 }
@@ -529,15 +529,15 @@ namespace DLM.cad
                         {
                           
                             Hashtable att = new Hashtable();
-                            att.Add(CADVars.ATT_N, numero);
-                            att.Add(CADVars.ATT_Familia, familia);
-                            att.Add(CADVars.ATT_Tipo, CADVars.ATT_TECNOMETAL);
-                            att.Add(CADVars.ATT_Comprimento, comp.Key);
-                            att.Add(CADVars.ATT_Codigo, codigo);
-                            att.Add(CADVars.ATT_id, 0);
-                            att.Add(CADVars.ATT_Descricao, string.Join(" ", descricao));
-                            att.Add(CADVars.ATT_Destino, CADVars.ATT_RME);
-                            att.Add(CADVars.ATT_Quantidade, 1 + s.Filhos.Count);
+                            att.Add(Cfg.Init.CAD_ATT_N, numero);
+                            att.Add(Cfg.Init.CAD_ATT_Familia, familia);
+                            att.Add(Cfg.Init.CAD_ATT_Tipo, Cfg.Init.CAD_ATT_TECNOMETAL);
+                            att.Add(Cfg.Init.CAD_ATT_Comprimento, comp.Key);
+                            att.Add(Cfg.Init.CAD_ATT_Codigo, codigo);
+                            att.Add(Cfg.Init.CAD_ATT_id, 0);
+                            att.Add(Cfg.Init.CAD_ATT_Descricao, string.Join(" ", descricao));
+                            att.Add(Cfg.Init.CAD_ATT_Destino, Cfg.Init.CAD_ATT_RME);
+                            att.Add(Cfg.Init.CAD_ATT_Quantidade, 1 + s.Filhos.Count);
                             if(subs_bloco)
                             {
                             Blocos.Inserir(CAD.acDoc, arquivo_bloco, s.Bloco.Position, escala, 0, att);
@@ -545,7 +545,7 @@ namespace DLM.cad
                             else
                             {
                                 var angulo = s.GetAngulo();
-                                Blocos.Inserir(CAD.acDoc, CADVars.BL_INDICACAO_TXT, s.Bloco.Position, escala, angulo, att);
+                                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BL_INDICACAO_TXT, s.Bloco.Position, escala, angulo, att);
                             }
                         }
 
@@ -559,7 +559,7 @@ namespace DLM.cad
                                 s.Numero = numero;
                                 s.Nome_Bloco = nome_bloco;
                                 s.Familia = familia;
-                                s.Destino = CADVars.ATT_RME;
+                                s.Destino = Cfg.Init.CAD_ATT_RME;
                                 s.Perfil = perfil;
                                 Hashtable att = new Hashtable();
                                 //att.Add("LUN_PRO", comp);
@@ -600,17 +600,17 @@ namespace DLM.cad
                         Core.Getw().somaProgresso();
 
                         Hashtable ht = new Hashtable();
-                        ht.Add(CADVars.ATT_N, pc.Numero);
-                        ht.Add(CADVars.ATT_Familia, pc.Familia);
-                        ht.Add(CADVars.ATT_Tipo, CADVars.ATT_TECNOMETAL);
-                        ht.Add(CADVars.ATT_Comprimento, pc.Comprimento.ToString().Replace(",", ""));
-                        ht.Add(CADVars.ATT_Codigo, pc.Nome);
-                        ht.Add(CADVars.ATT_id, 0);
-                        ht.Add(CADVars.ATT_Descricao, pc.Descricao);
-                        ht.Add(CADVars.ATT_Destino, pc.Destino);
-                        ht.Add(CADVars.ATT_Quantidade, 1 + s.Filhos.Count);
+                        ht.Add(Cfg.Init.CAD_ATT_N, pc.Numero);
+                        ht.Add(Cfg.Init.CAD_ATT_Familia, pc.Familia);
+                        ht.Add(Cfg.Init.CAD_ATT_Tipo, Cfg.Init.CAD_ATT_TECNOMETAL);
+                        ht.Add(Cfg.Init.CAD_ATT_Comprimento, pc.Comprimento.ToString().Replace(",", ""));
+                        ht.Add(Cfg.Init.CAD_ATT_Codigo, pc.Nome);
+                        ht.Add(Cfg.Init.CAD_ATT_id, 0);
+                        ht.Add(Cfg.Init.CAD_ATT_Descricao, pc.Descricao);
+                        ht.Add(Cfg.Init.CAD_ATT_Destino, pc.Destino);
+                        ht.Add(Cfg.Init.CAD_ATT_Quantidade, 1 + s.Filhos.Count);
 
-                        Blocos.Inserir(CAD.acDoc, CADVars.BlocosIndicacao()[0], s.Bloco.Position, escala, 0, ht);
+                        Blocos.Inserir(CAD.acDoc, Cfg.Init.BlocosIndicacao()[0], s.Bloco.Position, escala, 0, ht);
                     }
 
                 }
@@ -661,23 +661,23 @@ namespace DLM.cad
                             var att = Atributos.GetBlocoTag(s.First());
 
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => DLM.cad.Atributos.GetBlocoTag(x)).ToList());
-                            if (npc.Nome.StartsWith(CADVars.PC_Quantificar))
+                            if (npc.Nome.StartsWith(Cfg.Init.CAD_PC_Quantificar))
                             {
-                                var blcs = npc.Agrupar(new List<string> { "CODIGO", CADVars.ATT_N }, npc.Nome_Bloco);
+                                var blcs = npc.Agrupar(new List<string> { "CODIGO", Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);
                                 foreach (var bl in blcs)
                                 {
-                                    bl.SetDescPorAtributo(CADVars.ATT_Descricao);
-                                    bl.SetNumeroPorAtributo(CADVars.ATT_N);
+                                    bl.SetDescPorAtributo(Cfg.Init.CAD_ATT_Descricao);
+                                    bl.SetNumeroPorAtributo(Cfg.Init.CAD_ATT_N);
                                     bl.SetDestinoPorAtributo("DESTINO");
-                                    bl.SetQtdPorAtributo(CADVars.ATT_Quantidade);
-                                    bl.SetIdPorAtributo(CADVars.ATT_id);
-                                    bl.SetFamiliaPorAtributo(CADVars.ATT_Familia);
+                                    bl.SetQtdPorAtributo(Cfg.Init.CAD_ATT_Quantidade);
+                                    bl.SetIdPorAtributo(Cfg.Init.CAD_ATT_id);
+                                    bl.SetFamiliaPorAtributo(Cfg.Init.CAD_ATT_Familia);
                                 }
 
                                 pecas.AddRange(blcs);
 
                             }
-                            else if (npc.Nome == CADVars.Bloco_3D_Montagem_Info)
+                            else if (npc.Nome == Cfg.Init.CAD_Bloco_3D_Montagem_Info)
                             {
                                 if (opt.Pecas_TecnoMetal)
                                 {
@@ -694,7 +694,7 @@ namespace DLM.cad
 
 
                             }
-                            else if (npc.Nome == CADVars.Bloco_3D_Montagem_Tecnometal)
+                            else if (npc.Nome == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
                             {
                                 if (opt.Pecas_TecnoMetal)
                                 {
@@ -713,11 +713,11 @@ namespace DLM.cad
                         foreach(var bl in blk_tec)
                         {
                             //nesse segmento, ignoro o bloco repetido que dá os dados da peça e crio 1 objeto novo, quantificando pela quantidade do bloco que contém somente a marca
-                            var blocs = bl.ToList().FindAll(x => x.Nome_Bloco == CADVars.Bloco_3D_Montagem_Tecnometal);
+                            var blocs = bl.ToList().FindAll(x => x.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal);
                             if(blocs.Count>0)
                             {
                                 var p = blocs[0];
-                                var p_filhos_infos = bl.ToList().FindAll(x => x.Nome_Bloco == CADVars.Bloco_3D_Montagem_Info);
+                                var p_filhos_infos = bl.ToList().FindAll(x => x.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Info);
 
                                 var pf = new PCQuantificar(Tipo_Objeto.Bloco);
 
@@ -725,7 +725,7 @@ namespace DLM.cad
                                 {
                                     pf = p_filhos_infos[0];
                                 }
-                                PCQuantificar pc = new PCQuantificar(Tipo_Objeto.Bloco, bl.Key, pf.Descricao, p.Nome_Bloco, blocs.SelectMany(x=> x.Blocos).ToList(), "", pf.Perfil, CADVars.ATT_TECNOMETAL, pf.Perfil, pf.Material, pf.Comprimento);
+                                PCQuantificar pc = new PCQuantificar(Tipo_Objeto.Bloco, bl.Key, pf.Descricao, p.Nome_Bloco, blocs.SelectMany(x=> x.Blocos).ToList(), "", pf.Perfil, Cfg.Init.CAD_ATT_TECNOMETAL, pf.Perfil, pf.Material, pf.Comprimento);
                                 pc.Descricao = pf.Descricao;
                                /*essa propriedade guarda os blocos que tem as sub-informações dos blocos no tecnometal*/
                                 pc.Filhos_Ignorar = p_filhos_infos;
@@ -757,7 +757,7 @@ namespace DLM.cad
       
 
                             bool nao_adicionar = false;
-                            List<string> ignorar = CADVars.Ignorar();
+                            List<string> ignorar = Cfg.Init.Ignorar();
                             foreach(var ign in ignorar)
                             {
                                 if(s.Key.Contains(ign))
@@ -918,7 +918,7 @@ namespace DLM.cad
         public void GerarDBF3D()
         {
             if (!E_Tecnometal3D()) { return; }
-            acDoc.Comando("TEC_ST3D2DBF", this.Nome, "t", CADVars.ATT_N, CADVars.ATT_N);
+            acDoc.Comando("TEC_ST3D2DBF", this.Nome, "t", Cfg.Init.CAD_ATT_N, Cfg.Init.CAD_ATT_N);
         }
         public void RodarMacros(List<Conexoes.Arquivo> Arquivos = null)
         {
@@ -1084,8 +1084,8 @@ namespace DLM.cad
 
 
 
-                List<BlockReference> mss = blocos.Filtrar(CADVars.BlocosTecnoMetalMarcas);
-                List<BlockReference> pos = blocos.Filtrar(CADVars.BlocosTecnoMetalPosicoes);
+                List<BlockReference> mss = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                List<BlockReference> pos = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalPosicoes());
 
 
                 foreach (var m in mss)
@@ -1478,7 +1478,7 @@ namespace DLM.cad
                     acCurDb = CAD.acCurDb;
                 }
                 var att = Atributos.GetBlocoTag(bloco,somente_visiveis, acCurDb);
-                att.Set(CADVars.ATT_ARQ, arquivo);
+                att.Set(Cfg.Init.CAD_ATT_ARQ, arquivo);
                 if (this.E_Tecnometal(false))
                 {
                     try
@@ -1495,9 +1495,9 @@ namespace DLM.cad
 
                 att.Set(TAB_DBF1.NUM_DIS.ToString(), nome);
                 att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
-                att.Set(TAB_DBF1.FLG_REC.ToString(), att.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? CADVars.ATT_REC_MARCA : CADVars.ATT_REC_POSICAO);
+                att.Set(TAB_DBF1.FLG_REC.ToString(), att.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO);
                 att.Set(TAB_DBF1.DAT_DIS.ToString(), ultima_edicao);
-                att.Set(CADVars.ATT_BLK, bloco.Name.ToUpper());
+                att.Set(Cfg.Init.CAD_ATT_BLK, bloco.Name.ToUpper());
 
                 return att;
             }
@@ -1505,10 +1505,10 @@ namespace DLM.cad
             {
                 DLM.log.Log(ex);
                 BlocoTag att = new BlocoTag(bloco,false);
-                att.Set(CADVars.ATT_BLK, bloco.Name.ToUpper());
+                att.Set(Cfg.Init.CAD_ATT_BLK, bloco.Name.ToUpper());
                 att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
                 att.Set("ERRO", ex.Message);
-                att.Set(CADVars.ATT_ARQ, arquivo);
+                att.Set(Cfg.Init.CAD_ATT_ARQ, arquivo);
 
                 return att;
             }
@@ -1585,8 +1585,8 @@ namespace DLM.cad
                                 }
 
                                 //var nomes = blocos.Select(x => x.Name).Distinct().ToList();
-                                List<BlockReference> ms = blocos.Filtrar(CADVars.BlocosTecnoMetalMarcas);
-                                List<BlockReference> pos = blocos.Filtrar(CADVars.BlocosTecnoMetalPosicoes);
+                                List<BlockReference> ms = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                                List<BlockReference> pos = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalPosicoes());
 
                                 if(ms.Count==0)
                                 {
@@ -1727,8 +1727,8 @@ namespace DLM.cad
 
 
             //propriedades que não vão para a DBF
-            colunas.Add(CADVars.ATT_ARQ);
-            colunas.Add(CADVars.ATT_BLK);
+            colunas.Add(Cfg.Init.CAD_ATT_ARQ);
+            colunas.Add(Cfg.Init.CAD_ATT_BLK);
 
 
             TabelaBlocoTag tab_pecas = new TabelaBlocoTag();
@@ -1780,7 +1780,7 @@ namespace DLM.cad
                     {
                         var p_simples = m_simples.Clonar();
 
-                        m_simples.Set(TAB_DBF1.FLG_REC.ToString(), CADVars.ATT_REC_MARCA);
+                        m_simples.Set(TAB_DBF1.FLG_REC.ToString(), Cfg.Init.CAD_ATT_REC_MARCA);
                         m_simples.Set(TAB_DBF1.POS_PEZ.ToString(), "");
                         m_simples.Set(TAB_DBF1.COD_PEZ.ToString(), "");
                         m_simples.Set(TAB_DBF1.NOM_PRO.ToString(), "");
@@ -1793,9 +1793,9 @@ namespace DLM.cad
                         m_simples.Set(TAB_DBF1.PRE_LIS.ToString(), "");
 
                         p_simples.Set(TAB_DBF1.QTA_PEZ.ToString(), "1");
-                        p_simples.Set(TAB_DBF1.FLG_REC.ToString(), CADVars.ATT_REC_POSICAO);
+                        p_simples.Set(TAB_DBF1.FLG_REC.ToString(), Cfg.Init.CAD_ATT_REC_POSICAO);
                         p_simples.Set(TAB_DBF1.POS_PEZ.ToString(), p_simples.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor);
-                        p_simples.Set(CADVars.ATT_BLK, "DUMMY");
+                        p_simples.Set(Cfg.Init.CAD_ATT_BLK, "DUMMY");
 
                         l_marcas.Add(p_simples);
 
@@ -2782,7 +2782,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = this.GetBlocos().Filtrar(CADVars.BlocosTecnoMetalMarcas);
+                var marcas = this.GetBlocos().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if(marcas.Count>0)
                 {
@@ -2805,7 +2805,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = this.GetBlocos().Filtrar(CADVars.BlocosTecnoMetalMarcas);
+                var marcas = this.GetBlocos().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if (marcas.Count > 0)
                 {
@@ -2827,7 +2827,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = this.GetBlocos().Filtrar(CADVars.BlocosTecnoMetalMarcas);
+                var marcas = this.GetBlocos().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if (marcas.Count > 0)
                 {

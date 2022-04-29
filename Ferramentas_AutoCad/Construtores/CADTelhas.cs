@@ -49,7 +49,7 @@ namespace DLM.cad
 
         public List<BlockReference> Getpassarelas()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(CADVars.Peca_PASSARELA));
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_PASSARELA));
         }
 
         public List<Entity> Getcotaslinhadevida()
@@ -68,7 +68,7 @@ namespace DLM.cad
         }
         public List<BlockReference> GetblocostextoLinhaDeVida()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(CADVars.BL_Texto));
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_BL_Texto));
         }
         public void ApagarLinhaDeVida()
         {
@@ -98,7 +98,7 @@ namespace DLM.cad
 
         public List<BlockReference> Getsflhs()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(CADVars.Peca_SFLH));
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLH));
         }
         public List<BlockReference> GetLinhasDeVida()
         {
@@ -109,7 +109,7 @@ namespace DLM.cad
         }
         public List<BlockReference> Getsflis()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(CADVars.Peca_SFLI));
+            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLI));
         }
 
         public void AlinharLinhaDeVida()
@@ -321,8 +321,8 @@ namespace DLM.cad
                             for (int i = 0; i < qtd; i++)
                             {
                                 Hashtable tt = new Hashtable();
-                                tt.Add(CADVars.ATT_Cod_SAP, this.Codigo_Passarela);
-                                Blocos.Inserir(CAD.acDoc, CADVars.Peca_PASSARELA, p1, 1, 0, tt);
+                                tt.Add(Cfg.Init.CAD_ATT_Cod_SAP, this.Codigo_Passarela);
+                                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_PASSARELA, p1, 1, 0, tt);
                                 if(angulo==90 | angulo == 270)
                                 {
                                     mov = vert;
@@ -594,18 +594,18 @@ namespace DLM.cad
         {
            
             Hashtable sftlh = new Hashtable();
-            sftlh.Add(CADVars.ATT_Cod_SAP, Codigo_SFLH);
+            sftlh.Add(Cfg.Init.CAD_ATT_Cod_SAP, Codigo_SFLH);
             Hashtable sftli = new Hashtable();
-            sftli.Add(CADVars.ATT_Cod_SAP, Codigo_SFLI);
+            sftli.Add(Cfg.Init.CAD_ATT_Cod_SAP, Codigo_SFLI);
             if (sequencia == 0)
             {
      
-                Blocos.Inserir(CAD.acDoc, CADVars.Peca_SFLH, p1, 1, 0, sftlh);
+                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLH, p1, 1, 0, sftlh);
                 AddBlocoTexto(angulo, p1, SFLH, GetEscala() * 5, "");
                 Ut.AddLeader(angulo, p1,this.GetEscala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
 
             }
-            Blocos.Inserir(CAD.acDoc, CADVars.Peca_SFLH, p2, 1, 0, sftlh);
+            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLH, p2, 1, 0, sftlh);
             AddBlocoTexto(angulo, p2, SFLH, GetEscala() * 5,"");
             Ut.AddLeader(angulo, p2, this.GetEscala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
@@ -617,7 +617,7 @@ namespace DLM.cad
                 Point3d pp0 = new Coordenada(p1).Mover(angulo, espacos).GetPoint3D();
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
-                    Blocos.Inserir(CAD.acDoc, CADVars.Peca_SFLI, pp0, 1, 0, sftli);
+                    Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, GetEscala() * 5,"");
                     cotas.Add(pp0);
@@ -630,14 +630,14 @@ namespace DLM.cad
         {
             var p1 = new Coordenada(pp0).Mover(angulo + 90, offset).GetPoint3D();
             var ht = new Hashtable();
-            ht.Add(CADVars.ATT_Texto, nome);
-            ht.Add(CADVars.ATT_Cod_SAP, sap);
+            ht.Add(Cfg.Init.CAD_ATT_Texto, nome);
+            ht.Add(Cfg.Init.CAD_ATT_Cod_SAP, sap);
             if(angulo==90 | angulo == 270)
             {
                 //move pro lado quando é vertical
                 p1 = new Coordenada(pp0).Mover(angulo + 90, (GetEscala() * 16)/2).GetPoint3D();
             }
-            Blocos.Inserir(CAD.acDoc, CADVars.BL_Texto, p1, GetEscala(), 0, ht );
+            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BL_Texto, p1, GetEscala(), 0, ht );
 
         }
         private void Ajustar(ref double angulo, ref double comp, Point3d p1, ref Point3d p2)
@@ -679,14 +679,14 @@ namespace DLM.cad
             .Select(x => x.First()).ToList();
             var atributos = blocos
             
-            .Select(x => Atributos.GetValor(x, CADVars.ATT_Cod_SAP).ToString()).Distinct().ToList();
+            .Select(x => Atributos.GetValor(x, Cfg.Init.CAD_ATT_Cod_SAP).ToString()).Distinct().ToList();
 
             atributos = atributos.Distinct().ToList();
             if (blocos.Count>0)
             {
               foreach(var codigo in atributos)
                 {
-                    var pass = blocos.FindAll(x => Atributos.GetValor(x, CADVars.ATT_Cod_SAP).ToString() == codigo).ToList();
+                    var pass = blocos.FindAll(x => Atributos.GetValor(x, Cfg.Init.CAD_ATT_Cod_SAP).ToString() == codigo).ToList();
                     retorno.Add(GetRMA(codigo, (double)pass.Count));
                     AddMensagem("\n " + codigo + " - " +  pass.Count + " x");
                 }

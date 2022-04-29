@@ -57,7 +57,7 @@ namespace DLM.cad
         }
         public EstilosML()
         {
-            this.Arquivos = Conexoes.Utilz.GetArquivos(CADVars.Raiz_MlStyles, "*.mln").Select(x => new EstiloML(x)).ToList();
+            this.Arquivos = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_MlStyles, "*.mln").Select(x => new EstiloML(x)).ToList();
         }
     }
 }

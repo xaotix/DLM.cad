@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Conexoes;
 
 namespace DLM.cad.Menus
 {
@@ -48,8 +49,8 @@ namespace DLM.cad.Menus
             this.TecnoMetal = tec;
             InitializeComponent();
             this.DataContext = this;
-            this.combo_lista_blocos.ItemsSource = CADVars.BlocosIndicacao().Select(x=>Conexoes.Utilz.getNome(x)).ToList();
-            this.combo_tipo_de_peca.ItemsSource = new List<string> { CADVars.ATT_RMA, CADVars.ATT_RME, CADVars.ATT_RMU, CADVars.ATT_RMT, CADVars.ATT_TECNOMETAL, "DIGITAR" };
+            this.combo_lista_blocos.ItemsSource = Cfg.Init.BlocosIndicacao().Select(x=>Conexoes.Utilz.getNome(x)).ToList();
+            this.combo_tipo_de_peca.ItemsSource = new List<string> { Cfg.Init.CAD_ATT_RMA, Cfg.Init.CAD_ATT_RME, Cfg.Init.CAD_ATT_RMU, Cfg.Init.CAD_ATT_RMT, Cfg.Init.CAD_ATT_TECNOMETAL, "DIGITAR" };
             this.escala = this.TecnoMetal.GetEscala();
 
             if(this.combo_lista_blocos.Items.Count>0)
@@ -63,7 +64,7 @@ namespace DLM.cad.Menus
             this.lista_perfis_ctv.ItemsSource = perfis_mapeaveis;
 
 
-            this.Title = $"Indicações Montagem V." + Conexoes.Utilz.GetVersao(CADVars.DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"Indicações Montagem V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
         }
         public string arquivo { get; set; } = "";
         private void set_imagem(object sender, SelectionChangedEventArgs e)
@@ -72,7 +73,7 @@ namespace DLM.cad.Menus
             if(sel is string)
             {
                 var s = sel as string;
-                this.arquivo = CADVars.Raiz_Blocos_Indicacao + s + ".dwg";
+                this.arquivo = Cfg.Init.CAD_Raiz_Blocos_Indicacao + s + ".dwg";
                 if(File.Exists(arquivo))
                 {
                     
@@ -135,13 +136,13 @@ namespace DLM.cad.Menus
 
             try
             {
-                if (tipo_selecionado == CADVars.ATT_RMA && this.rma_sel != null)
+                if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && this.rma_sel != null)
                 {
                     bt_peca_selecionar.Content = this.rma_sel.ToString();
                     this.txt_codigo.Text = this.rma_sel.SAP;
                     this.txt_descricao.Text = this.rma_sel.DESC;
                 }
-                else if (tipo_selecionado == CADVars.ATT_RME && this.rme_sel != null)
+                else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && this.rme_sel != null)
                 {
                     var pc = new Conexoes.RME(this.rme_sel);
                     bt_peca_selecionar.Content = this.rme_sel.COD_DB;
@@ -157,7 +158,7 @@ namespace DLM.cad.Menus
                     this.txt_codigo.Text = pc.CODIGOFIM;
                     this.txt_descricao.Text = pc.DESC;
                 }
-                else if (tipo_selecionado == CADVars.ATT_RMU && this.rmu_sel != null)
+                else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU && this.rmu_sel != null)
                 {
                     var selec = this.rmu_sel;
                     var pc = new Conexoes.RMU(selec);
@@ -174,21 +175,21 @@ namespace DLM.cad.Menus
                     this.txt_codigo.Text = pc.CODIGOFIM;
                     this.txt_descricao.Text = pc.DESC;
                 }
-                else if (tipo_selecionado == CADVars.ATT_RMT && this.rmt_sel != null)
+                else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT && this.rmt_sel != null)
                 {
                     bt_peca_selecionar.Content = this.rmt_sel.ToString();
                     var pc = new Conexoes.RMT(this.rmt_sel, Conexoes.DBases.GetBobinaDummyPP());
                     this.rmt_sel.Comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
                     this.txt_descricao.Text = rmt_sel.Desc;
                 }
-                else if (tipo_selecionado == CADVars.ATT_TECNOMETAL)
+                else if (tipo_selecionado == Cfg.Init.CAD_ATT_TECNOMETAL)
                 {
                     if (this.marca_sel != null)
                     {
                         this.txt_codigo.Text = this.marca_sel.Marca;
                         this.txt_comprimento.Text = this.marca_sel.Comprimento.ToString();
                         this.txt_descricao.Text = this.marca_sel.Mercadoria;
-                        this.txt_destino.Text = CADVars.ATT_TECNOMETAL;
+                        this.txt_destino.Text = Cfg.Init.CAD_ATT_TECNOMETAL;
                         this.txt_quantidade.Text = this.marca_sel.Quantidade.ToString();
                         this.bt_peca_selecionar.Content = this.marca_sel.ToString();
                     }
@@ -207,45 +208,45 @@ namespace DLM.cad.Menus
 
         private void peca_selecionar_Click(object sender, RoutedEventArgs e)
         {
-            if (tipo_selecionado == CADVars.ATT_RMA)
+            if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA)
             {
-                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione");
+                var sel = Conexoes.DBases.GetBancoRM().GetRMAs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rma_sel = sel;
                 }
             }
-            else if (tipo_selecionado == CADVars.ATT_RME)
+            else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME)
             {
-                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMEs(), null, "Selecione");
+                var sel = Conexoes.DBases.GetBancoRM().GetRMEs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rme_sel = sel;
                 }
             }
-            else if (tipo_selecionado == CADVars.ATT_RMU)
+            else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU)
             {
-                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMUs(), null, "Selecione");
+                var sel = Conexoes.DBases.GetBancoRM().GetRMUs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rmu_sel = sel;
                 }
             }
-            else if (tipo_selecionado == CADVars.ATT_RMT)
+            else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT)
             {
-                var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMTs(), null, "Selecione");
+                var sel = Conexoes.DBases.GetBancoRM().GetRMTs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rmt_sel = sel;
                 }
             }
-            else if(tipo_selecionado == CADVars.ATT_TECNOMETAL)
+            else if(tipo_selecionado == Cfg.Init.CAD_ATT_TECNOMETAL)
             {
                 List<Report> erros = new List<Report>();
                 marcas_tecnometal = this.TecnoMetal.GetMarcasPranchas(ref erros);
                 if (marcas_tecnometal.Count > 0)
                 {
-                    this.marca_sel = Conexoes.Utilz.Selecao.SelecionarObjeto(marcas_tecnometal, null, "Selecione");
+                    this.marca_sel = marcas_tecnometal.ListaSelecionar();
                 }
             }
             set_titulo_peca_selecionar();
@@ -288,15 +289,15 @@ namespace DLM.cad.Menus
             this.Visibility = Visibility.Collapsed;
             bool cancelado = false;
             Hashtable ht = new Hashtable();
-            ht.Add(CADVars.ATT_N, this.txt_prefix.Text + this.txt_sequencial.Text);
-            ht.Add(CADVars.ATT_Familia, this.familia.Text);
-            ht.Add(CADVars.ATT_Tipo, this.tipo_selecionado);
-            ht.Add(CADVars.ATT_Comprimento, comprimento.ToString().Replace(",", ""));
+            ht.Add(Cfg.Init.CAD_ATT_N, this.txt_prefix.Text + this.txt_sequencial.Text);
+            ht.Add(Cfg.Init.CAD_ATT_Familia, this.familia.Text);
+            ht.Add(Cfg.Init.CAD_ATT_Tipo, this.tipo_selecionado);
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, comprimento.ToString().Replace(",", ""));
             ht.Add("CODIGO", txt_codigo.Text);
-            ht.Add(CADVars.ATT_id, id);
-            ht.Add(CADVars.ATT_Descricao, txt_descricao.Text);
+            ht.Add(Cfg.Init.CAD_ATT_id, id);
+            ht.Add(Cfg.Init.CAD_ATT_Descricao, txt_descricao.Text);
             ht.Add("DESTINO", txt_destino.Text);
-            ht.Add(CADVars.ATT_Quantidade, qtd);
+            ht.Add(Cfg.Init.CAD_ATT_Quantidade, qtd);
 
             var origem = Ut.PedirPonto3D("Selecione a origem", out cancelado);
             if (!cancelado)
@@ -356,12 +357,12 @@ namespace DLM.cad.Menus
             double qtd = Conexoes.Utilz.Double(this.txt_quantidade.Text);
             double comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
 
-            if (tipo_selecionado == CADVars.ATT_RMA && rma_sel!=null)
+            if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && rma_sel!=null)
             {
                 Conexoes.RMA mm = new Conexoes.RMA(rma_sel, qtd);
                 id = mm.id_db;
             }
-            else if (tipo_selecionado == CADVars.ATT_RME && rme_sel!=null)
+            else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && rme_sel!=null)
             {
                 Conexoes.RME mm = new Conexoes.RME(rme_sel);
                 if (mm.VARIAVEL)
@@ -373,7 +374,7 @@ namespace DLM.cad.Menus
                 txt_codigo.Text = mm.CODIGOFIM;
 
             }
-            else if (tipo_selecionado == CADVars.ATT_RMU && rmu_sel!=null)
+            else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU && rmu_sel!=null)
             {
                 Conexoes.RMU mm = new Conexoes.RMU(rmu_sel);
                 if (mm.VARIAVEL)
@@ -384,7 +385,7 @@ namespace DLM.cad.Menus
                 id = mm.id_codigo;
                 txt_codigo.Text = mm.CODIGOFIM;
             }
-            else if (tipo_selecionado == CADVars.ATT_RMT && rmt_sel!=null)
+            else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT && rmt_sel!=null)
             {
                 Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, Conexoes.DBases.GetBobinaDummy());
                 mm.Qtd = (int)qtd;

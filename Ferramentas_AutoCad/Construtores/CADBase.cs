@@ -565,7 +565,7 @@ namespace DLM.cad
 
         public List<CADLine> GetLinhas_Eixos()
         {
-            return GetLinhas().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == CADVars.LineType_Eixos | x.Linetype.ToUpper() == CADVars.LineType_ByLayer));
+            return GetLinhas().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
         }
 
         public List<Polyline> GetPolyLines_Verticais(List<Polyline> polylines)
@@ -665,23 +665,23 @@ namespace DLM.cad
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
             List<PCQuantificar> pcs = new List<PCQuantificar>();
-            var blocos = this.GetBlocos().FindAll(x => x.Name.ToUpper().StartsWith(CADVars.PC_Quantificar)).GroupBy(x => x.Name);
+            var blocos = this.GetBlocos().FindAll(x => x.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).GroupBy(x => x.Name);
 
 
             foreach(var s in blocos)
             {
                 PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => DLM.cad.Atributos.GetBlocoTag(x)).ToList());
-                if (npc.Nome.StartsWith(CADVars.PC_Quantificar))
+                if (npc.Nome.StartsWith(Cfg.Init.CAD_PC_Quantificar))
                 {
-                    var blcs = npc.Agrupar(new List<string> { CADVars.ATT_Codigo, CADVars.ATT_N }, npc.Nome_Bloco);
+                    var blcs = npc.Agrupar(new List<string> { Cfg.Init.CAD_ATT_Codigo, Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);
                     foreach (var bl in blcs)
                     {
-                        bl.SetDescPorAtributo(CADVars.ATT_Descricao);
-                        bl.SetNumeroPorAtributo(CADVars.ATT_N);
-                        bl.SetDestinoPorAtributo(CADVars.ATT_Destino);
-                        bl.SetQtdPorAtributo(CADVars.ATT_Quantidade);
-                        bl.SetIdPorAtributo(CADVars.ATT_id);
-                        bl.SetFamiliaPorAtributo(CADVars.ATT_Familia);
+                        bl.SetDescPorAtributo(Cfg.Init.CAD_ATT_Descricao);
+                        bl.SetNumeroPorAtributo(Cfg.Init.CAD_ATT_N);
+                        bl.SetDestinoPorAtributo(Cfg.Init.CAD_ATT_Destino);
+                        bl.SetQtdPorAtributo(Cfg.Init.CAD_ATT_Quantidade);
+                        bl.SetIdPorAtributo(Cfg.Init.CAD_ATT_id);
+                        bl.SetFamiliaPorAtributo(Cfg.Init.CAD_ATT_Familia);
                     }
                     pcs.AddRange(blcs);
                 }
@@ -847,7 +847,7 @@ namespace DLM.cad
         {
             if (Conexoes.DBases.GetUserAtual().ma.ToUpper() != "MA1516")
             {
-                CADVars.VerificarVersao();
+                Cfg.Init.CAD_VerificarVersao();
             }
             SetUCSParaWorld();
             GetLayers();

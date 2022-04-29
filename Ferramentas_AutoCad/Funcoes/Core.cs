@@ -773,7 +773,7 @@ namespace DLM.cad
         [CommandMethod(nameof(offtec))]
         public static void offtec()
         {
-            FLayer.Desligar(CADVars.LayersMarcasDesligar);
+            FLayer.Desligar(Cfg.Init.GetLayersMarcasDesligar());
         }
 
         [CommandMethod(nameof(mercadorias21))]

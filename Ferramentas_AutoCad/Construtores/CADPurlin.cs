@@ -399,12 +399,12 @@ namespace DLM.cad
 
                             if (p.FBD_Comp > 0 && fb != null)
                             {
-                                Blocos.IndicacaoPeca(CADVars.Bloco_PECA_INDICACAO_ESQ, p.FBD, p.FBD_Comp, this.id_flange_brace, p.Origem_Direita, this.DescFB, this.GetEscala());
+                                Blocos.IndicacaoPeca(Cfg.Init.CAD_Bloco_PECA_INDICACAO_ESQ, p.FBD, p.FBD_Comp, this.id_flange_brace, p.Origem_Direita, this.DescFB, this.GetEscala());
                             }
 
                             if (p.FBE_Comp > 0 && fb != null)
                             {
-                                Blocos.IndicacaoPeca(CADVars.Bloco_PECA_INDICACAO_DIR, p.FBE, p.FBE_Comp, this.id_flange_brace, p.Origem_Esquerda, this.DescFB, this.GetEscala());
+                                Blocos.IndicacaoPeca(Cfg.Init.CAD_Bloco_PECA_INDICACAO_DIR, p.FBE, p.FBE_Comp, this.id_flange_brace, p.Origem_Esquerda, this.DescFB, this.GetEscala());
                             }
                         }
                     }
@@ -462,7 +462,7 @@ namespace DLM.cad
         {
             List<Entity> blocos = new List<Entity>();
             blocos.AddRange(this.selecoes);
-            blocos = blocos.FindAll(x=> this.GetBlocos().FindAll(w => w.Name.ToUpper().StartsWith(CADVars.PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
+            blocos = blocos.FindAll(x=> this.GetBlocos().FindAll(w => w.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
             blocos = blocos.FindAll(x => this.GetBlocos_Eixos().Find(y => y.Bloco.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetLinhas_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetBlocosSecundariasIndicacao().Find(y => y.ObjectId == x.ObjectId) == null);
@@ -598,8 +598,8 @@ namespace DLM.cad
 
 
                 /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
-                List<CADLine> HORIS1 = GetLinhas_Horizontais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == CADVars.LineType_Eixos | x.Linetype.ToUpper() == CADVars.LineType_ByLayer));
-                List<CADLine> VERTS1 = GetLinhas_Verticais().FindAll(x => x.Comprimento>=this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == CADVars.LineType_Eixos | x.Linetype.ToUpper() == CADVars.LineType_ByLayer));
+                List<CADLine> HORIS1 = GetLinhas_Horizontais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
+                List<CADLine> VERTS1 = GetLinhas_Verticais().FindAll(x => x.Comprimento>=this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
 
                 List<CADLine> HORIS = HORIS1.GroupBy(x=>x.MinY).Select(x=>x.First()).ToList().OrderBy(x=>x.MinY).ToList();
                 List<CADLine> VERTS = VERTS1.GroupBy(x => x.MinX).Select(x => x.First()).ToList().OrderBy(x => x.MinX).ToList();
@@ -761,7 +761,7 @@ namespace DLM.cad
         {
             Hashtable ht = new Hashtable();
 
-            ht.Add(CADVars.ATT_N, p.Sequencia.ToString().PadLeft(3,'0'));
+            ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia.ToString().PadLeft(3,'0'));
             ht.Add("CRD", string.Join(";", p.Correntes_Direita));
             ht.Add("CRE", string.Join(";",p.Correntes_Esquerda));
             ht.Add("AD", this.OffsetApoio.ToString());
@@ -772,16 +772,16 @@ namespace DLM.cad
             ht.Add("SBR", p.Corrente_SBR ? "Sim" : "Não");
             ht.Add("FD", string.Join(";", p.Direita.Furos_Manuais));
             ht.Add("FE", string.Join(";", p.Esquerda.Furos_Manuais));
-            ht.Add(CADVars.ATT_Vao, p.Vao);
+            ht.Add(Cfg.Init.CAD_ATT_Vao, p.Vao);
             ht.Add("NOME", "");
-            ht.Add(CADVars.ATT_Transp_Dir, p.Direita.Comprimento);
-            ht.Add(CADVars.ATT_Transp_Esq, p.Esquerda.Comprimento);
+            ht.Add(Cfg.Init.CAD_ATT_Transp_Dir, p.Direita.Comprimento);
+            ht.Add(Cfg.Init.CAD_ATT_Transp_Esq, p.Esquerda.Comprimento);
             ht.Add("ID_DB", "");
             ht.Add("PINTURA", p.Pintura);
             ht.Add("ID_PECA", p.id_peca.ToString());
-            ht.Add(CADVars.ATT_Tipo, p.Perfil.Contains("C")?"C":"Z");
+            ht.Add(Cfg.Init.CAD_ATT_Tipo, p.Perfil.Contains("C")?"C":"Z");
             ht.Add("SECAO", p.Secao);
-            ht.Add(CADVars.ATT_Espessura, p.Espessura);
+            ht.Add(Cfg.Init.CAD_ATT_Espessura, p.Espessura);
 
             return ht;
         }
@@ -795,7 +795,7 @@ namespace DLM.cad
 
      
 
-            ht.Add(CADVars.ATT_N, letra);
+            ht.Add(Cfg.Init.CAD_ATT_N, letra);
             ht.Add("CRD", "");
             ht.Add("CRE", string.Join(";", Correntes_Esq));
             ht.Add("AD", this.OffsetApoio.ToString());
@@ -806,32 +806,32 @@ namespace DLM.cad
             ht.Add("SBR", this.SBR ? "Sim" : "Não");
             ht.Add("FD", "");
             ht.Add("FE", string.Join(";", Furos_Manuais_Esq));
-            ht.Add(CADVars.ATT_Vao, VAO);
+            ht.Add(Cfg.Init.CAD_ATT_Vao, VAO);
             ht.Add("NOME", "");
-            ht.Add(CADVars.ATT_Transp_Dir, TRD);
-            ht.Add(CADVars.ATT_Transp_Esq, TRE);
+            ht.Add(Cfg.Init.CAD_ATT_Transp_Dir, TRD);
+            ht.Add(Cfg.Init.CAD_ATT_Transp_Esq, TRE);
             ht.Add("ID_DB", id_purlin);
             ht.Add("PINTURA", this.FichaDePintura);
             ht.Add("ID_PECA", id_purlin);
-            ht.Add(CADVars.ATT_Tipo, pc.GRUPO);
+            ht.Add(Cfg.Init.CAD_ATT_Tipo, pc.GRUPO);
             ht.Add("SECAO", pc.SECAO);
-            ht.Add(CADVars.ATT_Espessura, pc.ESP);
+            ht.Add(Cfg.Init.CAD_ATT_Espessura, pc.ESP);
 
             //quando a purlin está deslocada.
             double comp_sem_transpasse = VAO + (TRE < 0 ? TRE : 0) + (TRD < 0 ? TRD : 0);
             //verifica se a purlin é maior que 150
             if (comp_sem_transpasse > 150)
             {
-                Blocos.Inserir(CAD.acDoc, CADVars.BLK_Incicacao_Tercas, origembloco, this.GetEscala(), 0, ht);
+                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Incicacao_Tercas, origembloco, this.GetEscala(), 0, ht);
             }
         }
         public void AddBlocoTirante(string letra,  Point2d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
         {
             //AddMensagem("Origem: " + centro + "\n");
             Hashtable ht = new Hashtable();
-            ht.Add(CADVars.ATT_N, letra);
+            ht.Add(Cfg.Init.CAD_ATT_N, letra);
 
-            ht.Add(CADVars.ATT_Comprimento, Comp.ToString());
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.ToString());
             ht.Add("OFFSET1", offset1.ToString());
             ht.Add("OFFSET2", offset2.ToString());
 
@@ -839,18 +839,18 @@ namespace DLM.cad
             ht.Add("SFTA", sfta.ToString());
             ht.Add("SFTB", sftb.ToString());
 
-            Blocos.Inserir(CAD.acDoc, CADVars.BLK_Indicacao_Tirantes, origembloco, this.GetEscala(), 0, ht);
+            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Indicacao_Tirantes, origembloco, this.GetEscala(), 0, ht);
         }
         public void AddBlocoCorrente(string letra, Point2d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
         {
             Hashtable ht = new Hashtable();
-            ht.Add(CADVars.ATT_N, letra);
+            ht.Add(Cfg.Init.CAD_ATT_N, letra);
             ht.Add("TIP", tip);
-            ht.Add(CADVars.ATT_Descricao, desc.ToString());
-            ht.Add(CADVars.ATT_Comprimento, Comp.ToString());
-            ht.Add(CADVars.ATT_Corrente_Fixador, fix);
+            ht.Add(Cfg.Init.CAD_ATT_Descricao, desc.ToString());
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.ToString());
+            ht.Add(Cfg.Init.CAD_ATT_Corrente_Fixador, fix);
 
-            Blocos.Inserir(CAD.acDoc, CADVars.BLK_Indicacao_Correntes, origembloco, this.GetEscala(), 0, ht);
+            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Indicacao_Correntes, origembloco, this.GetEscala(), 0, ht);
         }
         public List<Entity> LinhasFuros()
         {
@@ -1140,7 +1140,7 @@ namespace DLM.cad
                 nova.Sequencia = c;
                 foreach (var s in pps.Select(x=>x.Objeto as BlockReference))
                 {
-                    Atributos.Set(s, acTrans, CADVars.ATT_N, c.ToString().PadLeft(3, '0'));
+                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.ToString().PadLeft(3, '0'));
                 }
                 ss.Add(nova);
                 c++;
@@ -1166,7 +1166,7 @@ namespace DLM.cad
                
                 foreach (var s in pps.FindAll(x=> x.Objeto is BlockReference).Select(x => x.Objeto as BlockReference))
                 {
-                    Atributos.Set(s, acTrans, CADVars.ATT_N, c.ToString().PadLeft(2, '0'));
+                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.ToString().PadLeft(2, '0'));
                 }
                 ss.Add(nova);
                 c++;
@@ -1191,7 +1191,7 @@ namespace DLM.cad
 
                 foreach (var s in pps.FindAll(x=>x.Objeto is BlockReference).Select(x => x.Objeto as BlockReference))
                 {
-                    Atributos.Set(s, acTrans, CADVars.ATT_N, Conexoes.Utilz.getLetra(c));
+                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, Conexoes.Utilz.getLetra(c));
                 }
                 ss.Add(nova);
                 c++;
@@ -1204,16 +1204,16 @@ namespace DLM.cad
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
             var atributos = Atributos.GetBlocoTag(bloco);
-            var N = atributos.Get(CADVars.ATT_N).Valor;
-            var ESP = atributos.Get(CADVars.ATT_Espessura).Double();
+            var N = atributos.Get(Cfg.Init.CAD_ATT_N).Valor;
+            var ESP = atributos.Get(Cfg.Init.CAD_ATT_Espessura).Double();
             var SECAO = atributos.Get("SECAO").Double();
-            var TIPO = atributos.Get(CADVars.ATT_Tipo).Valor;
+            var TIPO = atributos.Get(Cfg.Init.CAD_ATT_Tipo).Valor;
             var ID_PECA = atributos.Get("ID_PECA").Int;
             var PINTURA = atributos.Get("PINTURA").Valor;
             var ID_DB = atributos.Get("ID_DB").Int;
-            var VAO = atributos.Get(CADVars.ATT_Vao).Double();
-            var TRE = atributos.Get(CADVars.ATT_Transp_Esq).Double();
-            var TRD = atributos.Get(CADVars.ATT_Transp_Dir).Double();
+            var VAO = atributos.Get(Cfg.Init.CAD_ATT_Vao).Double();
+            var TRE = atributos.Get(Cfg.Init.CAD_ATT_Transp_Esq).Double();
+            var TRD = atributos.Get(Cfg.Init.CAD_ATT_Transp_Dir).Double();
             var AD = atributos.Get("AD").Double();
             var AE = atributos.Get("AE").Double();
             var REB = atributos.Get("REB").Valor.ToUpper() == "SIM";
@@ -1328,7 +1328,7 @@ namespace DLM.cad
             var TIP = atributos.Get("TIP").Valor;
             var OFF1 = atributos.Get("OFF1").Double();
             var OFF2 = atributos.Get("OFF2").Double();
-            var COMP = atributos.Get(CADVars.ATT_Comprimento).Double();
+            var COMP = atributos.Get(Cfg.Init.CAD_ATT_Comprimento).Double();
 
             Conexoes.Macros.Tirante p = new Conexoes.Macros.Tirante();
             p.SFT1 = SFTA;
@@ -1345,8 +1345,8 @@ namespace DLM.cad
             var atributos = Atributos.GetBlocoTag(bloco);
 
             var TIP = atributos.Get("TIP").Valor;
-            var DESC = atributos.Get(CADVars.ATT_Descricao).Double();
-            var COMP = atributos.Get(CADVars.ATT_Comprimento).Double();
+            var DESC = atributos.Get(Cfg.Init.CAD_ATT_Descricao).Double();
+            var COMP = atributos.Get(Cfg.Init.CAD_ATT_Comprimento).Double();
             var FIX = atributos.Get("FIX").Valor;
 
             Conexoes.Macros.Corrente p = new Conexoes.Macros.Corrente();
@@ -1407,12 +1407,12 @@ namespace DLM.cad
                     {
                         if(trs == "Esquerda" | trs == "Ambos")
                         {
-                            Atributos.Set(s, acTrans, CADVars.ATT_Transp_Esq, valor.ToString());
+                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Esq, valor.ToString());
                         }
 
                         if (trs == "Direita" | trs == "Ambos")
                         {
-                            Atributos.Set(s, acTrans, CADVars.ATT_Transp_Dir, valor.ToString());
+                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Dir, valor.ToString());
                         }
                     }
                     acTrans.Commit();
@@ -1532,9 +1532,9 @@ namespace DLM.cad
                     {
                         Hashtable ht = new Hashtable();
                         ht.Add("ID_PECA", perfil.id_db.ToString());
-                        ht.Add(CADVars.ATT_Espessura, perfil.ESP.ToString());
+                        ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.ToString());
                         ht.Add("SECAO", perfil.SECAO.ToString());
-                        ht.Add(CADVars.ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");
+                        ht.Add(Cfg.Init.CAD_ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");
 
                         Atributos.Set(s, acTrans, ht);
                     }
@@ -1583,7 +1583,7 @@ namespace DLM.cad
 
                     foreach (var s in this.Getblocos_correntes())
                     {
-                        Atributos.Set(s, acTrans, CADVars.ATT_Descricao, valor.ToString());
+                        Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Descricao, valor.ToString());
 
                     }
                     acTrans.Commit();
