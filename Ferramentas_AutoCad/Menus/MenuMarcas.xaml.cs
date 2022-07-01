@@ -59,7 +59,6 @@ namespace DLM.cad
         public double Quantidade { get; set; } = 1;
         public double Escala { get; set; } = 1;
 
-        public static List<Valor> lista_mercadorias { get; set; } = new List<Valor>();
         public string NomeFim
         {
             get

@@ -33,13 +33,13 @@ namespace DLM.cad
         }
         public List<BlocoFuro> Furos { get; set; }
         public double Y { get; set; }
-        public Coordenada Origem()
+        public P3dCAD Origem()
         {
-            return new Coordenada(new Point3d(GetXmin(), Y, 0));
+            return new P3dCAD(new Point3d(GetXmin(), Y, 0));
         }
-        public Coordenada Fim()
+        public P3dCAD Fim()
         {
-            return new Coordenada(new Point3d(GetXmax(), Y, 0));
+            return new P3dCAD(new Point3d(GetXmax(), Y, 0));
         }
         public double GetXmin()
         {

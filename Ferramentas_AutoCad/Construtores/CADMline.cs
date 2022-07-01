@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
@@ -47,9 +48,9 @@ namespace DLM.cad
         }
         public Mline Mline { get; private set; }
         public double Comprimento { get; private set; } = 0;
-        public Point2d Inicio { get; private set; }
-        public Point2d Fim { get; private set; }
-        public Point2d Centro { get; private set; }
+        public P3d Inicio { get; private set; }
+        public P3d Fim { get; private set; }
+        public P3d Centro { get; private set; }
 
         public Polyline GetPLineDummy()
         {
@@ -100,18 +101,18 @@ namespace DLM.cad
         {
 
         }
-        public CADMline(Mline l, Tipo_Multiline tipo)
+        public CADMline(Mline objeto, Tipo_Multiline tipo)
         {
             this.Tipo = tipo;
-            Point3d p0, p1, centro;
+            P3d p0, p1, centro;
             double comprimento, angulo,largura;
-            Ut.GetCoordenadas(l, out p0, out p1, out angulo, out comprimento, out centro, out largura);
+            Ut.GetCoordenadas(objeto, out p0, out p1, out angulo, out comprimento, out centro, out largura);
             this.Angulo = angulo;
-            this.Centro = new Point2d(centro.X,centro.Y);
+            this.Centro = centro;
             this.Comprimento = Math.Round(comprimento);
-            this.Mline = l;
-            this.Inicio = new Point2d(p0.X,p0.Y);
-            this.Fim = new Point2d(p1.X,p1.Y);
+            this.Mline = objeto;
+            this.Inicio = p0;
+            this.Fim = p1;
             this.Largura = Math.Round(largura);
 
             this.Pontos = Ut.GetPontos(this.Mline);

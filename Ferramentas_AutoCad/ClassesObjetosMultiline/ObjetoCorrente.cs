@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using System;
 using System.ComponentModel;
 
@@ -21,7 +22,7 @@ namespace DLM.cad
             {
                 if(PurlinEmCima!=null && PurlinEmBaixo!=null)
                 {
-                    return Math.Abs(Math.Round(this.Origem_Direita.GetDistanceTo(this.Origem_Esquerda)));
+                    return Math.Abs(Math.Round(this.Origem_Direita.Distancia(this.Origem_Esquerda)));
                 }
                 else
                 {
@@ -30,7 +31,7 @@ namespace DLM.cad
             }
         }
 
-        public ObjetoCorrente(CADMline multiline, Point2d centro,  VaoObra vao, ObjetoPurlin purlin_cima, ObjetoPurlin purlin_baixo)
+        public ObjetoCorrente(CADMline multiline, P3d centro,  VaoObra vao, ObjetoPurlin purlin_cima, ObjetoPurlin purlin_baixo)
         {
             this.Grade = vao.Grade;
 
@@ -51,19 +52,19 @@ namespace DLM.cad
 
             if(p1.Count>0)
             {
-                this.Origem_Direita = p1[0];
+                this.Origem_Direita = p1[0].P3d();
             }
             else
             {
-                this.Origem_Direita = new Point2d(centro.X, PurlinEmCima.Y);
+                this.Origem_Direita = new P3d(centro.X, PurlinEmCima.Y);
             }
             if (p2.Count > 0)
             {
-                this.Origem_Esquerda = p2[0];
+                this.Origem_Esquerda = p2[0].P3d();
             }
             else
             {
-                this.Origem_Esquerda = new Point2d(centro.X, PurlinEmBaixo.Y);
+                this.Origem_Esquerda = new P3d(centro.X, PurlinEmBaixo.Y);
             }
 
             this.SetPeca(Core.CADPurlin.GetCorrentePadrao());

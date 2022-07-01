@@ -25,6 +25,7 @@ using Autodesk.AutoCAD.PlottingServices;
 using Autodesk.AutoCAD.Internal.PropertyInspector;
 using System.Windows;
 using System.Diagnostics;
+using DLM.desenho;
 
 [assembly: CommandClass(typeof(DLM.cad.Ut))]
 namespace DLM.cad
@@ -46,20 +47,17 @@ namespace DLM.cad
 
         }
         #endregion
-        public static Point2d AddLeader(double angulo, Point3d pp0, double escala, string nome = "", double multiplicador = 7.5, bool pedir_ponto = false)
-        {
-            return AddLeader(angulo, new Point2d(pp0.X, pp0.Y), escala, nome, multiplicador = 7.5, pedir_ponto);
-        }
-        public static Point2d AddLeader(double angulo, Point2d pp0, double escala, string nome = "", double multiplicador = 7.5, bool pedir_ponto = false)
+
+        public static P3d AddLeader(double angulo, P3d pp0, double escala, string nome = "", double multiplicador = 7.5, bool pedir_ponto = false)
         {
             try
             {
-                var pt2 = new Coordenada(pp0).Mover(angulo + 45, escala * multiplicador).GetPoint2d();
+                var pt2 = pp0.Mover(angulo + 45, escala * multiplicador);
 
                 if (pedir_ponto)
                 {
                     bool cancelado = false;
-                    var pt0 = Ut.PedirPonto2D("Selecione o segundo ponto", pp0, out cancelado);
+                    var pt0 = Ut.PedirPonto("Selecione o segundo ponto", pp0, out cancelado);
                     if (!cancelado)
                     {
                         pt2 = pt0;
@@ -76,7 +74,7 @@ namespace DLM.cad
             }
             return pp0;
         }
-        public static void AddLeader(Point2d origem, Point2d pt2, string texto, double escala)
+        public static void AddLeader(P3d origem, P3d pt2, string texto, double escala)
         {
             Point3d p1 = new Point3d(origem.X, origem.Y, 0);
             Point3d p2 = new Point3d(pt2.X, pt2.Y, 0);
@@ -235,13 +233,10 @@ namespace DLM.cad
         }
 
 
-        public static Point3d Centro(Point3d p1, Point3d p2)
-        {
-            return new Coordenada(p1).GetCentro(p2).GetPoint3D();
-        }
+
         public static Point3d Mover(Point3d p, double angulo, double distancia)
         {
-            return new Coordenada(p).Mover(angulo, distancia).GetPoint3D();
+            return new P3dCAD(p).Mover(angulo, distancia).GetPoint3dCad();
         }
 
 
@@ -420,14 +415,14 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static void GetInfo(Polyline lwp, out double comprimento, out double largura, out double area, out double perimetro)
+        public static List<Point3d> GetInfo(Polyline polyline, out double comprimento, out double largura, out double area, out double perimetro)
         {
 
-            var vertices = GetVertices(lwp);
+            var vertices = Ut.GetPontos(polyline);
             comprimento = 0;
             largura = 0;
-            area = lwp.Area;
-            perimetro = lwp.Length;
+            area = polyline.Area;
+            perimetro = polyline.Length;
 
 
             if (vertices.Count > 0)
@@ -441,24 +436,25 @@ namespace DLM.cad
                 double cmp2 = Math.Abs(ymax - ymin);
                 comprimento = cmp1 > cmp2 ? cmp1 : cmp2;
                 largura = cmp1 < cmp2 ? cmp1 : cmp2;
-
+                return vertices;
             }
-
+            return new List<Point3d>();
         }
-   
+        
+       
 
 
-        public static List<CADMline> MlinesPassando(Point2d de, Point2d ate, List<CADMline> LS, bool dentro_do_eixo = false, double tol_X = 0)
+        public static List<CADMline> MlinesPassando(P3d de, P3d ate, List<CADMline> Linhas, bool dentro_do_eixo = false, double tol_X = 0)
         {
             List<CADMline> retorno = new List<CADMline>();
-            Point3d nde = new Point3d(de.X - tol_X, de.Y, 0);
-            Point3d nate = new Point3d(ate.X + tol_X, ate.Y, 0);
+            P3d nde = new P3d(de.X - tol_X, de.Y, 0);
+            P3d nate = new P3d(ate.X + tol_X, ate.Y, 0);
 
 
-            foreach (var corrente in LS)
+            foreach (var corrente in Linhas)
             {
-                Point2d p1 = corrente.Inicio;
-                Point2d p2 = corrente.Fim;
+                var p1 = corrente.Inicio;
+                var p2 = corrente.Fim;
 
 
                 if (!dentro_do_eixo)
@@ -497,12 +493,12 @@ namespace DLM.cad
         /// <param name="dentro_do_eixo"></param>
         /// <param name="somente_vertical"></param>
         /// <returns></returns>
-        public static List<Entity> LinhasPassando(Point2d de, Point2d ate, List<Entity> LS, bool somente_dentro = false, bool dentro_do_eixo = false, bool somente_vertical = true)
+        public static List<Entity> LinhasPassando(P3d de, P3d ate, List<Entity> LS, bool somente_dentro = false, bool dentro_do_eixo = false, bool somente_vertical = true)
         {
             List<Entity> retorno = new List<Entity>();
             foreach (var s in LS)
             {
-                Point3d p1, p2, centro;
+                P3d p1, p2, centro;
                 double angulo, comprimento, largura;
                 GetCoordenadas(s, out p1, out p2, out angulo, out comprimento, out centro, out largura);
 
@@ -550,11 +546,11 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static void GetCoordenadas(Entity s, out Point3d p1, out Point3d p2, out double angulo, out double comprimento, out Point3d centro, out double largura)
+        public static void GetCoordenadas(Entity s, out P3d p1, out P3d p2, out double angulo, out double comprimento, out P3d centro, out double largura)
         {
-            p1 = new Point3d();
-            p2 = new Point3d();
-            centro = new Point3d();
+            p1 = new P3d();
+            p2 = new P3d();
+            centro = new P3d();
             comprimento = 0;
             largura = 0;
             if (s is Mline)
@@ -565,15 +561,15 @@ namespace DLM.cad
             else if (s is Line)
             {
                 var l = s as Line;
-                p1 = l.StartPoint;
-                p2 = l.EndPoint;
+                p1 = l.StartPoint.P3d();
+                p2 = l.EndPoint.P3d();
                 comprimento = l.Length;
             }
             else if (s is Polyline)
             {
                 var l = s as Polyline;
-                p1 = l.StartPoint;
-                p2 = l.EndPoint;
+                p1 = l.StartPoint.P3d();
+                p2 = l.EndPoint.P3d();
                 comprimento = l.Length;
                 largura = ((double)l.LineWeight);
             }
@@ -583,17 +579,11 @@ namespace DLM.cad
             {
                 angulo = angulo - 180;
             }
-            Coordenada pp = new Coordenada(p1);
 
-            centro = pp.GetCentro(new Coordenada(p2)).GetPoint3D();
-
-
+            centro = p1.Centro(p2);
         }
 
-        public static Point2d Centro(Point2d p1, Point2d p2)
-        {
-            return new Point2d((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
-        }
+
 
         public static List<Line> LinhasHorizontais(List<Line> LS, double comp_min = 100)
         {
@@ -686,17 +676,17 @@ namespace DLM.cad
                 id = new Point3d(pts.Max(x => x.X), pts.Min(x => x.Y), 0);
             }
         }
-        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, Point2d ponto, double tolerancia)
+        public static List<BlockReference> GetBlocosProximos(List<BlockReference> blocos, P3d ponto, double tolerancia)
         {
-            return blocos.FindAll(x => Math.Abs(new Point2d(x.Position.X, x.Position.Y).GetDistanceTo(ponto)) <= tolerancia);
+            return blocos.FindAll(x => Math.Abs(new P3d(x.Position.X, x.Position.Y).Distancia(ponto)) <= tolerancia);
         }
-        public static List<Polyline> GetPolylinesProximas(List<Polyline> blocos, Point3d ponto, double tolerancia)
+        public static List<Polyline> GetPolylinesProximas(List<Polyline> blocos, P3d ponto, double tolerancia)
         {
-            return blocos.FindAll(x => new Coordenada(x.StartPoint).Distancia(ponto) <= tolerancia | new Coordenada(x.EndPoint).Distancia(ponto) <= tolerancia);
+            return blocos.FindAll(x => new P3dCAD(x.StartPoint).Distancia(ponto) <= tolerancia | new P3dCAD(x.EndPoint).Distancia(ponto) <= tolerancia);
         }
-        public static List<RotatedDimension> GetCotasProximas(List<RotatedDimension> blocos, Point3d ponto, double tolerancia)
+        public static List<RotatedDimension> GetCotasProximas(List<RotatedDimension> blocos, P3d ponto, double tolerancia)
         {
-            return blocos.FindAll(x => new Coordenada(x.XLine1Point).Distancia(ponto) <= tolerancia | new Coordenada(x.XLine2Point).Distancia(ponto) <= tolerancia);
+            return blocos.FindAll(x => new P3dCAD(x.XLine1Point).Distancia(ponto) <= tolerancia | new P3dCAD(x.XLine2Point).Distancia(ponto) <= tolerancia);
         }
         public static Xline GetXlineMaisProxima(Entity objeto, List<Xline> xlines, double tolerancia)
         {
@@ -711,18 +701,18 @@ namespace DLM.cad
 
                 foreach (var p in xlines)
                 {
-                    var p1 = new Coordenada(coords.First());
+                    var p1 = coords.First();
                     var ang = Angulo.Get(p);
                     var p2 = p1.Mover(ang + 90, 10000);
 
-                    var a1 = new Coordenada(p.BasePoint);
-                    var a2 = new Coordenada(p.BasePoint).Mover(ang, 10000);
+                    var a1 = new P3dCAD(p.BasePoint);
+                    var a2 = new P3dCAD(p.BasePoint).Mover(ang, 10000);
 
 
 
 
 
-                    using (Line ll = new Line(p1.GetPoint3D(), p2.GetPoint3D()))
+                    using (Line ll = new Line(p1.GetPoint3dCad(), p2.GetPoint3dCad()))
                     {
                         Point3dCollection pts3D = new Point3dCollection();
                         //Get the intersection Points between line 1 and line 2
@@ -804,8 +794,8 @@ namespace DLM.cad
             var coords = GetCoordenadas(objeto);
             if (coords.Count > 0)
             {
-                var min = new Coordenada(new Point3d(coords.Min(x => x.X), coords.Min(x => x.Y), 0));
-                var max = new Coordenada(new Point3d(coords.Max(x => x.X), coords.Max(x => x.Y), 0));
+                var min = new P3dCAD(new Point3d(coords.Min(x => x.X), coords.Min(x => x.Y), 0));
+                var max = new P3dCAD(new Point3d(coords.Max(x => x.X), coords.Max(x => x.Y), 0));
                 foreach (var p in xlines)
                 {
                     double angulo = Angulo.Get(p);
@@ -813,16 +803,13 @@ namespace DLM.cad
                     double dist1 = 0, dist2 = 0;
                     if (norm == 0 | norm == 180)
                     {
-                        dist1 = new Coordenada(min).DistanciaX(p.BasePoint);
-                        dist2 = new Coordenada(max).DistanciaX(p.BasePoint);
+                        dist1 = new P3dCAD(min).DistanciaX(p.BasePoint);
+                        dist2 = new P3dCAD(max).DistanciaX(p.BasePoint);
                     }
 
 
-
-
-
-                    Coordenada pmin = new Coordenada(min).Mover(angulo, dist1);
-                    Coordenada pmax = new Coordenada(min).Mover(angulo, dist2);
+                    var pmin = new P3dCAD(min).Mover(angulo, dist1);
+                    var pmax = new P3dCAD(min).Mover(angulo, dist2);
                     double ds1 = min.Distancia(pmin);
                     double ds2 = max.Distancia(pmax);
 
@@ -837,38 +824,38 @@ namespace DLM.cad
 
             return retorno;
         }
-        public static List<Point3d> GetCoordenadas(Entity objeto)
+        public static List<P3d> GetCoordenadas(Entity objeto)
         {
-            List<Point3d> retorno = new List<Point3d>();
+            List<P3d> retorno = new List<P3d>();
 
             if (objeto is Line)
             {
                 var p = (objeto as Line);
-                retorno.Add(p.StartPoint);
-                retorno.Add(p.EndPoint);
+                retorno.Add(p.StartPoint.P3d());
+                retorno.Add(p.EndPoint.P3d());
             }
             else if (objeto is Polyline)
             {
                 var p = (objeto as Polyline);
-                retorno.Add(p.StartPoint);
-                retorno.Add(p.EndPoint);
+                retorno.Add(p.StartPoint.P3d());
+                retorno.Add(p.EndPoint.P3d());
             }
             else if (objeto is RotatedDimension)
             {
                 var p = (objeto as RotatedDimension);
-                retorno.Add(p.XLine1Point);
-                retorno.Add(p.XLine2Point);
+                retorno.Add(p.XLine1Point.P3d());
+                retorno.Add(p.XLine2Point.P3d());
             }
             else if (objeto is BlockReference)
             {
                 var p = (objeto as BlockReference);
-                retorno.Add(p.Position);
+                retorno.Add(p.Position.P3d());
             }
             else if (objeto is Mline)
             {
                 var p = (objeto as Mline);
-                Point3d p1;
-                Point3d p2;
+                P3d p1;
+                P3d p2;
                 double largura = 0;
                 Multiline.GetOrigens(p, out p1, out p2, out largura);
                 retorno.Add(p1);
@@ -966,8 +953,8 @@ namespace DLM.cad
                                 var pt2 = pts[i].TransformBy(s.BlockTransform);
                                 if (Math.Abs(pt1.DistanceTo(pt2)) >= comp_min)
                                 {
-                                    var p1 = new Coordenada(pt1).GetWinPoint();
-                                    var p2 = new Coordenada(pt2).GetWinPoint();
+                                    var p1 = new P3dCAD(pt1).GetWinPoint();
+                                    var p2 = new P3dCAD(pt2).GetWinPoint();
                                     p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
                                     p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
 
@@ -992,8 +979,8 @@ namespace DLM.cad
 
                         if (Math.Abs(pt1.DistanceTo(pt2)) >= comp_min)
                         {
-                            var p1 = new Coordenada(pt1).GetWinPoint();
-                            var p2 = new Coordenada(pt2).GetWinPoint();
+                            var p1 = new P3dCAD(pt1).GetWinPoint();
+                            var p2 = new P3dCAD(pt2).GetWinPoint();
                             p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
                             p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
                             cor.Opacity = opacidade;
@@ -1083,10 +1070,7 @@ namespace DLM.cad
             return msg;
         }
 
-        public static System.Windows.Point GetWPoint(Point2d pt)
-        {
-            return new Point(pt.X, pt.Y);
-        }
+
         public static Point3d GetP3d(Point2d pt)
         {
             return new Point3d(pt.X, pt.Y, 0);
@@ -1116,17 +1100,18 @@ namespace DLM.cad
         /// <param name="pergunta"></param>
         /// <param name="cancelado">se false: o usuário clicou</param>
         /// <returns></returns>
-        public static Point3d PedirPonto3D(string pergunta, out bool cancelado)
+        public static P3d PedirPonto(string pergunta, out bool cancelado)
         {
             cancelado = false;
-            return PedirPonto3D(pergunta, new Point3d(), out cancelado, false);
+            return PedirPonto(pergunta, new P3d(), out cancelado, false);
         }
-        public static Point2d PedirPonto2D(string pergunta, out bool cancelado)
-        {
-            cancelado = false;
-            return PedirPonto2D(pergunta, new Point2d(), out cancelado, false);
-        }
-        public static Point3d PedirPonto3D(string pergunta, Point3d origem, out bool cancelado, bool tem_origem = true)
+        //public static Point2d PedirPonto2D(string pergunta, out bool cancelado)
+        //{
+        //    cancelado = false;
+        //    return PedirPonto2D(pergunta, new P3d(), out cancelado, false);
+        //}
+
+        public static P3d PedirPonto(string pergunta, P3d origem, out bool cancelado, bool tem_origem = true)
         {
             cancelado = false;
             PromptPointResult pPtRes;
@@ -1136,53 +1121,53 @@ namespace DLM.cad
             if (tem_origem)
             {
                 pPtOpts.UseBasePoint = true;
-                pPtOpts.BasePoint = origem;
+                pPtOpts.BasePoint = origem.GetPoint3dCad();
             }
             pPtRes = editor.GetPoint(pPtOpts);
 
-            Point3d ptStart = pPtRes.Value;
+            var ptStart = pPtRes.Value.P3d();
 
             if (pPtRes.Status == PromptStatus.Cancel)
             {
                 cancelado = true;
-                return new Point3d();
+                return new P3d();
             }
 
             return ptStart;
 
         }
-        public static Point2d PedirPonto2D(string pergunta, Point2d origem, out bool cancelado, bool tem_origem = true)
+        //public static P3d PedirPonto2D(string pergunta, P3d origem, out bool cancelado, bool tem_origem = true)
+        //{
+        //    cancelado = false;
+        //    PromptPointResult pPtRes;
+        //    PromptPointOptions pPtOpts = new PromptPointOptions("");
+
+        //    pPtOpts.Message = "\n" + pergunta;
+        //    if (tem_origem)
+        //    {
+        //        pPtOpts.UseBasePoint = true;
+        //        pPtOpts.BasePoint = new Point3d(origem.X, origem.Y, 0);
+        //    }
+        //    pPtRes = editor.GetPoint(pPtOpts);
+
+        //    Point3d ptStart = pPtRes.Value;
+
+        //    if (pPtRes.Status == PromptStatus.Cancel)
+        //    {
+        //        cancelado = true;
+        //        return new P3d();
+        //    }
+
+        //    return new P3d(ptStart.X, ptStart.Y);
+
+        //}
+        public static List<P3d> PedirPontos3D(string pergunta = "Selecione as origens")
         {
-            cancelado = false;
-            PromptPointResult pPtRes;
-            PromptPointOptions pPtOpts = new PromptPointOptions("");
-
-            pPtOpts.Message = "\n" + pergunta;
-            if (tem_origem)
-            {
-                pPtOpts.UseBasePoint = true;
-                pPtOpts.BasePoint = new Point3d(origem.X, origem.Y, 0);
-            }
-            pPtRes = editor.GetPoint(pPtOpts);
-
-            Point3d ptStart = pPtRes.Value;
-
-            if (pPtRes.Status == PromptStatus.Cancel)
-            {
-                cancelado = true;
-                return new Point2d();
-            }
-
-            return new Point2d(ptStart.X, ptStart.Y);
-
-        }
-        public static List<Point3d> PedirPontos3D(string pergunta = "Selecione as origens")
-        {
-            List<Point3d> retorno = new List<Point3d>();
+            List<P3d> retorno = new List<P3d>();
             bool cancelado = false;
             while (!cancelado)
             {
-                var pt = PedirPonto3D(pergunta, retorno.Count > 0 ? retorno.Last() : new Point3d(), out cancelado, retorno.Count > 0);
+                var pt = PedirPonto(pergunta, retorno.Count > 0 ? retorno.Last() : new P3d(), out cancelado, retorno.Count > 0);
                 if (!cancelado)
                 {
                     retorno.Add(pt);
@@ -1297,6 +1282,35 @@ namespace DLM.cad
         }
 
 
+        public static List<Point3d> GetPontos(List<Entity> objs, Transaction tr = null)
+        {
+            List<Point3d> ptss = new List<Point3d>();
+            if (tr == null)
+            {
+                using (var docLock = acDoc.LockDocument())
+                {
+                    // Start a transaction
+                    using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+                    {
+                        foreach (var obj in objs)
+                        {
+                            ptss.AddRange(GetPontosAgrupados(obj, acTrans).SelectMany(x => x));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var obj in objs)
+                {
+                    ptss.AddRange(GetPontosAgrupados(obj, tr).SelectMany(x => x));
+                }
+            }
+
+            return ptss;
+        }
+
+
         public static List<Point3d> GetPontos(object obj, Transaction tr = null)
         {
             List<Point3d> ptss = new List<Point3d>();
@@ -1315,7 +1329,6 @@ namespace DLM.cad
             {
                 ptss.AddRange(GetPontosAgrupados(obj,tr).SelectMany(x => x));
             }
-
 
             return ptss;
         }
@@ -1356,7 +1369,7 @@ namespace DLM.cad
             {
                 var tt = obj as Circle;
                 cor = Ut.GetCor(tt.Color);
-                pts.AddRange(GetPontosCirculo(tt.Center, tt.Diameter, 16).Select(x=>x.GetPoint3D()));
+                pts.AddRange(tt.Center.P3d().GetPontosCirculo(tt.Diameter, 16).Select(x=>x.GetPoint3dCad()));
 
                 if(pts.Count>0)
                 {
@@ -1457,22 +1470,7 @@ namespace DLM.cad
 
             return p;
         }
-        public static List<Coordenada> GetPontosCirculo(Point3d centro, double Diametro, int Num_Faces)
-        {
-            List<Point3d> retorno = new List<Point3d>();
-            double ang0 = (double)360 / (double)Num_Faces;
-            List<Coordenada> tamp = new List<Coordenada>();
-            double ang = ang0;
-            for (int i = 0; i < Num_Faces; i++)
-            {
 
-                Coordenada pt = new Coordenada(centro).Mover(ang, Diametro / 2);
-
-                ang = ang + ang0;
-                retorno.Add(pt.GetPoint3D());
-            }
-            return retorno.Select(x=> new Coordenada(x)).ToList();
-        }
 
 
         public static RMLiteFamilia GetFBs()

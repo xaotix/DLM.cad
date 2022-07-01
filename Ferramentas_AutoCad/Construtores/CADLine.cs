@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,18 +12,18 @@ namespace DLM.cad
 {
     public  class CADLine
     {
-        public Point2d Min
+        public P3d Min
         {
             get
             {
-                return new Point2d(MinX, MinY);
+                return new P3d(MinX, MinY);
             }
         }
-        public Point2d Max
+        public P3d Max
         {
             get
             {
-                return new Point2d(MaxX, MaxY);
+                return new P3d(MaxX, MaxY);
             }
         }
         public double MinY
@@ -82,16 +83,16 @@ namespace DLM.cad
         public ObjectId ObjectId { get; private set; }
         public string Layer { get; private set; }
         public string Linetype { get; private set; }
-        public Point3d StartPoint { get; private set; }
-        public Point3d EndPoint { get; private set; }
+        public P3d StartPoint { get; private set; }
+        public P3d EndPoint { get; private set; }
         public double Comprimento { get; private set; }
         public Line Line { get; private set; } 
         public CADLine(Line L)
         {
             this.Line = L;
             this.Comprimento = Math.Round(this.Line.Length);
-            this.StartPoint = L.StartPoint;
-            this.EndPoint  = L.EndPoint;
+            this.StartPoint = L.StartPoint.P3d();
+            this.EndPoint  = L.EndPoint.P3d();
             this.Layer = L.Layer;
             this.Linetype = L.Linetype;
             this.Angulo = DLM.cad.Angulo.RadianosParaGraus(L.Angle);

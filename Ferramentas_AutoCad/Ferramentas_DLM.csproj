@@ -75,10 +75,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Conexoes, Version=5.1.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\DLLS\Conexoes.dll</HintPath>
-    </Reference>
     <Reference Include="DataGridExtensions, Version=2.5.1.0, Culture=neutral, PublicKeyToken=43de855f87de903a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\DLLS\DataGridExtensions.dll</HintPath>
@@ -120,6 +116,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClassesBase\PolyInfo.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoMultiLineBase.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoCorrente.cs" />
     <Compile Include="Construtores\CADLine.cs" />
@@ -173,7 +170,7 @@
     </Compile>
     <Compile Include="ClassesObjetosMultiline\EstiloML.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoTirante.cs" />
-    <Compile Include="Funcoes\Core.cs" />
+    <Compile Include="Core.cs" />
     <Compile Include="Funcoes\Atributos.cs" />
     <Compile Include="ClassesBase\CTV_de_para.cs" />
     <Compile Include="ClassesObjetosBloco\BlocoFuro.cs" />
@@ -182,6 +179,7 @@
     <Compile Include="ClassesBase\PCQuantificar.cs" />
     <Compile Include="ClassesObjetosBloco\BlocoTag.cs" />
     <Compile Include="ClassesBase\Enumeradores.cs" />
+    <Compile Include="ClassesBase\Outline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Construtores\CADPurlin.cs" />
     <Compile Include="Funcoes\Tabelas.cs" />
@@ -266,10 +264,15 @@
     </Content>
     <Content Include="Logo-Medabil-Vertical-01.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Conexoes\Conexoes.csproj">
+      <Project>{def82547-9fab-457e-89bf-c10ed1dd9162}</Project>
+      <Name>Conexoes</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>del /q "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\Support\acad.lsp"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

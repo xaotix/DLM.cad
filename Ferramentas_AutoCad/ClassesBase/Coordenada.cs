@@ -1,225 +1,172 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DLM.cad
 {
-
-    public class Coordenada
+    public static class P3dCAD_Extensoes
     {
-        public Point2d GetPoint2d()
+        public static List<Point3d> Point3d(this List<P3d> lista)
         {
-            return new Point2d(this.X, this.Y);
+            return lista.Select(x => new Autodesk.AutoCAD.Geometry.Point3d(x.X, x.Y, x.Z)).ToList();
         }
-        public System.Windows.Point GetWinPoint()
+        public static List<P3dCAD> ArredondarJuntar(this List<P3dCAD> origem, int decimais_X = 0, int decimais_Y = 0)
         {
-            return new System.Windows.Point(this.X, this.Y);
+            try
+            {
+                return origem.Select(x => new P3dCAD(Math.Round(x.X, decimais_X), Math.Round(x.Y, decimais_Y), 0)).GroupBy(x => "X: " + x.X + " Y:" + x.Y).Select(x => x.First()).ToList();
+
+            }
+            catch (System.Exception)
+            {
+
+
+            }
+            return new List<P3dCAD>();
         }
-        public Coordenada(System.Windows.Point p)
+        public static List<P3dCAD> RemoverRepetidos(this List<P3dCAD> pts)
         {
-            this.X = p.X;
-            this.X = p.Y;
+            List<P3dCAD> lista = new List<P3dCAD>();
+            for (int i = 0; i < pts.Count; i++)
+            {
+                var p = pts[i];
+                if (i > 0 && lista.Count > 0)
+                {
+                    var p0 = lista[lista.Count - 1];
+
+                    if (p0.X == p.X && p0.Y == p.Y)
+                    {
+
+                    }
+                    else
+                    {
+                        lista.Add(p);
+                    }
+                }
+                else
+                {
+                    lista.Add(p);
+                }
+            }
+
+            return lista;
+        }
+        public static System.Windows.Point Point(this Point2d pt)
+        {
+            return new System.Windows.Point(pt.X, pt.Y);
+        }
+        public static double Area(List<P3dCAD> p3DCADs)
+        {
+            return p3DCADs.Select(x => (P3d)x).ToList().Area();
+        }
+        public static List<P3dCAD> P3dCAD(this List<P3d> lista)
+        {
+            return lista.Select(x => new P3dCAD(x.X,x.Y,x.Z)).ToList();
+        }
+        public static List<P3d> P3d(this List<P3dCAD> lista)
+        {
+            return lista.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
+        }
+        public static Point2d Centro(this Point2d p1, Point2d p2)
+        {
+            return new Point2d((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
+        }
+        public static Point3d Centro(this Point3d p1, Point3d p2)
+        {
+            return new P3dCAD(p1).Centro(p2).GetPoint3dCad();
+        }
+        public static P3d P3d(this Point3d p)
+        {
+            return new P3d(p.X, p.Y,p.Z);
+        }
+        public static P3dCAD P3dCAD(this Point3d p)
+        {
+            return new P3dCAD(p.X, p.Y, p.Z);
+        }
+        public static P3d P3d(this Point2d p)
+        {
+            return new P3d(p.X, p.Y);
+        }
+        public static System.Windows.Point GetWinPoint(this P3d p3d)
+        {
+            return new System.Windows.Point(p3d.X, p3d.Y);
         }
 
-        public Coordenada(Point2d pt)
+        public static Point3d GetPoint3dCad(this P3d p3d)
         {
-            this.X = pt.X;
-            this.Y = pt.Y;
-            this.Z = 0;
+            return new Point3d(p3d.X, p3d.Y, p3d.Z);
         }
-        public Coordenada Mover(double X, double Y = 0, double Z = 0)
+        public static Point2d GetPoint2dCad(this P3d p3d)
         {
-            var s= new Coordenada(new Point3d(this.X + X, this.Y + Y, this.Z + Z));
-            s.Tipo = this.Tipo;
-            return s;
+            return new Point2d(p3d.X, p3d.Y);
         }
+        public static double DistanciaX(this P3d p3d,Point3d p2)
+        {
+            return p3d.DistanciaX(new P3dCAD(p2));
+        }
+
+        public static double Distancia(this P3d p1, Point3d p3d)
+        {
+            return p1.Distancia(new P3dCAD(p3d));
+        }
+        public static double Angulo(this P3d p1, Point3d p3d)
+        {
+            return p1.Angulo(new P3dCAD(p3d));
+        }
+        public static double DistanciaY(this P3d p1, Point3d v)
+        {
+            return p1.DistanciaY(new P3dCAD(v));
+        }
+    }
+
+    public class P3dCAD:P3d
+    {
+
+ 
+        
+
         public override string ToString()
         {
             return "[" + Tipo.ToString().PadRight(10,' ') + "] [" + this.id.ToString().PadLeft(3, '0') + "] " + chave;
         }
-        public Point3d GetPoint3D()
-        {
-            return new Point3d(this.X, this.Y, 0);
-        }
-        //public string chave
-        //{
-        //    get
-        //    {
-        //        return "X: " + Math.Round(this.X,3).ToString().PadRight(10, ' ') + " | Y" + Math.Round(this.Y,3).ToString().PadRight(10, ' ');
-        //    }
-        //}
+   
 
-        public string chave
-        {
-            get
-            {
-                return "X: " + this.X.ToString().PadRight(10, ' ') + " | Y" + this.Y.ToString().PadRight(10, ' ');
-            }
-        }
 
-        public double DistanciaX(Point3d p)
-        {
-            return DistanciaX(new Coordenada(p));
-        }
-        public double DistanciaX(Coordenada v)
-        {
-            if(v== null) { return - 1; }
-            return this.X > v.X ? Math.Abs(this.X - v.X) : Math.Abs(v.X - this.X);
-        }
-        public double Distancia(Point3d p)
-        {
-            return Distancia(new Coordenada(p));
-        }
 
-        public double Angulo(Coordenada v)
-        {
-          return  DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(this.X, this.Y, this.Z), new DLM.desenho.P3d(v.X, v.Y, v.Z));
-        }
-        public double Angulo(Point3d v)
-        {
-            return Angulo(new Coordenada(v));
-        }
 
-       
-        public Coordenada Mover(double angulo, double distancia)
-        {
-            var s = DLM.desenho.Trigonometria.Mover(new System.Windows.Point(this.X, this.Y), angulo, distancia);
+  
 
-            return new Coordenada(s.X, s.Y, 0);
-        }
-        public double Distancia(Coordenada v)
-        {
-            double xDelta = this.X - v.X;
-            double yDelta = this.Y - v.Y;
-
-            return Math.Sqrt(Math.Pow(xDelta, 2) + Math.Pow(yDelta, 2));
-        }
-        public double DistanciaY(Coordenada v)
-        {
-            if (v == null) { return -1; }
-            return this.Y > v.Y ? Math.Abs(this.Y - v.Y) : Math.Abs(v.Y - this.Y);
-        }
-        public double DistanciaY(Point3d v)
-        {
-            return DistanciaY(new Coordenada(v));
-        }
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
+ 
         public Tipo_Coordenada Tipo { get; set; }
-        public int id { get; set; }
-        public Coordenada anterior { get; set; } 
-        public Coordenada proxima { get; set; }
 
-        public double Getdist_proximaX(int decimais = 0)
+
+
+  
+
+
+
+
+        public P3dCAD(Point3d pt, int id, Tipo_Coordenada tipo)
         {
-            return Math.Round(this.DistanciaX(proxima),decimais);
-        }
-
-        public double GetDist_proximaY(int decimais = 0)
-        {
-            return Math.Round(this.DistanciaY(proxima),decimais);
-        }
-        private List<Coordenada> IguaisX { get; set; }
-
-        public List<Coordenada> PegarIguaisX()
-        {
-            if (IguaisX == null)
-            {
-                IguaisX = new List<Coordenada>();
-                var proxima = this.proxima;
-                var atual = this;
-                if (this.proxima != null)
-                {
-                    while (proxima != null && IguaisX.Count < 10)
-                    {
-                        if (proxima.Getdist_proximaX() == this.Getdist_proximaX() && this.Getdist_proximaX() > 0)
-                        {
-                            if (IguaisX
-                                .Find(x => x.id == proxima.id) == null 
-                                && proxima.id == atual.id +1 
-                                && proxima.X>atual.X
-                                && proxima.chave!=this.chave 
-                                && proxima.chave!=atual.chave)
-                            {
-                                IguaisX.Add(proxima);
-                                atual = proxima;
-                                proxima = proxima.proxima;
-                            }
-                            else
-                            {
-                                proxima = null;
-                            }
-                        }
-                        else
-                        {
-                            proxima = null;
-                        }
-                    }
-                }
-                IguaisX = IguaisX.FindAll(x => x != null);
-            }
-
-
-            return IguaisX;
-        }
-        private List<Coordenada> IguaisY { get; set; }
-        public List<Coordenada> PegarIguaisY()
-        {
-            if (IguaisY == null)
-            {
-                IguaisY = new List<Coordenada>();
-
-                var proxima = this.proxima;
-                var atual = this;
-                if (this.proxima != null)
-                {
-                    while (proxima != null && IguaisY.Count < 10)
-                    {
-                        if (proxima.GetDist_proximaY() == this.GetDist_proximaY() && this.GetDist_proximaY() > 0)
-                        {
-                            if (IguaisY
-                                .Find(x => x.id == proxima.id) == null
-                                && proxima.Y > atual.Y
-                                && proxima.id == atual.id +1
-                                && proxima.chave != this.chave 
-                                && proxima.chave != atual.chave)
-                            {
-                                IguaisY.Add(proxima);
-                                atual = proxima;
-                                proxima = proxima.proxima;
-                            }
-                            else
-                            {
-                                proxima = null;
-                            }
-
-                        }
-                        else
-                        {
-                            proxima = null;
-                        }
-                    }
-                }
-                IguaisY = IguaisY.FindAll(x => x != null);
-
-            }
-
-
-            return IguaisY;
-        }
-        public Coordenada(Point3d pt, int id, Tipo_Coordenada tipo)
-        {
-
             this.X = pt.X;
             this.Y = pt.Y;
             this.Z = pt.Z;
             this.id = id;
             this.Tipo = tipo;
         }
-        public Coordenada(Point3d pt)
+        public P3dCAD(P3d pt, int id, Tipo_Coordenada tipo)
+        {
+            this.X = pt.X;
+            this.Y = pt.Y;
+            this.Z = pt.Z;
+            this.id = id;
+            this.Tipo = tipo;
+        }
+        public P3dCAD(Point3d pt)
         {
 
             this.X = pt.X;
@@ -227,7 +174,7 @@ namespace DLM.cad
             this.Z = pt.Z;
             this.Tipo = Tipo_Coordenada.Ponto;
         }
-        public Coordenada(double X, double Y, double Z)
+        public P3dCAD(double X, double Y, double Z)
         {
 
             this.X = X;
@@ -235,7 +182,7 @@ namespace DLM.cad
             this.Z = Z;
             this.Tipo = Tipo_Coordenada.Ponto;
         }
-        public Coordenada(Coordenada pt, int arredondar = 1)
+        public P3dCAD(P3dCAD pt, int arredondar = 1)
         {
             this.X = Math.Round(pt.X, arredondar);
             this.Y = Math.Round(pt.Y, arredondar);
@@ -244,20 +191,20 @@ namespace DLM.cad
             this.Tipo = pt.Tipo;
         }
 
-        public Coordenada GetCentro(Point3d pt)
+        public P3dCAD Centro(Point3d pt)
         {
-            return GetCentro(new Coordenada(pt));
+            return (P3dCAD)Centro(new P3dCAD(pt));
         }
-        public Coordenada GetCentro(Coordenada ps)
-        {
-            return new Coordenada(
-                (this.X + ps.X) / 2,
-                (this.Y + ps.Y) / 2,
-                (this.Z + ps.Z) / 2);
-        }
-        public Coordenada()
+
+        public P3dCAD()
         {
 
+        }
+        public P3dCAD(Point2d pt)
+        {
+            this.X = pt.X;
+            this.Y = pt.Y;
+            this.Z = 0;
         }
     }
 }

@@ -21,6 +21,7 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.PlottingServices;
 using DLM.vars;
 using Conexoes;
+using DLM.desenho;
 
 namespace DLM.cad
 {
@@ -31,7 +32,7 @@ namespace DLM.cad
         {
             var sel = SelecionarObjetos(Tipo_Selecao.Dimensoes);
             List<Entity> remover = new List<Entity>();
-            foreach (var acEnt in selecoes)
+            foreach (var acEnt in Selecoes)
             {
                 if (
                           acEnt is AlignedDimension |
@@ -99,7 +100,7 @@ namespace DLM.cad
         {
             string nome = "LAYERS_PADRAO";
             
-            Blocos.Inserir(CAD.acDoc, nome, new Point3d(), 0.001, 0, new Hashtable());
+            Blocos.Inserir(CAD.acDoc, nome, new P3d(), 0.001, 0, new Hashtable());
             acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
         }
         public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
@@ -126,6 +127,41 @@ namespace DLM.cad
 
 
         private List<Entity> _entities_blocos { get; set; }
+
+
+        public List<BlockReference> Getfuros_vista()
+        {
+            return GetBlocos().FindAll(x =>
+                 x.Name.ToUpper() == "M8"
+                | x.Name.ToUpper() == "M10"
+                | x.Name.ToUpper() == "M12"
+                | x.Name.ToUpper() == "M14"
+                | x.Name.ToUpper() == "M14_"
+                | x.Name.ToUpper() == "M16"
+                | x.Name.ToUpper() == "M18"
+                | x.Name.ToUpper() == "M20"
+                | x.Name.ToUpper() == "M22"
+                | x.Name.ToUpper() == "M24"
+                | x.Name.ToUpper() == "M27"
+                | x.Name.ToUpper() == "M30"
+                | x.Name.ToUpper() == "M33"
+                | x.Name.ToUpper() == "M36"
+                | x.Name.ToUpper() == "M39"
+                | x.Name.ToUpper() == "M42"
+                | x.Name.ToUpper() == "M45"
+                | x.Name.ToUpper() == "M48"
+                | x.Name.ToUpper() == "M52"
+                | x.Name.ToUpper() == "M56"
+                | x.Name.ToUpper() == "M60"
+                | x.Name.ToUpper() == "M64"
+                | x.Name.ToUpper() == "M68"
+                | x.Name.ToUpper() == "M72"
+                | x.Name.ToUpper() == "M76"
+                | x.Name.ToUpper() == "M80"
+                | x.Name.ToUpper() == "3D_INFOHOLE1"
+                | x.Name.ToUpper() == "MA"
+                );
+        }
         public List<Entity> GetEntitiesdeBlocos()
         {
             if(_entities_blocos==null)
@@ -228,7 +264,7 @@ namespace DLM.cad
         }
 
         [Browsable(false)]
-        public List<Entity> selecoes { get; set; } = new List<Entity>();
+        public List<Entity> Selecoes { get; set; } = new List<Entity>();
 
        
         public void SetUCSParaWorld()
@@ -238,33 +274,7 @@ namespace DLM.cad
         }
 
 
-        public List<Coordenada> RemoverRepetidos(List<Coordenada> pts)
-        {
-            List<Coordenada> lista = new List<Coordenada>();
-            for (int i = 0; i < pts.Count; i++)
-            {
-                var p = pts[i];
-                if (i > 0 && lista.Count > 0)
-                {
-                    var p0 = lista[lista.Count - 1];
 
-                    if (p0.X == p.X && p0.Y == p.Y)
-                    {
-
-                    }
-                    else
-                    {
-                        lista.Add(p);
-                    }
-                }
-                else
-                {
-                    lista.Add(p);
-                }
-            }
-
-            return lista;
-        }
         #region Prompts usuário
         public string PerguntaString(string Titulo, List<string> Opcoes)
         {
@@ -312,12 +322,12 @@ namespace DLM.cad
         #endregion
 
         #region Desenho
-        public void AddPolyLine(List<Coordenada> pts, double largura, double largura_fim, System.Drawing.Color cor)
+        public void AddPolyLine(List<P3d> pontos, double largura, double largura_fim, System.Drawing.Color cor)
         {
             AddBarra();
             AddMensagem("\nAdicionando Polyline");
-            AddMensagem(string.Join("\n", pts));
-            if (pts.Count < 2)
+            AddMensagem(string.Join("\n", pontos));
+            if (pontos.Count < 2)
             {
                 return;
             }
@@ -330,7 +340,7 @@ namespace DLM.cad
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
-                List<Coordenada> lista = RemoverRepetidos(pts);
+                List<P3d> lista = pontos.RemoverRepetidos();
                 // Create the rotated dimension
                 using (Polyline p = new Polyline(lista.Count))
                 {
@@ -367,7 +377,7 @@ namespace DLM.cad
 
             }
         }
-        public void AddLinha(Coordenada inicio, Coordenada fim, string tipo, System.Drawing.Color cor)
+        public void AddLinha(P3d inicio, P3d fim, string tipo, System.Drawing.Color cor)
         {
 
 
@@ -384,8 +394,7 @@ namespace DLM.cad
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                 // Create a line that starts at 5,5 and ends at 12,3
-                using (Line acLine = new Line(inicio.GetPoint3D(),
-                                              fim.GetPoint3D()))
+                using (Line acLine = new Line(inicio.GetPoint3dCad(), fim.GetPoint3dCad()))
                 {
                     if (acLineTypTbl.Has(tipo) == false)
                     {
@@ -410,7 +419,7 @@ namespace DLM.cad
 
 
         #region Cotas
-        public RotatedDimension AddCotaVertical(Coordenada inicio, Coordenada fim, string texto, Point3d posicao, bool dimtix =false, double tam = 0, bool juntar_cotas =false, bool ultima_cota =false)
+        public RotatedDimension AddCotaVertical(P3d inicio, P3d fim, string texto, P3d posicao, bool dimtix =false, double tam = 0, bool juntar_cotas =false, bool ultima_cota =false)
         {
             RotatedDimension acRotDim;
             // Get the current database
@@ -467,7 +476,7 @@ namespace DLM.cad
 
             return acRotDim;
         }
-        public RotatedDimension AddCotaHorizontal(Coordenada inicio, Coordenada fim, string texto, Point3d posicao, bool dimtix, double tam, bool juntar_cotas, bool ultima_cota)
+        public RotatedDimension AddCotaHorizontal(P3d inicio, P3d fim, string texto, P3d posicao, bool dimtix, double tam, bool juntar_cotas, bool ultima_cota)
         {
             RotatedDimension acRotDim;
             // Start a transaction
@@ -517,7 +526,7 @@ namespace DLM.cad
 
             return acRotDim;
         }
-        public void AddCotaOrdinate(Point3d pontozero, Coordenada ponto, Point3d posicao, double tam)
+        public void AddCotaOrdinate(P3d pontozero, P3d ponto, P3d posicao, double tam)
         {
             OrdinateDimension acOrdDim;
 
@@ -582,7 +591,7 @@ namespace DLM.cad
         #region listas de itens selecionados
         public List<CADLine> GetLinhas()
         {
-            return selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList().Select(x=>new CADLine(x)).ToList();
+            return Selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList().Select(x=>new CADLine(x)).ToList();
         }
         public List<CADLine> GetLinhas_Verticais()
         {
@@ -595,25 +604,27 @@ namespace DLM.cad
         }
         public List<Polyline> GetPolyLines()
         {
-            return selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).ToList();
+            return Selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).ToList();
         }
         public List<MText> GetMtexts()
         {
-            return selecoes.FindAll(x => x is MText).Select(x => x as MText).ToList();
+            return Selecoes.FindAll(x => x is MText).Select(x => x as MText).ToList();
         }
         public List<DBText> GetTexts()
         {
-            return selecoes.FindAll(x => x is Autodesk.AutoCAD.DatabaseServices.DBText).Select(x => x as DBText).ToList();
+            return Selecoes.FindAll(x => x is Autodesk.AutoCAD.DatabaseServices.DBText).Select(x => x as DBText).ToList();
         }
         public List<BlockReference> GetBlocos()
         {
-            return selecoes.FindAll(x => x is BlockReference).Select(x => x as BlockReference).ToList();
+            return Selecoes.FindAll(x => x is BlockReference).Select(x => x as BlockReference).ToList();
         }
+
+
 
         public List<Mline> GetMultilines()
         {
             List<Mline> lista = new List<Mline>();
-            lista.AddRange(selecoes.FindAll(x => x is Mline).Select(x => x as Mline).ToList());
+            lista.AddRange(Selecoes.FindAll(x => x is Mline).Select(x => x as Mline).ToList());
 
             if (BuscarEmBlocos)
             {
@@ -624,11 +635,11 @@ namespace DLM.cad
         }
         public List<Xline> GetXlines()
         {
-            return selecoes.FindAll(x => x is Xline).Select(x => x as Xline).ToList();
+            return Selecoes.FindAll(x => x is Xline).Select(x => x as Xline).ToList();
         }
         public List<Entity> GetCotas()
         {
-            return selecoes.FindAll(x =>
+            return Selecoes.FindAll(x =>
 
                               x is AlignedDimension
                             | x is ArcDimension
@@ -735,10 +746,6 @@ namespace DLM.cad
             pp.RejectObjectsFromNonCurrentSpace = true;
             pp.AllowDuplicates = false;
           
-            //pp.MessageForAdding = "Item adicionado à seleção";
-            //pp.MessageForRemoval = "Item removido da seleção";
-
-
 
             var lista_filtro = new List<TypedValue>();
 
@@ -746,7 +753,6 @@ namespace DLM.cad
             {
                 case Tipo_Selecao.Tudo:
                     lista_filtro.Add(new TypedValue(0, "LINE,POLYLINE,LWPOLYLINE,TEXT,MTEXT,DIMENSION,LEADER,INSERT,MLINE"));
-
                     break;
                 case Tipo_Selecao.Blocos:
                     lista_filtro.Add(new TypedValue(0, "INSERT"));
@@ -762,6 +768,12 @@ namespace DLM.cad
                     break;
                 case Tipo_Selecao.Polyline:
                     lista_filtro.Add(new TypedValue(0, "POLYLINE,LWPOLYLINE"));
+                    break;
+                case Tipo_Selecao.Linhas:
+                    lista_filtro.Add(new TypedValue(0, "LINE"));
+                    break;
+                case Tipo_Selecao.PolyLine_Linhas:
+                    lista_filtro.Add(new TypedValue(0, "LINE,POLYLINE,LWPOLYLINE"));
                     break;
             }
 
@@ -783,7 +795,7 @@ namespace DLM.cad
                 if (acSSPrompt.Status == PromptStatus.OK)
                 {
                     SelectionSet acSSet = acSSPrompt.Value;
-                    selecoes.Clear();
+                    Selecoes.Clear();
                     // Step through the objects in the selection set
                     foreach (SelectedObject acSSObj in acSSet)
                     {
@@ -795,7 +807,7 @@ namespace DLM.cad
 
                                 if (acEnt != null)
                                 {
-                                    selecoes.Add(acEnt);
+                                    Selecoes.Add(acEnt);
                                 }
                             }
                         }

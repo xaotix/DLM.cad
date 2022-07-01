@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.PlottingServices;
 using Conexoes;
+using DLM.desenho;
 using DLM.encoder;
 using DLM.vars;
 using System;
@@ -110,8 +111,8 @@ namespace DLM.cad
                     double largura = 63.69;
                     var filetes = retorno.GroupBy(x => x.ToString()).ToList();
                     bool cancelado = false;
-                    var pt = Ut.PedirPonto3D("Selecione a origem", out cancelado);
-                    var origem = new Coordenada(pt).Mover(-largura, 0, 0);
+                    var pt = Ut.PedirPonto("Selecione a origem", out cancelado);
+                    var origem = pt.Mover(-largura, 0, 0);
                     if(!cancelado)
                     {
                         foreach(var filete in filetes)
@@ -129,7 +130,7 @@ namespace DLM.cad
                                 Hashtable ht = new Hashtable();
                                 ht.Add("MBPERFIL", pc);
                                 ht.Add("MBFILETE", filete.First().Filete_Minimo);
-                                Blocos.Inserir(CAD.acDoc, nome, origem.GetPoint2d(), 1, 0, ht);
+                                Blocos.Inserir(CAD.acDoc, nome, origem, 1, 0, ht);
 
                                 origem = origem.Mover(-largura, 0, 0);
                             }
@@ -540,12 +541,12 @@ namespace DLM.cad
                             att.Add(Cfg.Init.CAD_ATT_Quantidade, 1 + s.Filhos.Count);
                             if(subs_bloco)
                             {
-                            Blocos.Inserir(CAD.acDoc, arquivo_bloco, s.Bloco.Position, escala, 0, att);
+                            Blocos.Inserir(CAD.acDoc, arquivo_bloco, s.Bloco.Position.P3d(), escala, 0, att);
                             }
                             else
                             {
                                 var angulo = s.GetAngulo();
-                                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BL_INDICACAO_TXT, s.Bloco.Position, escala, angulo, att);
+                                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BL_INDICACAO_TXT, s.Bloco.Position.P3d(), escala, angulo, att);
                             }
                         }
 
@@ -610,7 +611,7 @@ namespace DLM.cad
                         ht.Add(Cfg.Init.CAD_ATT_Destino, pc.Destino);
                         ht.Add(Cfg.Init.CAD_ATT_Quantidade, 1 + s.Filhos.Count);
 
-                        Blocos.Inserir(CAD.acDoc, Cfg.Init.BlocosIndicacao()[0], s.Bloco.Position, escala, 0, ht);
+                        Blocos.Inserir(CAD.acDoc, Cfg.Init.BlocosIndicacao()[0], s.Bloco.Position.P3d(), escala, 0, ht);
                     }
 
                 }
@@ -631,7 +632,7 @@ namespace DLM.cad
             List<PCQuantificar> pecas = new List<PCQuantificar>();
 
             var sel = SelecionarObjetos( Tipo_Selecao.Blocos_Textos);
-            if(sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && this.selecoes.Count>0)
+            if(sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && this.Selecoes.Count>0)
             {
                 var opt = new ConfiguracaoQuantificar();
                 opt.Blocos = blocos;
@@ -851,10 +852,9 @@ namespace DLM.cad
                 if (pcs.Count > 0)
                 {
                     bool cancelado = false;
-                    var pt = Ut.PedirPonto2D("Selecione a origem", out cancelado);
+                    var pt = Ut.PedirPonto("Selecione a origem", out cancelado);
                     if (!cancelado)
                     {
-
                         var separar = Conexoes.Utilz.Pergunta("Separar as peças e gerar tabelas por família?");
                         Tabelas.Pecas(pcs, separar, pt, 0);
                     }
@@ -1212,13 +1212,13 @@ namespace DLM.cad
             }
             return this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
         }
-        public void InserirTabela(Point2d? pt =null)
+        public void InserirTabela(P3d pt =null)
         {
 
             bool cancelado = false;
             if(pt==null)
             {
-                pt = Ut.PedirPonto2D("Clique na origem", out cancelado);
+                pt = Ut.PedirPonto("Clique na origem", out cancelado);
             }
 
             if (!cancelado)
@@ -1229,7 +1229,7 @@ namespace DLM.cad
                 {
                     if (erros.Count == 0)
                     {
-                        Tabelas.TecnoMetal(pcs, (Point2d)pt, -186.47);
+                        Tabelas.TecnoMetal(pcs, pt, -186.47);
                     }
                     else
                     {
@@ -1261,7 +1261,7 @@ namespace DLM.cad
 
 
 
-            Point2d? pt  = CleanTabela();
+            P3d pt  = CleanTabela();
 
             if (pt!=null)
             {
@@ -1281,9 +1281,9 @@ namespace DLM.cad
 
         }
 
-        private Point2d? CleanTabela()
+        private P3d CleanTabela()
         {
-            Point2d? retorno = null;
+            P3d retorno = null;
             List<BlockReference> blocos = new List<BlockReference>();
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
@@ -1341,12 +1341,12 @@ namespace DLM.cad
                     var pts = Ut.GetPontos(s);
                     if (pts.Count > 0)
                     {
-                        retorno = new Point2d(pts.Max(x => x.X) + offset, pts.Max(x => x.Y) + offset);
+                        retorno = new P3d(pts.Max(x => x.X) + offset, pts.Max(x => x.Y) + offset);
                     }
                     else
                     {
                         var ptsb = s.Bounds.Value.MaxPoint;
-                        retorno = new Point2d(ptsb.X + offset, ptsb.Y + offset);
+                        retorno = new P3d(ptsb.X + offset, ptsb.Y + offset);
                     }
                   
              
@@ -2142,6 +2142,45 @@ namespace DLM.cad
         }
 
 
+        public void GerarCAMDePolyLine()
+        {
+            var sel = SelecionarObjetos(Tipo_Selecao.Polyline);
+            var pols = this.GetPolyLines();
+            if (pols.Count > 0)
+            {
+                var polyline = pols[0];
+                if (!polyline.Closed)
+                {
+                    Conexoes.Utilz.Alerta("Polyline inválida. Somente polylines fechadas representando o contorno da chapa.");
+                    return;
+                }
+                double comprimento, largura, area, perimetro;
+                Ut.GetInfo(polyline, out comprimento, out largura, out area, out perimetro);
+                comprimento = Math.Round(comprimento, 0);
+                largura = Math.Round(largura, 0);
+
+                if(comprimento>0 && largura>0)
+                {
+                    var marca = PromptMarca();
+                    if (marca != null)
+                    {
+                        var material = PromptMaterial();
+                        if (material != null)
+                        {
+                   
+
+                        }
+                    }
+                }
+                else
+                {
+                    AddMensagem($"Polyline com geometria inválida");
+                }
+            }
+        }
+
+
+
         public void PromptGeometria( out double comprimento, out double largura, out double area, out double perimetro)
         {
             comprimento = 0;
@@ -2166,11 +2205,6 @@ namespace DLM.cad
                     Ut.GetInfo(pl, out comprimento, out largura, out area, out perimetro);
                     comprimento = Math.Round(comprimento, 0);
                     largura = Math.Round(largura, 0);
-
-
-
-
-
                 }
             }
             else if(opcao == "Digitar")
@@ -2344,7 +2378,7 @@ namespace DLM.cad
                 if (pa.Comprimento > 0 && pa.Espessura > 0 && pa.Marca.Replace(" ", "") != "" && pa.Quantidade > 0)
                 {
                     bool cancelado = true;
-                    var origem = Ut.PedirPonto2D("Selecione o ponto de inserção do bloco.", out cancelado);
+                    var origem = Ut.PedirPonto("Selecione o ponto de inserção do bloco.", out cancelado);
                     if (!cancelado)
                     {
                         if (chapa_fina)
@@ -2473,7 +2507,7 @@ namespace DLM.cad
                         }
                         ConfiguracaoChapa_Dobrada pa = new ConfiguracaoChapa_Dobrada(bobina, largura, comprimento,area, new List<double>()) { Marca = marca, Ficha = ficha, GerarCam = Opcao.Nao,  Quantidade = quantidade, Mercadoria = mercadoria };
 
-                        var origem = Ut.PedirPonto2D("Selecione a origem", out status);
+                        var origem = Ut.PedirPonto("Selecione a origem", out status);
                         if (!status)
                         {
                             if (chapa_fina)
@@ -2569,7 +2603,7 @@ namespace DLM.cad
                     return;
                 }
 
-                var origem = Ut.PedirPonto2D("Selecione a origem", out status);
+                var origem = Ut.PedirPonto("Selecione a origem", out status);
 
                 if (status)
                 {
@@ -2640,7 +2674,7 @@ namespace DLM.cad
                                 return;
                             }
                             bool status = true;
-                            var ponto = Ut.PedirPonto2D("Selecione a origem do bloco", out status);
+                            var ponto = Ut.PedirPonto("Selecione a origem do bloco", out status);
 
                             if (!status)
                             {
@@ -2713,7 +2747,7 @@ namespace DLM.cad
                                     ficha = PromptFicha();
                                 }
 
-                                var ponto = Ut.PedirPonto2D("Selecione a origem do bloco", out status);
+                                var ponto = Ut.PedirPonto("Selecione a origem do bloco", out status);
 
                                 if (!status)
                                 {
@@ -2730,7 +2764,7 @@ namespace DLM.cad
         {
             this.SetEscala(escala);
             bool cancelado = true;
-            var origem = Ut.PedirPonto2D("Selecione a origem", out cancelado);
+            var origem = Ut.PedirPonto("Selecione a origem", out cancelado);
 
             if(cancelado)
             {
@@ -2745,7 +2779,7 @@ namespace DLM.cad
             List<Report> erros = new List<Report>();
             this.SetEscala(escala);
             bool cancelado = true;
-            var origem = Ut.PedirPonto2D("Selecione a origem", out cancelado);
+            var origem = Ut.PedirPonto("Selecione a origem", out cancelado);
 
             if (cancelado)
             {

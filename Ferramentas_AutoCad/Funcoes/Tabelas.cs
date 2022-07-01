@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using DLM.vars;
 using System;
 using System.Collections;
@@ -16,7 +17,7 @@ namespace DLM.cad
         public static void DBRM(Conexoes.DBRM_Offline dbase)
         {
             bool cancelado = false;
-            Point2d p0 = Ut.PedirPonto2D("Selecione a origem para a tabela de peças.", out cancelado);
+            P3d p0 = Ut.PedirPonto("Selecione a origem para a tabela de peças.", out cancelado);
 
             if(cancelado)
             {
@@ -51,7 +52,7 @@ namespace DLM.cad
             }
 
         }
-        public static Point2d Purlins(List<Conexoes.Macros.Purlin> purlins, Point2d p0)
+        public static P3d Purlins(List<Conexoes.Macros.Purlin> purlins, P3d p0)
         {
             double x0 = 0;
             double y0 = 0;
@@ -65,7 +66,7 @@ namespace DLM.cad
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE TERÇAS");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
-                    p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
+                    p0 = new P3d(p0.X, p0.Y - (escala * 12.86));
                     foreach (var p in purlins)
                     {
                         Hashtable hp = new Hashtable();
@@ -76,14 +77,14 @@ namespace DLM.cad
                         hp.Add(Cfg.Init.CAD_ATT_Espessura, p.Espessura.ToString("N2").PadLeft(5, '0'));
                         hp.Add(Cfg.Init.CAD_ATT_Destino, Cfg.Init.CAD_ATT_RME);
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas, p0, escala, 0, hp);
-                        p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
+                        p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                     }
                 
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
-        public static Point2d Tirantes(List<Conexoes.Macros.Tirante> trs, Point2d p0, double mover_direita = 0)
+        public static P3d Tirantes(List<Conexoes.Macros.Tirante> trs, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
@@ -93,7 +94,7 @@ namespace DLM.cad
 
                 if(mover_direita!=0)
                 {
-                    p0 = new Point2d(p0.X + (mover_direita * escala), p0.Y);
+                    p0 = new P3d(p0.X + (mover_direita * escala), p0.Y);
                 }
 
                 x0 = p0.X;
@@ -101,7 +102,7 @@ namespace DLM.cad
                 Hashtable htt = new Hashtable();
                 htt.Add("TITULO", "LISTA DE TIRANTES");
                 Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes_Titulo, p0, escala, 0, htt);
-                p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
+                p0 = new P3d(p0.X, p0.Y - (escala * 12.86));
                 foreach (var p in trs)
                 {
                     Hashtable ht = new Hashtable();
@@ -110,13 +111,13 @@ namespace DLM.cad
                     ht.Add(Cfg.Init.CAD_ATT_Quantidade, p.Qtd.ToString().PadLeft(3, '0'));
                     ht.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento.ToString().PadLeft(5, '0'));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes, p0, escala, 0, ht);
-                    p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
+                    p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                 }
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
-        public static Point2d Correntes(List<Conexoes.Macros.Corrente> trs, Point2d p0, double mover_direita = 0)
+        public static P3d Correntes(List<Conexoes.Macros.Corrente> trs, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
@@ -126,7 +127,7 @@ namespace DLM.cad
 
                 if (mover_direita != 0)
                 {
-                    p0 = new Point2d(p0.X + (mover_direita * escala), p0.Y);
+                    p0 = new P3d(p0.X + (mover_direita * escala), p0.Y);
                 }
 
                 x0 = p0.X;
@@ -134,7 +135,7 @@ namespace DLM.cad
                 Hashtable ht = new Hashtable();
                 ht.Add("TITULO", "LISTA DE TIRANTES");
                 Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Correntes_Titulo, p0, escala, 0, ht);
-                p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
+                p0 = new P3d(p0.X, p0.Y - (escala * 12.86));
                 foreach (var p in trs)
                 {
                     Hashtable hp = new Hashtable();
@@ -143,13 +144,13 @@ namespace DLM.cad
                     hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Qtd.ToString().PadLeft(3,'0'));
                     hp.Add(Cfg.Init.CAD_ATT_Vao, p.Vao.ToString());
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Correntes, p0, escala, 0, hp);
-                    p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
+                    p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                 }
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
-        public static Point2d RMES(List<Conexoes.RME> RMES, Point2d p0, double mover_direita = 0)
+        public static P3d RMES(List<Conexoes.RME> RMES, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
@@ -160,7 +161,7 @@ namespace DLM.cad
 
                 if (mover_direita != 0)
                 {
-                    p0 = new Point2d(p0.X + (mover_direita * escala), p0.Y);
+                    p0 = new P3d(p0.X + (mover_direita * escala), p0.Y);
                 }
 
                 if (!cancelado)
@@ -170,7 +171,7 @@ namespace DLM.cad
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
-                    p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
+                    p0 = new P3d(p0.X, p0.Y - (escala * 12.86));
                     int seq = 1;
                     foreach (var p in RMES)
                     {
@@ -182,15 +183,15 @@ namespace DLM.cad
                         hp.Add(Cfg.Init.CAD_ATT_Espessura, p.ESP.ToString("N2").PadLeft(5, '0'));
                         hp.Add(Cfg.Init.CAD_ATT_Destino, "RM");
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas, p0, escala, 0, hp);
-                        p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
+                        p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                         seq++;
                     }
                 }
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
-        public static Point2d RMAS(List<Conexoes.RMA> RMAS, Point2d p0, double mover_direita = 0)
+        public static P3d RMAS(List<Conexoes.RMA> RMAS, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
@@ -201,7 +202,7 @@ namespace DLM.cad
 
                 if (mover_direita != 0)
                 {
-                    p0 = new Point2d(p0.X + (mover_direita * escala), p0.Y);
+                    p0 = new P3d(p0.X + (mover_direita * escala), p0.Y);
                 }
 
                 if (!cancelado)
@@ -211,7 +212,7 @@ namespace DLM.cad
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA DE PEÇAS");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Almox_Titulo, p0, escala, 0, ht);
-                    p0 = new Point2d(p0.X, p0.Y - (escala * 12.86));
+                    p0 = new P3d(p0.X, p0.Y - (escala * 12.86));
                     int seq = 1;
                     foreach (var p in RMAS)
                     {
@@ -222,17 +223,17 @@ namespace DLM.cad
                         htt.Add(Cfg.Init.CAD_ATT_Cod_SAP, p.SAP);
 
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Almox, p0, escala, 0, htt);
-                        p0 = new Point2d(p0.X, p0.Y - (escala * 6.43));
+                        p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                         seq++;
                     }
                 }
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
 
 
-        public static Point2d Pecas(List<PCQuantificar> pcs, bool separar, Point2d p0, double mover_direita = 0)
+        public static P3d Pecas(List<PCQuantificar> pcs, bool separar, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
@@ -243,13 +244,13 @@ namespace DLM.cad
             {
                 double escala = acCurDb.Dimscale;
 
-                Point2d p1 = new Point2d(p0.X, p0.Y);
+                P3d p1 = new P3d(p0.X, p0.Y);
                 if (mover_direita != 0)
                 {
-                    p1 = new Point2d(p1.X + (mover_direita * escala), p1.Y);
+                    p1 = new P3d(p1.X + (mover_direita * escala), p1.Y);
                 }
 
-                Point2d p0a = new Point2d(p1.X, p1.Y);
+                P3d p0a = new P3d(p1.X, p1.Y);
 
                 List<List<PCQuantificar>> pacotes = new List<List<PCQuantificar>>();
                 if(separar)
@@ -268,7 +269,7 @@ namespace DLM.cad
                     Hashtable ht = new Hashtable();
                     ht.Add("TITULO", "LISTA " + pacote[0].Familia.ToUpper());
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Pecas_Titulo, p1, escala, 0, ht);
-                    p1 = new Point2d(p1.X, p1.Y - (escala * 12.86));
+                    p1 = new P3d(p1.X, p1.Y - (escala * 12.86));
                     int seq = 1;
                     var linhas = pacote.OrderBy(x => x.Numero + "|" + x.Nome).ToList();
                     foreach (var p in linhas)
@@ -277,7 +278,7 @@ namespace DLM.cad
                         hp.Add(Cfg.Init.CAD_ATT_Marca, p.Nome);
                         if (p.Nome_Bloco.StartsWith(Cfg.Init.CAD_PC_Quantificar) && !p.Nome_Bloco.Contains(Cfg.Init.CAD_ATT_Texto))
                         {
-                            Point2d pcentro = new Point2d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152));
+                            P3d pcentro = new P3d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152));
                             Hashtable bl = new Hashtable();
                             //foreach (var obj in p.Atributos.Celulas)
                             //{
@@ -304,7 +305,7 @@ namespace DLM.cad
                         hp.Add("DESCRICAO", p.Descricao);
 
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Pecas_Linha, p1, escala, 0, hp);
-                        p1 = new Point2d(p1.X, p1.Y - (escala * 6.43));
+                        p1 = new P3d(p1.X, p1.Y - (escala * 6.43));
                         seq++;
                     }
 
@@ -314,10 +315,10 @@ namespace DLM.cad
               
 
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
-        public static Point2d TecnoMetal(List<DLM.db.Linha> pecas_tecnometal, Point2d p0, double mover_direita = 0, double escala = 1)
+        public static P3d TecnoMetal(List<DLM.db.Linha> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)
         {
             double x0 = 0;
             double y0 = 0;
@@ -329,7 +330,7 @@ namespace DLM.cad
 
                 if (mover_direita != 0)
                 {
-                    p0 = new Point2d(p0.X + (mover_direita), p0.Y);
+                    p0 = new P3d(p0.X + (mover_direita), p0.Y);
                 }
 
                 if (!cancelado)
@@ -362,7 +363,7 @@ namespace DLM.cad
                     htt.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
                     htt.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Titulo, p0, fator_escala, 0, htt);
-                    p0 = new Point2d(p0.X, p0.Y - (fator_escala * 20.4));
+                    p0 = new P3d(p0.X, p0.Y - (fator_escala * 20.4));
                     int seq = 1;
                     foreach(var Marca in pecas)
                     {
@@ -396,21 +397,21 @@ namespace DLM.cad
                             ht.Add(Cfg.Init.CAD_ATT_Ficha_Pintura, Pos.Get(TAB_DBF1.TRA_PEZ.ToString()));
 
                             Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal, p0, fator_escala, 0, ht);
-                            p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
+                            p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
                             seq++;
                         }
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
-                        p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
+                        p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
                     }
                    
                 }
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
 
 
-        public static Point2d TecnoMetal(List<MarcaTecnoMetal> pecas_tecnometal, Point2d p0, double mover_direita = 0, double escala = 1)
+        public static P3d TecnoMetal(List<MarcaTecnoMetal> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)
         {
             double x0 = 0;
             double y0 = 0;
@@ -422,7 +423,7 @@ namespace DLM.cad
 
                 if (mover_direita != 0)
                 {
-                    p0 = new Point2d(p0.X + (mover_direita), p0.Y);
+                    p0 = new P3d(p0.X + (mover_direita), p0.Y);
                 }
 
                 if (!cancelado)
@@ -444,7 +445,7 @@ namespace DLM.cad
                     ht.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
                     ht.Add("SUPERFICIE_TOTAL", total_superficie.ToString("N1").Replace(",", "") + " m²");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
-                    p0 = new Point2d(p0.X, p0.Y - (fator_escala * 20.4));
+                    p0 = new P3d(p0.X, p0.Y - (fator_escala * 20.4));
                     foreach (var Marca in pecas_tecnometal)
                     {
 
@@ -459,7 +460,7 @@ namespace DLM.cad
                         mp.Add(Cfg.Init.CAD_ATT_Ficha_Pintura, Marca.Tratamento);
 
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal, p0, fator_escala, 0, mp);
-                        p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
+                        p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
                         foreach (var Pos in Marca.GetPosicoes())
                         {
                             Hashtable hp = new Hashtable();
@@ -473,15 +474,15 @@ namespace DLM.cad
                             hp.Add(Cfg.Init.CAD_ATT_Ficha_Pintura, Pos.Tratamento);
 
                             Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal, p0, fator_escala, 0, hp);
-                            p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
+                            p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
                         }
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Vazia, p0, fator_escala, 0, new Hashtable());
-                        p0 = new Point2d(p0.X, p0.Y - (fator_escala * 4.25));
+                        p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
                     }
 
                 }
             }
-            return new Point2d(x0, y0);
+            return new P3d(x0, y0);
 
         }
     }

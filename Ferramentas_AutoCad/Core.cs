@@ -19,6 +19,7 @@ using Autodesk.AutoCAD.Internal.Reactors;
 using DLM.encoder;
 using DLM.vars;
 using Conexoes;
+using DLM.desenho;
 
 [assembly: CommandClass(typeof(DLM.cad.Core))]
 
@@ -28,6 +29,12 @@ namespace DLM.cad
     {
         private static Conexoes.ControleWait _w { get; set; }
 
+        private static MenuMarcas _MenuMarcas { get; set; }
+        private static CADCotagem _Cotas { get; set; }
+        private static CADTecnoMetal _TecnMetal { get; set; }
+        private static Menus.Menu_Bloco_Peca menu_bloco { get; set; }
+        public static CADMonitoramento monitoramento { get; set; }
+
         public static Conexoes.ControleWait Getw()
         {
             if (_w == null)
@@ -36,12 +43,6 @@ namespace DLM.cad
             }
             return _w;
         }
-        private static MenuMarcas _MenuMarcas { get; set; }
-        private static CADCotagem _Cotas { get; set; }
-        private static CADTecnoMetal _TecnMetal { get; set; }
-        private static Menus.Menu_Bloco_Peca menu_bloco { get; set; }
-        public static CADMonitoramento monitoramento { get; set; }
-
         public static MenuMarcas MenuMarcas
         {
             get
@@ -91,6 +92,7 @@ namespace DLM.cad
             {
                 editor.WriteMessage($"---> {s.ToUpper()}\n");
             }
+            
         }
 
         [CommandMethod(nameof(LCotas))]
@@ -128,24 +130,33 @@ namespace DLM.cad
             Cotas.Contornar();
         }
 
-
-        [CommandMethod(nameof(ccb))]
-        public static void ccb()
+        [CommandMethod(nameof(getContorno_polilinhas))]
+        public static void getContorno_polilinhas()
         {
-
-
-            Cotas.Contornar(false);
-
-
+            Ferramentas_DLM.Contorno.GetContornoPolyLines();
         }
-        [CommandMethod(nameof(ccv))]
-        public static void ccv()
+
+        [CommandMethod(nameof(getcontorno))]
+        public static void getcontorno()
         {
-
-
+            Cotas.Contornar();
+        }
+        [CommandMethod(nameof(getcontorno_convexo))]
+        public static void getcontorno_convexo()
+        {
             Cotas.ContornarConvexo();
-
-
+        }
+        [CommandMethod(nameof(getcontorno_linhas))]
+        public static void getcontorno_linhas()
+        {
+            var sel = Cotas.SelecionarObjetos(Tipo_Selecao.PolyLine_Linhas);
+            if (sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && Cotas.Selecoes.Count > 0)
+            {
+                var pts = Ut.GetPontos(Cotas.Selecoes);
+                var p3ds = pts.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
+                var contorno = p3ds.GetContorno();
+                Cotas.AddPolyLine(contorno, 0, 4, System.Drawing.Color.Red);
+            }
         }
 
 
@@ -161,7 +172,7 @@ namespace DLM.cad
                     var pts = Ut.PedirPontos3D();
                     if (pts.Count > 0)
                     {
-                        Multiline.DesenharMLine(estilo, ml.Arquivo, pts);
+                        Multiline.DesenharMLine(estilo, ml.Arquivo, pts.Point3d());
                     }
                 }
 
@@ -568,7 +579,7 @@ namespace DLM.cad
             if (arqs.Count > 0)
             {
                 bool cancelado = false;
-                var p0 = Ut.PedirPonto2D("\nSelecione a origem", out cancelado);
+                var p0 = Ut.PedirPonto("\nSelecione a origem", out cancelado);
                 var x0 = p0.X;
                 var y0 = p0.Y;
                 int c = 1;
@@ -581,11 +592,11 @@ namespace DLM.cad
                         DLM.cam.ReadCAM cam = new DLM.cam.ReadCAM(s);
                         Blocos.CamToMarcaSimples(cam, p0, Cotas.GetEscala());
 
-                        p0 = new Point2d(p0.X + offset, p0.Y);
+                        p0 = new P3d(p0.X + offset, p0.Y);
 
                         if (c == 10)
                         {
-                            p0 = new Point2d(x0, p0.Y + (offset / 2));
+                            p0 = new P3d(x0, p0.Y + (offset / 2));
                             c = 1;
                         }
                         c++;

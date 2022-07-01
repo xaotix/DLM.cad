@@ -10,6 +10,7 @@ using static DLM.cad.CAD;
 using System.IO;
 using Autodesk.AutoCAD.ApplicationServices;
 using DLM.vars;
+using DLM.desenho;
 
 namespace DLM.cad
 {
@@ -334,19 +335,19 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static void GetOrigens(Mline s, out Point3d p1, out Point3d p2, out double largura)
+        public static void GetOrigens(Mline s, out P3d p1, out P3d p2, out double largura)
         {
-            List<Point3d> lista = Ut.GetPontos(s);
+            List<P3d> lista = Ut.GetPontos(s).Select(x=>x.P3d()).ToList();
 
             /*tem q ver como ele trata quando a purlin tem mais de 2 vertices*/
-            var pts = new List<Point3d>();
-            pts.Add(s.Bounds.Value.MinPoint);
-            pts.Add(s.Bounds.Value.MaxPoint);
+            var pts = new List<P3d>();
+            pts.Add(s.Bounds.Value.MinPoint.P3d());
+            pts.Add(s.Bounds.Value.MaxPoint.P3d());
 
             
 
-            p1 = new Point3d();
-            p2 = new Point3d();
+            p1 = new P3d();
+            p2 = new P3d();
 
             largura = 0;
             var isvertical = GetVerticais(new List<Mline> { s }).Count > 0;
@@ -362,9 +363,9 @@ namespace DLM.cad
 
             if (lista.Count > 1)
             {
-                var ys = new List<Point3d>();
-                ys.Add(s.Bounds.Value.MaxPoint);
-                ys.Add(s.Bounds.Value.MinPoint);
+                var ys = new List<P3d>();
+                ys.Add(s.Bounds.Value.MaxPoint.P3d());
+                ys.Add(s.Bounds.Value.MinPoint.P3d());
                 p1 = lista.OrderBy(x => x.X).First();
                 p2 = lista.OrderBy(x => x.X).Last();
 

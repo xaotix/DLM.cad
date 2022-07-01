@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 using Conexoes;
+using DLM.desenho;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,19 +60,16 @@ namespace DLM.cad
         {
             get
             {
-                return DLM.cad.Angulo.Get(
-                    this.Origem_Esquerda,
-                    this.Origem_Direita
-                    );
+                return this.Origem_Esquerda.Angulo(this.Origem_Direita);
             }
         }
 
         [Browsable(false)]
-        public Point2d Origem_Esquerda { get; set; } = new Point2d();
+        public P3d Origem_Esquerda { get; set; } = new P3d();
         [Browsable(false)]
-        public Point2d Origem_Direita { get;  set; } = new Point2d();
+        public P3d Origem_Direita { get;  set; } = new P3d();
         [Browsable(false)]
-        public Point2d P1
+        public P3d P1
         {
             get
             {
@@ -85,20 +83,20 @@ namespace DLM.cad
                         }
                         else
                         {
-                            return Ut.Mover(this.Origem_Esquerda, this.Angulo, -p.TRE);
+                            return this.Origem_Esquerda.Mover(this.Angulo, -p.TRE);
                         }
                     case Tipo_ObjetoBase.Corrente:
                         var c = this as ObjetoCorrente;
-                        return Ut.Mover(this.Origem_Esquerda, this.Angulo, c.Descontar);
+                        return this.Origem_Esquerda.Mover(this.Angulo, c.Descontar);
                     case Tipo_ObjetoBase.Tirante:
                         var t = this as ObjetoTirante;
-                        return Ut.Mover(this.Origem_Esquerda, this.Angulo, -t.Offset);
+                        return this.Origem_Esquerda.Mover(this.Angulo, -t.Offset);
                 }
-                return new Point2d();
+                return new P3d();
             }
         }
         [Browsable(false)]
-        public Point2d P2
+        public P3d P2
         {
             get
             {
@@ -112,16 +110,16 @@ namespace DLM.cad
                         }
                         else
                         {
-                            return Ut.Mover(this.Origem_Direita, this.Angulo, p.TRD);
+                            return this.Origem_Direita.Mover(this.Angulo, p.TRD);
                         }
                     case Tipo_ObjetoBase.Corrente:
                         var c = this as ObjetoCorrente;
-                        return Ut.Mover(this.Origem_Direita, this.Angulo, -c.Descontar);
+                        return this.Origem_Direita.Mover(this.Angulo, -c.Descontar);
                     case Tipo_ObjetoBase.Tirante:
                         var t = this as ObjetoTirante;
-                        return Ut.Mover(this.Origem_Direita, this.Angulo, t.Offset);
+                        return this.Origem_Direita.Mover(this.Angulo, t.Offset);
                 }
-                return new Point2d();
+                return new P3d();
             }
         }
         [Browsable(false)]
@@ -236,12 +234,12 @@ namespace DLM.cad
             {
                 this.Grade.Canvas.Children.Remove(this._botao);
             }
-            var p1 = Ut.GetWPoint(this.P1);
-            var p2 = Ut.GetWPoint(this.P2);
+            var P1 = this.P1;
+            var P2 = this.P2;
 
-            p1 = new Point((p1.X - this.Grade.P0.X) * this.Grade.Escala, (p1.Y - this.Grade.P0.Y) * this.Grade.Escala);
-            p2 = new Point((p2.X - this.Grade.P0.X) * this.Grade.Escala, (p2.Y - this.Grade.P0.Y) * this.Grade.Escala);
-            _linha = DLM.desenho.FuncoesCanvas.Linha(p1, p2, this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
+            P1 = new P3d((P1.X - this.Grade.P0.X) * this.Grade.Escala, (P1.Y - this.Grade.P0.Y) * this.Grade.Escala);
+            P2 = new P3d((P2.X - this.Grade.P0.X) * this.Grade.Escala, (P2.Y - this.Grade.P0.Y) * this.Grade.Escala);
+            _linha = DLM.desenho.FuncoesCanvas.Linha(P1.GetPoint(), P2.GetPoint(), this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;
@@ -447,11 +445,11 @@ namespace DLM.cad
             }
         }
         [Browsable(false)]
-        public Point2d CentroBloco
+        public P3d CentroBloco
         {
             get
             {
-                return Ut.Centro(this.P1, this.P2);
+                return this.P1.Centro(this.P2);
             }
         }
         [Browsable(false)]

@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -89,8 +90,8 @@ namespace DLM.cad
 
                     double TRE = Core.CADPurlin.TranspassePadrao;
                     double TRD = Core.CADPurlin.TranspassePadrao;
-                    Point2d p_esq = purlin.Inicio;
-                    Point2d p_dir = purlin.Fim;
+                    var p_esq = purlin.Inicio;
+                    var p_dir = purlin.Fim;
 
                     if (p_esq.X >= Esquerda.MinX && p_dir.X <= Direita.MinX)
                     {
@@ -113,31 +114,31 @@ namespace DLM.cad
                     }
 
                     //mapeia as correntes
-                    Point2d origembloco = new Point2d(Math.Round(CentroX), Math.Round(p_esq.Y));
+                    P3d origembloco = new P3d(Math.Round(CentroX), Math.Round(p_esq.Y));
 
-                    Point2d centro = new Point2d(origembloco.X, origembloco.Y);
+                    P3d centro = new P3d(origembloco.X, origembloco.Y);
 
 
                     //desloca a origem do bloco
                     if (TRE < 0 | TRD < 0)
                     {
                         //desloca para a direita
-                        var pe = new Point3d(Esquerda.MinX, Esquerda.MinY, Esquerda.Z);
-                        var pd = new Point3d(Direita.MinX, Direita.MinY, Direita.Z);
+                        var pe = new P3d(Esquerda.MinX, Esquerda.MinY, Esquerda.Z);
+                        var pd = new P3d(Direita.MinX, Direita.MinY, Direita.Z);
 
                         if (TRE < 0)
                         {
-                            pe = new Point3d(pe.X + Math.Abs(TRE), pe.Y, pe.Z);
+                            pe = new P3d(pe.X + Math.Abs(TRE), pe.Y, pe.Z);
                         }
 
                         if (TRD < 0)
                         {
-                            pd = new Point3d(pd.X + TRD, pd.Y, pd.Z);
+                            pd = new P3d(pd.X + TRD, pd.Y, pd.Z);
                         }
 
                         double cmp = pd.X - pe.X;
 
-                        origembloco = new Point2d(pe.X + (cmp / 2), p_esq.Y);
+                        origembloco = new P3d(pe.X + (cmp / 2), p_esq.Y);
 
                     }
 
@@ -146,11 +147,11 @@ namespace DLM.cad
                     List<double> cre = new List<double>();
                     foreach (var corrente in correntes)
                     {
-                        Point2d crp0 = corrente.Inicio;
-                        Point2d crp1 = corrente.Fim;
+                        var crp0 = corrente.Inicio;
+                        var crp1 = corrente.Fim;
 
-                        crp0 = new Point2d(Math.Round(crp0.X), Math.Round(crp0.Y));
-                        crp1 = new Point2d(Math.Round(crp1.X), Math.Round(crp1.Y));
+                        crp0 = new P3d(Math.Round(crp0.X), Math.Round(crp0.Y));
+                        crp1 = new P3d(Math.Round(crp1.X), Math.Round(crp1.Y));
 
                         //se está passando pela terça
                         if (crp0.Y + ToleranciaPasse + purlin.Largura >= centro.Y && crp1.Y - ToleranciaPasse - purlin.Largura <= centro.Y)
@@ -166,14 +167,14 @@ namespace DLM.cad
                         var lista = Ut.LinhasPassando(Esquerda.Origem, Direita.Origem, Core.CADPurlin.LinhasFuros(), true, true, true);
                         foreach (var ls in lista)
                         {
-                            Point3d crp0 = new Point3d();
-                            Point3d crp1 = new Point3d();
-                            Point3d cc = new Point3d();
+                            P3d crp0 = new P3d();
+                            P3d crp1 = new P3d();
+                            P3d cc = new P3d();
                             double angulo, comprimento, largura = 0;
 
                             Ut.GetCoordenadas(ls, out crp0, out crp1, out angulo, out comprimento, out cc, out largura);
-                            crp0 = new Point3d(Math.Round(crp0.X), Math.Round(crp0.Y), 0);
-                            crp1 = new Point3d(Math.Round(crp1.X), Math.Round(crp1.Y), 0);
+                            crp0 = new P3d(Math.Round(crp0.X), Math.Round(crp0.Y), 0);
+                            crp1 = new P3d(Math.Round(crp1.X), Math.Round(crp1.Y), 0);
 
                             //se está passando pela terça
                             if (crp0.Y + 5 >= centro.Y && crp1.Y - 5 <= centro.Y)
@@ -290,8 +291,8 @@ namespace DLM.cad
                             var pur1 = purlins[i - 1];
                             var pur2 = purlins[i];
                             double comp = Math.Abs(Math.Round(pur2.Multiline.Centro.Y - pur1.Multiline.Centro.Y));
-                            var centro = Ut.Centro(pur1.Multiline.Centro, pur2.Multiline.Centro);
-                            centro = new Point2d(corrente.Minx, centro.Y);
+                            var centro = pur1.Multiline.Centro.Centro(pur2.Multiline.Centro);
+                            centro = new P3d(corrente.Minx, centro.Y);
 
                             /*verifica se a corrente tem um comp min ok e se está dentro de 2 purlin*/
                             if (comp >= Core.CADPurlin.CorrenteCompMin && centro.X >= pur1.X1 && centro.X <= pur1.X2 && centro.X > pur2.X1 && centro.X <= pur2.X2)

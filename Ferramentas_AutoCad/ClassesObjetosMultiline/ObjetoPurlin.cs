@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -192,24 +193,23 @@ namespace DLM.cad
 
 
             var p1 = this.Multiline.GetInterSeccao(this.VaoObra.Esquerda.GetLinhaEixo(vao.Grade));
-
             var p2 = this.Multiline.GetInterSeccao(this.VaoObra.Direita.GetLinhaEixo(vao.Grade));
             if(p1.Count>0)
             {
-                this.Origem_Esquerda = p1[0];
+                this.Origem_Esquerda = p1[0].P3d();
             }
             else
             {
-                this.Origem_Esquerda = new Point2d(this.VaoObra.Esquerda.Origem.X, this.CentroBloco.Y);
+                this.Origem_Esquerda = new P3d(this.VaoObra.Esquerda.Origem.X, this.CentroBloco.Y);
             }
 
             if (p2.Count>0)
             {
-                this.Origem_Direita = p2[0];
+                this.Origem_Direita = p2[0].P3d();
             }
             else
             {
-                this.Origem_Direita = new Point2d(this.VaoObra.Direita.Origem.X, this.CentroBloco.Y);
+                this.Origem_Direita = new P3d(this.VaoObra.Direita.Origem.X, this.CentroBloco.Y);
             }
         }
 
@@ -224,8 +224,8 @@ namespace DLM.cad
 
 
 
-            this.Origem_Direita = new Point2d(this.Multiline.Fim.X, multiline.Centro.Y);
-            this.Origem_Esquerda = new Point2d(this.Multiline.Inicio.X, multiline.Centro.Y);
+            this.Origem_Direita = new P3d(this.Multiline.Fim.X, multiline.Centro.Y);
+            this.Origem_Esquerda = new P3d(this.Multiline.Inicio.X, multiline.Centro.Y);
         }
 
         public ObjetoPurlin(Point2d origem, VaoObra vao)

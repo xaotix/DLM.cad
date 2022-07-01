@@ -39,6 +39,8 @@ namespace DLM.cad
         Blocos_Textos,
         Dimensoes,
         Polyline,
+        Linhas,
+        PolyLine_Linhas,
     }
     public enum Tipo_Objeto
     {

@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using DLM.vars;
 using System;
 using System.Collections;
@@ -27,7 +28,7 @@ namespace DLM.cad
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Point2d p0 = new Point2d();
+            P3d p0 = new P3d();
             double escala = 10;
             double offset = 67;
 
@@ -70,11 +71,11 @@ namespace DLM.cad
                         if (c == 5)
                         {
                             //sobe uma linha, criando as marcas acima
-                            p0 = new Point2d(0, p0.Y + (escala * offset / 2));
+                            p0 = new P3d(0, p0.Y + (escala * offset / 2));
                             c = 0;
                         }
 
-                        p0 = new Point2d(
+                        p0 = new P3d(
                             p0.X + (escala * offset),
                             p0.Y/* + (escala * offset)*/
                             );

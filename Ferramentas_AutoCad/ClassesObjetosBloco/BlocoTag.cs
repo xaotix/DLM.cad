@@ -62,7 +62,7 @@ namespace DLM.cad
         }
         private List<Point2d> _contorno { get; set; }
 
-        public List<Point2d> GetContorno(Transaction tr)
+        public List<Point2d> GetPontos(Transaction tr)
         {
             if(_contorno==null)
             {
@@ -83,18 +83,18 @@ namespace DLM.cad
             return 0;
         }
 
-        private Coordenada _coordenada { get; set; }
-        public Coordenada GetCoordenada()
+        private P3dCAD _coordenada { get; set; }
+        public P3dCAD GetCoordenada()
         {
             if(_coordenada==null)
             {
                 if (Bloco == null)
                 {
-                    return new Coordenada();
+                    return new P3dCAD();
                 }
                 else
                 {
-                    _coordenada = new Coordenada(this.Bloco.Position, -1, Tipo_Coordenada.Bloco);
+                    _coordenada = new P3dCAD(this.Bloco.Position, -1, Tipo_Coordenada.Bloco);
                 }
             }
             return _coordenada;

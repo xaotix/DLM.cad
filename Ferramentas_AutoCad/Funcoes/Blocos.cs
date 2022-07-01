@@ -13,6 +13,7 @@ using Autodesk.AutoCAD.EditorInput;
 using System.Runtime.InteropServices;
 using System.Windows;
 using DLM.vars;
+using DLM.desenho;
 
 namespace DLM.cad
 {
@@ -25,7 +26,7 @@ namespace DLM.cad
         ///// <param name="s"></param>
         ///// <param name="tr"></param>
         ///// <returns></returns>
-        
+
         //public static List<Point3d> GetContorno(BlockReference s, Transaction tr)
         //{
         //    List<Point3d> pts = new List<Point3d>();
@@ -88,124 +89,7 @@ namespace DLM.cad
         //    return pts;
         //}
 
-
-        public static void Inserir(Document acDoc, string nome, Point3d origem, double escala, double rotacao, Hashtable atributos)
-        {
-            Inserir(acDoc, nome, new Point2d(origem.X, origem.Y), escala, rotacao, atributos);
-        }
-
-
-        public static void Renomear(string nome_antigo, string novo_nome, bool auto_cont = true)
-        {
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
-            {
-                string nome = novo_nome;
-                var bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
-                if (bt.Has(nome_antigo))
-                {
-                    if (auto_cont)
-                    {
-                        int c = 1;
-                        while (bt.Has(nome))
-                        {
-                            nome = novo_nome + "_" + c;
-                            c++;
-                        }
-                    }
-
-
-                    if (!bt.Has(nome))
-                    {
-                        var btr = (BlockTableRecord)acTrans.GetObject(bt[nome_antigo], OpenMode.ForWrite);
-                        btr.Name = nome;
-                    }
-                    else
-                    {
-                        Conexoes.Utilz.Alerta($"Já Existe um bloco com o nome {nome}.");
-                    }
-
-                }
-
-                acTrans.Commit();
-            }
-        }
-
-
-        public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  Point2d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
-        {
-            Hashtable ht = new Hashtable();
-            ht.Add(Cfg.Init.CAD_ATT_N, N);
-            ht.Add(Cfg.Init.CAD_ATT_Familia, FAMILIA);
-            ht.Add(Cfg.Init.CAD_ATT_Tipo, TIPO);
-            ht.Add(Cfg.Init.CAD_ATT_Comprimento, COMP);
-            ht.Add("CODIGO", CODIGO);
-            ht.Add(Cfg.Init.CAD_ATT_id, ID);
-            ht.Add(Cfg.Init.CAD_ATT_Descricao, DESC);
-            ht.Add(Cfg.Init.CAD_ATT_Destino, DESTINO);
-            ht.Add(Cfg.Init.CAD_ATT_Quantidade, QTD);
-
-            Inserir(CAD.acDoc, Bloco, origem, escala, rotacao, ht);
-        }
-        public static void Criar(string nome, List<Entity> Objetos, Point3d origem)
-        {
-            string nome_fim = nome;
-            using (var acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
-            {
-                // Get the block table from the drawing
-                BlockTable bt = (BlockTable)acTrans.GetObject(CAD.acCurDb.BlockTableId,OpenMode.ForRead);
-
-                int c = 1;
-                while (bt.Has(nome_fim))
-                {
-                    nome_fim = nome + "_" + c;
-                    c++;
-                }
-                
-                //cria o bloco
-                BlockTableRecord btr = new BlockTableRecord();
-                btr.Name = nome_fim;
-                bt.UpgradeOpen();
-
-                ObjectId btrId = bt.Add(btr);
-                acTrans.AddNewlyCreatedDBObject(btr, true);
-
-                foreach (Entity ent in Objetos)
-                {
-                    btr.AppendEntity(ent);
-                    acTrans.AddNewlyCreatedDBObject(ent, true);
-                }
-                // Insere o bloco
-                BlockTableRecord ms = (BlockTableRecord)acTrans.GetObject(bt[BlockTableRecord.ModelSpace],OpenMode.ForWrite);
-                BlockReference br = new BlockReference(origem, btrId);
-
-                ms.AppendEntity(br);
-                acTrans.AddNewlyCreatedDBObject(br, true);
-                acTrans.Commit();
-            }
-
-        }
-        public static void MarcaComposta(Point2d p0, string marca, double quantidade, string ficha, string mercadoria, double escala = 10)
-        {
-            try
-            {
-
-                Hashtable ht = new Hashtable();
-
-
-                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
-                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade);
-                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
-
-                Inserir(acDoc, Cfg.Init.CAD_Marca_Composta, p0, escala, 0, ht);
-            }
-            catch (System.Exception ex)
-            {
-                Conexoes.Utilz.Alerta(ex);
-            }
-
-        }
-        public static void Inserir(Document acDoc, string nome, Point2d origem, double escala, double rotacao, Hashtable atributos)
+        public static void Inserir(Document acDoc, string nome, P3d origem, double escala, double rotacao, Hashtable atributos)
         {
             string endereco = "";
             if (File.Exists(nome))
@@ -434,7 +318,119 @@ namespace DLM.cad
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
         }
-        public static void MarcaPerfil(Point2d p0, string marca, double comprimento, DLM.cam.Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
+
+
+        public static void Renomear(string nome_antigo, string novo_nome, bool auto_cont = true)
+        {
+            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            {
+                string nome = novo_nome;
+                var bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+                if (bt.Has(nome_antigo))
+                {
+                    if (auto_cont)
+                    {
+                        int c = 1;
+                        while (bt.Has(nome))
+                        {
+                            nome = novo_nome + "_" + c;
+                            c++;
+                        }
+                    }
+
+
+                    if (!bt.Has(nome))
+                    {
+                        var btr = (BlockTableRecord)acTrans.GetObject(bt[nome_antigo], OpenMode.ForWrite);
+                        btr.Name = nome;
+                    }
+                    else
+                    {
+                        Conexoes.Utilz.Alerta($"Já Existe um bloco com o nome {nome}.");
+                    }
+
+                }
+
+                acTrans.Commit();
+            }
+        }
+
+
+        public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  P3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
+        {
+            Hashtable ht = new Hashtable();
+            ht.Add(Cfg.Init.CAD_ATT_N, N);
+            ht.Add(Cfg.Init.CAD_ATT_Familia, FAMILIA);
+            ht.Add(Cfg.Init.CAD_ATT_Tipo, TIPO);
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, COMP);
+            ht.Add("CODIGO", CODIGO);
+            ht.Add(Cfg.Init.CAD_ATT_id, ID);
+            ht.Add(Cfg.Init.CAD_ATT_Descricao, DESC);
+            ht.Add(Cfg.Init.CAD_ATT_Destino, DESTINO);
+            ht.Add(Cfg.Init.CAD_ATT_Quantidade, QTD);
+
+            Inserir(CAD.acDoc, Bloco, origem, escala, rotacao, ht);
+        }
+        public static void Criar(string nome, List<Entity> Objetos, P3d origem)
+        {
+            string nome_fim = nome;
+            using (var acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
+            {
+                // Get the block table from the drawing
+                BlockTable bt = (BlockTable)acTrans.GetObject(CAD.acCurDb.BlockTableId,OpenMode.ForRead);
+
+                int c = 1;
+                while (bt.Has(nome_fim))
+                {
+                    nome_fim = nome + "_" + c;
+                    c++;
+                }
+                
+                //cria o bloco
+                BlockTableRecord btr = new BlockTableRecord();
+                btr.Name = nome_fim;
+                bt.UpgradeOpen();
+
+                ObjectId btrId = bt.Add(btr);
+                acTrans.AddNewlyCreatedDBObject(btr, true);
+
+                foreach (Entity ent in Objetos)
+                {
+                    btr.AppendEntity(ent);
+                    acTrans.AddNewlyCreatedDBObject(ent, true);
+                }
+                // Insere o bloco
+                BlockTableRecord ms = (BlockTableRecord)acTrans.GetObject(bt[BlockTableRecord.ModelSpace],OpenMode.ForWrite);
+                BlockReference br = new BlockReference(origem.GetPoint3dCad(), btrId);
+
+                ms.AppendEntity(br);
+                acTrans.AddNewlyCreatedDBObject(br, true);
+                acTrans.Commit();
+            }
+
+        }
+        public static void MarcaComposta(P3d p0, string marca, double quantidade, string ficha, string mercadoria, double escala = 10)
+        {
+            try
+            {
+
+                Hashtable ht = new Hashtable();
+
+
+                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
+                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade);
+                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
+                ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
+
+                Inserir(acDoc, Cfg.Init.CAD_Marca_Composta, p0, escala, 0, ht);
+            }
+            catch (System.Exception ex)
+            {
+                Conexoes.Utilz.Alerta(ex);
+            }
+
+        }
+        public static void MarcaPerfil(P3d p0, string marca, double comprimento, DLM.cam.Perfil perfil, int quantidade, string material, string tratamento, double peso = 0, double superficie = 0, double escala = 10, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -489,7 +485,7 @@ namespace DLM.cad
 
             }
         }
-        public static void MarcaChapa(Point2d p0, ConfiguracaoChapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao = "")
+        public static void MarcaChapa(P3d p0, ConfiguracaoChapa_Dobrada pf, Tipo_Bloco tipo, double escala, string posicao = "")
         {
             try
             {
@@ -572,7 +568,7 @@ namespace DLM.cad
             }
 
         }
-        public static void MarcaElemM2(Point2d p0, DLM.cam.Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemM2(P3d p0, DLM.cam.Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -620,7 +616,7 @@ namespace DLM.cad
             }
 
         }
-        public static void MarcaElemUnitario(Point2d p0, Conexoes.RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemUnitario(P3d p0, Conexoes.RMA pf, double quantidade, string marca, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -665,7 +661,7 @@ namespace DLM.cad
             }
 
         }
-        public static void CamToMarcaSimples(DLM.cam.ReadCAM cam, Point2d origem, double escala)
+        public static void CamToMarcaSimples(DLM.cam.ReadCAM cam, P3d origem, double escala)
         {
 
             if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contains("_"))
@@ -801,13 +797,13 @@ namespace DLM.cad
 
         public static List<BlocoTag> GetBlocosProximos(List<BlocoTag> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1)
         {
-            return GetBlocosProximos(blocos, new Point2d(pt1.X, pt1.Y), new Point2d(pt2.X, pt2.Y), tolerancia);
+            return GetBlocosProximos(blocos, new P3d(pt1.X, pt1.Y), new P3d(pt2.X, pt2.Y), tolerancia);
         }
 
         
 
 
-        public static List<BlocoTag> GetBlocosProximos(List<BlocoTag> blocos, Point2d pt1, Point2d pt2, double tolerancia = 1)
+        public static List<BlocoTag> GetBlocosProximos(List<BlocoTag> blocos, P3d pt1, P3d pt2, double tolerancia = 1)
         {
             List<BlocoTag> blks = new List<BlocoTag>();
 
@@ -846,8 +842,8 @@ namespace DLM.cad
                 foreach (var blk in blocos)
                 {
 
-                    var d1 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(Ut.GetP3d(pt1))));
-                    var d2 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(Ut.GetP3d(pt2))));
+                    var d1 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(pt1.GetPoint3dCad())));
+                    var d2 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(pt2.GetPoint3dCad())));
 
 
 
@@ -860,11 +856,11 @@ namespace DLM.cad
                     }
 
 
-                    var pts = blk.GetContorno(acTrans);
+                    var pts = blk.GetPontos(acTrans);
 
                     List<double> dists = new List<double>();
-                    dists.AddRange(pts.Select(x => Math.Round(pt1.GetDistanceTo(x))).Distinct().ToList());
-                    dists.AddRange(pts.Select(x => Math.Round(pt2.GetDistanceTo(x))).Distinct().ToList());
+                    dists.AddRange(pts.Select(x => Math.Round(pt1.Distancia(x.P3d()))).Distinct().ToList());
+                    dists.AddRange(pts.Select(x => Math.Round(pt2.Distancia(x.P3d()))).Distinct().ToList());
 
                     if(dists.Count>0)
                     {
@@ -919,12 +915,12 @@ namespace DLM.cad
             }
             return blocos;
         }
-        public static void Mover(BlockReference bloco, Point2d posicao)
+        public static void Mover(BlockReference bloco, P3d posicao)
         {
             Clonar(bloco, posicao);
             acDoc.Apagar(new List<Entity> { bloco });
         }
-        public static void Clonar(BlockReference bloco, Point2d novaposicao)
+        public static void Clonar(BlockReference bloco, P3d novaposicao)
         {
             var atributos = Atributos.GetBlocoTag(bloco);
 

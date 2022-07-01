@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using DLM.desenho;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,11 +13,11 @@ namespace DLM.cad
 {
     public class Eixo
     {
-        public Point2d Origem
+        public P3d Origem
         {
             get
             {
-                return new Point2d(MinX, MinY);
+                return new P3d(MinX, MinY);
             }
         }
         public double MinX

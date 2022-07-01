@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Internal;
 using Conexoes;
+using DLM.desenho;
 using DLM.vars;
 using System;
 using System.Collections;
@@ -162,25 +163,25 @@ namespace DLM.cad
                 Utils.SetUndoMark(true);
                 foreach (var o in pcs)
                 {
-                    var p0 = new Coordenada(o.Position);
+                    var p0 = new P3dCAD(o.Position);
                     var xlss = Ut.GetXlinesProximas(o, xls, ToleranciaY);
                     var xl = Ut.GetXlineMaisProxima(o, xls, ToleranciaY);
                     if(xl == null) {
                         AddMensagem("\nNenhuma Xline encontrada. (SFLH) " + o.Position);
                         continue; }
-                    var pos = new Point2d(o.Position.X, xl.BasePoint.Y);
+                    var pos = new P3d(o.Position.X, xl.BasePoint.Y);
                     Blocos.Mover(o, pos);
 
-                    var polis = Ut.GetPolylinesProximas(cabos, p0.GetPoint3D(), 100);
+                    var polis = Ut.GetPolylinesProximas(cabos, p0, 100);
                       
                     foreach(var p in polis)
                     {
-                        var d1 = new Coordenada(p.StartPoint).Distancia(p0);
-                        var d2 = new Coordenada(p.EndPoint).Distancia(p0);
-                        Point3d pp1 = p.StartPoint;
-                        Point3d pp2 = p.EndPoint;
+                        var d1 = p.StartPoint.P3d().Distancia(p0);
+                        var d2 = p.EndPoint.P3d().Distancia(p0);
+                        P3d pp1 = p.StartPoint.P3d();
+                        P3d pp2 = p.EndPoint.P3d();
 
-                        var ang = new Coordenada(pp1).Angulo(pp2);
+                        var ang = pp1.Angulo(pp2);
                         if (ang<0)
                         {
                             ang = 360 - ang;
@@ -188,25 +189,25 @@ namespace DLM.cad
 
                         if(ang == 0 | ang == 180)
                         {
-                            pp1 = new Point3d(pp1.X, pos.Y, 0);
-                            pp2 = new Point3d(pp2.X, pos.Y, 0);
+                            pp1 = new P3d(pp1.X, pos.Y, 0);
+                            pp2 = new P3d(pp2.X, pos.Y, 0);
                         }
                         else if(ang == 90 | ang == 270)
                         {
-                            pp1 = new Point3d(pos.X, pp1.Y, 0);
-                            pp2 = new Point3d(pos.X, pp2.Y, 0);
+                            pp1 = new P3d(pos.X, pp1.Y, 0);
+                            pp2 = new P3d(pos.X, pp2.Y, 0);
                         }
                         
                         p.Erase(true);
-                        AddPolyLine(new List<Coordenada> { new Coordenada(pp1), new Coordenada(pp2) }, this.EspessuraCabo, this.EspessuraCabo, System.Drawing.Color.Red);
+                        AddPolyLine(new List<P3d> { pp1, pp2 }, this.EspessuraCabo, this.EspessuraCabo, System.Drawing.Color.Red);
                     }
 
-                    var ccotas = Ut.GetCotasProximas(Getcotaslinhadevida().FindAll(x=>x is RotatedDimension).Select(x=> x as RotatedDimension).ToList(), p0.GetPoint3D(), 100);
+                    var ccotas = Ut.GetCotasProximas(Getcotaslinhadevida().FindAll(x=>x is RotatedDimension).Select(x=> x as RotatedDimension).ToList(), p0, 100);
 
                     foreach (var p in ccotas)
                     {
-                        var d1 = new Coordenada(p.XLine1Point).Distancia(p0);
-                        var d2 = new Coordenada(p.XLine2Point).Distancia(p0);
+                        var d1 = new P3dCAD(p.XLine1Point).Distancia(p0);
+                        var d2 = new P3dCAD(p.XLine2Point).Distancia(p0);
                         var ptt = new Point3d(pos.X, pos.Y, 0);
                         if (d1 < d2)
                         {
@@ -219,15 +220,14 @@ namespace DLM.cad
                     }
 
 
-                    var p1 = new Coordenada(pos);
-                    var angulo = p0.Angulo(p1);
-                    var dist = p0.Distancia(p1);
+                    var angulo = p0.Angulo(pos);
+                    var dist = p0.Distancia(pos);
                     var blocos_texto = Ut.GetBlocosProximos(textos, pos, GetEscala() * 20);
                     foreach(var p in blocos_texto)
                     {
-                        var p_texto = new Coordenada(p.Position);
+                        var p_texto = new P3dCAD(p.Position);
                         var pxx = p_texto.Mover(angulo, dist);
-                        Blocos.Mover(p,pxx.GetPoint2d());
+                        Blocos.Mover(p,pxx);
                     }
                 }
                 Utils.SetUndoMark(false);
@@ -263,14 +263,14 @@ namespace DLM.cad
                 //}
                 bool cancelado = false;
 
-                Point3d p1 = new Point3d();
+                P3d p1 = new P3d();
                 if (selecionar)
                 {
                     SelecionarObjetos();
                     if (this.Getpassarelas().Count>0)
                     {
                         var p = this.Getpassarelas()[0];
-                        p1 = p.Position;
+                        p1 = p.Position.P3d();
                         p.Erase(true);
                     }
                     else
@@ -281,7 +281,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    p1 = Ut.PedirPonto3D("Selecione o ponto inicial", out cancelado);
+                    p1 = Ut.PedirPonto("Selecione o ponto inicial", out cancelado);
                 }
 
                 int sequencia = 0;
@@ -290,23 +290,23 @@ namespace DLM.cad
                 denovo:
                     Point3d p0 = new Point3d(p1.X, p1.Y, p1.Z);
                     Ut.SetOrtho(true);
-                    var p2 = Ut.PedirPonto3D("Selecione o ponto final",p1, out cancelado);
+                    var p2 = Ut.PedirPonto("Selecione o ponto final",p1, out cancelado);
                     if(!cancelado)
                     {
 
                         if (sequencia ==0 && !selecionar)
                         {
-                            p1 = new Coordenada(p1).Mover(angulo, this.LarguraTelha/2).GetPoint3D();
-                            angulo = new Coordenada(p1).Angulo(p2);
+                            p1 = p1.Mover(angulo, this.LarguraTelha/2);
+                            angulo = p1.Angulo(p2);
                             var tmpang = Angulo.Normalizar(angulo);
                             if (tmpang == 90 | tmpang == 270)
                             {
-                                p1 = new Coordenada(p1).Mover(tmpang, vert / 2).GetPoint3D();
+                                p1 = p1.Mover(tmpang, vert / 2);
                             }
                         }
-                        angulo = new Coordenada(p1).Angulo(p2);
+                        angulo = p1.Angulo(p2);
 
-                        comp = new Coordenada(p1).Distancia(p2);
+                        comp = p1.Distancia(p2);
 
                         Ajustar(ref angulo, ref comp, p1, ref p2);
                         
@@ -332,7 +332,7 @@ namespace DLM.cad
                                     mov = this.LarguraTelha;
                                 }
 
-                               var p3 = new Coordenada(p1).Mover(angulo, mov).GetPoint3D();
+                               var p3 = p1.Mover(angulo, mov);
 
 
                                 p1 = p3;
@@ -341,27 +341,27 @@ namespace DLM.cad
                             if (AdicionarCotas)
                             {
                                 FLayer.Criar(LayerPassarelaCotas, System.Drawing.Color.White);
-                                var d1 = new Coordenada(p0);
+                                var d1 = new P3dCAD(p0);
                                 if(sequencia>0)
                                 {
-                                    d1 = d1.Mover(angulo, -mov / 2);
+                                    d1 = (P3dCAD)d1.Mover(angulo, -mov / 2);
                                 }
                                 else if(selecionar)
                                 {
-                                    d1 = d1.Mover(angulo, mov / 2);
+                                    d1 = (P3dCAD)d1.Mover(angulo, mov / 2);
                                     qtd = qtd - 1;
                                 }
 
-                                var d2 = new Coordenada(p1).Mover(angulo, -mov/2);
-                                var ce = d1.GetCentro(d2);
+                                var d2 = p1.Mover(angulo, -mov/2);
+                                var ce = d1.Centro(d2);
                                 var dist = Math.Round(d1.Distancia(d2));
                                 if (angulo == 90 | angulo == 270)
                                 {
-                                    AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint3D(), false, 0, false, false);
+                                    AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
                                 }
                                 else
                                 {
-                                    AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala).GetPoint3D(), false, 0, false, false);
+                                    AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
 
                                 }
                             }
@@ -403,14 +403,14 @@ namespace DLM.cad
 
                 bool cancelado = false;
 
-                Point3d p1 = new Point3d();
+                P3d p1 = new P3d();
                 if (selecionar)
                 {
                     SelecionarObjetos();
                     if (this.Getsflhs().Count > 0)
                     {
                         var p = this.Getsflhs()[0];
-                        p1 = p.Position;
+                        p1 = p.Position.P3d();
                         p.Erase(true);
                     }
                     else
@@ -421,7 +421,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    p1 = Ut.PedirPonto3D("Selecione o ponto inicial", out cancelado);
+                    p1 = Ut.PedirPonto("Selecione o ponto inicial", out cancelado);
                 }
 
                 int sequencia = 0;
@@ -429,20 +429,20 @@ namespace DLM.cad
                 {
                 denovo:
                     Ut.SetOrtho(true);
-                    var p2 = Ut.PedirPonto3D("Selecione o ponto final", p1, out cancelado);
+                    var p2 = Ut.PedirPonto("Selecione o ponto final", p1, out cancelado);
                     if (!cancelado)
                     {
                         FLayer.Set(LayerLinhaDeVida);
 
-                        List<Point3d> cotas = new List<Point3d>();
+                        List<P3d> cotas = new List<P3d>();
                         if (sequencia == 0 && !selecionar)
                         {
-                            p1 = new Coordenada(p1).Mover(angulo, this.LarguraTelha / 2).GetPoint3D();
+                            p1 = p1.Mover(angulo, this.LarguraTelha / 2);
                             
                         }
                         cotas.Add(p1);
-                        comp = new Coordenada(p1).Distancia(p2);
-                        angulo = new Coordenada(p1).Angulo(p2);
+                        comp = p1.Distancia(p2);
+                        angulo = p1.Angulo(p2);
                         AddMensagem("\nÂngulo: " + angulo);
 
                    
@@ -460,7 +460,7 @@ namespace DLM.cad
                             if (angulo == 0 | angulo == 180)
                             {
                                 var compf = (this.LarguraTelha * qtd_telhas) - (this.LarguraTelha);
-                                p2 = new Coordenada(p1).Mover(angulo, compf).GetPoint3D();
+                                p2 = p1.Mover(angulo, compf);
                             }
 
                             var qtd_sflh = Conexoes.Utilz.Int(comp/ this.DistMaxSFLH);
@@ -499,28 +499,28 @@ namespace DLM.cad
                             {
                             AddVaoSFLH(angulo, comp, p1, sequencia, p2, ref cotas);
                                 //adiciona o cabo
-                                AddPolyLine(new List<Coordenada> { new Coordenada(p1), new Coordenada(p2) }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
+                                AddPolyLine(new List<P3d> { new P3d(p1), new P3d(p2) }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
                             }
                             else if(comps.Count>1)
                             {
-                                Point3d pxa = new Point3d(p1.X, p1.Y, p1.Z);
+                                P3d pxa = new P3d(p1.X, p1.Y, p1.Z);
                                 foreach (var item in comps)
                                 {
-                                    Point3d pxb = new Coordenada(pxa).Mover(angulo, item).GetPoint3D();
+                                    var pxb = pxa.Mover(angulo, item);
                                     AddVaoSFLH(angulo,item, pxa, sequencia, pxb, ref cotas);
                                     sequencia++;
                                     cotas.Add(pxb);
                                     //adiciona o cabo
-                                    AddPolyLine(new List<Coordenada> { new Coordenada(pxa), new Coordenada(pxb) }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
+                                    AddPolyLine(new List<P3d> { pxa, pxb }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
                                     pxa = pxb;
                                 }
                             }
 
 
                             sequencia++;
-                            if(comps.Count==1)
+                            if (comps.Count == 1)
                             {
-                            cotas.Add(new Point3d(p2.X, p2.Y, p2.Z));
+                                cotas.Add(p2);
                             }
 
                             if (AdicionarCotas)
@@ -530,11 +530,11 @@ namespace DLM.cad
                                 {
                                     if (angulo == 0 | angulo == 180)
                                     {
-                                        AddCotaHorizontal(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Ut.Mover(Ut.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
+                                        AddCotaHorizontal(cotas[i], cotas[i + 1], "", cotas[i].Centro(cotas[i + 1]).Mover(angulo - 90, GetEscala() * 10), false, 0, false, false);
                                     }
                                     else
                                     {
-                                        AddCotaVertical(new Coordenada(cotas[i]), new Coordenada(cotas[i + 1]), "", Ut.Mover(Ut.Centro(cotas[i], cotas[i + 1]), angulo - 90, GetEscala() * 10), false, 0, false, false);
+                                        AddCotaVertical(cotas[i], cotas[i + 1], "", cotas[i].Centro(cotas[i + 1]).Mover(angulo - 90, GetEscala() * 10), false, 0, false, false);
 
                                     }
                                 }
@@ -542,11 +542,11 @@ namespace DLM.cad
                                 {
                                     if (angulo == 0 | angulo == 180)
                                     {
-                                        AddCotaHorizontal(new Coordenada(cotas.OrderBy(x => x.X).First()), new Coordenada(cotas.OrderBy(x => x.X).Last()), "", Ut.Mover(Ut.Centro(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+                                        AddCotaHorizontal(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last(), "", cotas.OrderBy(x => x.X).First().Centro(cotas.OrderBy(x => x.X).Last()).Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
                                     }
                                     else
                                     {
-                                        AddCotaVertical(new Coordenada(cotas.OrderBy(x => x.Y).First()), new Coordenada(cotas.OrderBy(x => x.Y).Last()), "", Ut.Mover(Ut.Centro(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last()), angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+                                        AddCotaVertical(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last(), "", cotas.OrderBy(x => x.Y).First().Centro(cotas.OrderBy(x => x.Y).Last()).Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
 
                                     }
                                 }
@@ -590,7 +590,7 @@ namespace DLM.cad
                 pp.Salvar(dest);
             }
         }
-        private void AddVaoSFLH(double angulo, double comp, Point3d p1, int sequencia, Point3d p2,  ref List<Point3d> cotas)
+        private void AddVaoSFLH(double angulo, double comp, P3d p1, int sequencia, P3d p2,  ref List<P3d> cotas)
         {
            
             Hashtable sftlh = new Hashtable();
@@ -614,33 +614,33 @@ namespace DLM.cad
             if (qtd_sfli > 0)
             {
                 double espacos = Utilz.ArredondarMultiplo(Utilz.Double(comp / qtd_sfli), this.LarguraTelha);
-                Point3d pp0 = new Coordenada(p1).Mover(angulo, espacos).GetPoint3D();
+                var pp0 = p1.Mover(angulo, espacos);
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
                     Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, GetEscala() * 5,"");
-                    cotas.Add(pp0);
-                    pp0 = new Coordenada(pp0).Mover(angulo, espacos).GetPoint3D();
+                    cotas.Add((P3dCAD)pp0);
+                    pp0 = pp0.Mover(angulo, espacos);
 
                 }
             }
         }
-        private void AddBlocoTexto(double angulo, Point3d pp0, string nome, double offset, string sap)
+        private void AddBlocoTexto(double angulo, P3d pp0, string nome, double offset, string sap)
         {
-            var p1 = new Coordenada(pp0).Mover(angulo + 90, offset).GetPoint3D();
+            var p1 = pp0.Mover(angulo + 90, offset);
             var ht = new Hashtable();
             ht.Add(Cfg.Init.CAD_ATT_Texto, nome);
             ht.Add(Cfg.Init.CAD_ATT_Cod_SAP, sap);
             if(angulo==90 | angulo == 270)
             {
                 //move pro lado quando é vertical
-                p1 = new Coordenada(pp0).Mover(angulo + 90, (GetEscala() * 16)/2).GetPoint3D();
+                p1 = pp0.Mover(angulo + 90, (GetEscala() * 16)/2);
             }
             Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BL_Texto, p1, GetEscala(), 0, ht );
 
         }
-        private void Ajustar(ref double angulo, ref double comp, Point3d p1, ref Point3d p2)
+        private void Ajustar(ref double angulo, ref double comp, P3d p1, ref P3d p2)
         {
             if (angulo < 0)
             {
@@ -654,13 +654,13 @@ namespace DLM.cad
                 comp = 0;
                 if (angulo == 0 | angulo == 180)
                 {
-                    comp = new Coordenada(p1).DistanciaX(p2);
+                    comp = p1.DistanciaX(p2);
                 }
                 else
                 {
-                    comp = new Coordenada(p1).DistanciaY(p2);
+                    comp = p1.DistanciaY(p2);
                 }
-                p2 = new Coordenada(p1).Mover(angulo, comp).GetPoint3D();
+                p2 = p1.Mover(angulo, comp);
                 AddMensagem("\nÂngulo ajustado:" + angulo);
 
             }

@@ -14,6 +14,7 @@ using static DLM.cad.CAD;
 using Autodesk.AutoCAD.EditorInput;
 using DLM.vars;
 using Conexoes;
+using DLM.desenho;
 
 namespace DLM.cad
 {
@@ -461,7 +462,7 @@ namespace DLM.cad
         public List<Entity> GetObjetosNaoMapeados(bool ignorar_multilines = true)
         {
             List<Entity> blocos = new List<Entity>();
-            blocos.AddRange(this.selecoes);
+            blocos.AddRange(this.Selecoes);
             blocos = blocos.FindAll(x=> this.GetBlocos().FindAll(w => w.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
             blocos = blocos.FindAll(x => this.GetBlocos_Eixos().Find(y => y.Bloco.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetLinhas_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
@@ -787,7 +788,7 @@ namespace DLM.cad
         }
 
 
-        public void AddBlocoPurlin(string letra, int id_purlin, double VAO, double TRE, double TRD, Point2d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
+        public void AddBlocoPurlin(string letra, int id_purlin, double VAO, double TRE, double TRD, P3d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
         {
             Conexoes.RMLite pc = Ut.GetPURLINS().Get(id_purlin);
             //AddMensagem("Origem: " + centro + "\n");
@@ -825,7 +826,7 @@ namespace DLM.cad
                 Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Incicacao_Tercas, origembloco, this.GetEscala(), 0, ht);
             }
         }
-        public void AddBlocoTirante(string letra,  Point2d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
+        public void AddBlocoTirante(string letra,  P3d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
         {
             //AddMensagem("Origem: " + centro + "\n");
             Hashtable ht = new Hashtable();
@@ -841,7 +842,7 @@ namespace DLM.cad
 
             Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Indicacao_Tirantes, origembloco, this.GetEscala(), 0, ht);
         }
-        public void AddBlocoCorrente(string letra, Point2d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
+        public void AddBlocoCorrente(string letra, P3d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
         {
             Hashtable ht = new Hashtable();
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
@@ -854,7 +855,7 @@ namespace DLM.cad
         }
         public List<Entity> LinhasFuros()
         {
-            return this.selecoes.FindAll(x => x.Layer.ToUpper().Replace(" ", "") == this.MapeiaFurosManuaisLayer.ToUpper().Replace(" ", "") && (x is Line | x is Polyline));
+            return this.Selecoes.FindAll(x => x.Layer.ToUpper().Replace(" ", "") == this.MapeiaFurosManuaisLayer.ToUpper().Replace(" ", "") && (x is Line | x is Polyline));
         }
         public void ExcluirBlocosMarcas()
         {
@@ -900,12 +901,12 @@ namespace DLM.cad
         public void PurlinManual()
         {
             bool cancelado = false;
-            var pt1 = Ut.PedirPonto2D("Selecione o ponto de origem", out cancelado);
+            var pt1 = Ut.PedirPonto("Selecione o ponto de origem", out cancelado);
             if(cancelado)
             {
                 return;
             }
-            var pt2 = Ut.PedirPonto2D("Selecione o ponto final",pt1, out cancelado);
+            var pt2 = Ut.PedirPonto("Selecione o ponto final",pt1, out cancelado);
             if(cancelado)
             {
                 return;
@@ -925,7 +926,7 @@ namespace DLM.cad
 
             if(comprimento> this.PurlinCompMin)
             {
-                AddBlocoPurlin("",this.id_purlin, comprimento, 0, 0, Ut.Centro(pt1, pt2), new List<double>(), new List<double>());
+                AddBlocoPurlin("",this.id_purlin, comprimento, 0, 0, pt1.Centro(pt2), new List<double>(), new List<double>());
             }
             else
             {
@@ -964,7 +965,7 @@ namespace DLM.cad
             bool cancelado = false;
             double dist = 2500;
 
-            var origem = Ut.PedirPonto3D("Selecione a origem", out cancelado);
+            var origem = Ut.PedirPonto("Selecione a origem", out cancelado);
             var grupos = this.Getblocos_tercas().GroupBy(x => Math.Round(x.Position.X)).OrderBy(x=>x.Key).ToList();
             bool baixo = false;
             if(cancelado)
@@ -982,7 +983,7 @@ namespace DLM.cad
                     foreach (var p in purlins)
                     {
                         var purlin = p.ToList()[0];
-                        Point3d p0 = new Point3d(purlin.Origem.X - purlin.Vao / 2, origem.Y - offset, 0);
+                        P3d p0 = new P3d(purlin.Origem.X - purlin.Vao / 2, origem.Y - offset, 0);
                         GerarCroqui(p.ToList()[0], p0);
                         offset = offset + dist;
                     }
@@ -990,7 +991,7 @@ namespace DLM.cad
                 baixo = !baixo;
             }
         }
-        public void GerarCroqui(Conexoes.Macros.Purlin purlin, Point3d pt)
+        public void GerarCroqui(Conexoes.Macros.Purlin purlin, P3d pt)
         {
             double fonte = 30;
             List<Entity> linhas = new List<Entity>();
@@ -1051,11 +1052,11 @@ namespace DLM.cad
                         Conexoes.DBRM_Offline mm = new Conexoes.DBRM_Offline();
                         var purlins = this.Getblocos_tercas().Select(x => GetPurlin(x));
                         List<Conexoes.Macros.Purlin> ss = JuntarERenomearPurlinsIguais(purlins, acTrans);
-                        Point2d p = new Point2d();
+                        P3d p = new P3d();
                         if (tabela)
                         {
                             bool cancelado = false;
-                            var PS = Ut.PedirPonto2D("Selecione a origem", out cancelado);
+                            var PS = Ut.PedirPonto("Selecione a origem", out cancelado);
                             if (!cancelado)
                             {
                                 p = Tabelas.Purlins(ss, PS);
@@ -1068,7 +1069,7 @@ namespace DLM.cad
                             List<Conexoes.Macros.Tirante> pcs = JuntarTirantesIguais(tirantes, acTrans);
                             if (tabela)
                             {
-                                p = Tabelas.Tirantes(pcs, new Point2d(p.X + (119.81 * GetEscala()), p.Y));
+                                p = Tabelas.Tirantes(pcs, new P3d(p.X + (119.81 * GetEscala()), p.Y));
                             }
                             mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
                         }
@@ -1081,7 +1082,7 @@ namespace DLM.cad
                             List<Conexoes.Macros.Corrente> pcs = JuntarCorrentesIguais(correntes, acTrans);
                             if (tabela)
                             {
-                                p = Tabelas.Correntes(pcs, new Point2d(p.X + (86.77 * GetEscala()), p.Y));
+                                p = Tabelas.Correntes(pcs, new P3d(p.X + (86.77 * GetEscala()), p.Y));
                             }
                             mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
                         }
@@ -1101,7 +1102,7 @@ namespace DLM.cad
 
                             if(pcs.Count>0)
                             {
-                               p = Tabelas.Pecas(pcs, true, new Point2d(p.X + (86.77 * GetEscala()), p.Y));
+                               p = Tabelas.Pecas(pcs, true, new P3d(p.X + (86.77 * GetEscala()), p.Y));
                             }
                         }
 
