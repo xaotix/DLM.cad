@@ -1,4 +1,5 @@
-﻿using DLM.vars;
+﻿using Conexoes;
+using DLM.vars;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,7 +80,7 @@ namespace DLM.cad.Menus
 
         private void furo_offset_apoio_Click(object sender, RoutedEventArgs e)
         {
-            int valor = Conexoes.Utilz.Prompt(Core.CADPurlin.OffsetApoio);
+            int valor = Conexoes.Utilz.Prompt(Core.CADPurlin.OffsetApoio).Int();
             Core.CADPurlin.OffsetApoio = valor;
             this.furo_offset_apoio.Content = valor;
         }

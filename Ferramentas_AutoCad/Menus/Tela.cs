@@ -26,7 +26,7 @@ namespace DLM.cad
 
         private void getvars(CADCotagem mm)
         {
-            if (mm.tipo_desenho.StartsWith("V") | mm.tipo_desenho == "")
+            if (mm.Tipo_Desenho.StartsWith("V") | mm.Tipo_Desenho == "")
             {
                 this.tipo_desenho_vista.Checked = true;
                 this.tipo_desenho_corte.Checked = false;
@@ -37,20 +37,20 @@ namespace DLM.cad
                 this.tipo_desenho_corte.Checked = true;
             }
 
-            base_esquerda.Checked = mm.base_esquerda;
-            base_direita.Checked = mm.base_direita;
+            base_esquerda.Checked = mm.Base_Esquerda;
+            base_direita.Checked = mm.Base_Direita;
 
-            cotar_emabaixo.Checked = mm.cotar_embaixo;
-            cotar_emcima.Checked = mm.cotar_emcima;
+            cotar_emabaixo.Checked = mm.Cotar_Embaixo;
+            cotar_emcima.Checked = mm.Cotar_Em_Cima;
 
-            acumuladas_cima.Checked = mm.acumuladas_cima;
-            acumuladas_embaixo.Checked = mm.acumuladas_baixo;
+            acumuladas_cima.Checked = mm.Acumuladas_Cima;
+            acumuladas_embaixo.Checked = mm.Acumuladas_Baixo;
 
-            cotas_esquerda.Checked = mm.cotar_esquerda;
-            cotas_direita.Checked = mm.cotar_direita;
+            cotas_esquerda.Checked = mm.Cotar_Esquerda;
+            cotas_direita.Checked = mm.Cotar_Direita;
 
-            profundidade_direita.Value = (decimal)mm.profundidade_direita;
-            profundidade_esquerda.Value = (decimal)mm.profundidade_direita;
+            profundidade_direita.Value = (decimal)mm.Profundidade_Direita;
+            profundidade_esquerda.Value = (decimal)mm.Profundidade_Direita;
         }
 
         private void Tela_Load(object sender, EventArgs e)
@@ -67,27 +67,27 @@ namespace DLM.cad
         {
             if (this.tipo_desenho_corte.Checked)
             {
-                mm.tipo_desenho = "Corte";
+                mm.Tipo_Desenho = "Corte";
             }
             else if (this.tipo_desenho_vista.Checked)
             {
-                mm.tipo_desenho = "Vista";
+                mm.Tipo_Desenho = "Vista";
             }
 
-            mm.base_direita = base_direita.Checked;
-            mm.base_esquerda = base_esquerda.Checked;
+            mm.Base_Direita = base_direita.Checked;
+            mm.Base_Esquerda = base_esquerda.Checked;
 
 
-            mm.cotar_embaixo = cotar_emabaixo.Checked;
+            mm.Cotar_Embaixo = cotar_emabaixo.Checked;
             
-            mm.acumuladas_cima = acumuladas_cima.Checked;
-            mm.acumuladas_baixo = acumuladas_embaixo.Checked;
-            mm.cotar_emcima = cotar_emcima.Checked;
-            mm.cotar_direita = cotas_direita.Checked;
-            mm.cotar_esquerda = cotas_esquerda.Checked;
+            mm.Acumuladas_Cima = acumuladas_cima.Checked;
+            mm.Acumuladas_Baixo = acumuladas_embaixo.Checked;
+            mm.Cotar_Em_Cima = cotar_emcima.Checked;
+            mm.Cotar_Direita = cotas_direita.Checked;
+            mm.Cotar_Esquerda = cotas_esquerda.Checked;
 
-            mm.profundidade_direita = (double)this.profundidade_direita.Value;
-            mm.profundidade_esquerda = (double)this.profundidade_esquerda.Value;
+            mm.Profundidade_Direita = (double)this.profundidade_direita.Value;
+            mm.Profundidade_Esquerda = (double)this.profundidade_esquerda.Value;
 
         }
 

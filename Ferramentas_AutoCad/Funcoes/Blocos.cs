@@ -568,6 +568,46 @@ namespace DLM.cad
             }
 
         }
+
+        public static void MarcaChapa(P3d p0, List<P3d> pts, double Espessura, int Quantidade,string Marca, string Material, string Ficha, double escala)
+        {
+            try
+            {
+                var Largura = pts.Largura();
+                var Area = pts.Area();
+                var Perimetro = pts.Perimetro();
+                var Comprimento = pts.Comprimento();
+                var Descricao = $"Ch #{Espessura.ToString("N2")}x{Largura.ToString("N0")}x{Comprimento.ToString("N0")}";
+                var Peso_Unitario = pts.Peso(Espessura);
+                var Superficie = (Area * 2) + (Perimetro * Espessura);
+                var Geometria = $"{Comprimento.ToString("N0").Replace(",", "")}*{Espessura.ToString("N2").Replace(",", "")}*{Largura.ToString("N0").Replace(",", "")}";
+
+                var bloco = Cfg.Init.CAD_Marca_Chapa;
+                Hashtable ht = new Hashtable();
+                //Pairs of tag-value:
+                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), Marca);
+                ht.Add(TAB_DBF1.POS_PEZ.ToString(), Marca);
+                ht.Add(TAB_DBF1.NOM_PRO.ToString(), Descricao);
+                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), Quantidade.ToString().Replace(",", ""));
+                ht.Add(TAB_DBF1.LUN_PRO.ToString(), Comprimento.ToString("N0").Replace(",", ""));
+                ht.Add(TAB_DBF1.LAR_PRO.ToString(), Largura.ToString("N0").Replace(",", ""));
+                ht.Add(TAB_DBF1.SPE_PRO.ToString(), Espessura.ToString("N2").Replace(",", ""));
+                ht.Add(TAB_DBF1.MAT_PRO.ToString(), Material);
+                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), Ficha);
+                ht.Add(TAB_DBF1.PUN_LIS.ToString(), Peso_Unitario.ToString("N4").Replace(",", ""));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Superficie.ToString("N4").Replace(",", ""));
+                ht.Add(TAB_DBF1.DES_PEZ.ToString(), "CHAPA");
+                ht.Add(TAB_DBF1.ING_PEZ.ToString(), Geometria);
+
+                               
+                Inserir(acDoc, bloco, p0, escala, 0, ht);
+            }
+            catch (System.Exception ex)
+            {
+                Conexoes.Utilz.Alerta(ex);
+            }
+
+        }
         public static void MarcaElemM2(P3d p0, DLM.cam.Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try

@@ -14,6 +14,7 @@ namespace DLM.cad
         {
             return lista.Select(x => new Autodesk.AutoCAD.Geometry.Point3d(x.X, x.Y, x.Z)).ToList();
         }
+       
         public static List<P3dCAD> ArredondarJuntar(this List<P3dCAD> origem, int decimais_X = 0, int decimais_Y = 0)
         {
             try
@@ -96,6 +97,12 @@ namespace DLM.cad
             return new System.Windows.Point(p3d.X, p3d.Y);
         }
 
+        public static List<P3d> P3d(this List<Point3d> p)
+        {
+            return p.Select(x=> new P3d(x.X, x.Y, x.Z)).ToList();
+        }
+
+
         public static Point3d GetPoint3dCad(this P3d p3d)
         {
             return new Point3d(p3d.X, p3d.Y, p3d.Z);
@@ -113,9 +120,9 @@ namespace DLM.cad
         {
             return p1.Distancia(new P3dCAD(p3d));
         }
-        public static double Angulo(this P3d p1, Point3d p3d)
+        public static double GetAngulo(this P3d p1, Point3d p3d)
         {
-            return p1.Angulo(new P3dCAD(p3d));
+            return p1.GetAngulo(new P3dCAD(p3d));
         }
         public static double DistanciaY(this P3d p1, Point3d v)
         {
@@ -126,29 +133,13 @@ namespace DLM.cad
     public class P3dCAD:P3d
     {
 
- 
-        
-
         public override string ToString()
         {
             return "[" + Tipo.ToString().PadRight(10,' ') + "] [" + this.id.ToString().PadLeft(3, '0') + "] " + chave;
         }
-   
 
 
-
-
-  
-
- 
-        public Tipo_Coordenada Tipo { get; set; }
-
-
-
-  
-
-
-
+        public Tipo_Coordenada Tipo { get; set; } = Tipo_Coordenada.Sem;
 
         public P3dCAD(Point3d pt, int id, Tipo_Coordenada tipo)
         {

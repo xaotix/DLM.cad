@@ -60,7 +60,7 @@ namespace DLM.cad
         {
             get
             {
-                return this.Origem_Esquerda.Angulo(this.Origem_Direita);
+                return this.Origem_Esquerda.GetAngulo(this.Origem_Direita);
             }
         }
 

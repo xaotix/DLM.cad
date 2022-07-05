@@ -129,8 +129,8 @@ namespace DLM.cad
                 var textos = GetblocostextoLinhaDeVida();
 
                 var cabos = Getcabos();
-                var cabos_verticais = GetPolyLines_Verticais(cabos);
-                var cabos_horizontais = GetPolyLines_Horizontais(cabos);
+                var cabos_verticais = Ut.PolylinesVerticais(cabos);
+                var cabos_horizontais = Ut.PolylinesHorizontais(cabos);
 
                 var cotas = Getcotaslinhadevida();
                 var cotas_verticais = Ut.CotasVerticais(cotas);
@@ -181,7 +181,7 @@ namespace DLM.cad
                         P3d pp1 = p.StartPoint.P3d();
                         P3d pp2 = p.EndPoint.P3d();
 
-                        var ang = pp1.Angulo(pp2);
+                        var ang = pp1.GetAngulo(pp2);
                         if (ang<0)
                         {
                             ang = 360 - ang;
@@ -220,7 +220,7 @@ namespace DLM.cad
                     }
 
 
-                    var angulo = p0.Angulo(pos);
+                    var angulo = p0.GetAngulo(pos);
                     var dist = p0.Distancia(pos);
                     var blocos_texto = Ut.GetBlocosProximos(textos, pos, GetEscala() * 20);
                     foreach(var p in blocos_texto)
@@ -297,14 +297,14 @@ namespace DLM.cad
                         if (sequencia ==0 && !selecionar)
                         {
                             p1 = p1.Mover(angulo, this.LarguraTelha/2);
-                            angulo = p1.Angulo(p2);
+                            angulo = p1.GetAngulo(p2);
                             var tmpang = Angulo.Normalizar(angulo);
                             if (tmpang == 90 | tmpang == 270)
                             {
                                 p1 = p1.Mover(tmpang, vert / 2);
                             }
                         }
-                        angulo = p1.Angulo(p2);
+                        angulo = p1.GetAngulo(p2);
 
                         comp = p1.Distancia(p2);
 
@@ -442,7 +442,7 @@ namespace DLM.cad
                         }
                         cotas.Add(p1);
                         comp = p1.Distancia(p2);
-                        angulo = p1.Angulo(p2);
+                        angulo = p1.GetAngulo(p2);
                         AddMensagem("\nÂngulo: " + angulo);
 
                    
@@ -660,6 +660,8 @@ namespace DLM.cad
                 {
                     comp = p1.DistanciaY(p2);
                 }
+
+                comp = comp.Abs();
                 p2 = p1.Mover(angulo, comp);
                 AddMensagem("\nÂngulo ajustado:" + angulo);
 

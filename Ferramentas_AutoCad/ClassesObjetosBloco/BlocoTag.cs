@@ -16,6 +16,7 @@ namespace DLM.cad
             return this.Descricao;
         }
         public string Descricao { get; set; } = "";
+        public BlockReference Bloco { get; private set; }
         public void Set(string coluna, string valor)
         {
             var t = this.Atributos.Find(x => x.Coluna.ToUpper() == coluna.ToUpper());
@@ -70,7 +71,6 @@ namespace DLM.cad
             }
             return _contorno;
         }
-        public BlockReference Bloco { get; private set; }
 
         public List<BlocoTag> Filhos { get; set; } = new List<BlocoTag>();
 
@@ -98,7 +98,6 @@ namespace DLM.cad
                 }
             }
             return _coordenada;
-
         }
 
         public BlocoTag(List<CelulaTag> atributos)

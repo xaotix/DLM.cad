@@ -932,5 +932,11 @@ namespace DLM.cad
             this.Visibility = Visibility.Collapsed;
            Core.AtualizarPesoChapaFina();
         }
+
+        private void criar_cam_polyline(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Core.cam_de_polilinha();
+        }
     }
 }

@@ -149,13 +149,13 @@ namespace DLM.cad
         [CommandMethod(nameof(getcontorno_linhas))]
         public static void getcontorno_linhas()
         {
-            var sel = Cotas.SelecionarObjetos(Tipo_Selecao.PolyLine_Linhas);
+            var sel = Cotas.SelecionarObjetos(CAD_TYPE.LINE, CAD_TYPE.LWPOLYLINE, CAD_TYPE.POLYLINE);
             if (sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && Cotas.Selecoes.Count > 0)
             {
                 var pts = Ut.GetPontos(Cotas.Selecoes);
                 var p3ds = pts.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
-                var contorno = p3ds.GetContorno();
-                Cotas.AddPolyLine(contorno, 0, 4, System.Drawing.Color.Red);
+                var contorno = p3ds.GetContorno(Ut.PedirInteger("Digite a escala",1),Ut.PedirDouble("Digite a concavidade",0.5));
+                Cotas.AddPolyLine(contorno, 0, 10, System.Drawing.Color.Red);
             }
         }
 
@@ -419,7 +419,7 @@ namespace DLM.cad
             List<BlockReference> blks = null;
             if (!Conexoes.Utilz.Pergunta("Selecionar tudo?"))
             {
-                if (pp.SelecionarObjetos(Tipo_Selecao.Blocos).Status == PromptStatus.OK)
+                if (pp.SelecionarObjetos(CAD_TYPE.INSERT).Status == PromptStatus.OK)
                 {
                     blks = pp.GetBlocos();
                     if(blks.Count==0)
@@ -527,8 +527,12 @@ namespace DLM.cad
 
         }
 
- 
 
+        [CommandMethod(nameof(cam_de_polilinha))]
+        public static void cam_de_polilinha()
+        {
+            TecnoMetal.CAM_de_Polilinha();
+        }
 
 
         [CommandMethod(nameof(arremate))]

@@ -1,33 +1,32 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.Internal.PropertyInspector;
-using Autodesk.AutoCAD.Runtime;
+using Conexoes;
 using DLM.cad;
+using DLM.cam;
+using DLM.desenho;
+using DLM.vars;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using static DLM.cad.CAD;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.PlottingServices;
-using DLM.vars;
-using Conexoes;
-using DLM.desenho;
 
 namespace DLM.cad
 {
     [Serializable]
     public class CADBase
     {
+        private List<Entity> _Entities_Blocos { get; set; }
+        private List<CADLine> _Linhas { get; set; }
+        private List<string> _Layers { get; set; }
+        private List<Furo> _Furos { get; set; }
+        private List<BlocoTag> _Blocos_Eixo { get; set; }
+        private List<PolyInfo> _Polies { get; set; }
+
         public void ApagarCotas()
         {
             var sel = SelecionarObjetos(Tipo_Selecao.Dimensoes);
@@ -124,12 +123,18 @@ namespace DLM.cad
             return arquivos;
         }
 
+        public List<Circle> GetCirculos()
+        {
+            return this.Selecoes.FindAll(x => x is Circle).Select(x => x as Circle).ToList();
+        }
 
 
-        private List<Entity> _entities_blocos { get; set; }
 
-
-        public List<BlockReference> Getfuros_vista()
+        public List<BlocoFuro> GetFurosVista()
+        {
+            return this.GetBlocos_Furos_Vista().Select(x => new BlocoFuro(x)).ToList();
+        }
+        public List<BlockReference> GetBlocos_Furos_Vista()
         {
             return GetBlocos().FindAll(x =>
                  x.Name.ToUpper() == "M8"
@@ -158,22 +163,23 @@ namespace DLM.cad
                 | x.Name.ToUpper() == "M72"
                 | x.Name.ToUpper() == "M76"
                 | x.Name.ToUpper() == "M80"
+
                 | x.Name.ToUpper() == "3D_INFOHOLE1"
                 | x.Name.ToUpper() == "MA"
                 );
         }
         public List<Entity> GetEntitiesdeBlocos()
         {
-            if(_entities_blocos==null)
+            if(_Entities_Blocos==null)
             {
-                _entities_blocos = new List<Entity>();
+                _Entities_Blocos = new List<Entity>();
                 foreach (var bl in this.GetBlocos())
                 {
-                    _entities_blocos.AddRange(Blocos.GetEntities(bl));
+                    _Entities_Blocos.AddRange(Blocos.GetEntities(bl));
                 }
             }
 
-            return _entities_blocos;
+            return _Entities_Blocos;
         }
 
         [Category("Mapeamento")]
@@ -243,6 +249,20 @@ namespace DLM.cad
             }
         }
 
+        public string PastaCAM
+        {
+            get
+            {
+                string destino = this.Pasta;
+                if (this.E_Tecnometal(false))
+                {
+                    destino = Conexoes.Utilz.CriarPasta(destino, "CAM");
+                }
+
+                return destino;
+            }
+        }
+
         [Category("Informações")]
         [DisplayName("Nome Arquivo")]
         public string Nome
@@ -264,8 +284,7 @@ namespace DLM.cad
         }
 
         [Browsable(false)]
-        public List<Entity> Selecoes { get; set; } = new List<Entity>();
-
+        public List<Entity> Selecoes { get; private set; } = new List<Entity>();
        
         public void SetUCSParaWorld()
         {
@@ -276,49 +295,7 @@ namespace DLM.cad
 
 
         #region Prompts usuário
-        public string PerguntaString(string Titulo, List<string> Opcoes)
-        {
-            PromptKeywordOptions tipo_vista = new PromptKeywordOptions("");
-            tipo_vista.Message = "\n" + Titulo;
-            foreach (var s in Opcoes)
-            {
-                tipo_vista.Keywords.Add(s);
-            }
-            tipo_vista.AppendKeywordsToMessage = true;
 
-            tipo_vista.AllowNone = false;
-
-            PromptResult selecao_tipo_vista = acDoc.Editor.GetKeywords(tipo_vista);
-            if (selecao_tipo_vista.Status != PromptStatus.OK) return "";
-
-            return selecao_tipo_vista.StringResult;
-        }
-        public double PergundaDouble(string Titulo, double padrao = 0)
-        {
-            PromptDoubleOptions tipo_vista = new PromptDoubleOptions(Titulo);
-            tipo_vista.Message = "\n" + Titulo;
-            tipo_vista.DefaultValue = padrao;
-
-            tipo_vista.AllowNone = false;
-
-            PromptDoubleResult selecao_tipo_vista = acDoc.Editor.GetDouble(tipo_vista);
-            if (selecao_tipo_vista.Status != PromptStatus.OK) return padrao;
-
-            return selecao_tipo_vista.Value;
-        }
-        public int PerguntaInteger(string Titulo, int padrao = 0)
-        {
-            PromptIntegerOptions tipo_vista = new PromptIntegerOptions(Titulo);
-            tipo_vista.Message = "\n" + Titulo;
-            tipo_vista.DefaultValue = padrao;
-
-            tipo_vista.AllowNone = false;
-
-            PromptIntegerResult selecao_tipo_vista = acDoc.Editor.GetInteger(tipo_vista);
-            if (selecao_tipo_vista.Status != PromptStatus.OK) return padrao;
-
-            return selecao_tipo_vista.Value;
-        }
         #endregion
 
         #region Desenho
@@ -571,31 +548,24 @@ namespace DLM.cad
 
 
         #region mapeamento de objetos a serem usados
-
         public List<CADLine> GetLinhas_Eixos()
         {
             return GetLinhas().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
         }
-
-        public List<Polyline> GetPolyLines_Verticais(List<Polyline> polylines)
-        {
-            return Ut.PolylinesVerticais(polylines);
-        }
-        public List<Polyline> GetPolyLines_Horizontais(List<Polyline> polylines)
-        {
-            return Ut.PolylinesHorizontais(polylines);
-        }
         #endregion
-
 
         #region listas de itens selecionados
         public List<CADLine> GetLinhas()
         {
-            return Selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList().Select(x=>new CADLine(x)).ToList();
+            if(_Linhas == null)
+            {
+                _Linhas = new List<CADLine>();
+                _Linhas.AddRange(Selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList().Select(x => new CADLine(x)).ToList());
+            }
+            return _Linhas;
         }
         public List<CADLine> GetLinhas_Verticais()
         {
-            
             return GetLinhas().FindAll(x=>x.Sentido == Sentido.Vertical).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<CADLine> GetLinhas_Horizontais()
@@ -606,6 +576,57 @@ namespace DLM.cad
         {
             return Selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).ToList();
         }
+
+        public List<PolyInfo> GetPolies()
+        {
+            if (_Polies == null)
+            {
+                _Polies = Selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).OrderByDescending(x => x.Length).ToList().Select(x => new PolyInfo(x)).ToList();
+            }
+            return _Polies;
+        }
+
+
+
+        public List<Furo> GetFurosSelecao()
+        {
+            if(_Furos == null)
+            {
+                _Furos = new List<Furo>();
+
+                var furos = this.GetFurosVista();
+                var furos_pl = this.GetCirculos();
+                var polis = this.GetPolies().FindAll(x => x.Polyline.Closed);
+                var furos_polis = polis.FindAll(x => x.Arcos.Count == 2);
+
+                foreach (var furo in furos.FindAll(x=>x.Bloco.Name!="MA"))
+                {
+                    var p3d = furo.Bloco.Position.P3d();
+                    _Furos.Add(new cam.Furo(p3d.X, p3d.Y, furo.Diametro, furo.Oblongo));
+                }
+                foreach (var furo in furos_pl)
+                {
+                    var p0 = furo.Center.P3d();
+                    _Furos.Add(new cam.Furo(p0.X, p0.Y, furo.Diameter));
+                }
+                foreach (var furo_poli in furos_polis)
+                {
+                    var arc0 = furo_poli.Arcos[0];
+                    var arc1 = furo_poli.Arcos[1];
+                    var pa = new P3d(arc0.Center.X, arc0.Center.Y);
+                    var pb = new P3d(arc1.Center.X, arc1.Center.Y);
+
+                    var diam = (arc0.Radius * 2).Round(0);
+                    var angulo = pa.GetAngulo(pb).Round(0);
+                    var dist = pa.Distancia(pb).Abs().Round(0);
+                    var d0 = dist - diam;
+                    var p0 = pa.Centro(pb);
+                    _Furos.Add(new cam.Furo(p0.X, p0.Y, diam, dist, angulo));
+                }
+            }
+            return _Furos;
+        }
+
         public List<MText> GetMtexts()
         {
             return Selecoes.FindAll(x => x is MText).Select(x => x as MText).ToList();
@@ -656,23 +677,21 @@ namespace DLM.cad
             );
         }
 
-        private List<BlocoTag> _blocos_eixo { get; set; }
         public List<BlocoTag> GetBlocos_Eixos(bool update = false)
         {
             /*pega blocos dinâmicos*/
-           if(_blocos_eixo==null | update)
+           if(_Blocos_Eixo==null | update)
             {
-                _blocos_eixo = this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => new BlocoTag(x)).ToList();
+                _Blocos_Eixo = this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => new BlocoTag(x)).ToList();
             }
 
-            return _blocos_eixo;
+            return _Blocos_Eixo;
         }
         public List<BlocoTag> GetBlocos_Nivel()
         {
             /*pega blocos dinâmicos*/
             return this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x=> new BlocoTag(x)).ToList();
         }
-
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
             List<PCQuantificar> pcs = new List<PCQuantificar>();
@@ -727,15 +746,14 @@ namespace DLM.cad
             AddMensagem("\n=====================================================================\n");
 
         }
-        private List<string> _layers { get; set; }
 
         public List<string> GetLayers()
         {
-            if (_layers == null)
+            if (_Layers == null)
             {
-                _layers = FLayer.Listar();
+                _Layers = FLayer.Listar();
             }
-            return _layers;
+            return _Layers;
         }
 
         public PromptSelectionResult SelecionarObjetos(Tipo_Selecao tipo = Tipo_Selecao.Tudo)
@@ -745,43 +763,53 @@ namespace DLM.cad
             pp.RejectPaperspaceViewport = true;
             pp.RejectObjectsFromNonCurrentSpace = true;
             pp.AllowDuplicates = false;
-          
+
 
             var lista_filtro = new List<TypedValue>();
 
             switch (tipo)
             {
-                case Tipo_Selecao.Tudo:
-                    lista_filtro.Add(new TypedValue(0, "LINE,POLYLINE,LWPOLYLINE,TEXT,MTEXT,DIMENSION,LEADER,INSERT,MLINE"));
-                    break;
                 case Tipo_Selecao.Blocos:
-                    lista_filtro.Add(new TypedValue(0, "INSERT"));
-                    break;
+                    return SelecionarObjetos(CAD_TYPE.INSERT);
+                case Tipo_Selecao.PolyLine_Blocos:
+                    return SelecionarObjetos(CAD_TYPE.INSERT, CAD_TYPE.POLYLINE, CAD_TYPE.LWPOLYLINE);
                 case Tipo_Selecao.Textos:
-                    lista_filtro.Add(new TypedValue(0, "TEXT,MTEXT,LEADER,MLEADER"));
-                    break;
+                    return SelecionarObjetos(CAD_TYPE.TEXT, CAD_TYPE.MTEXT, CAD_TYPE.LEADER, CAD_TYPE.MLEADER);
                 case Tipo_Selecao.Blocos_Textos:
-                    lista_filtro.Add(new TypedValue(0, "INSERT,TEXT,MTEXT,LEADER"));
-                    break;
+                    return SelecionarObjetos(CAD_TYPE.INSERT, CAD_TYPE.TEXT, CAD_TYPE.MTEXT, CAD_TYPE.LEADER);
                 case Tipo_Selecao.Dimensoes:
-                    lista_filtro.Add(new TypedValue(0, "DIMENSION,TEXT,MTEXT,LEADER,MLEADER"));
-                    break;
+                    return SelecionarObjetos(CAD_TYPE.DIMENSION, CAD_TYPE.TEXT, CAD_TYPE.MTEXT, CAD_TYPE.LEADER, CAD_TYPE.MLEADER);
                 case Tipo_Selecao.Polyline:
-                    lista_filtro.Add(new TypedValue(0, "POLYLINE,LWPOLYLINE"));
-                    break;
+                    return SelecionarObjetos(CAD_TYPE.POLYLINE, CAD_TYPE.LWPOLYLINE);
                 case Tipo_Selecao.Linhas:
-                    lista_filtro.Add(new TypedValue(0, "LINE"));
-                    break;
+                    return SelecionarObjetos(CAD_TYPE.LINE);
                 case Tipo_Selecao.PolyLine_Linhas:
-                    lista_filtro.Add(new TypedValue(0, "LINE,POLYLINE,LWPOLYLINE"));
-                    break;
+                    return SelecionarObjetos(CAD_TYPE.LINE, CAD_TYPE.POLYLINE, CAD_TYPE.LWPOLYLINE);
+                default:
+                case Tipo_Selecao.Tudo:
+                    return SelecionarObjetos(Conexoes.Utilz.GetLista_Enumeradores<CAD_TYPE>().ToArray());
             }
+        }
 
 
-            SelectionFilter filtro =   new SelectionFilter(lista_filtro.ToArray());
+
+        public PromptSelectionResult SelecionarObjetos(params CAD_TYPE[] filtros )
+        {
+            PromptSelectionOptions pp = new PromptSelectionOptions();
+            pp.RejectObjectsOnLockedLayers = true;
+            pp.RejectPaperspaceViewport = true;
+            pp.RejectObjectsFromNonCurrentSpace = true;
+            pp.AllowDuplicates = false;
+
+
+            var lista_filtro = new List<TypedValue>();
+            lista_filtro.Add(new TypedValue(0, string.Join(",", filtros.ToList().Select(x=>x.ToString()).Distinct().ToList())));
+
+
+            SelectionFilter filtro = new SelectionFilter(lista_filtro.ToArray());
             PromptSelectionResult acSSPrompt = null;
 
-            if (lista_filtro.Count>0)
+            if (lista_filtro.Count > 0)
             {
                 acSSPrompt = acDoc.Editor.GetSelection(pp, filtro);
             }
@@ -790,12 +818,21 @@ namespace DLM.cad
                 acSSPrompt = acDoc.Editor.GetSelection(pp);
             }
 
+            /*Reseta a Seleção Atual*/
+            _Polies = null;
+            _Furos = null;
+            _Blocos_Eixo = null;
+            _Entities_Blocos = null;
+            _Layers = null;
+            _Linhas = null;
+            Selecoes.Clear();
+
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 if (acSSPrompt.Status == PromptStatus.OK)
                 {
                     SelectionSet acSSet = acSSPrompt.Value;
-                    Selecoes.Clear();
+               
                     // Step through the objects in the selection set
                     foreach (SelectedObject acSSObj in acSSet)
                     {
@@ -847,11 +884,8 @@ namespace DLM.cad
                         {
                             Blocos.Renomear(nome.Key, novo_nome);
                         }
-
                     }
                 }
-
-
             }
         }
 

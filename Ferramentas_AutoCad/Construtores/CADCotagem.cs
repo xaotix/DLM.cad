@@ -24,21 +24,15 @@ namespace DLM.cad
     [Serializable]
     public class CADCotagem :CADBase
     {
-     
-
         #region CAD
-
         public List<CADLine> Getlinhas_perfil()
         {
-            return GetLinhas().FindAll(x => x.Layer == LayerLinhas && x.Comprimento >= distancia_minima_X);
+            return GetLinhas().FindAll(x => x.Layer == LayerLinhas && x.Comprimento >= D_Min_X);
         }
-
         public List<CADLine> Getlinhas_projecao()
         {
-            return GetLinhas().FindAll(x => x.Layer == LayerProjecao && x.Comprimento >= distancia_minima_X && x.Comprimento >= tam_minimo_projecao);
+            return GetLinhas().FindAll(x => x.Layer == LayerProjecao && x.Comprimento >= D_Min_X && x.Comprimento >= Tam_Minimo_Projecao);
         }
-
-
         public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
             return GetBlocos().FindAll(x =>
@@ -53,103 +47,103 @@ namespace DLM.cad
         #endregion
         public void GetVars(CADCotagem c)
         {
-            this.acumuladas_baixo = c.acumuladas_baixo;
-            this.acumuladas_cima = c.acumuladas_cima;
-            this.base_direita = c.base_direita;
-            this.base_esquerda = c.base_esquerda;
+            this.Acumuladas_Baixo = c.Acumuladas_Baixo;
+            this.Acumuladas_Cima = c.Acumuladas_Cima;
+            this.Base_Direita = c.Base_Direita;
+            this.Base_Esquerda = c.Base_Esquerda;
             this.Concavidade_Contorno = c.Concavidade_Contorno;
-            this.cotar_direita = c.cotar_direita;
-            this.cotar_embaixo = c.cotar_embaixo;
-            this.cotar_emcima = c.cotar_emcima;
-            this.cotar_esquerda = c.cotar_esquerda;
-            this.cotas_movidas_contagem = c.cotas_movidas_contagem;
-            this.cota_anterior_movida = c.cota_anterior_movida;
-            this.cota_horizontal_superior = c.cota_horizontal_superior;
-            this.dist0 = c.dist0;
-            this.dist1 = c.dist1;
-            this.dist2 = c.dist2;
-            this.distancia_minima_X = c.distancia_minima_X;
-            this.distancia_minima_Y = c.distancia_minima_Y;
+            this.Cotar_Direita = c.Cotar_Direita;
+            this.Cotar_Embaixo = c.Cotar_Embaixo;
+            this.Cotar_Em_Cima = c.Cotar_Em_Cima;
+            this.Cotar_Esquerda = c.Cotar_Esquerda;
+            this.Cotas_Movidas_Contagem = c.Cotas_Movidas_Contagem;
+            this.Cota_Anterior_Movida = c.Cota_Anterior_Movida;
+            this.Cota_Horizontal_Superior = c.Cota_Horizontal_Superior;
+            this.Dist0 = c.Dist0;
+            this.Dist1 = c.Dist1;
+            this.Dist2 = c.Dist2;
+            this.D_Min_X = c.D_Min_X;
+            this.D_Min_Y = c.D_Min_Y;
             //this.escala = c.escala;
             this.Escala_Contorno = c.Escala_Contorno;
             this.Espessura_Contorno = c.Espessura_Contorno;
-            this.estilo_padrao = c.estilo_padrao;
-            this.estilo_padrao_fonte = c.estilo_padrao_fonte;
+            this.Estilo_Padrao = c.Estilo_Padrao;
+            this.Estilo_Padrao_Fonte = c.Estilo_Padrao_Fonte;
             this.ForcarTamTexto = c.ForcarTamTexto;
-            this.furos_corte_baixo = c.furos_corte_baixo;
-            this.furos_corte_cima = c.furos_corte_cima;
-            this.furos_vista_baixo = c.furos_vista_baixo;
-            this.furos_vista_cima = c.furos_vista_cima;
-            this.furos_vista_corte_cotar_direita = c.furos_vista_corte_cotar_direita;
-            this.furos_vista_corte_cotar_esquerda = c.furos_vista_corte_cotar_esquerda;
-            this.juntar_cotas = c.juntar_cotas;
+            this.Furos_Corte_Baixo = c.Furos_Corte_Baixo;
+            this.Furos_Corte_Cima = c.Furos_Corte_Cima;
+            this.Furos_Vista_Baixo = c.Furos_Vista_Baixo;
+            this.Furos_Vista_Cima = c.Furos_Vista_Cima;
+            this.Furos_Vista_Corte_Cotar_direita = c.Furos_Vista_Corte_Cotar_direita;
+            this.Furos_Vista_Corte_Cotar_Esquerda = c.Furos_Vista_Corte_Cotar_Esquerda;
+            this.Juntar_Cotas = c.Juntar_Cotas;
             this.LayerLinhas = c.LayerLinhas;
             this.LayerProjecao = c.LayerProjecao;
-            this.marcas_ajusta_escala = c.marcas_ajusta_escala;
-            this.offset_centro_valor = c.offset_centro_valor;
-            this.profundidade_direita = c.profundidade_direita;
-            this.profundidade_esquerda = c.profundidade_esquerda;
-            this.profundidade_furos_porcentagem = c.profundidade_furos_porcentagem;
-            this.size = c.size;
-            this.tam_minimo_projecao = c.tam_minimo_projecao;
-            this.tipo_calculo_contorno = c.tipo_calculo_contorno;
-            this.tipo_desenho = c.tipo_desenho;
-            this.widthfactor = c.widthfactor;
+            this.Marcas_Ajusta_Escala = c.Marcas_Ajusta_Escala;
+            this.Offset_Centro_Valor = c.Offset_Centro_Valor;
+            this.Profundidade_Direita = c.Profundidade_Direita;
+            this.Profundidade_Esquerda = c.Profundidade_Esquerda;
+            this.Profundidade_Furos_Porcentagem = c.Profundidade_Furos_Porcentagem;
+            this.Size = c.Size;
+            this.Tam_Minimo_Projecao = c.Tam_Minimo_Projecao;
+            this.Tipo_Calculo_Contorno = c.Tipo_Calculo_Contorno;
+            this.Tipo_Desenho = c.Tipo_Desenho;
+            this.Widthfactor = c.Widthfactor;
             
         }
 
         #region Pontos
         [XmlIgnore]
-        private P3d se { get; set; } = new P3d();
+        private P3d Superior_Esquerdo { get; set; } = new P3d();
         [XmlIgnore]
-        private P3d ie { get; set; } = new P3d();
+        private P3d Inferior_Esquerdo { get; set; } = new P3d();
         [XmlIgnore]
-        private P3d sd { get; set; } = new P3d();
+        private P3d Superior_Direito { get; set; } = new P3d();
         [XmlIgnore]
-        private P3d id { get; set; } = new P3d();
+        private P3d Inferior_Direito { get; set; } = new P3d();
         [XmlIgnore]
         private P3d Centro { get; set; } = new P3d();
-        private double altura
+        private double Altura
         {
             get
             {
-               return (se.Y > sd.Y ? se.Y : sd.Y) - (ie.Y < id.Y ? ie.Y : id.Y);
+               return (Superior_Esquerdo.Y > Superior_Direito.Y ? Superior_Esquerdo.Y : Superior_Direito.Y) - (Inferior_Esquerdo.Y < Inferior_Direito.Y ? Inferior_Esquerdo.Y : Inferior_Direito.Y);
             }
         }
-        private double largura
+        private double Largura
         {
             get
             {
-                return (sd.X > id.X ? sd.X : id.X) - (se.X < ie.X ? se.X : ie.X);
+                return (Superior_Direito.X > Inferior_Direito.X ? Superior_Direito.X : Inferior_Direito.X) - (Superior_Esquerdo.X < Inferior_Esquerdo.X ? Superior_Esquerdo.X : Inferior_Esquerdo.X);
             }
         }
-        private double minY
+        private double MinY
         {
             get
             {
-                return id.Y < ie.Y ? id.Y : ie.Y;
+                return Inferior_Direito.Y < Inferior_Esquerdo.Y ? Inferior_Direito.Y : Inferior_Esquerdo.Y;
             }
         }
-        private double maxY
+        private double MaxY
         {
             get
             {
-                return sd.Y > se.Y ? sd.Y : se.Y;
+                return Superior_Direito.Y > Superior_Esquerdo.Y ? Superior_Direito.Y : Superior_Esquerdo.Y;
             }
         }
 
-        private double minX
+        private double MinX
         {
             get
             {
-              return  se.X < ie.X ? se.X : ie.X;
+              return  Superior_Esquerdo.X < Inferior_Esquerdo.X ? Superior_Esquerdo.X : Inferior_Esquerdo.X;
             }
         }
-        private double maxX
+        private double MaxX
         {
             get
             {
-                return sd.X > id.X ? sd.X : id.X;
+                return Superior_Direito.X > Inferior_Direito.X ? Superior_Direito.X : Inferior_Direito.X;
             }
         }
         private void GetPontosHorizontais(out List<P3dCAD> pp, out double y, out P3dCAD origem, bool superior = true)
@@ -174,7 +168,7 @@ namespace DLM.cad
             if (superior)
             {
 
-                var superiores = ptss.FindAll(x => x.Y >= Centro.Y + offset_centro).ToList();
+                var superiores = ptss.FindAll(x => x.Y >= Centro.Y + Offset_Centro).ToList();
 
                 pp.AddRange(superiores);
 
@@ -194,7 +188,7 @@ namespace DLM.cad
                 .Select(x => x.Last()).ToList().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Linha)).ToList();
 
 
-                if (this.furos_vista_cima)
+                if (this.Furos_Vista_Cima)
                 {
                     //pega os furos da vista, organiza os mesmos pela menor coordenada em Y;
                     var ps = Getpts_furos_vista();
@@ -204,10 +198,10 @@ namespace DLM.cad
                     pp.AddRange(furos_vista.Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
                 }
 
-                if(this.furos_corte_cima)
+                if(this.Furos_Corte_Cima)
                 {
                     //adiciona os furos de corte;
-                    var furos_corte = Getpts_furos_corte_verticais().FindAll(x => x.Y >= Centro.Y + offset_centro);
+                    var furos_corte = Getpts_furos_corte_verticais().FindAll(x => x.Y >= Centro.Y + Offset_Centro);
                     pp.AddRange(furos_corte.Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
                 }
 
@@ -234,7 +228,7 @@ namespace DLM.cad
             }
             else
             {
-                var inferiores = ptss.FindAll(x => x.Y <= Centro.Y - offset_centro);
+                var inferiores = ptss.FindAll(x => x.Y <= Centro.Y - Offset_Centro);
                 //encontra todos com Y menor que o meio
                 if (inferiores.Count > 0)
                 {
@@ -256,7 +250,7 @@ namespace DLM.cad
                 .Select(x => x.ToList().OrderBy(z => z.Y)) //organiza por coordenada Y
                 .Select(x => x.First()).ToList().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Linha)).ToList();
 
-                if (furos_vista_baixo)
+                if (Furos_Vista_Baixo)
                 {
                     var ps = Getpts_furos_vista();
 
@@ -267,10 +261,10 @@ namespace DLM.cad
                     pp.AddRange(furos_vista.Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
                 }
 
-                if(furos_corte_baixo)
+                if(Furos_Corte_Baixo)
                 {
                     //adiciona os furos de corte;
-                    var furos_corte = Getpts_furos_corte_verticais().FindAll(x => x.Y <= Centro.Y - offset_centro);
+                    var furos_corte = Getpts_furos_corte_verticais().FindAll(x => x.Y <= Centro.Y - Offset_Centro);
                     pp.AddRange(furos_corte.Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
                 }
 
@@ -299,11 +293,11 @@ namespace DLM.cad
 
 
             //se ativou pra cotar em cima e é uma vista inferior
-            if(furos_vista_cima && !superior && !furos_vista_baixo)
+            if(Furos_Vista_Cima && !superior && !Furos_Vista_Baixo)
             {
                 pp = pp.FindAll(x => x.Tipo != Tipo_Coordenada.Furo_Vista);
             }
-            else if (!furos_vista_cima && superior && furos_vista_baixo)
+            else if (!Furos_Vista_Cima && superior && Furos_Vista_Baixo)
             {
                 pp = pp.FindAll(x => x.Tipo != Tipo_Coordenada.Furo_Vista);
             }
@@ -327,12 +321,12 @@ namespace DLM.cad
                 }
                 else if (i == 0)
                 {
-                    pp[i].Proxima = pp[i + 1];
+                    pp[i].Proximo = pp[i + 1];
                 }
                 
                 else if (i > 0 && i < pp.Count - 2)
                 {
-                    pp[i].Proxima = pp[i + 1];
+                    pp[i].Proximo = pp[i + 1];
                     pp[i].Anterior = pp[i - 1];
                    
                 }
@@ -349,8 +343,8 @@ namespace DLM.cad
             List<P3dCAD> lista = new List<P3dCAD>();
             lista.AddRange(GetContorno());
             //lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new Coordenada(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
-            double prof = profundidade_esquerda;
-            if ((base_esquerda | (base_direita && base_esquerda)) && !tipo_desenho.StartsWith("C"))
+            double prof = Profundidade_Esquerda;
+            if ((Base_Esquerda | (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsWith("C"))
             {
                 //remove todas as coordenadas se tem placa base, deixando apenas os que tem xmax
                 //isso vai funcionar bem em chapas retas, no entando em chapas inclinadas vai ficar uma bosta
@@ -359,7 +353,7 @@ namespace DLM.cad
 
                 lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Linha)).ToList());
             }
-            else if(furos_vista_corte_cotar_esquerda | !tipo_desenho.StartsWith("C"))
+            else if(Furos_Vista_Corte_Cotar_Esquerda | !Tipo_Desenho.StartsWith("C"))
             {
                 lista.AddRange(Getpts_furos_vista().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
             }
@@ -375,9 +369,9 @@ namespace DLM.cad
             //forçando usar o maximo em X encontrado na lista ao invés do max X global
             double minX = lista.Min(x => x.X);
 
-            if (!tipo_desenho.StartsWith("C"))
+            if (!Tipo_Desenho.StartsWith("C"))
             {
-                lista = lista.FindAll(x => x.X <= prof + this.minX).ToList();
+                lista = lista.FindAll(x => x.X <= prof + this.MinX).ToList();
             }
             else
             {
@@ -393,7 +387,7 @@ namespace DLM.cad
             }
 
 
-            lista = RemovePtsDistMin_Y(lista, distancia_minima_Y);
+            lista = RemovePtsDistMin_Y(lista, D_Min_Y);
 
 
             Setids(lista);
@@ -404,8 +398,8 @@ namespace DLM.cad
         {
             List<P3dCAD> lista = new List<P3dCAD>();
             lista.AddRange(GetContorno());
-            double prof = profundidade_direita;
-            if ((base_direita | (base_direita && base_esquerda))  && !tipo_desenho.StartsWith("C"))
+            double prof = Profundidade_Direita;
+            if ((Base_Direita | (Base_Direita && Base_Esquerda))  && !Tipo_Desenho.StartsWith("C"))
             {
                 //remove todas as coordenadas se tem placa base, deixando apenas os que tem xmax
                 //isso vai funcionar bem em chapas retas, no entando em chapas inclinadas vai ficar uma bosta
@@ -414,7 +408,7 @@ namespace DLM.cad
 
                 lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
             }
-            else if (furos_vista_corte_cotar_direita | !tipo_desenho.StartsWith("C"))
+            else if (Furos_Vista_Corte_Cotar_direita | !Tipo_Desenho.StartsWith("C"))
             {
                 lista.AddRange(Getpts_furos_vista().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
             }
@@ -430,7 +424,7 @@ namespace DLM.cad
             //forçando usar o maximo em X encontrado na lista ao invés do max X global
             double maxX = lista.Max(x => x.X);
 
-            if (!tipo_desenho.StartsWith("C"))
+            if (!Tipo_Desenho.StartsWith("C"))
             {
             lista = lista.FindAll(x => x.X >= maxX - prof);
 
@@ -451,7 +445,7 @@ namespace DLM.cad
             }
 
 
-            lista = RemovePtsDistMin_Y(lista, distancia_minima_Y);
+            lista = RemovePtsDistMin_Y(lista, D_Min_Y);
 
             Setids(lista);
             return lista;
@@ -470,14 +464,13 @@ namespace DLM.cad
             }
             try
             {
-                var pontos = linhas.Select(x => new DLM.desenho.Contorno.Node(x.X, x.Y, 0)).ToList();
 
                 var contorno = new DLM.desenho.Contorno.Hull(linhas);
                 var contorno_perfil = contorno.GetPontos(this.Concavidade_Contorno, Escala_Contorno).Select(x => new Point3d(x.X, x.Y, 0)).ToList();
                 retorno.AddRange(contorno_perfil.Select(x=> new P3dCAD(x,0, Tipo_Coordenada.Linha)));
 
                 retorno = retorno.RemoverRepetidos();
-                if (tipo_desenho.StartsWith("C") && projecoes.Count>0)
+                if (Tipo_Desenho.StartsWith("C") && projecoes.Count>0)
                 {
                     var conv = GetContornoConvexo(projecoes.P3dCAD()).ToList();
                     retorno.AddRange(conv);
@@ -495,10 +488,10 @@ namespace DLM.cad
         }
         private List<P3d> Getpts_furos_vista()
         {
-            var s = Getfuros_vista();
+            var s = GetBlocos_Furos_Vista();
             if (s.Count > 0)
             {
-                return Getfuros_vista().Select(x => x.Position).Select(x => new P3d(Math.Round(x.X), Math.Round(x.Y), Math.Round(x.Z))).ToList();
+                return GetBlocos_Furos_Vista().Select(x => x.Position).Select(x => new P3d(Math.Round(x.X), Math.Round(x.Y), Math.Round(x.Z))).ToList();
 
             }
             return new List<P3d>();
@@ -586,75 +579,84 @@ namespace DLM.cad
 
         #endregion
 
-
         [Category("Cantos Profundidade")]
         [DisplayName("Esquerda")]
         [Browsable(false)]
-        public double profundidade_esquerda { get; set; } = 50;
-
+        public double Profundidade_Esquerda { get; set; } = 50;
 
         [Category("Mapeamento")]
         [DisplayName("Ignorar Linhas Proj. Menores que")]
         [Browsable(false)]
-        public double tam_minimo_projecao { get; set; } = 25;
+        public double Tam_Minimo_Projecao { get; set; } = 25;
 
         [Category("Cantos Profundidade")]
         [DisplayName("Direita")]
         [Browsable(false)]
-        public double profundidade_direita { get; set; } = 50;
-
+        public double Profundidade_Direita { get; set; } = 50;
 
         [Category("Cantos Profundidade")]
         [DisplayName("Furos %")]
         [Browsable(false)]
-        public double profundidade_furos_porcentagem { get; set; } = 20;
+        public double Profundidade_Furos_Porcentagem { get; set; } = 20;
         [XmlIgnore]
-        private double profundidade_furos_porcentagem_valor
+        private double Profundidade_Furos_Porcentagem_valor
         {
             get
             {
-                return (profundidade_furos_porcentagem / 100 * this.largura);
+                return (Profundidade_Furos_Porcentagem / 100 * this.Largura);
             }
         }
 
-
         #region Configurações
-
-
+        [Browsable(false)]
+        public string Tipo_Desenho { get; set; } = "";
+        private double Ordinate_Anterior { get; set; } = 0;
+        [Browsable(false)]
+        public bool Cotar_Embaixo { get; set; } = false;
+        [Browsable(false)]
+        public bool Acumuladas_Cima { get; set; } = true;
+        [Browsable(false)]
+        public bool Acumuladas_Baixo { get; set; } = false;
+        [Browsable(false)]
+        public bool Cotar_Em_Cima { get; set; } = true;
+        [Browsable(false)]
+        public bool Cotar_Direita { get; set; } = false;
+        [Browsable(false)]
+        public bool Cotar_Esquerda { get; set; } = true;
+        [Browsable(false)]
+        public bool Base_Esquerda { get; set; } = false;
+        [Browsable(false)]
+        public bool Base_Direita { get; set; } = false;
 
         [Category("Offset Cotas")]
         [DisplayName("Total")]
-        public double dist0 { get; set; } = 20;
+        public double Dist0 { get; set; } = 20;
         [Category("Offset Cotas")]
         [DisplayName("Geral")]
-        public double dist1 { get; set; } = 15;
+        public double Dist1 { get; set; } = 15;
         [Category("Offset Cotas")]
         [DisplayName("Acumuladas")]
-        public double dist2 { get; set; } = 3;
-
+        public double Dist2 { get; set; } = 3;
         [Category("Cotas")]
         [DisplayName("Width Factor")]
-        public double widthfactor { get; set; } = 0.8;
-
-
+        public double Widthfactor { get; set; } = 0.8;
         [Category("Cotas")]
         [DisplayName("Juntar Cotas Iguais")]
-        public bool juntar_cotas { get; set; } = true;
+        public bool Juntar_Cotas { get; set; } = true;
         [Category("Marcas e Posições")]
         [DisplayName("Ajustar Escala")]
-        public bool marcas_ajusta_escala { get; set; } = false;
+        public bool Marcas_Ajusta_Escala { get; set; } = false;
         [Category("Cotas")]
         [DisplayName("Estilo")]
-        public string estilo_padrao { get; set; } = "ROMANS";
+        public string Estilo_Padrao { get; set; } = "ROMANS";
         [Category("Cotas")]
         [DisplayName("Fonte")]
-        public string estilo_padrao_fonte { get; set; } = "romans.shx";
+        public string Estilo_Padrao_Fonte { get; set; } = "romans.shx";
         [Category("Cotas")]
         [DisplayName("Size")]
-        public double size { get; set; } = 1.8;
+        public double Size { get; set; } = 1.8;
         [Category("Mapeamento")]
         public string LayerLinhas { get; set; } = "G";
-
         [Category("Mapeamento")]
         [DisplayName("Forçar Tamanho Texto")]
         public bool ForcarTamTexto { get; set; } = false;
@@ -662,128 +664,93 @@ namespace DLM.cad
         public string LayerProjecao { get; set; } = "TR";
         [Category("Mapeamento")]
         [DisplayName("Distância Mínima X")]
-        public double distancia_minima_X { get; set; } = 2;
+        public double D_Min_X { get; set; } = 2;
         [Category("Mapeamento")]
         [DisplayName("Distância Mínima Y")]
-        public double distancia_minima_Y { get; set; } = 2;
+        public double D_Min_Y { get; set; } = 2;
         [Category("Cálculo")]
         [DisplayName("Contorno")]
-        public Tipo_Calculo_Contorno tipo_calculo_contorno { get; set; } = Tipo_Calculo_Contorno.Bordas;
-
+        public Tipo_Calculo_Contorno Tipo_Calculo_Contorno { get; set; } = Tipo_Calculo_Contorno.Bordas;
         [Category("Furos Vista")]
         [DisplayName("Em Baixo")]
-        public bool furos_vista_baixo { get; set; } = false;
+        public bool Furos_Vista_Baixo { get; set; } = false;
         [Category("Furos Vista")]
         [DisplayName("Em Cima")]
-        public bool furos_vista_cima { get; set; } = true;
-
+        public bool Furos_Vista_Cima { get; set; } = true;
         [Category("Furos Projeção")]
         [DisplayName("Em Cima")]
-        public bool furos_corte_cima { get; set; } = true;
-
+        public bool Furos_Corte_Cima { get; set; } = true;
         [Category("Furos Projeção")]
         [DisplayName("Em Baixo")]
-        public bool furos_corte_baixo { get; set; } = true;
-
-
+        public bool Furos_Corte_Baixo { get; set; } = true;
         [Category("Furos Corte")]
         [DisplayName("Esquerda")]
-        public bool furos_vista_corte_cotar_esquerda { get; set; } = true;
-
+        public bool Furos_Vista_Corte_Cotar_Esquerda { get; set; } = true;
         [Category("Furos Corte")]
         [DisplayName("Direita")]
-        public bool furos_vista_corte_cotar_direita { get; set; } = false;
-
-
+        public bool Furos_Vista_Corte_Cotar_direita { get; set; } = false;
         [Category("Furos Vista")]
         [DisplayName("Adicionar Linha Projeção")]
-        public bool linha_projecao { get; set; } = true;
-
+        public bool Linha_Projecao { get; set; } = true;
         [Category("Furos Vista")]
         [DisplayName("Indicar Diâmetro")]
-        public bool indicar_diametro { get; set; } = true;
-
+        public bool Indicar_Diametro { get; set; } = true;
         [Category("Furos Vista")]
         [DisplayName("Projeção - Dist. Mínima Entre Furos")]
-        public double linha_projecao_dist_min { get; set; } = 25;
-
-        public List<LinhaBlocoFuro> GetFurosPorDiam()
-        {
-            List<LinhaBlocoFuro> coordenadas = new List<LinhaBlocoFuro>();
-            var furos = this.Getfuros_vista().Select(x => new BlocoFuro(x)).ToList();
-
-            var ret = furos.GroupBy(x => x.GetChave()).Select(x => new LinhaBlocoFuro(x.ToList())).ToList();
-
-            return ret;
-        }
-
-        public List<LinhaBlocoFuro> GetCoordenadasFurosProjecao()
-        {
-            List<LinhaBlocoFuro> coordenadas = new List<LinhaBlocoFuro>();
-            var furos = this.Getfuros_vista();
-            var ys = furos.Select(x => Math.Round(x.Position.Y)).Distinct().ToList().OrderBy(x => x).ToList();
-            for (int i = 0; i < ys.Count; i++)
-            {
-                coordenadas.Add(new LinhaBlocoFuro(furos.FindAll(x => Math.Round(x.Position.Y) == ys[i] | Math.Round(x.Position.Y)+1 == ys[i] | Math.Round(x.Position.Y)-1 == ys[i]).ToList(), ys[i]));
-            }
-
-            return coordenadas;
-        }
-
+        public double Linha_Projecao_Dist_Min { get; set; } = 25;
         [Category("Cálculo")]
         [DisplayName("Offset Centro %")]
-        public double offset_centro_valor { get; set; } = 10;
-        private double offset_centro
+        public double Offset_Centro_Valor { get; set; } = 10;
+        private double Offset_Centro
         {
             get
             {
-                if (offset_centro_valor > 0)
+                if (Offset_Centro_Valor > 0)
                 {
-                    return altura * offset_centro_valor / 100;
+                    return Altura * Offset_Centro_Valor / 100;
                 }
 
                 return 0;
             }
         }
-
         [Category("Mapeamento")]
         [DisplayName("Concavidade")]
         public double Concavidade_Contorno { get; set; } = -1;
         [Category("Mapeamento")]
         [DisplayName("Contorno")]
-        public int Escala_Contorno { get; set; } = 1000;
+        public int Escala_Contorno { get; set; } = 5;
         [Category("Mapeamento")]
         [DisplayName("Espessura")]
         public double Espessura_Contorno { get; set; } = 2;
         [XmlIgnore]
-        private double offset0
+        private double Offset0
         {
             get
             {
-                return GetEscala() * dist0;
+                return GetEscala() * Dist0;
             }
         }
         [XmlIgnore]
-        private double offset1
+        private double Offset1
         {
             get
             {
-                return GetEscala() * dist1;
+                return GetEscala() * Dist1;
             }
         }
         [XmlIgnore]
-        private double offset2
+        private double Offset2
         {
             get
             {
-                return GetEscala() * dist2;
+                return GetEscala() * Dist2;
             }
         }
-
         #endregion
+
         private void Calcular_Cantos()
         {
-            if (tipo_calculo_contorno == Tipo_Calculo_Contorno.Bordas)
+            if (Tipo_Calculo_Contorno == Tipo_Calculo_Contorno.Bordas)
             {
                 List<P3d> c = GetContornoConvexo().P3d();
 
@@ -795,19 +762,19 @@ namespace DLM.cad
                 if (le.Count > 0 && ld.Count > 0)
                 {
 
-                    se = new P3d(le.Min(x => x.X), le.Max(x => x.Y), 0);
-                    ie = new P3d(le.Min(x => x.X), le.Min(x => x.Y), 0);
+                    Superior_Esquerdo = new P3d(le.Min(x => x.X), le.Max(x => x.Y), 0);
+                    Inferior_Esquerdo = new P3d(le.Min(x => x.X), le.Min(x => x.Y), 0);
 
-                    sd = new P3d(ld.Max(x => x.X), ld.Max(x => x.Y), 0);
-                    id = new P3d(ld.Max(x => x.X), ld.Min(x => x.Y), 0);
+                    Superior_Direito = new P3d(ld.Max(x => x.X), ld.Max(x => x.Y), 0);
+                    Inferior_Direito = new P3d(ld.Max(x => x.X), ld.Min(x => x.Y), 0);
                 }
 
                 var cc = new List<P3d>{
-                    new P3d(se.X,se.Y,0),
-                    new P3d(sd.X,sd.Y,0),
-                    new P3d(id.X,id.Y,0),
-                    new P3d(ie.X,ie.Y,0),
-                    new P3d(se.X,se.Y,0)
+                    new P3d(Superior_Esquerdo.X,Superior_Esquerdo.Y,0),
+                    new P3d(Superior_Direito.X,Superior_Direito.Y,0),
+                    new P3d(Inferior_Direito.X,Inferior_Direito.Y,0),
+                    new P3d(Inferior_Esquerdo.X,Inferior_Esquerdo.Y,0),
+                    new P3d(Superior_Esquerdo.X,Superior_Esquerdo.Y,0)
 
                 }.Centro();
 
@@ -818,11 +785,11 @@ namespace DLM.cad
             else
             {
                 var s = Getpts_linhas_perfil().ArredondarJuntar();
-                se = new P3dCAD(s.Min(x => x.X), s.Max(x => x.Y), 0);
-                ie = new P3dCAD(s.Min(x => x.X), s.Min(x => x.Y), 0);
+                Superior_Esquerdo = new P3dCAD(s.Min(x => x.X), s.Max(x => x.Y), 0);
+                Inferior_Esquerdo = new P3dCAD(s.Min(x => x.X), s.Min(x => x.Y), 0);
 
-                sd = new P3dCAD(s.Max(x => x.X), s.Max(x => x.Y), 0);
-                id = new P3dCAD(s.Max(x => x.X), s.Min(x => x.Y), 0);
+                Superior_Direito = new P3dCAD(s.Max(x => x.X), s.Max(x => x.Y), 0);
+                Inferior_Direito = new P3dCAD(s.Max(x => x.X), s.Min(x => x.Y), 0);
 
 
                 Centro = Getpts_linhas_perfil().Centro();
@@ -830,12 +797,30 @@ namespace DLM.cad
 
            
         }
+        public List<LinhaBlocoFuro> GetFurosPorDiam()
+        {
+            List<LinhaBlocoFuro> coordenadas = new List<LinhaBlocoFuro>();
+            List<BlocoFuro> furos = GetFurosVista();
+
+            var ret = furos.GroupBy(x => x.GetChave()).Select(x => new LinhaBlocoFuro(x.ToList())).ToList();
+
+            return ret;
+        }
 
 
 
+        public List<LinhaBlocoFuro> GetCoordenadasFurosProjecao()
+        {
+            List<LinhaBlocoFuro> coordenadas = new List<LinhaBlocoFuro>();
+            var furos = this.GetBlocos_Furos_Vista();
+            var ys = furos.Select(x => Math.Round(x.Position.Y)).Distinct().ToList().OrderBy(x => x).ToList();
+            for (int i = 0; i < ys.Count; i++)
+            {
+                coordenadas.Add(new LinhaBlocoFuro(furos.FindAll(x => Math.Round(x.Position.Y) == ys[i] | Math.Round(x.Position.Y) + 1 == ys[i] | Math.Round(x.Position.Y) - 1 == ys[i]).ToList(), ys[i]));
+            }
 
-
-
+            return coordenadas;
+        }
         private List<P3dCAD> GetContornoConvexo(List<P3dCAD> sss = null)
         {
             double escala = 1000;
@@ -852,7 +837,6 @@ namespace DLM.cad
             }
             return new List<P3dCAD>();
         }
-
         public void Contornar(bool calculo = true)
         {
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
@@ -866,7 +850,7 @@ namespace DLM.cad
                 else
                 {
                     Calcular_Cantos();
-                    AddPolyLine(new List<P3d> { se, sd, id, ie, se }, 2,0, System.Drawing.Color.Blue);
+                    AddPolyLine(new List<P3d> { Superior_Esquerdo, Superior_Direito, Inferior_Direito, Inferior_Esquerdo, Superior_Esquerdo }, 2,0, System.Drawing.Color.Blue);
                 }
 
 
@@ -897,7 +881,6 @@ namespace DLM.cad
                 acTrans.Commit();
             };
         }
-
         public List<P3dCAD> RemovePtsDistMin_X(List<P3dCAD> pp, double xmin)
         {
             pp = pp.OrderBy(x => x.X).ToList();
@@ -922,7 +905,6 @@ namespace DLM.cad
             }
             return pps;
         }
-
         public List<P3dCAD> RemovePtsDistMin_Y(List<P3dCAD> pp, double min)
         {
             pp = pp.OrderBy(x => x.Y).ToList();
@@ -947,30 +929,9 @@ namespace DLM.cad
             }
             return pps;
         }
-
-        [Browsable(false)]
-        public string tipo_desenho { get; set; } = "";
-
-        [Browsable(false)]
-        public bool cotar_embaixo { get; set; } = false;
-        [Browsable(false)]
-        public bool acumuladas_cima { get; set; } = true;
-        [Browsable(false)]
-        public bool acumuladas_baixo { get; set; } = false;
-        [Browsable(false)]
-        public bool cotar_emcima { get; set; } = true;
-        [Browsable(false)]
-        public bool cotar_direita { get; set; } = false;
-        [Browsable(false)]
-        public bool cotar_esquerda { get; set; } = true;
-        [Browsable(false)]
-        public bool base_esquerda { get; set; } = false;
-        [Browsable(false)]
-        public bool base_direita { get; set; } = false;
-
         public void Configurar()
         {
-            var opt = PerguntaString("Selecione o tipo de configuração", new List<string> {"Contorno", "Dimensoes" });
+            var opt = Ut.PedirString("Selecione o tipo de configuração", new List<string> {"Contorno", "Dimensoes" });
  
             if(opt.StartsWith("C"))
             {
@@ -985,17 +946,17 @@ namespace DLM.cad
         }
         private void ConfigurarDesenho()
         {
-            dist0 = PergundaDouble("Digite a dist0", dist0);
-            dist1 = PergundaDouble("Digite a dist1", dist1);
-            dist2 = PergundaDouble("Digite a espessura", dist2);
-            profundidade_esquerda = PergundaDouble("Digite a profundidade_corte", profundidade_esquerda);
-            profundidade_direita = PergundaDouble("Digite a profundidade_corte", profundidade_direita);
+            Dist0 = Ut.PedirDouble("Digite a dist0", Dist0);
+            Dist1 = Ut.PedirDouble("Digite a dist1", Dist1);
+            Dist2 = Ut.PedirDouble("Digite a espessura", Dist2);
+            Profundidade_Esquerda = Ut.PedirDouble("Digite a profundidade_corte", Profundidade_Esquerda);
+            Profundidade_Direita = Ut.PedirDouble("Digite a profundidade_corte", Profundidade_Direita);
         }
         public void ConfigurarContorno()
         {
-            Concavidade_Contorno = PergundaDouble("Digite a concavidade", Concavidade_Contorno);
-            Escala_Contorno = PerguntaInteger("Digite a escala", Escala_Contorno);
-            Espessura_Contorno = PergundaDouble("Digite a espessura", Espessura_Contorno);
+            Concavidade_Contorno = Ut.PedirDouble("Digite a concavidade", Concavidade_Contorno);
+            Escala_Contorno = Ut.PedirInteger("Digite a escala", Escala_Contorno);
+            Espessura_Contorno = Ut.PedirDouble("Digite a espessura", Espessura_Contorno);
         }
         public void SetWidthFactor(double valor)
         {
@@ -1003,17 +964,16 @@ namespace DLM.cad
 
             acDoc.Comando(
                     "_-style" ,
-                    estilo_padrao ,
-                    estilo_padrao_fonte,
+                    Estilo_Padrao ,
+                    Estilo_Padrao_Fonte,
                     "0" ,
-                    widthfactor ,
+                    Widthfactor ,
                     "0" ,
                     "No" ,
                     "No" ,
                     "No"
                 );
         }
-
         public bool OpcoesComMenu()
         {
             Tela mm = new Tela(this);
@@ -1028,29 +988,28 @@ namespace DLM.cad
                 return false;
             }
         }
-
         private void MapeiaObjetos()
         {
             Calcular_Cantos();
             AddBarra();
             AddMensagem("\nEscala: " + GetEscala());
-            AddMensagem("\nDist0: " + dist0);
-            AddMensagem("\nDist1: " + dist1);
-            AddMensagem("\nDist2: " + dist2);
+            AddMensagem("\nDist0: " + Dist0);
+            AddMensagem("\nDist1: " + Dist1);
+            AddMensagem("\nDist2: " + Dist2);
             AddMensagem("\nFuros na Vista: " + Getpts_furos_vista().Count);
             AddMensagem("\nFuros em corte: " + GetFuros_corte().Count);
             AddMensagem("\nFuros em corte sentido horizontal: " + Getpts_furos_corte_verticais().Count);
             AddMensagem("\nFuros em corte sentido vertical: " + Getpts_furos_corte_horizontais().Count);
             AddMensagem("\nCoordenadas de Bordas:");
-            AddMensagem("\nSE: " + se);
-            AddMensagem("\nSD: " + sd);
-            AddMensagem("\nIE: " + ie);
-            AddMensagem("\nID: " + id);
+            AddMensagem("\nSE: " + Superior_Esquerdo);
+            AddMensagem("\nSD: " + Superior_Direito);
+            AddMensagem("\nIE: " + Inferior_Esquerdo);
+            AddMensagem("\nID: " + Inferior_Direito);
             AddMensagem("\nCENTRO: " + Centro);
             AddBarra();
-            AddMensagem("\nOffset Centro: " + offset_centro);
-            AddMensagem("\nAltura: " + altura);
-            AddMensagem("\nLargura: " + largura);
+            AddMensagem("\nOffset Centro: " + Offset_Centro);
+            AddMensagem("\nAltura: " + Altura);
+            AddMensagem("\nLargura: " + Largura);
             AddBarra();
             AddMensagem("\nLinhas:" + GetLinhas().Count);
             AddMensagem("\nLinhas de perfil:" + Getlinhas_perfil().Count);
@@ -1063,22 +1022,21 @@ namespace DLM.cad
         {
             get
             {
-                return this.GetEscala() * 4.2 * this.widthfactor ;
+                return this.GetEscala() * 4.2 * this.Widthfactor ;
             }
         }
-
         [XmlIgnore]
-        private bool cota_horizontal_superior { get; set; } = true;
+        private bool Cota_Horizontal_Superior { get; set; } = true;
         [XmlIgnore]
-        private bool cota_anterior_movida { get; set; } = false;
+        private bool Cota_Anterior_Movida { get; set; } = false;
         [XmlIgnore]
-        private bool ultima_cota { get; set; } = false;
+        private bool Ultima_Cota { get; set; } = false;
         [XmlIgnore]
-        private int sequencia { get; set; } = 0;
+        private int Sequencia { get; set; } = 0;
         [XmlIgnore]
-        private int max_sequencia { get; set; } = 0;
+        private int Max_Sequencia { get; set; } = 0;
         [XmlIgnore]
-        private int cotas_movidas_contagem { get; set; } = 0;
+        private int Cotas_Movidas_Contagem { get; set; } = 0;
         private void AddCotasHorizontais(List<P3dCAD> pp, double y, bool superior = true)
         {
             if(pp.Count<2)
@@ -1086,12 +1044,12 @@ namespace DLM.cad
                 AddMensagem("Cotagem Horizontal abortada - Lista contém apenas " + pp.Count + " coordenadas");
                 return;
             }
-            sequencia = 0;
-            cotas_movidas_contagem = 0;
-            cota_anterior_movida = false;
-            ultima_cota = false;
-            this.cota_horizontal_superior = superior;
-            max_sequencia = pp.Count-2;
+            Sequencia = 0;
+            Cotas_Movidas_Contagem = 0;
+            Cota_Anterior_Movida = false;
+            Ultima_Cota = false;
+            this.Cota_Horizontal_Superior = superior;
+            Max_Sequencia = pp.Count-2;
             if (superior)
             {
                
@@ -1099,27 +1057,27 @@ namespace DLM.cad
                 {
 
 
-                    sequencia = i;
+                    Sequencia = i;
                     var dist = Math.Abs(pp[i + 1].X - pp[i].X);
-                    if(pp[i].PegarIguaisX().Count>0 && juntar_cotas)
+                    if(pp[i].PegarIguaisX().Count>0 && Juntar_Cotas)
                     {
-                        AddCotaHorizontal(pp[i], pp[i + pp[i].PegarIguaisX().Count+1], offset1 + y);
+                        AddCotaHorizontal(pp[i], pp[i + pp[i].PegarIguaisX().Count+1], Offset1 + y);
                         i = i + pp[i].PegarIguaisX().Count;
                     }
                     else if (i == 0)
                     {
                         //cota da esquerda pra direita, ajustanto automaticamente a primeira cota, se a mesma for pequena
-                        AddCotaHorizontal(pp[i + 1], pp[i], offset1 + y);
+                        AddCotaHorizontal(pp[i + 1], pp[i], Offset1 + y);
                     }
                     else
                     {
-                        AddCotaHorizontal(pp[i], pp[i + 1], offset1 + y);
+                        AddCotaHorizontal(pp[i], pp[i + 1], Offset1 + y);
                        
                     }
                 }
                 //cota de ponta a ponta
-                ultima_cota = true;
-                AddCotaHorizontal(pp[0], pp[pp.Count - 1], offset0 + y + (cotas_movidas_contagem>0?(offset0-offset1):0));
+                Ultima_Cota = true;
+                AddCotaHorizontal(pp[0], pp[pp.Count - 1], Offset0 + y + (Cotas_Movidas_Contagem>0?(Offset0-Offset1):0));
             }
             else
             {
@@ -1127,87 +1085,87 @@ namespace DLM.cad
                 for (int i = 0; i < pp.Count-1; i++)
                 {
 
-                    sequencia = i;
-                    if (pp[i].PegarIguaisX().Count > 0 && juntar_cotas)
+                    Sequencia = i;
+                    if (pp[i].PegarIguaisX().Count > 0 && Juntar_Cotas)
                     {
-                        AddCotaHorizontal(pp[i], pp[i + pp[i].PegarIguaisX().Count+1], -offset1 + y);
+                        AddCotaHorizontal(pp[i], pp[i + pp[i].PegarIguaisX().Count+1], -Offset1 + y);
                         i = i + pp[i].PegarIguaisX().Count;
                     }
                     else if(i == 0)
                     {
                         //cota da esquerda pra direita, ajustanto automaticamente a primeira cota, se a mesma for pequena
-                        AddCotaHorizontal(pp[i +1], pp[i], -offset1 + y);
+                        AddCotaHorizontal(pp[i +1], pp[i], -Offset1 + y);
                     }
                     else
                     {
-                        AddCotaHorizontal(pp[i], pp[i+1], -offset1 + y);
+                        AddCotaHorizontal(pp[i], pp[i+1], -Offset1 + y);
                     }
                 }
                 //cota de ponta a ponta
-                ultima_cota = true;
-                AddCotaHorizontal(pp[0], pp[pp.Count - 1], -offset0 + y - (cotas_movidas_contagem > 0 ? (offset0 - offset1) : 0));
+                Ultima_Cota = true;
+                AddCotaHorizontal(pp[0], pp[pp.Count - 1], -Offset0 + y - (Cotas_Movidas_Contagem > 0 ? (Offset0 - Offset1) : 0));
             }
 
         }
         private void AddCotasAcumuladas(List<P3d> pp, double y, P3d origem, bool superior = true)
         {
-            cotas_movidas_contagem = 0;
-            sequencia = 0;
-            cota_anterior_movida = false;
-            ultima_cota = false;
-            max_sequencia = pp.Count-2;
-            ordinate_anterior = origem.X;
+            Cotas_Movidas_Contagem = 0;
+            Sequencia = 0;
+            Cota_Anterior_Movida = false;
+            Ultima_Cota = false;
+            Max_Sequencia = pp.Count-2;
+            Ordinate_Anterior = origem.X;
 
-            var coordy2 = offset2 + y;
+            var coordy2 = Offset2 + y;
             if(!superior)
             {
-                coordy2 = -offset2 + y;
+                coordy2 = -Offset2 + y;
             }
-            var coordy1 = offset1 + y;
+            var coordy1 = Offset1 + y;
             if (!superior)
             {
-                coordy1 = -offset1 + y;
+                coordy1 = -Offset1 + y;
             }
 
             //0 - Sem chapa
-            if (!base_esquerda && !base_direita && pp.Count > 2)
+            if (!Base_Esquerda && !Base_Direita && pp.Count > 2)
             {
                 for (int i = 0; i < pp.Count; i++)
                 {
-                    sequencia = i;
+                    Sequencia = i;
                     AddCotaOrdinate(origem, pp[i], new P3d(pp[i].X, coordy2, 0));
 
                 }
             }
 
             //1 - Só na esquerda
-            else if (base_esquerda && !base_direita && pp.Count > 2)
+            else if (Base_Esquerda && !Base_Direita && pp.Count > 2)
             {
                 origem = new P3d(pp[1].X, y, 0);
                 for (int i = 1; i < pp.Count; i++)
                 {
-                    sequencia = i;
+                    Sequencia = i;
                     AddCotaOrdinate(origem, pp[i], new P3d(pp[i].X, coordy2, 0));
                 }
             }
 
             //2 - Só na direita
-            else if (!base_esquerda && base_direita && pp.Count > 3)
+            else if (!Base_Esquerda && Base_Direita && pp.Count > 3)
             {
                 for (int i = 0; i < pp.Count - 1; i++)
                 {
-                    sequencia = i;
+                    Sequencia = i;
                     AddCotaOrdinate(origem, pp[i], new P3d(pp[i].X, coordy2, 0));
                 }
             }
 
             //3 - Ambos os lados
-            else if (base_direita && base_esquerda && pp.Count > 3)
+            else if (Base_Direita && Base_Esquerda && pp.Count > 3)
             {
                 origem = new P3d(pp[1].X, y, 0);
                 for (int i = 1; i < pp.Count - 1; i++)
                 {
-                    sequencia = i;
+                    Sequencia = i;
                     AddCotaOrdinate(origem, pp[i], new P3d(pp[i].X, coordy2, 0));
                 }
             }
@@ -1216,19 +1174,19 @@ namespace DLM.cad
         }
         private void AddCotasVerticais(List<P3dCAD> pp, double xmin, double xmin2)
         {
-            cotas_movidas_contagem = 0;
-            sequencia = 0;
-            cota_anterior_movida = false;
-            ultima_cota = false;
-            max_sequencia = pp.Count - 2;
+            Cotas_Movidas_Contagem = 0;
+            Sequencia = 0;
+            Cota_Anterior_Movida = false;
+            Ultima_Cota = false;
+            Max_Sequencia = pp.Count - 2;
             if (pp.Count > 1)
             {
                 for (int i = 0; i < pp.Count-1; i++)
                 {
 
-                    sequencia = i;
+                    Sequencia = i;
                     var distancia = pp[i+1].Y - pp[i].Y;
-                    if (pp[i].PegarIguaisY().Count > 0 && juntar_cotas)
+                    if (pp[i].PegarIguaisY().Count > 0 && Juntar_Cotas)
                     {
                         AddBarra();
                         AddMensagem("\n" + pp[i] + "\n");
@@ -1249,12 +1207,11 @@ namespace DLM.cad
 
                 }
                 //cota final ponta a ponta
-                ultima_cota = true;
+                Ultima_Cota = true;
                 AddCotaVertical(pp[0], pp[pp.Count - 1], xmin2);
 
             }
         }
-
         public void AddMLeader(Point3d origem, Point3d pt2, string texto)
         {
           
@@ -1298,13 +1255,9 @@ namespace DLM.cad
 
             }
         }
-
-
-       
-
         private void AddCotasVerticaisCantos()
         {
-            if(cotar_esquerda)
+            if(Cotar_Esquerda)
             {
                
                 try
@@ -1314,8 +1267,8 @@ namespace DLM.cad
                     AddMensagem(string.Join("\n", pts.Select(x=>x.ToString())));
                     if (pts.Count > 0)
                     {
-                        var xmin = pts.Min(y => y.X) - offset1;
-                        var xmin2 = pts.Min(y => y.X) - offset0;
+                        var xmin = pts.Min(y => y.X) - Offset1;
+                        var xmin2 = pts.Min(y => y.X) - Offset0;
                
                         AddCotasVerticais(pts, xmin, xmin2);
                     }
@@ -1335,7 +1288,7 @@ namespace DLM.cad
 
             }
 
-            if(cotar_direita)
+            if(Cotar_Direita)
             {
                 try
                 {
@@ -1344,8 +1297,8 @@ namespace DLM.cad
                     AddMensagem(string.Join("\n", pts));
                     if (pts.Count > 0)
                     {
-                        var xmin = pts.Max(y => y.X) + offset1;
-                        var xmin2 = pts.Max(y => y.X) + offset0;
+                        var xmin = pts.Max(y => y.X) + Offset1;
+                        var xmin2 = pts.Max(y => y.X) + Offset0;
                         
                         AddCotasVerticais(pts, xmin, xmin2);
                     }
@@ -1365,7 +1318,6 @@ namespace DLM.cad
             }
            
         }
-
         public void AddCotaVertical(P3dCAD inicio, P3dCAD fim, double x, string texto = "")
         {
             RotatedDimension acRotDim;
@@ -1381,7 +1333,7 @@ namespace DLM.cad
 
             bool dimtix = false;
 
-            if (sequencia == 0 | sequencia == max_sequencia)
+            if (Sequencia == 0 | Sequencia == Max_Sequencia)
             {
                 dimtix = false;
             }
@@ -1394,10 +1346,10 @@ namespace DLM.cad
             double tam = 0;
             if (ForcarTamTexto)
             {
-                tam = size;
+                tam = Size;
             }
 
-            acRotDim = AddCotaVertical(inicio, fim, texto, posicao, dimtix, tam,juntar_cotas,ultima_cota);
+            acRotDim = AddCotaVertical(inicio, fim, texto, posicao, dimtix, tam,Juntar_Cotas,Ultima_Cota);
         }
         public void AddCotaHorizontal(P3dCAD inicio, P3dCAD fim, double y, string texto = "")
         {
@@ -1410,22 +1362,22 @@ namespace DLM.cad
             //}
             var posicao = new P3d((inicio.X > fim.X ? inicio.X : fim.X) - (dist / 2), y, 0);
             bool movida = false;
-            if (dist < DistMinTexto_X && sequencia > 0 && sequencia != max_sequencia)
+            if (dist < DistMinTexto_X && Sequencia > 0 && Sequencia != Max_Sequencia)
             {
-                if (cota_anterior_movida)
+                if (Cota_Anterior_Movida)
                 {
-                    cota_anterior_movida = false;
+                    Cota_Anterior_Movida = false;
                 }
                 else
                 {
-                    cotas_movidas_contagem++;
+                    Cotas_Movidas_Contagem++;
                     movida = true;
-                    posicao = new P3d(posicao.X, posicao.Y + (this.cota_horizontal_superior ? (offset0 - offset1) : -(offset0 - offset1)), posicao.Z);
+                    posicao = new P3d(posicao.X, posicao.Y + (this.Cota_Horizontal_Superior ? (Offset0 - Offset1) : -(Offset0 - Offset1)), posicao.Z);
                 }
             }
 
             bool dimtix = false;
-            if (sequencia == 0 | sequencia == max_sequencia | movida)
+            if (Sequencia == 0 | Sequencia == Max_Sequencia | movida)
             {
                 dimtix = false;
             }
@@ -1437,11 +1389,11 @@ namespace DLM.cad
             //tam_texto
             if (ForcarTamTexto)
             {
-                tam = size;
+                tam = Size;
 
             }
 
-            acRotDim = AddCotaHorizontal(inicio, fim, texto, posicao, dimtix, tam,juntar_cotas,ultima_cota);
+            acRotDim = AddCotaHorizontal(inicio, fim, texto, posicao, dimtix, tam,Juntar_Cotas,Ultima_Cota);
         }
         public void AddCotaOrdinate(P3d pontozero, P3d ponto, P3d posicao)
         {
@@ -1450,30 +1402,28 @@ namespace DLM.cad
             //tam_texto
             if (ForcarTamTexto)
             {
-                tam = size;
+                tam = Size;
 
             }
-            double dist = Math.Abs(ponto.X - ordinate_anterior);
+            double dist = Math.Abs(ponto.X - Ordinate_Anterior);
 
 
-            if (sequencia > 0 && dist < (GetEscala() * 2.1) && sequencia != max_sequencia)
+            if (Sequencia > 0 && dist < (GetEscala() * 2.1) && Sequencia != Max_Sequencia)
             {
-                if (cota_anterior_movida)
+                if (Cota_Anterior_Movida)
                 {
-                    cota_anterior_movida = false;
+                    Cota_Anterior_Movida = false;
                 }
                 else
                 {
                     posicao = new P3d(posicao.X + (2.2 * GetEscala()), posicao.Y, posicao.Z);
-                    cota_anterior_movida = true;
+                    Cota_Anterior_Movida = true;
                 }
             }
 
             AddCotaOrdinate(pontozero, ponto, posicao, tam);
-            ordinate_anterior = ponto.X;
+            Ordinate_Anterior = ponto.X;
         }
-
-
         public TextStyleTableRecord GetStyle(string nome)
         {
             TextStyleTableRecord ret = null;
@@ -1496,10 +1446,6 @@ namespace DLM.cad
             }
             return ret;
         }
-
-        private double ordinate_anterior { get; set; } = 0;
-
-
         /// <summary>
         /// Esse cara habilita a opção das cotas não serem jogadas pro lado quando a distância for muito pequena
         /// </summary>
@@ -1555,11 +1501,11 @@ namespace DLM.cad
 
 
                 //escala = acCurDb.Dimscale;
-                size = acCurDb.Dimtxt;
+                Size = acCurDb.Dimtxt;
                 acCurDb.Dimtfill = 1;
                 if (ForcarTamTexto)
                 {
-                    acCurDb.Textsize = size;
+                    acCurDb.Textsize = Size;
 
                 }
                 acCurDb.Dimtix = true;
@@ -1570,7 +1516,7 @@ namespace DLM.cad
 
                 MapeiaObjetos();
 
-                if (marcas_ajusta_escala)
+                if (Marcas_Ajusta_Escala)
                 {
                     Blocos.SetEscala(this.GetBlocos_Marcas_Posicoes(),this.GetEscala());
                 }
@@ -1592,13 +1538,13 @@ namespace DLM.cad
                 GetPontosHorizontais(out pp, out y, out origem, true);
 
 
-                if (cotar_emcima)
+                if (Cotar_Em_Cima)
                 {
                     AddCotasHorizontais(pp, y);
                 }
 
                 //cotas acumuladas
-                if (acumuladas_cima && !tipo_desenho.StartsWith("C"))
+                if (Acumuladas_Cima && !Tipo_Desenho.StartsWith("C"))
                 {
                     AddCotasAcumuladas(pp.P3d(), y, origem);
                 }
@@ -1606,12 +1552,12 @@ namespace DLM.cad
                 //cotas horizotais inferiores
                 GetPontosHorizontais(out pp, out y, out origem, false);
 
-                if (cotar_embaixo)
+                if (Cotar_Embaixo)
                 {
                     AddCotasHorizontais(pp, y, false);
                 }
 
-                if (acumuladas_baixo && !tipo_desenho.StartsWith("C"))
+                if (Acumuladas_Baixo && !Tipo_Desenho.StartsWith("C"))
                 {
                     AddCotasAcumuladas(pp.P3d(), y, origem, false);
                 }
@@ -1619,7 +1565,7 @@ namespace DLM.cad
                 //cotas dos cantos
                 AddCotasVerticaisCantos();
 
-                if (linha_projecao && !tipo_desenho.StartsWith("C"))
+                if (Linha_Projecao && !Tipo_Desenho.StartsWith("C"))
                 {
                     foreach (var s in this.GetCoordenadasFurosProjecao())
                     {
@@ -1627,11 +1573,11 @@ namespace DLM.cad
                     }
                 }
 
-                if (indicar_diametro && !tipo_desenho.StartsWith("C"))
+                if (Indicar_Diametro && !Tipo_Desenho.StartsWith("C"))
                 {
                     foreach (var s in this.GetFurosPorDiam())
                     {
-                        Ut.AddLeader(s.Origem(), s.Origem().Mover(offset1, -offset1 / 2), s.Nome, size * this.GetEscala());
+                        Ut.AddLeader(s.Origem(), s.Origem().Mover(Offset1, -Offset1 / 2), s.Nome, Size * this.GetEscala());
                     }
                 }
 
@@ -1642,7 +1588,6 @@ namespace DLM.cad
 
 
         }
-
         public void Cotar()
         {
         retentar:
@@ -1651,7 +1596,7 @@ namespace DLM.cad
             {
                 return;
             }
-            if (tipo_desenho == "") { return; }
+            if (Tipo_Desenho == "") { return; }
 
 
 
@@ -1666,7 +1611,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    var pp = this.PerguntaString("Deseja mudar as opções e continuar?", new List<string> { "Sim", "Não" });
+                    var pp = Ut.PedirString("Deseja mudar as opções e continuar?", new List<string> { "Sim", "Não" });
                     if (pp.StartsWith("S"))
                     {
                         //Opcoes();

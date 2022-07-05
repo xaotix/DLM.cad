@@ -41,7 +41,13 @@ namespace DLM.cad
         Polyline,
         Linhas,
         PolyLine_Linhas,
+        PolyLine_Blocos,
     }
+    public enum CAD_TYPE
+    {
+        LINE, POLYLINE, LWPOLYLINE, TEXT, MTEXT, DIMENSION, LEADER, INSERT, MLINE,CIRCLE, MLEADER
+    }
+
     public enum Tipo_Objeto
     {
         Texto,

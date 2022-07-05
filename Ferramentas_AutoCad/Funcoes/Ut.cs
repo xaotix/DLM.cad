@@ -1202,6 +1202,50 @@ namespace DLM.cad
 
         }
 
+        public static string PedirString(string Titulo, List<string> Opcoes)
+        {
+            PromptKeywordOptions tipo_vista = new PromptKeywordOptions("");
+            tipo_vista.Message = "\n" + Titulo;
+            foreach (var s in Opcoes)
+            {
+                tipo_vista.Keywords.Add(s);
+            }
+            tipo_vista.AppendKeywordsToMessage = true;
+
+            tipo_vista.AllowNone = false;
+
+            PromptResult selecao_tipo_vista = acDoc.Editor.GetKeywords(tipo_vista);
+            if (selecao_tipo_vista.Status != PromptStatus.OK) return "";
+
+            return selecao_tipo_vista.StringResult;
+        }
+        public static double PedirDouble(string Titulo, double padrao = 0)
+        {
+            PromptDoubleOptions tipo_vista = new PromptDoubleOptions(Titulo);
+            tipo_vista.Message = "\n" + Titulo;
+            tipo_vista.DefaultValue = padrao;
+
+            tipo_vista.AllowNone = false;
+
+            PromptDoubleResult selecao_tipo_vista = acDoc.Editor.GetDouble(tipo_vista);
+            if (selecao_tipo_vista.Status != PromptStatus.OK) return padrao;
+
+            return selecao_tipo_vista.Value;
+        }
+        public static int PedirInteger(string Titulo, int padrao = 0)
+        {
+            PromptIntegerOptions tipo_vista = new PromptIntegerOptions(Titulo);
+            tipo_vista.Message = "\n" + Titulo;
+            tipo_vista.DefaultValue = padrao;
+
+            tipo_vista.AllowNone = false;
+
+            PromptIntegerResult selecao_tipo_vista = acDoc.Editor.GetInteger(tipo_vista);
+            if (selecao_tipo_vista.Status != PromptStatus.OK) return padrao;
+
+            return selecao_tipo_vista.Value;
+        }
+
         public static System.Collections.Generic.List<ObjectId> getLayoutIds(Database db)
         {
             System.Collections.Generic.List<ObjectId> layoutIds = new System.Collections.Generic.List<ObjectId>();
@@ -1352,18 +1396,18 @@ namespace DLM.cad
             }
             else if (obj is Polyline)
             {
-                var tt = obj as Polyline;
-                for (int i = 0; i < tt.NumberOfVertices; i++)
+                var poly = obj as Polyline;
+                for (int i = 0; i < poly.NumberOfVertices; i++)
                 {
-                    var t = tt.GetPoint3dAt(i);
+                    var t = poly.GetPoint3dAt(i);
                     pts.Add(t);
                 }
 
-                if(tt.Closed && pts.Count>0)
+                if(poly.Closed && pts.Count>0)
                 {
                     pts.Add(pts[0]);
                 }
-                cor = Ut.GetCor(tt.Color);
+                cor = Ut.GetCor(poly.Color);
             }
             else if (obj is Circle)
             {

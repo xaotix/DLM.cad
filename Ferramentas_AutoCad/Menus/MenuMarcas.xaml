@@ -403,6 +403,7 @@
                     <GroupBox Header="Geral">
                         <StackPanel>
                             <Button Content="Criar marcas a partir de CAMs" Click="criar_marcas_cam"/>
+                            <Button Content="Criar CAM a partir de Polyline" Click="criar_cam_polyline"/>
                             <Separator></Separator>
                             <Button Content="Gerar DBF 3D"  Click="gerar_dbf_3d"/>
                             <Button Content="Abrir Pasta"  Click="abre_pasta"/>

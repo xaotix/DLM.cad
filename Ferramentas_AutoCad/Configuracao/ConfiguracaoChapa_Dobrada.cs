@@ -88,7 +88,7 @@ namespace DLM.cad
                     return _Superficie;
                 }
 
-                double ret = (this.Comprimento * this.Largura * 2) + (this.Espessura * Comprimento * 2) + (this.Espessura * Largura * 2);
+                double ret = (Area * 2) + (this.Espessura * Comprimento * 2) + (this.Espessura * Largura * 2);
                 double sup = Math.Round(ret / 1000 / 1000 / 1000, Cfg.Init.CAD_DECIMAIS_SUP);
                 return sup;
             }
@@ -165,10 +165,6 @@ namespace DLM.cad
             this.Descricao = Descricao;
             
         }
-        public void SetArea(double valor)
-        {
-            this._Superficie = valor;
-        }
         public ConfiguracaoChapa_Dobrada(Conexoes.Bobina bobina, double comprimento, double largura)
         {
             this._Corte = largura;
@@ -183,19 +179,21 @@ namespace DLM.cad
             this.Comprimento = comprimento;
             this.Descricao = $"Ch #{this.Espessura.ToString("N2")}x{this.Largura.ToString("N0")}x{this.Comprimento.ToString("N0")}";
         }
-        public ConfiguracaoChapa_Dobrada(DLM.cam.ReadCAM cam)
+        public ConfiguracaoChapa_Dobrada(DLM.cam.ReadCAM CAM)
         {
-            this.Comprimento = cam.Comprimento;
-            this.Espessura = cam.Espessura;
-            this.Marca = cam.Marca;
-            this.Material = cam.Material;
-            this.Mercadoria = cam.Descricao;
-            this.Quantidade = cam.Quantidade;
-            this.Ficha = cam.Tratamento;
-            this._Corte = cam.Largura;
-            this._Peso_Unitario = cam.Peso;
-            this._Superficie = cam.Superficie;
-            this.Descricao = cam.Descricao;
+            this.Comprimento = CAM.Comprimento;
+            this.Espessura = CAM.Espessura;
+            this.Marca = CAM.Marca;
+            this.Material = CAM.Material;
+            this.Mercadoria = CAM.Descricao;
+            this.Quantidade = CAM.Quantidade;
+            this.Ficha = CAM.Tratamento;
+            this._Corte = CAM.Largura;
+            this._Peso_Unitario = CAM.Peso;
+            this._Superficie = CAM.Superficie;
+            this._Area = CAM.Formato.LIV1.GetArea();
+            this.Descricao = CAM.Descricao;
         }
+       
     }
 }
