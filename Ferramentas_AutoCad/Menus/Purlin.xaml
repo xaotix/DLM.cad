@@ -103,7 +103,7 @@
                                 <ListView x:Name="tirantes_mlstyles" Grid.Row="8" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_tirantes, Path=IsChecked,TargetNullValue=false}"/>
                                 <ListView x:Name="tirantes_multilines" Grid.Row="8" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_tirantes, Path=IsChecked,TargetNullValue=false}"/>
 
-                                <CheckBox Grid.Row="9" Content="Terças" Name="mapeia_tercas" IsChecked="True"/>
+                                    <CheckBox Grid.Row="9" Content="Purlins" Name="mapeia_tercas" IsChecked="True"/>
                                 <ListView x:Name="tercas_mlstyles" Grid.Row="9" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_tercas, Path=IsChecked,TargetNullValue=false}"/>
                                 <ListView x:Name="tercas_multilines" Grid.Row="9" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_tercas, Path=IsChecked,TargetNullValue=false}"/>
                                     <Label  Grid.Row="10">

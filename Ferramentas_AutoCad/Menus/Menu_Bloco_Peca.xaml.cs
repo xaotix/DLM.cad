@@ -35,7 +35,7 @@ namespace DLM.cad.Menus
 
         public Conexoes.RMA rma_sel { get; set; }
         public Conexoes.RME rme_sel { get; set; }
-        public Conexoes.RMU rmu_sel { get; set; }
+        public RME rmu_sel { get; set; }
         public Conexoes.RMT rmt_sel { get; set; }
 
         private List<MarcaTecnoMetal> marcas_tecnometal { get; set; } = new List<MarcaTecnoMetal>();
@@ -144,7 +144,7 @@ namespace DLM.cad.Menus
                 }
                 else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && this.rme_sel != null)
                 {
-                    var pc = new Conexoes.RME(this.rme_sel);
+                    var pc = this.rme_sel.Clonar();
                     bt_peca_selecionar.Content = this.rme_sel.COD_DB;
                     if (this.rme_sel.VARIAVEL)
                     {
@@ -161,7 +161,7 @@ namespace DLM.cad.Menus
                 else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU && this.rmu_sel != null)
                 {
                     var selec = this.rmu_sel;
-                    var pc = new Conexoes.RMU(selec);
+                    var pc = new RME(selec);
                     bt_peca_selecionar.Content = selec.COD_DB;
                     if (this.rmu_sel.VARIAVEL)
                     {
@@ -364,7 +364,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && rme_sel!=null)
             {
-                Conexoes.RME mm = new Conexoes.RME(rme_sel);
+                Conexoes.RME mm = rme_sel.Clonar();
                 if (mm.VARIAVEL)
                 {
                     mm.COMP = comprimento;
@@ -376,7 +376,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU && rmu_sel!=null)
             {
-                Conexoes.RMU mm = new Conexoes.RMU(rmu_sel);
+                RME mm = new RME(rmu_sel);
                 if (mm.VARIAVEL)
                 {
                     mm.COMP = comprimento;

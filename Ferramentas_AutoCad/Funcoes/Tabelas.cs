@@ -64,7 +64,7 @@ namespace DLM.cad
                     x0 = p0.X;
                     y0 = p0.Y;
                     Hashtable ht = new Hashtable();
-                    ht.Add("TITULO", "LISTA DE TERÇAS");
+                    ht.Add("TITULO", "LISTA DE PURLINS");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * 12.86));
                     foreach (var p in purlins)
