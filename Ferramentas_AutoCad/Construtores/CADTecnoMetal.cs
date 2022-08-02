@@ -1020,9 +1020,9 @@ namespace DLM.cad
                             Core.LimparDesenho(doc);
                         }
                     }
-                    //dynamic acadDoc = doc.AcadDocument;
-                    //acadDoc.Save();
-                   
+                    dynamic acadDoc = doc.AcadDocument;
+                    acadDoc.Save();
+
                     if (drawing.Endereco.ToUpper() == arq_atual.ToUpper())
                     {
                        
@@ -1030,7 +1030,7 @@ namespace DLM.cad
                     else
                     {
 
-                        //acadDoc.Close();
+                        acadDoc.Close();
                     }
 
                     Core.Getw().somaProgresso("1/3 - Rodando macros " + drawing.Nome);

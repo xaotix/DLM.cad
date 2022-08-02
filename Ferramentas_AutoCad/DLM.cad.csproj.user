@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Autodesk\AutoCAD Mechanical 2012\acad.exe</StartProgram>
-    <StartArguments>C:\Medabil\Ferramentas_DLM\iniciar.scr</StartArguments>
+    <StartArguments>nologo /b "C:\Medabil\Ferramentas_DLM\iniciar.scr"</StartArguments>
     <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
   </PropertyGroup>
 </Project>
