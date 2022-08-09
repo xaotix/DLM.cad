@@ -620,7 +620,7 @@ namespace DLM.cad
                     Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, GetEscala() * 5,"");
-                    cotas.Add((P3dCAD)pp0);
+                    cotas.Add(pp0);
                     pp0 = pp0.Mover(angulo, espacos);
 
                 }

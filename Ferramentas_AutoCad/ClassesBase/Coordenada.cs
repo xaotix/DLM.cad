@@ -132,15 +132,11 @@ namespace DLM.cad
 
     public class P3dCAD:P3d
     {
-
         public override string ToString()
         {
             return "[" + Tipo.ToString().PadRight(10,' ') + "] [" + this.id.ToString().PadLeft(3, '0') + "] " + chave;
         }
-
-
         public Tipo_Coordenada Tipo { get; set; } = Tipo_Coordenada.Sem;
-
         public P3dCAD(Point3d pt, int id, Tipo_Coordenada tipo)
         {
             this.X = pt.X;
