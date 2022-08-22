@@ -274,7 +274,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>del /q "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\Support\acad.lsp"</PreBuildEvent>
+    <PreBuildEvent>::del /q "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\Support\acad.lsp"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
