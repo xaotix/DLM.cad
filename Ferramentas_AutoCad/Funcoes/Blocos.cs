@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using DLM.vars;
 using DLM.desenho;
+using Conexoes;
 
 namespace DLM.cad
 {
@@ -622,8 +623,8 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.POS_PEZ.ToString(), posicao);
                 ht.Add(TAB_DBF1.NOM_PRO.ToString(), pf.Descricao);
                 ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
-                ht.Add(TAB_DBF1.LUN_PRO.ToString(), comp.ToString().Replace(",", ""));
-                ht.Add(TAB_DBF1.LAR_PRO.ToString(), larg.ToString().Replace(",", ""));
+                ht.Add(TAB_DBF1.LUN_PRO.ToString(), comp.String(0));
+                ht.Add(TAB_DBF1.LAR_PRO.ToString(), larg.String(0));
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
                 ht.Add(TAB_DBF1.PUN_LIS.ToString(), Math.Round(pf.Peso * area / 1000 / 1000 / 100, Cfg.Init.CAD_DECIMAIS));
                 ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.CAD_DECIMAIS));

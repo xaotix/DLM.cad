@@ -153,7 +153,7 @@ namespace DLM.cad.Menus
                     }
                     else
                     {
-                        this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
+                        this.txt_comprimento.Text = this.rme_sel.COMP.String(0);
                     }
                     this.txt_codigo.Text = pc.CODIGOFIM;
                     this.txt_descricao.Text = pc.DESC;
@@ -170,7 +170,7 @@ namespace DLM.cad.Menus
                     }
                     else
                     {
-                        this.txt_comprimento.Text = this.rme_sel.COMP.ToString();
+                        this.txt_comprimento.Text = this.rme_sel.COMP.String(0);
                     }
                     this.txt_codigo.Text = pc.CODIGOFIM;
                     this.txt_descricao.Text = pc.DESC;
@@ -187,7 +187,7 @@ namespace DLM.cad.Menus
                     if (this.marca_sel != null)
                     {
                         this.txt_codigo.Text = this.marca_sel.Marca;
-                        this.txt_comprimento.Text = this.marca_sel.Comprimento.ToString();
+                        this.txt_comprimento.Text = this.marca_sel.Comprimento.String(0);
                         this.txt_descricao.Text = this.marca_sel.Mercadoria;
                         this.txt_destino.Text = Cfg.Init.CAD_ATT_TECNOMETAL;
                         this.txt_quantidade.Text = this.marca_sel.Quantidade.ToString();
@@ -292,7 +292,7 @@ namespace DLM.cad.Menus
             ht.Add(Cfg.Init.CAD_ATT_N, this.txt_prefix.Text + this.txt_sequencial.Text);
             ht.Add(Cfg.Init.CAD_ATT_Familia, this.familia.Text);
             ht.Add(Cfg.Init.CAD_ATT_Tipo, this.tipo_selecionado);
-            ht.Add(Cfg.Init.CAD_ATT_Comprimento, comprimento.ToString().Replace(",", ""));
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, comprimento.String(0));
             ht.Add("CODIGO", txt_codigo.Text);
             ht.Add(Cfg.Init.CAD_ATT_id, id);
             ht.Add(Cfg.Init.CAD_ATT_Descricao, txt_descricao.Text);

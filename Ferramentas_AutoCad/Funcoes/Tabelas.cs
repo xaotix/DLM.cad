@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using DLM.desenho;
 using DLM.vars;
 using System;
@@ -73,8 +74,8 @@ namespace DLM.cad
                         hp.Add(Cfg.Init.CAD_ATT_N, p.Sequencia.ToString().PadLeft(2, '0'));
                         hp.Add(Cfg.Init.CAD_ATT_Perfil, p.Nome);
                         hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3,'0'));
-                        hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento.ToString().PadLeft(5,'0'));
-                        hp.Add(Cfg.Init.CAD_ATT_Espessura, p.Espessura.ToString("N2").PadLeft(5, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento.String(0,5));
+                        hp.Add(Cfg.Init.CAD_ATT_Espessura, p.Espessura.String(2,5));
                         hp.Add(Cfg.Init.CAD_ATT_Destino, Cfg.Init.CAD_ATT_RME);
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas, p0, escala, 0, hp);
                         p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
@@ -109,7 +110,7 @@ namespace DLM.cad
                     ht.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
                     ht.Add(Cfg.Init.CAD_ATT_Peca, p.Marca);
                     ht.Add(Cfg.Init.CAD_ATT_Quantidade, p.Qtd.ToString().PadLeft(3, '0'));
-                    ht.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento.ToString().PadLeft(5, '0'));
+                    ht.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento.String(0,5));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                 }
@@ -142,7 +143,7 @@ namespace DLM.cad
                     hp.Add(Cfg.Init.CAD_ATT_N, p.Sequencia);
                     hp.Add(Cfg.Init.CAD_ATT_Perfil, p.Marca);
                     hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Qtd.ToString().PadLeft(3,'0'));
-                    hp.Add(Cfg.Init.CAD_ATT_Vao, p.Vao.ToString());
+                    hp.Add(Cfg.Init.CAD_ATT_Vao, p.Vao.String(0));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Correntes, p0, escala, 0, hp);
                     p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                 }
@@ -179,8 +180,8 @@ namespace DLM.cad
                         hp.Add(Cfg.Init.CAD_ATT_N, seq.ToString().PadLeft(2, '0'));
                         hp.Add(Cfg.Init.CAD_ATT_Perfil, p.CODIGOFIM);
                         hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
-                        hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.COMP.ToString().PadLeft(5, '0'));
-                        hp.Add(Cfg.Init.CAD_ATT_Espessura, p.ESP.ToString("N2").PadLeft(5, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.COMP.String(0,5));
+                        hp.Add(Cfg.Init.CAD_ATT_Espessura, p.ESP.String(2,5));
                         hp.Add(Cfg.Init.CAD_ATT_Destino, "RM");
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas, p0, escala, 0, hp);
                         p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
@@ -465,7 +466,7 @@ namespace DLM.cad
                         {
                             Hashtable hp = new Hashtable();
                             hp.Add(Cfg.Init.CAD_ATT_Marca, Pos.Posicao);
-                            hp.Add(Cfg.Init.CAD_ATT_Quantidade, Math.Round(Pos.Quantidade * Marca.Quantidade,decimais).ToString().Replace(",","."));
+                            hp.Add(Cfg.Init.CAD_ATT_Quantidade, (Pos.Quantidade * Marca.Quantidade).String(decimais));
                             hp.Add(Cfg.Init.CAD_ATT_Descricao, Pos.Descricao);
                             hp.Add(Cfg.Init.CAD_ATT_Material, Pos.Material);
                             hp.Add(Cfg.Init.CAD_ATT_Cod_SAP, Pos.SAP);

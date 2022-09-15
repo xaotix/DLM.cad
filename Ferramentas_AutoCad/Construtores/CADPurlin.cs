@@ -732,7 +732,7 @@ namespace DLM.cad
 
                         textos.Add($"Coordenadas:{furos.Count}");
                         textos.Add("$Inicio");
-                        textos.AddRange(furos.Select(x => Math.Round(x).ToString()));
+                        textos.AddRange(furos.Select(x => x.String(0)));
                         textos.Add("$Fim");
 
 
@@ -832,9 +832,9 @@ namespace DLM.cad
             Hashtable ht = new Hashtable();
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
 
-            ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.ToString());
-            ht.Add("OFFSET1", offset1.ToString());
-            ht.Add("OFFSET2", offset2.ToString());
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.String(0));
+            ht.Add("OFFSET1", offset1.String(0));
+            ht.Add("OFFSET2", offset2.String(0));
 
             ht.Add("TIP", TIP.ToString());
             ht.Add("SFTA", sfta.ToString());
@@ -847,8 +847,8 @@ namespace DLM.cad
             Hashtable ht = new Hashtable();
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
             ht.Add("TIP", tip);
-            ht.Add(Cfg.Init.CAD_ATT_Descricao, desc.ToString());
-            ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.ToString());
+            ht.Add(Cfg.Init.CAD_ATT_Descricao, desc.String(3));
+            ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.String(0));
             ht.Add(Cfg.Init.CAD_ATT_Corrente_Fixador, fix);
 
             Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Indicacao_Correntes, origembloco, this.GetEscala(), 0, ht);
@@ -1154,7 +1154,7 @@ namespace DLM.cad
             int c = 1;
             List<Conexoes.Macros.Tirante> ss = new List<Conexoes.Macros.Tirante>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
-            foreach (var p in tirantes.GroupBy(x => x.Tipo + Conexoes.Utilz.ArredondarMultiplo(x.Comprimento, this.TirantesTolerancia).ToString() + " - " + x.SFT1 + "/" + x.SFT2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
+            foreach (var p in tirantes.GroupBy(x => x.Tipo + Conexoes.Utilz.ArredondarMultiplo(x.Comprimento, this.TirantesTolerancia).String(0) + " - " + x.SFT1 + "/" + x.SFT2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
             {
                 var pps = p.ToList();
                 var nova = pps[0].Clonar();
@@ -1394,7 +1394,7 @@ namespace DLM.cad
                 return;
             }
 
-            var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", "", this.TranspassePadrao.ToString()));
+            var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", "", this.TranspassePadrao.String(0)));
 
            
 
@@ -1408,12 +1408,12 @@ namespace DLM.cad
                     {
                         if(trs == "Esquerda" | trs == "Ambos")
                         {
-                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Esq, valor.ToString());
+                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Esq, valor.String(0));
                         }
 
                         if (trs == "Direita" | trs == "Ambos")
                         {
-                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Dir, valor.ToString());
+                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Dir, valor.String(0));
                         }
                     }
                     acTrans.Commit();
@@ -1470,16 +1470,16 @@ namespace DLM.cad
                         {
                             if (trs == "Ambos")
                             {
-                                Atributos.Set(s, acTrans, "AD", valor.ToString());
+                                Atributos.Set(s, acTrans, "AD", valor.String(0));
                                 Atributos.Set(s, acTrans, "AE", "0");
                             }
                             else if (trs == "Esquerda")
                             {
-                                Atributos.Set(s, acTrans, "AE", valor.ToString());
+                                Atributos.Set(s, acTrans, "AE", valor.String(0));
                             }
                             else if (trs == "Direita")
                             {
-                                Atributos.Set(s, acTrans, "AD", valor.ToString());
+                                Atributos.Set(s, acTrans, "AD", valor.String(0));
                             }
                         }
                     }
@@ -1533,8 +1533,8 @@ namespace DLM.cad
                     {
                         Hashtable ht = new Hashtable();
                         ht.Add("ID_PECA", perfil.id_db.ToString());
-                        ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.ToString());
-                        ht.Add("SECAO", perfil.SECAO.ToString());
+                        ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.String());
+                        ht.Add("SECAO", perfil.SECAO.String(0));
                         ht.Add(Cfg.Init.CAD_ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");
 
                         Atributos.Set(s, acTrans, ht);
@@ -1570,7 +1570,7 @@ namespace DLM.cad
         }
         public void SetCorrenteDescontar()
         {
-            var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite", "", this.CorrenteDescontar.ToString()));
+            var valor = Conexoes.Utilz.Int(Conexoes.Utilz.Prompt("Digite", "", this.CorrenteDescontar.ToString()));
             if (valor < 0)
             {
                 return;
@@ -1582,9 +1582,9 @@ namespace DLM.cad
                 if (sel.Status == PromptStatus.OK)
                 {
 
-                    foreach (var s in this.Getblocos_correntes())
+                    foreach (var bloco in this.Getblocos_correntes())
                     {
-                        Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Descricao, valor.ToString());
+                        Atributos.Set(bloco, acTrans, Cfg.Init.CAD_ATT_Descricao, valor.ToString());
 
                     }
                     acTrans.Commit();

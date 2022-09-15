@@ -499,7 +499,7 @@ namespace DLM.cad
                     {
                         string numero = seq.ToString().PadLeft(2, '0');
                         string familia = "TIRANTE " + igual.PecaLiberar.Replace("$C$", "");
-                        string codigo = igual.PecaLiberar.Replace("$C$", Math.Round(comp.Key).ToString().PadLeft(igual.CaractComp, '0'));
+                        string codigo = igual.PecaLiberar.Replace("$C$", comp.Key.String(0, igual.CaractComp));
                         var pedacos = Conexoes.Utilz.Quebrar(comp.Key, 6000, 600, 0);
                         string descricao = string.Join(" ",pedacos.GroupBy(x => x).ToList().Select(x => "(" + x.Key + " " + x.Count().ToString() + "x)"));
 
@@ -616,7 +616,7 @@ namespace DLM.cad
                         ht.Add(Cfg.Init.CAD_ATT_N, pc.Numero);
                         ht.Add(Cfg.Init.CAD_ATT_Familia, pc.Familia);
                         ht.Add(Cfg.Init.CAD_ATT_Tipo, Cfg.Init.CAD_ATT_TECNOMETAL);
-                        ht.Add(Cfg.Init.CAD_ATT_Comprimento, pc.Comprimento.ToString().Replace(",", ""));
+                        ht.Add(Cfg.Init.CAD_ATT_Comprimento, pc.Comprimento.String(0));
                         ht.Add(Cfg.Init.CAD_ATT_Codigo, pc.Nome);
                         ht.Add(Cfg.Init.CAD_ATT_id, 0);
                         ht.Add(Cfg.Init.CAD_ATT_Descricao, pc.Descricao);
@@ -1664,9 +1664,9 @@ namespace DLM.cad
                                 var sup = m.CalcularSuperficieLinear();
 
                                 Hashtable att = new Hashtable();
-                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.ToString("N4").Replace(",", "."));
-                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().ToString().Replace(",", "."));
-                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento}*{m.Espessura}*{m.Largura}");
+                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.String(Cfg.Init.Peso_Decimais));
+                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().String(Cfg.Init.Superficie_Decimais));
+                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento.String(0)}*{m.Espessura.String()}*{m.Largura.String(0)}");
                                 att.Add(TAB_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));
 
                                 DLM.cad.Atributos.Set(m.Bloco.Bloco, acTrans, att);
@@ -1929,8 +1929,8 @@ namespace DLM.cad
 
 
             erros.AddRange(marcas.GroupBy(x => x.Marca).ToList().FindAll(x => x.Count() > 1).Select(x => new Report("Mesma marca em pranchas diferentes.", $"Marca: {x.Key} nas pranchas: {string.Join("\n", x.Select(y => y.Prancha))}", DLM.vars.TipoReport.Crítico)));
-            erros.AddRange(marcas.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Marca.Replace("-","").Replace("_","")) | x.Marca.Contains(" ")).Select(x => x.Marca).Distinct().ToList().Select(x => new Report("Nome de marca com caracteres inválidos.", $"Marca: {x}", DLM.vars.TipoReport.Crítico)));
-            erros.AddRange(posicoes.FindAll(x=> Conexoes.Utilz.CaracteresEspeciais(x.Posicao.Replace("-","").Replace("_","")) | x.Marca.Contains(" ") | x.Marca.Replace(" ","").Length==0).Select(x=>"M: " + x.Marca + "Pos: " + x.Posicao).Distinct().ToList().Select(x => new Report("Nome de posição com caracteres inválidos ou em branco.", $"{x}", DLM.vars.TipoReport.Crítico)));
+            erros.AddRange(marcas.FindAll(x=> x.Marca.Replace("-", "").Replace("_", "").CaracteresEspeciais() | x.Marca.Contains(" ")).Select(x => x.Marca).Distinct().ToList().Select(x => new Report("Nome de marca com caracteres inválidos.", $"Marca: {x}", DLM.vars.TipoReport.Crítico)));
+            erros.AddRange(posicoes.FindAll(x=> x.Posicao.Replace("-", "").Replace("_", "").CaracteresEspeciais() | x.Marca.Contains(" ") | x.Marca.Replace(" ","").Length==0).Select(x=>"M: " + x.Marca + "Pos: " + x.Posicao).Distinct().ToList().Select(x => new Report("Nome de posição com caracteres inválidos ou em branco.", $"{x}", DLM.vars.TipoReport.Crítico)));
 
 
             var ppos = posicoes.GroupBy(x => x.Posicao);
@@ -2303,7 +2303,7 @@ namespace DLM.cad
                     return "";
                 }
             }
-            if(Conexoes.Utilz.CaracteresEspeciais(m))
+            if(m.CaracteresEspeciais())
             {
                 if (Conexoes.Utilz.Pergunta($"[{m}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?"))
                 {

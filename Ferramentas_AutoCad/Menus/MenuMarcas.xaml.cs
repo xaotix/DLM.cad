@@ -289,7 +289,7 @@ namespace DLM.cad
 
 
 
-            if (Conexoes.Utilz.CaracteresEspeciais(NomeFim) | NomeFim.Contains(" "))
+            if (NomeFim.CaracteresEspeciais() | NomeFim.Contains(" "))
             {
                 Conexoes.Utilz.Alerta($"{NomeFim} - Nome não pode conter caracteres especiais ou espaços.");
                 return;
@@ -308,7 +308,7 @@ namespace DLM.cad
 
             if(tipo!= Tipo_Bloco.Elemento_Unitario)
             {
-                if(!Conexoes.Utilz.E_Multiplo(qtd_double,1))
+                if(!qtd_double.E_Multiplo(1))
                 {
                     Conexoes.Utilz.Alerta($"Quantidade inválida: {qtd_double}. Quantidades com números quebrados somente para elemento unitário.");
                     return;

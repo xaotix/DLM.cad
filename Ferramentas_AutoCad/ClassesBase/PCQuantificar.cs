@@ -212,7 +212,7 @@ namespace DLM.cad
 
                     foreach(var st in str2)
                     {
-                        if(Conexoes.Utilz.ESoNumero(st))
+                        if(st.ESoNumero())
                         {
                             qtd_pc  = Conexoes.Utilz.Double(st);
                             break;

@@ -780,7 +780,7 @@ namespace DLM.cad
             }
          else
             {
-                menu_bloco.txt_escala.Text = TecnoMetal.GetEscala().ToString();
+                menu_bloco.txt_escala.Text = TecnoMetal.GetEscala().String();
                 menu_bloco.Visibility = System.Windows.Visibility.Visible;
             }
         }

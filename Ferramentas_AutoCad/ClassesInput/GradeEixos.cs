@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -233,7 +234,7 @@ namespace DLM.cad
                             if(pp.DistBaixo>0)
                             {
                                 var pt = new System.Windows.Point((this.GetXmin() - P0.X - Core.CADPurlin.Canvas_Offset) * Escala, (pp.CentroBloco.Y- P0.Y - (pp.DistBaixo/2)) * Escala);
-                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
+                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.String(0), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
                                 cota.ToolTip = pp;
@@ -253,7 +254,7 @@ namespace DLM.cad
                             if (pp.DistBaixo > 0)
                             {
                                 var pt = new System.Windows.Point((this.GetXMax() - P0.X) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
-                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.ToString(), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
+                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.String(), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
                                 retorno.Add(cota);

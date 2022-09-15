@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using Conexoes;
 using DLM.vars;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace DLM.cad
         }
         public string GetChave()
         {
-            return "Ø" + Diametro + (Oblongo > 0 ? ("x"+ (Oblongo + Diametro).ToString()) : "");
+            return "Ø" + Diametro + (Oblongo > 0 ? ("x"+ (Oblongo + Diametro).String(0)) : "");
         }
         public double Diametro { get; private set; } = 0;
         public double Oblongo { get; private set; } = 0;
