@@ -243,7 +243,7 @@ namespace DLM.cad
 
                 if (!Directory.Exists(pasta))
                 {
-                    pasta = Cfg.Init.Raiz_AppData;
+                    pasta = Cfg.Init.DIR_APPDATA;
                 }
                 return pasta;
             }
