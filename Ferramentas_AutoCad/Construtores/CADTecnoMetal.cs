@@ -2372,7 +2372,7 @@ namespace DLM.cad
                 if (bobina == null)
                 {
                    
-                    bobina = DBases.GetBobinaDummy();
+                    bobina = DBases.GetBobinaDummy(Cfg.Init.Material_RMU);
                     var espessura = PromptChapa(Tipo_Chapa.Fina);
                     if (espessura == null)
                     {
@@ -2507,7 +2507,7 @@ namespace DLM.cad
                     bool chapa_fina = espessura.GetChapa_Fina();
                     if (bobina==null)
                     {
-                        bobina = Conexoes.Extensoes.Clonar(DBases.GetBobinaDummy());
+                        bobina = Conexoes.Extensoes.Clonar(DBases.GetBobinaDummy(Cfg.Init.Material));
                  
                         if (chapa_fina)
                         {

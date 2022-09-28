@@ -387,7 +387,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT && rmt_sel!=null)
             {
-                Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, Conexoes.DBases.GetBobinaDummy());
+                Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, Conexoes.DBases.GetBobinaDummy(Cfg.Init.Material_RMT));
                 mm.Qtd = (int)qtd;
                 id = mm.id_telha;
                 txt_codigo.Text = mm.NomeFim;

@@ -183,7 +183,7 @@ namespace DLM.cad
 
                 case Tipo_Bloco.Chapa:
                     db_chapa = Core.TecnoMetal.PromptChapa(Tipo_Chapa.Grossa);
-                    db_bobina = Conexoes.Extensoes.Clonar(DBases.GetBobinaDummy());
+                    db_bobina = Conexoes.Extensoes.Clonar(DBases.GetBobinaDummy(Cfg.Init.Material));
                     if (db_chapa != null)
                     {
                         perfil.Content = db_chapa.ToString();
