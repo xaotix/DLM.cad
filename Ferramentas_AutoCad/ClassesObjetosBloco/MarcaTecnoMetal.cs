@@ -1,4 +1,5 @@
-﻿using DLM.vars;
+﻿using Conexoes;
+using DLM.vars;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,14 @@ namespace DLM.cad
         public string GetInfo()
         {
             string retorno = $"" +
-                $"\nComprimento >{this.Comprimento}" +
+                $"\nComprimento >{this.Comprimento.String(0)}" +
                 $"\nDescrição >{this.Descricao}" +
-                $"\nEspessura >{this.Espessura}" +
-                $"\nLargura >{this.Largura}" +
+                $"\nEspessura >{this.Espessura.String(2)}" +
+                $"\nLargura >{this.Largura.String(0)}" +
                 $"\nMaterial >{this.Material}" +
                 $"\nMercadoria >{this.Mercadoria}" +
                 $"\nBloco >{this.NomeBloco}" +
                 $"\nPerfil >{this.Perfil}" +
-                //$"\nPrancha >{this.Prancha}" +
                 $"\nSAP >{this.SAP}" +
                 $"\nTip. Blk >{this.Tipo_Bloco}" +
                 $"\nTipo M >{this.Tipo_Marca}" +
@@ -355,8 +355,8 @@ namespace DLM.cad
             this.NomeBloco =    l.Get(Cfg.Init.CAD_ATT_BLK).Valor;
             this.Prancha =      l.Get(TAB_DBF1.FLG_DWG.ToString()).Valor;
 
-            this.Comprimento =  l.Get(TAB_DBF1.LUN_PRO.ToString()).Double();
-            this.Largura =      l.Get(TAB_DBF1.LAR_PRO.ToString()).Double();
+            this.Comprimento =  l.Get(TAB_DBF1.LUN_PRO.ToString()).Double(0);
+            this.Largura =      l.Get(TAB_DBF1.LAR_PRO.ToString()).Double(0);
             this.Espessura =    l.Get(TAB_DBF1.SPE_PRO.ToString()).Double(2);
             this.Perfil =       l.Get(TAB_DBF1.NOM_PRO.ToString()).Valor;
 

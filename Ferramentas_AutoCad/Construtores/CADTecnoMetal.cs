@@ -1140,12 +1140,12 @@ namespace DLM.cad
                 }
             }
             var posp = _Marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao);
-            foreach(var p in posp)
+            foreach(var posicao in posp)
             {
-                var hashes = p.ToList().GroupBy(x => x.GetInfo()).ToList();
-                if(hashes.Count>1)
+                var diferencas = posicao.ToList().GroupBy(x => x.GetInfo()).ToList();
+                if(diferencas.Count>1)
                 {
-                    erros.Add(new Report($"{p.Key} => Posição com divergências", string.Join("\n",hashes.Select(x=>x.Key)), DLM.vars.TipoReport.Crítico));
+                    erros.Add(new Report($"{posicao.Key} => Posição com divergências", string.Join("\n",diferencas.Select(x=>x.Key)), DLM.vars.TipoReport.Crítico));
                 }
             }
             return _Marcas;
@@ -1938,30 +1938,45 @@ namespace DLM.cad
             foreach (var p in ppos)
             {
                 var pos1 = p.ToList();
+                var pos_comps = pos1.GroupBy(x => x.Comprimento.Round(0)).ToList();
                 var pos_perfis = pos1.GroupBy(x => x.Perfil).ToList();
-                var pos_larguras = pos1.GroupBy(x => x.Largura).ToList();
+                var pos_larguras = pos1.GroupBy(x => x.Largura.Round(0)).ToList();
+                var pos_esps = pos1.GroupBy(x => x.Espessura.Round(2)).ToList();
                 var pos_materiais = pos1.GroupBy(x => x.Material).ToList();
                 var pos_sap = pos1.GroupBy(x => x.SAP).ToList();
 
+
+                if (pos_comps.Count > 1)
+                {
+                    erros.AddRange(
+                        pos_comps
+                        .Select(x => new Report("Posição com divergência de Comprimento",
+                        $"Posição: {p.Key} Nos locais:" +
+                        $"\n{string.Join("\n", x.Select(y => $"==> Comprimento: {y.Comprimento} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
+                }
                 if (pos_perfis.Count > 1)
                 {
-                    erros.AddRange(pos_perfis.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Perfil: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
+                    erros.AddRange(pos_perfis.Select(x => new Report("Posição com divergência de Perfil", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Perfil: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
 
                 if (pos_larguras.Count > 1)
                 {
-                    erros.AddRange(pos_larguras.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Largura: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
+                    erros.AddRange(pos_larguras.Select(x => new Report("Posição com divergência de Largura", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Largura: {y.Largura} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
+                }
+
+                if (pos_esps.Count > 1)
+                {
+                    erros.AddRange(pos_esps.Select(x => new Report("Posição com divergência de Espessura", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Espessura: {y.Espessura} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
 
                 if (pos_materiais.Count > 1)
                 {
-                    erros.AddRange(pos_materiais.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Material: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
+                    erros.AddRange(pos_materiais.Select(x => new Report("Posição com divergência de Material", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Material: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
-
 
                 if (pos_sap.Count > 1)
                 {
-                    erros.AddRange(pos_sap.Select(x => new Report("Posição com divergência", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> SAP: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
+                    erros.AddRange(pos_sap.Select(x => new Report("Posição com divergência de Código SAP", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> SAP: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
                 }
             }
         
