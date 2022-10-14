@@ -1037,7 +1037,7 @@ namespace DLM.cad
                 string dest = "";
                 if (exportar)
                 {
-                    dest = Conexoes.Utilz.SalvarArquivo("RM");
+                    dest = Conexoes.Utilz.SalvarArquivo(Cfg.Init.EXT_RM);
                 }
                 if (dest == "" && exportar)
                 {

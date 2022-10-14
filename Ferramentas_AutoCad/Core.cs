@@ -393,7 +393,7 @@ namespace DLM.cad
         [CommandMethod(nameof(importarm))]
         public static void importarm()
         {
-            string arquivo = Conexoes.Utilz.Abrir_String("RM", "Selecione");
+            string arquivo = Conexoes.Utilz.Abrir_String(Cfg.Init.EXT_RM, "Selecione");
             if (File.Exists(arquivo))
             {
                 Conexoes.DBRM_Offline pp = new Conexoes.DBRM_Offline();

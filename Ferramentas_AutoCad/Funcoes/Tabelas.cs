@@ -182,7 +182,7 @@ namespace DLM.cad
                         hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
                         hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.COMP.String(0,5));
                         hp.Add(Cfg.Init.CAD_ATT_Espessura, p.ESP.String(2,5));
-                        hp.Add(Cfg.Init.CAD_ATT_Destino, "RM");
+                        hp.Add(Cfg.Init.CAD_ATT_Destino, Cfg.Init.EXT_RM);
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas, p0, escala, 0, hp);
                         p0 = new P3d(p0.X, p0.Y - (escala * 6.43));
                         seq++;
