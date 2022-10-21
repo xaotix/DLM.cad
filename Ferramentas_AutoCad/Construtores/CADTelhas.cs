@@ -571,8 +571,8 @@ namespace DLM.cad
         }
         public void ExportarRMAdeTabela()
         {
-            string dest = Conexoes.Utilz.SalvarArquivo(Cfg.Init.EXT_RM);
-            if(dest=="")
+            string destino = Conexoes.Utilz.SalvarArquivo(Cfg.Init.EXT_RM);
+            if(destino==null)
             {
                 return;
             }
@@ -587,7 +587,7 @@ namespace DLM.cad
                     Tabelas.DBRM(pp);
                 }
 
-                pp.Salvar(dest);
+                pp.Salvar(destino);
             }
         }
         private void AddVaoSFLH(double angulo, double comp, P3d p1, int sequencia, P3d p2,  ref List<P3d> cotas)

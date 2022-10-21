@@ -1034,12 +1034,12 @@ namespace DLM.cad
         {
             try
             {
-                string dest = "";
+                string destino = "";
                 if (exportar)
                 {
-                    dest = Conexoes.Utilz.SalvarArquivo(Cfg.Init.EXT_RM);
+                    destino = Conexoes.Utilz.SalvarArquivo(Cfg.Init.EXT_RM);
                 }
-                if (dest == "" && exportar)
+                if (destino ==null && exportar)
                 {
                     return;
                 }
@@ -1110,7 +1110,7 @@ namespace DLM.cad
                         mm.RM_Macros.AddRange(ss.Select(x => new Conexoes.RME_Macro(x)));
                         if (exportar)
                         {
-                            mm.Salvar(dest);
+                            mm.Salvar(destino);
                         }
 
                         acTrans.Commit();
