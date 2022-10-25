@@ -566,6 +566,7 @@ namespace DLM.cad
             catch (System.Exception ex)
             {
                 Conexoes.Utilz.Alerta(ex);
+
             }
 
         }
