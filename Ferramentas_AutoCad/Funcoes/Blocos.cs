@@ -707,7 +707,7 @@ namespace DLM.cad
 
             if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contains("_"))
             {
-                var perfil = Conexoes.DBases.GetdbPerfil().GetPerfilTecnoMetal(cam.Descricao);
+                var perfil = DBases.GetdbPerfil().GetPerfilTecnoMetal(cam.Descricao);
                 if (perfil != null)
                 {
                     if (perfil.Descricao == "")

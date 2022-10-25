@@ -891,7 +891,7 @@ namespace DLM.cad
 
         public CADBase()
         {
-            if (Conexoes.DBases.GetUserAtual().ma.ToUpper() != "MA1516")
+            if (DBases.GetUserAtual().ma.ToUpper() != "MA1516")
             {
                 Cfg.Init.CAD_VerificarVersao();
             }

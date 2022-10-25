@@ -69,7 +69,7 @@ namespace DLM.cad
                     var mesa = resto.Max(x => x.Largura);
 
 
-                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(esp_m, esp_alm, altura, mesa, false).Clonar();
+                    var cmp = DBases.GetSoldaComposicao().Get(esp_m, esp_alm, altura, mesa, false).Clonar();
                     cmp.Perfil = DLM.cam.Perfil.I_Soldado("",altura, mesa,mesa,esp_m,esp_m, esp_alm);
                     cmp.Nome_Pos = m.Key;
                     retorno.Add(cmp);
@@ -88,7 +88,7 @@ namespace DLM.cad
                 if(pp.Familia== DLM.vars.CAM_FAMILIA.Soldado)
                 {
                 
-                    var cmp = Conexoes.DBases.GetSoldaComposicao().Get(pp.Esp_M, pp.Esp, pp.Altura, pp.Aba, false);
+                    var cmp = DBases.GetSoldaComposicao().Get(pp.Esp_M, pp.Esp, pp.Altura, pp.Aba, false);
                     foreach(var p in pf.ToList())
                     {
                         var np = cmp.Clonar();
@@ -1452,7 +1452,7 @@ namespace DLM.cad
                             ht.Add("COORDENAÇÃO", this.GetSubEtapa().Coordenador.ToUpper());
                             ht.Add("COORDENACAO", this.GetSubEtapa().Coordenador.ToUpper());
                             ht.Add("PROJETO", this.GetSubEtapa().Projetista.ToUpper());
-                            ht.Add("DESENHO", Conexoes.DBases.GetUserAtual().nome.ToUpper());
+                            ht.Add("DESENHO", DBases.GetUserAtual().nome.ToUpper());
                             ht.Add("RESPONSAVEL_TECNICO", this.GetSubEtapa().Calculista.ToUpper());
                             ht.Add("CREA", this.GetSubEtapa().CalculistaCREA.ToUpper());
                         }
@@ -2037,7 +2037,7 @@ namespace DLM.cad
                     }
                     else
                     {
-                        if (p0.Espessura >= Conexoes.DBases.GetBancoRM().TEST_LIST_CHAPA_FINA_IGNORAR)
+                        if (p0.Espessura >= DBases.GetBancoRM().TEST_LIST_CHAPA_FINA_IGNORAR)
                         {
                             erros.Add(new Report("Falta Arquivo", $"{p0.Posicao}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", DLM.vars.TipoReport.Alerta));
                         }
@@ -2067,7 +2067,7 @@ namespace DLM.cad
         {
             if (_Bobinas == null)
             {
-                _Bobinas = Conexoes.DBases.GetBancoRM().GetBobinas();
+                _Bobinas = DBases.GetBancoRM().GetBobinas();
             }
             return _Bobinas;
         }
@@ -2075,7 +2075,7 @@ namespace DLM.cad
         {
             if (_Chapas == null)
             {
-                _Chapas = Conexoes.DBases.GetChapas();
+                _Chapas = DBases.GetChapas();
             }
             return _Chapas;
         }
@@ -2083,7 +2083,7 @@ namespace DLM.cad
         {
             if (_Materiais == null)
             {
-                _Materiais = Conexoes.DBases.GetBancoRM().GetMateriais().Select(x=>x.nome).ToList();
+                _Materiais = DBases.GetBancoRM().GetMateriais().Select(x=>x.nome).ToList();
             }
             return _Materiais;
         }
@@ -2091,7 +2091,7 @@ namespace DLM.cad
         {
             if (_Mercadorias == null)
             {
-                _Mercadorias = Conexoes.DBases.GetBancoRM().GetMercadorias();
+                _Mercadorias = DBases.GetBancoRM().GetMercadorias();
             }
             return _Mercadorias;
         }
@@ -2624,7 +2624,7 @@ namespace DLM.cad
             
             if(peca==null)
             {
-            peca = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetBancoRM().GetRMAs(), null, "Selecione uma peça");
+            peca = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetBancoRM().GetRMAs(), null, "Selecione uma peça");
             }
 
             if (peca != null)
@@ -2713,7 +2713,7 @@ namespace DLM.cad
                         if (perfil == null)
                         {
                             
-                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
+                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
                         }
 
                         if (perfil != null)
@@ -2784,7 +2784,7 @@ namespace DLM.cad
                         {
                             if (perfil == null)
                             {
-                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(Conexoes.DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
+                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
                             }
 
 

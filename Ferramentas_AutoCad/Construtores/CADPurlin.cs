@@ -1234,7 +1234,7 @@ namespace DLM.cad
             p.IndicacaoMontagem = N;
 
             p.id_peca = ID_PECA;
-            //p.SetPeca(Conexoes.DBases.GetBancoRM().GetTercas().Find(x => x.id_db == ID_PECA));
+            //p.SetPeca(DBases.GetBancoRM().GetTercas().Find(x => x.id_db == ID_PECA));
             p.Objeto = bloco;
             p.Tipo_Corrente = Tipo_Corrente_Purlin.Manual;
             p.Rebater_Furos = REB;

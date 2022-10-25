@@ -178,7 +178,7 @@ namespace DLM.cad.Menus
                 else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT && this.rmt_sel != null)
                 {
                     bt_peca_selecionar.Content = this.rmt_sel.ToString();
-                    var pc = new Conexoes.RMT(this.rmt_sel, Conexoes.DBases.GetBobinaDummyPP());
+                    var pc = new Conexoes.RMT(this.rmt_sel, DBases.GetBobinaDummyPP());
                     this.rmt_sel.Comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
                     this.txt_descricao.Text = rmt_sel.Desc;
                 }
@@ -210,7 +210,7 @@ namespace DLM.cad.Menus
         {
             if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA)
             {
-                var sel = Conexoes.DBases.GetBancoRM().GetRMAs().ListaSelecionar();
+                var sel = DBases.GetBancoRM().GetRMAs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rma_sel = sel;
@@ -218,7 +218,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME)
             {
-                var sel = Conexoes.DBases.GetBancoRM().GetRMEs().ListaSelecionar();
+                var sel = DBases.GetBancoRM().GetRMEs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rme_sel = sel;
@@ -226,7 +226,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU)
             {
-                var sel = Conexoes.DBases.GetBancoRM().GetRMUs().ListaSelecionar();
+                var sel = DBases.GetBancoRM().GetRMUs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rmu_sel = sel;
@@ -234,7 +234,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT)
             {
-                var sel = Conexoes.DBases.GetBancoRM().GetRMTs().ListaSelecionar();
+                var sel = DBases.GetBancoRM().GetRMTs().ListaSelecionar();
                 if (sel != null)
                 {
                     this.rmt_sel = sel;
@@ -387,7 +387,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT && rmt_sel!=null)
             {
-                Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, Conexoes.DBases.GetBobinaDummy(Cfg.Init.Material_RMT));
+                Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, DBases.GetBobinaDummy(Cfg.Init.Material_RMT));
                 mm.Qtd = (int)qtd;
                 id = mm.id_telha;
                 txt_codigo.Text = mm.NomeFim;

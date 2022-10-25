@@ -233,7 +233,7 @@ namespace DLM.cad
         }
         public DLM.cam.Perfil GetPerfil()
         {
-            return Conexoes.DBases.GetdbPerfil().GetPerfilTecnoMetal(this.Perfil);
+            return DBases.GetdbPerfil().GetPerfilTecnoMetal(this.Perfil);
         }
         public string Perfil
         {
@@ -313,7 +313,7 @@ namespace DLM.cad
             }
             if(_bobina==null && this.SAP!= sap)
             {
-                _bobina = Conexoes.DBases.GetBancoRM().GetBobina(sap);
+                _bobina = DBases.GetBancoRM().GetBobina(sap);
             }
             
             return _bobina;
