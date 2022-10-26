@@ -24,7 +24,7 @@ namespace DLM.cad.Menus
         public SoldaComposicao()
         {
             InitializeComponent();
-            this.Title = $"Soldas de composição V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"Soldas de composição V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg_User.Init.MySQL_Servidor}]";
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
         {

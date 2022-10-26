@@ -31,7 +31,7 @@ namespace DLM.cad.Menus
             original = pecas;
             filtro.AddRange(pecas);
             InitializeComponent();
-            this.Title = $"Gerar Tabela (Editor) V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"Gerar Tabela (Editor) V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{Cfg_User.Init.MySQL_Servidor}]";
             this.Update();
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)

@@ -64,7 +64,7 @@ namespace DLM.cad.Menus
             this.lista_perfis_ctv.ItemsSource = perfis_mapeaveis;
 
 
-            this.Title = $"Indicações Montagem V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"Indicações Montagem V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{Cfg_User.Init.MySQL_Servidor}]";
         }
         public string arquivo { get; set; } = "";
         private void set_imagem(object sender, SelectionChangedEventArgs e)

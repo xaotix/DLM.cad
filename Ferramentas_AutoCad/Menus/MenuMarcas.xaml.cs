@@ -129,7 +129,7 @@ namespace DLM.cad
             try
             {
 
-                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+                this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg_User.Init.MySQL_Servidor}]";
 
                 this.combo_mercadoria.ItemsSource = Core.TecnoMetal.GetMercadorias();
                 this.combo_material.ItemsSource = Core.TecnoMetal.GetMateriais();

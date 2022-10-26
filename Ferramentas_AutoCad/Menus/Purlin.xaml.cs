@@ -27,7 +27,7 @@ namespace DLM.cad.Menus
         {
 
             InitializeComponent();
-            this.Title = $"xPurlin V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg.Init.MySQL_Servidor}]";
+            this.Title = $"xPurlin V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{Cfg_User.Init.MySQL_Servidor}]";
             
         }
 
