@@ -578,9 +578,9 @@ namespace DLM.cad
         public static void criarmarcasdecam()
         {
 
-            var arqs = Conexoes.Utilz.AbrirArquivos("Selecione os arquivos", new List<string> { "CAM" });
+            var cams = Conexoes.Utilz.AbrirArquivos("Selecione os arquivos", new List<string> { Cfg.Init.EXT_CAM });
             var offset = Cotas.GetEscala() * 70;
-            if (arqs.Count > 0)
+            if (cams.Count > 0)
             {
                 bool cancelado = false;
                 var p0 = Ut.PedirPonto("\nSelecione a origem", out cancelado);
@@ -590,7 +590,7 @@ namespace DLM.cad
 
                 if (!cancelado)
                 {
-                    foreach (var s in arqs)
+                    foreach (var s in cams)
                     {
 
                         DLM.cam.ReadCAM cam = new DLM.cam.ReadCAM(s);

@@ -881,7 +881,7 @@ namespace DLM.cad
             if(_cams.Count==0 && this.E_Tecnometal(false) | atualizar && this.E_Tecnometal(false))
             {
                 var sub = this.GetSubEtapa();
-                var cams = sub.GetPastaCAM().GetArquivos("*.CAM");
+                var cams = sub.GetPastaCAM().GetArquivos($"*.{Cfg.Init.EXT_CAM}");
                 Core.Getw().SetProgresso(1,cams.Count, "Carregando CAMs...");
                 Core.Getw().Show();
 
@@ -2013,9 +2013,9 @@ namespace DLM.cad
                         }
                         cam.Peso = p0.PesoUnit;
 
-                        foreach (var s in cam.GetSubCams())
+                        foreach (var subcam in cam.GetSubCams())
                         {
-                            var arq = this.GetSubEtapa().GetPastaCAM().Dir + s + ".CAM";
+                            var arq = $"{this.GetSubEtapa().GetPastaCAM().Dir}{subcam}.{Cfg.Init.EXT_CAM}";
                             if (!File.Exists(arq))
                             {
                                 erros.Add(new Report("Falta Arquivo", $"{arq}", DLM.vars.TipoReport.Alerta));
@@ -2198,7 +2198,7 @@ namespace DLM.cad
                                             var sub = this.GetSubEtapa();
 
                                             Blocos.MarcaChapa(p_marca, coords_normalizadas, esp.valor, qtd, marca, material, ficha, this.GetEscala());
-                                            DLM.cam.Cam nCAM = new cam.Cam($"{this.PastaCAM}{marca}.CAM", face, esp.valor);
+                                            DLM.cam.Cam nCAM = new cam.Cam($"{this.PastaCAM}{marca}.{Cfg.Init.EXT_CAM}", face, esp.valor);
                                             nCAM.Cabecalho.TRA_PEZ = ficha;
                                             nCAM.Cabecalho.Material = material;
                                             nCAM.Cabecalho.Quantidade = qtd;
@@ -2432,9 +2432,9 @@ namespace DLM.cad
                     return;
                 }
 
-                ConfiguracaoChapa_Dobrada pa = new ConfiguracaoChapa_Dobrada(bobina, corte, comprimento, 0, angulos) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, DescontarDobras = !chapa_fina, Ficha = ficha, Quantidade = (int)quantidade ,Mercadoria = mercadoria };
+                ConfiguracaoChapa_Dobrada chapa_dobrada = new ConfiguracaoChapa_Dobrada(bobina, corte, comprimento, 0, angulos) { Marca = marca, GerarCam = chapa_fina ? Opcao.Nao : Opcao.Sim, DescontarDobras = !chapa_fina, Ficha = ficha, Quantidade = (int)quantidade ,Mercadoria = mercadoria };
                 //pa = Conexoes.Utilz.Propriedades(pa, out status);
-                if (pa.Comprimento > 0 && pa.Espessura > 0 && pa.Marca.Replace(" ", "") != "" && pa.Quantidade > 0)
+                if (chapa_dobrada.Comprimento > 0 && chapa_dobrada.Espessura > 0 && chapa_dobrada.Marca.Replace(" ", "") != "" && chapa_dobrada.Quantidade > 0)
                 {
                     bool cancelado = true;
                     var origem = Ut.PedirPonto("Selecione o ponto de inserção do bloco.", out cancelado);
@@ -2442,11 +2442,11 @@ namespace DLM.cad
                     {
                         if (chapa_fina)
                         {
-                            Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Arremate, escala, posicao);
+                            Blocos.MarcaChapa(origem, chapa_dobrada, Tipo_Bloco.Arremate, escala, posicao);
                         }
                         else
                         {
-                            Blocos.MarcaChapa(origem, pa, Tipo_Bloco.Chapa, escala, posicao);
+                            Blocos.MarcaChapa(origem, chapa_dobrada, Tipo_Bloco.Chapa, escala, posicao);
                         }
 
                         if (Conexoes.Utilz.Pergunta("Gerar CAM?"))
@@ -2454,7 +2454,7 @@ namespace DLM.cad
                             string destino = this.Pasta;
                             if (this.E_Tecnometal(false))
                             {
-                                destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), "CAM");
+                                destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), Cfg.Init.EXT_CAM);
                             }
                             else
                             {
@@ -2462,25 +2462,25 @@ namespace DLM.cad
                             }
                             if (Directory.Exists(destino))
                             {
-                                var Perfil = DLM.cam.Perfil.Chapa(pa.Largura, pa.Espessura);
+                                var Perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
 
-                                string arquivo = destino + pa.Marca + ".CAM";
+                                string arquivo = $"{destino}{chapa_dobrada.Marca}.{Cfg.Init.EXT_CAM}";
 
-                                DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, pa.Comprimento);
+                                DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, chapa_dobrada.Comprimento);
                                 double x = 0;
 
                                 for (int i = 0; i < angulos.Count; i++)
                                 {
                                     var s = segmentos[i];
-                                    x = x + s.Length - (chapa_fina ? 0 : pa.Espessura);
+                                    x = x + s.Length - (chapa_fina ? 0 : chapa_dobrada.Espessura);
                                     var a = angulos[i];
                                     pcam.Formato.LIV1.Dobras.Add(new DLM.cam.Dobra(a, x, pcam, false));
                                 }
 
-                                pcam.Cabecalho.TRA_PEZ = pa.Ficha;
-                                pcam.Cabecalho.Quantidade = pa.Quantidade;
-                                pcam.Cabecalho.Material = pa.Material;
-                                pcam.Cabecalho.Marca = pa.Marca;
+                                pcam.Cabecalho.TRA_PEZ = chapa_dobrada.Ficha;
+                                pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade;
+                                pcam.Cabecalho.Material = chapa_dobrada.Material;
+                                pcam.Cabecalho.Marca = chapa_dobrada.Marca;
                                 pcam.Nota = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
                                 pcam.Gerar();
                                 arquivo.Abrir();
@@ -2583,7 +2583,7 @@ namespace DLM.cad
                                 string destino = this.Pasta;
                                 if (this.E_Tecnometal(false))
                                 {
-                                    destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), "CAM");
+                                    destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), Cfg.Init.EXT_CAM);
                                 }
                                 else
                                 {
@@ -2593,7 +2593,7 @@ namespace DLM.cad
                                 {
                                     var Perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
 
-                                    string arquivo = destino + chapa_dobrada.Marca + ".CAM";
+                                    string arquivo = $"{destino}{chapa_dobrada.Marca}.{Cfg.Init.EXT_CAM}";
 
                                     DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, chapa_dobrada.Comprimento);
 
