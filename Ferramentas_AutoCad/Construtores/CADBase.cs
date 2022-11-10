@@ -115,7 +115,8 @@ namespace DLM.cad
             {
                 var etapa = new Conexoes.SubEtapaTecnoMetal(this.Pasta);
 
-                selecao.AddRange(etapa.GetPastaCAM().GetArquivos("*.DXF"));
+                selecao.AddRange(etapa.PastaCAM_Pedido.GetArquivos("*.DXF"));
+                selecao.AddRange(etapa.PastaCAM_Etapa.GetArquivos("*.DXF"));
             }
             var arquivos = Conexoes.Utilz.Selecao.SelecionarObjetos(resto, selecao, "Selecione as pranchas.");
 

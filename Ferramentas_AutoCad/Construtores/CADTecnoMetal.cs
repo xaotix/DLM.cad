@@ -881,7 +881,8 @@ namespace DLM.cad
             if(_cams.Count==0 && this.E_Tecnometal(false) | atualizar && this.E_Tecnometal(false))
             {
                 var sub = this.GetSubEtapa();
-                var cams = sub.GetPastaCAM().GetArquivos($"*.{Cfg.Init.EXT_CAM}");
+                var cams = sub.PastaCAM_Pedido.GetArquivos($"*.{Cfg.Init.EXT_CAM}");
+                cams.AddRange(sub.PastaCAM_Etapa.GetArquivos($"*.{Cfg.Init.EXT_CAM}"));
                 Core.Getw().SetProgresso(1,cams.Count, "Carregando CAMs...");
                 Core.Getw().Show();
 
@@ -1201,7 +1202,7 @@ namespace DLM.cad
             if(cams.Count>0)
             {
                 var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
-                Core.Getw().SetProgresso(1,dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().GetPastaCAM().Dir}");
+                Core.Getw().SetProgresso(1,dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
                 Core.Getw().Show();
 
                 foreach(var s in dxfs)
@@ -1884,7 +1885,7 @@ namespace DLM.cad
                         return new TabelaBlocoTag();
                     }
                 }
-                destino = etapa.GetPastaDBF().Dir + nome_dbf + ".DBF";
+                destino = $"{etapa.PastaDBF}{nome_dbf}.{Cfg.Init.EXT_DBF}";
             }
 
 
@@ -2015,8 +2016,17 @@ namespace DLM.cad
 
                         foreach (var subcam in cam.GetSubCams())
                         {
-                            var arq = $"{this.GetSubEtapa().GetPastaCAM().Dir}{subcam}.{Cfg.Init.EXT_CAM}";
-                            if (!File.Exists(arq))
+                            var arq = $"{this.GetSubEtapa().PastaCAM_Pedido}{subcam}.{Cfg.Init.EXT_CAM}";
+                            if (!arq.Existe())
+                            {
+                                var arq2 = $"{this.GetSubEtapa().PastaCAM_Etapa}{subcam}.{Cfg.Init.EXT_CAM}";
+                                if (arq2.Existe())
+                                {
+                                    arq = arq2;
+                                }
+                            }
+
+                            if (!arq.Existe())
                             {
                                 erros.Add(new Report("Falta Arquivo", $"{arq}", DLM.vars.TipoReport.Alerta));
                             }
