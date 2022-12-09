@@ -446,16 +446,16 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000, Cfg.Init.CAD_DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), (perfil.Peso * comprimento / 1000).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                 }
                 else
                 {
-                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), peso);
+                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                 }
 
                 if (superficie == 0)
                 {
-                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round(perfil.Peso * comprimento / 1000 / 1000 / 100, Cfg.Init.CAD_DECIMAIS_TON).ToString("N4").Replace(",", ""));
+                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), (perfil.Peso * comprimento / 1000 / 1000 / 100).String(Cfg.Init.Superficie_Decimais));
                 }
                 else
                 {
@@ -502,8 +502,8 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.SPE_PRO.ToString(), pf.Espessura.ToString("N2").Replace(",", ""));
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), pf.Material);
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), pf.Ficha);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), pf.Peso_Unitario.ToString("N4").Replace(",", ""));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), pf.Superficie.ToString("N4").Replace(",", ""));
+                ht.Add(TAB_DBF1.PUN_LIS.ToString(), pf.Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), pf.Superficie.Round(Cfg.Init.Superficie_Decimais));
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), pf.Mercadoria);
                 ht.Add(TAB_DBF1.COS_PEZ.ToString(), pf.Dobras);
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), pf.Volume);
@@ -596,8 +596,8 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.SPE_PRO.ToString(), Espessura.ToString("N2").Replace(",", ""));
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), Material);
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), Ficha);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), Peso_Unitario.ToString("N4").Replace(",", ""));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Superficie.ToString("N4").Replace(",", ""));
+                ht.Add(TAB_DBF1.PUN_LIS.ToString(), Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Superficie.Round(Cfg.Init.Superficie_Decimais));
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), "CHAPA");
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), Geometria);
 
@@ -627,8 +627,8 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.LUN_PRO.ToString(), comp.String(0));
                 ht.Add(TAB_DBF1.LAR_PRO.ToString(), larg.String(0));
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), Math.Round(pf.Peso * area / 1000 / 1000 / 100, Cfg.Init.CAD_DECIMAIS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.CAD_DECIMAIS));
+                ht.Add(TAB_DBF1.PUN_LIS.ToString(), (pf.Peso * area / 1000 / 1000 / 100).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.Superficie_Decimais));
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
                 ht.Add(TAB_DBF1.COD_PEZ.ToString(), pf.SAP);
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), material);
@@ -672,7 +672,7 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), pf.NORMA);
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), pf.TRATAMENTO);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), pf.PESOUNIT);
+                ht.Add(TAB_DBF1.PUN_LIS.ToString(), pf.PESOUNIT.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
 
 
                 ht.Add(TAB_DBF1.COD_PEZ.ToString(), pf.SAP);

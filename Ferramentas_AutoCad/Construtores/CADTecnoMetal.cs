@@ -1665,7 +1665,7 @@ namespace DLM.cad
                                 var sup = m.CalcularSuperficieLinear();
 
                                 Hashtable att = new Hashtable();
-                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.String(Cfg.Init.Peso_Decimais));
+                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                                 att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().String(Cfg.Init.Superficie_Decimais));
                                 att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento.String(0)}*{m.Espessura.String()}*{m.Largura.String(0)}");
                                 att.Add(TAB_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));

@@ -1,6 +1,8 @@
 
 Suporte: daniel.maciel@medabil.com.br
-
+V 1.2.16
+> Adicionado casas decimais nas marcas e posições TecnoMetal
+> Adicionado variável de peso mínimo e setado para 100 gramas.
 V 1.2.7
 > Adicionada função de atualizar peso de chapa fina
 > Corrigido bug no comando de limpar desenhos

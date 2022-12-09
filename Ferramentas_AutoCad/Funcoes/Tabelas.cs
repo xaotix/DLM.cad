@@ -339,7 +339,6 @@ namespace DLM.cad
                     x0 = p0.X;
                     y0 = p0.Y;
                     Hashtable htt = new Hashtable();
-                    int decimais = 4;
                     string dec_str = "N4";
 
                     var pecas = pecas_tecnometal.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).Select(X => X.ToList());
@@ -350,18 +349,18 @@ namespace DLM.cad
                         var marca = pc.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "");
                         var posics = pc.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor != "");
                         int qtd = marca[0].Get(TAB_DBF1.QTA_PEZ.ToString()).Int();
-                        double peso_unit = posics.Sum(x => x.Get(TAB_DBF1.PUN_LIS.ToString()).Double() * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
-                        double sup_unit = posics.Sum(x => x.Get(TAB_DBF1.SUN_LIS.ToString()).Double() * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
+                        double peso_unit = posics.Sum(x => x.Get(TAB_DBF1.PUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
+                        double sup_unit = posics.Sum(x => x.Get(TAB_DBF1.SUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
                         marca[0].Set(TAB_DBF1.PUN_LIS.ToString(), peso_unit);
                         marca[0].Set(TAB_DBF1.SUN_LIS.ToString(), sup_unit);
                         total_superficie += (sup_unit * qtd);
                         total_peso += (peso_unit * qtd);
                     }
 
-                    total_peso = Math.Round(total_peso/1000, decimais);
-                    total_superficie = Math.Round(total_superficie, decimais);
+                    total_peso = (total_peso/1000);
+              
 
-                    htt.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
+                    htt.Add("PESO_TOTAL", total_peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) + " ton");
                     htt.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Titulo, p0, fator_escala, 0, htt);
                     p0 = new P3d(p0.X, p0.Y - (fator_escala * 20.4));
@@ -393,8 +392,8 @@ namespace DLM.cad
                             ht.Add(Cfg.Init.CAD_ATT_Descricao, descricao );
                             ht.Add(Cfg.Init.CAD_ATT_Material, Pos.Get(TAB_DBF1.MAT_PRO.ToString()));
                             ht.Add(Cfg.Init.CAD_ATT_Cod_SAP, Pos.Get(TAB_DBF1.COD_PEZ.ToString()));
-                            ht.Add("PESO_UNIT", Math.Round(Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000,decimais).ToString(dec_str).Replace(",",""));
-                            ht.Add("PESO_TOT", Math.Round(Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000 * Pos.Get(TAB_DBF1.QTA_PEZ.ToString()).Int(), decimais).ToString(dec_str).Replace(",", ""));
+                            ht.Add(Cfg.Init.CAD_ATT_Peso_Unit, (Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000).String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
+                            ht.Add(Cfg.Init.CAD_ATT_Peso_Tot, (Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000 * Pos.Get(TAB_DBF1.QTA_PEZ.ToString()).Int()).String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
                             ht.Add(Cfg.Init.CAD_ATT_Ficha_Pintura, Pos.Get(TAB_DBF1.TRA_PEZ.ToString()));
 
                             Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal, p0, fator_escala, 0, ht);
@@ -431,47 +430,68 @@ namespace DLM.cad
                 {
                     x0 = p0.X;
                     y0 = p0.Y;
-                    int decimais = 4;
-                    string dec_str = "N4";
+           
 
 
                     double total_superficie = pecas_tecnometal.Sum(x=>x.Superficie  * x.Quantidade);
                     double total_peso = pecas_tecnometal.Sum(x=>x.PesoUnit * x.Quantidade);
 
 
-                    total_peso = Math.Round(total_peso / 1000, decimais);
-                    total_superficie = Math.Round(total_superficie, decimais);
+                    total_peso = (total_peso / 1000);
+                 
 
                     Hashtable ht = new Hashtable();
-                    ht.Add("PESO_TOTAL", total_peso.ToString(dec_str).Replace(",", "") + " ton");
+                    ht.Add("PESO_TOTAL", total_peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) + " ton");
                     ht.Add("SUPERFICIE_TOTAL", total_superficie.ToString("N1").Replace(",", "") + " m²");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Titulo, p0, fator_escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (fator_escala * 20.4));
                     foreach (var Marca in pecas_tecnometal)
                     {
+                        var m_pes_uni = (Marca.PesoUnit / 1000);
+                        if (m_pes_uni < Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON)
+                        {
+                            m_pes_uni = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;
+                        }
 
+                        var m_pes_tot = (Marca.PesoUnit / 1000) * Marca.Quantidade;
+                        if (m_pes_tot < Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON)
+                        {
+                            m_pes_tot = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;
+                        }
                         Hashtable mp = new Hashtable();
                         mp.Add(Cfg.Init.CAD_ATT_Marca, Marca.Marca);
-                        mp.Add(Cfg.Init.CAD_ATT_Quantidade, Marca.Quantidade);
+                        mp.Add(Cfg.Init.CAD_ATT_Quantidade, Marca.Quantidade.Round(2).ToString());
                         mp.Add(Cfg.Init.CAD_ATT_Descricao, Marca.Mercadoria);
                         mp.Add(Cfg.Init.CAD_ATT_Material, Marca.Material);
                         mp.Add(Cfg.Init.CAD_ATT_Cod_SAP, Marca.SAP);
-                        mp.Add("PESO_UNIT", Math.Round(Marca.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
-                        mp.Add("PESO_TOT", Math.Round(Marca.PesoUnit * Marca.Quantidade / 1000 , decimais).ToString(dec_str).Replace(",", ""));
+                        mp.Add(Cfg.Init.CAD_ATT_Peso_Unit, m_pes_uni.String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
+                        mp.Add(Cfg.Init.CAD_ATT_Peso_Tot, m_pes_tot.String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
                         mp.Add(Cfg.Init.CAD_ATT_Ficha_Pintura, Marca.Tratamento);
 
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal, p0, fator_escala, 0, mp);
                         p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
                         foreach (var Pos in Marca.GetPosicoes())
                         {
+                            var p_pes_uni = (Pos.PesoUnit / 1000);
+                            if(p_pes_uni<Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON)
+                            {
+                                p_pes_uni = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;
+                            }
+
+                            var p_pes_tot = (Pos.PesoUnit / 1000) * Pos.Quantidade;
+                            if (p_pes_tot < Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON)
+                            {
+                                p_pes_tot = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;
+                            }
+
                             Hashtable hp = new Hashtable();
                             hp.Add(Cfg.Init.CAD_ATT_Marca, Pos.Posicao);
-                            hp.Add(Cfg.Init.CAD_ATT_Quantidade, (Pos.Quantidade * Marca.Quantidade).String(decimais));
-                            hp.Add(Cfg.Init.CAD_ATT_Descricao, Pos.Descricao);
+                            hp.Add(Cfg.Init.CAD_ATT_Quantidade, (Pos.Quantidade * Marca.Quantidade).Round(2).ToString());
+                            hp.Add(Cfg.Init.CAD_ATT_Descricao, Pos.Descricao.CortarString(34,false));
                             hp.Add(Cfg.Init.CAD_ATT_Material, Pos.Material);
                             hp.Add(Cfg.Init.CAD_ATT_Cod_SAP, Pos.SAP);
-                            hp.Add("PESO_UNIT", Math.Round(Pos.PesoUnit / 1000, decimais).ToString(dec_str).Replace(",", ""));
-                            hp.Add("PESO_TOT", Math.Round(Pos.PesoUnit/1000 * Pos.Quantidade, decimais).ToString(dec_str).Replace(",", ""));
+                            hp.Add(Cfg.Init.CAD_ATT_Peso_Unit, p_pes_uni.String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
+                            hp.Add(Cfg.Init.CAD_ATT_Peso_Tot, p_pes_tot.String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
                             hp.Add(Cfg.Init.CAD_ATT_Ficha_Pintura, Pos.Tratamento);
 
                             Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal, p0, fator_escala, 0, hp);

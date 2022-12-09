@@ -24,24 +24,9 @@ namespace DLM.cad
     /// </summary>
     public partial class MenuMarcas : Window
     {
-        private void seleciona_tudo(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = null;
-            if (sender is TextBox)
-            {
-                textBox = ((TextBox)sender);
+        public List<MarcaTecnoMetal> Marcas { get; set; } = new List<MarcaTecnoMetal>();
+        public List<MarcaTecnoMetal> Posicoes { get; set; } = new List<MarcaTecnoMetal>();
 
-            }
-
-
-            if (textBox != null)
-            {
-                textBox.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    textBox.SelectAll();
-                }));
-            }
-        }
         public void Iniciar()
         {
             if(this.IsLoaded)
@@ -54,9 +39,8 @@ namespace DLM.cad
                 this.Show();
             }
         }
-        public string Prefix { get; set; } = "P";
-        public string Sufix { get; set; } = "01";
-        public double Quantidade { get; set; } = 1;
+
+        public int Sufix_Count { get; set; } = 1;
         public double Escala { get; set; } = 1;
 
         public string NomeFim
@@ -154,7 +138,6 @@ namespace DLM.cad
 
         }
 
-        public int Sufix_Count { get; set; } = 1;
         public void Update()
         {
 
@@ -164,8 +147,7 @@ namespace DLM.cad
 
 
         }
-        public List<MarcaTecnoMetal> Marcas { get; set; } = new List<MarcaTecnoMetal>();
-        public List<MarcaTecnoMetal> Posicoes { get; set; } = new List<MarcaTecnoMetal>();
+
         public void GetMarcas()
         {
             List<Report> erros = new List<Report>();
@@ -281,9 +263,15 @@ namespace DLM.cad
                 return;
             }
 
+           if(this.Posicoes.FindAll(x=>x.Marca.ToUpper() == NomeFim.ToUpper()).Count>0)
+            {
+                Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} Já existe uma posição com o mesmo nome.");
+                return;
+            }
+
            if(tipo == Tipo_Bloco.Elemento_Unitario && !NomeFim.EndsWith("_A"))
             {
-                Conexoes.Utilz.Alerta($"Nome inválido: para elemento unitário deve sempre terminar com '_A'");
+                Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} para elemento unitário deve sempre terminar com '_A'");
                 return;
             }
 
@@ -291,7 +279,7 @@ namespace DLM.cad
 
             if (NomeFim.CaracteresEspeciais() | NomeFim.Contains(" "))
             {
-                Conexoes.Utilz.Alerta($"{NomeFim} - Nome não pode conter caracteres especiais ou espaços.");
+                Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} - Nome não pode conter caracteres especiais ou espaços.");
                 return;
             }
 
@@ -458,7 +446,14 @@ namespace DLM.cad
 
             this.seleciona_marca_composta.ItemsSource = null;
             this.seleciona_marca_composta.ItemsSource = Marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta);
-            this.Sufix_Count = Marcas.Count + Marcas.Count + 1;
+            if((bool)rad_m_simples.IsChecked)
+            {
+                this.Sufix_Count = Marcas.Count + 1;
+            }
+            else
+            {
+                this.Sufix_Count = Posicoes.Count + 1;
+            }
             if (this.seleciona_marca_composta.Items.Count > 0 && (bool)rad_m_composta.IsChecked)
             {
                 this.seleciona_marca_composta.Visibility = Visibility.Visible;
@@ -494,11 +489,11 @@ namespace DLM.cad
 
             if ((bool)rad_m_composta.IsChecked)
             {
-                this.prefix.Text = "M";
+                this.prefix.Text = "P";
             }
             else
             {
-                this.prefix.Text = "P";
+                this.prefix.Text = "M";
             }
 
 
@@ -937,6 +932,24 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             Core.cam_de_polilinha();
+        }
+        private void seleciona_tudo(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = null;
+            if (sender is TextBox)
+            {
+                textBox = ((TextBox)sender);
+
+            }
+
+
+            if (textBox != null)
+            {
+                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.SelectAll();
+                }));
+            }
         }
     }
 }
