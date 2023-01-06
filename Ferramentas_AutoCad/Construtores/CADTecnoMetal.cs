@@ -2532,7 +2532,7 @@ namespace DLM.cad
                     bool chapa_fina = espessura.GetChapa_Fina();
                     if (bobina==null)
                     {
-                        bobina = Conexoes.Extensoes.Clonar(DBases.GetBobinaDummy(Cfg.Init.Material));
+                        bobina = DBases.GetBobinaDummy(Cfg.Init.Material).Clonar();
                  
                         if (chapa_fina)
                         {
