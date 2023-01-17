@@ -455,7 +455,7 @@ namespace DLM.cad
 
                 if (superficie == 0)
                 {
-                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), (perfil.Peso * comprimento / 1000 / 1000 / 100).String(Cfg.Init.Superficie_Decimais));
+                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), (perfil.Peso * comprimento / 1000 / 1000 / 100).String(Cfg.Init.DECIMAIS_Superficie));
                 }
                 else
                 {
@@ -503,7 +503,7 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), pf.Material);
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), pf.Ficha);
                 ht.Add(TAB_DBF1.PUN_LIS.ToString(), pf.Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), pf.Superficie.Round(Cfg.Init.Superficie_Decimais));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), pf.Superficie.Round(Cfg.Init.DECIMAIS_Superficie));
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), pf.Mercadoria);
                 ht.Add(TAB_DBF1.COS_PEZ.ToString(), pf.Dobras);
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), pf.Volume);
@@ -597,7 +597,7 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), Material);
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), Ficha);
                 ht.Add(TAB_DBF1.PUN_LIS.ToString(), Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Superficie.Round(Cfg.Init.Superficie_Decimais));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Superficie.Round(Cfg.Init.DECIMAIS_Superficie));
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), "CHAPA");
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), Geometria);
 
@@ -628,7 +628,7 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.LAR_PRO.ToString(), larg.String(0));
                 ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
                 ht.Add(TAB_DBF1.PUN_LIS.ToString(), (pf.Peso * area / 1000 / 1000 / 100).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.Superficie_Decimais));
+                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.DECIMAIS_Superficie));
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
                 ht.Add(TAB_DBF1.COD_PEZ.ToString(), pf.SAP);
                 ht.Add(TAB_DBF1.MAT_PRO.ToString(), material);

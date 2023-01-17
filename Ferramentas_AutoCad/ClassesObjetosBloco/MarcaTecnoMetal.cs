@@ -366,7 +366,7 @@ namespace DLM.cad
             this.SAP =          l.Get(TAB_DBF1.COD_PEZ.ToString()).Valor;
 
             this._PesoUnit =    l.Get(TAB_DBF1.PUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS);
-            this._Superficie =  l.Get(TAB_DBF1.SUN_LIS.ToString()).Double(Cfg.Init.Superficie_Decimais);
+            this._Superficie =  l.Get(TAB_DBF1.SUN_LIS.ToString()).Double(Cfg.Init.DECIMAIS_Superficie);
         }
     }
 

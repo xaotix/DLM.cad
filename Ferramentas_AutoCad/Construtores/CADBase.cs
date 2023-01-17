@@ -63,11 +63,11 @@ namespace DLM.cad
         }
         public bool E_Tecnometal3D(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith(@".S&G"))
+            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith($@".{Cfg.Init.EXT_Pedido}"))
             {
                 if (mensagem)
                 {
-                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.S&G)" +
+                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.{Cfg.Init.EXT_Pedido})" +
                    $"\nPasta atual: {this.Pasta}");
                 }
 
@@ -80,11 +80,11 @@ namespace DLM.cad
         }
         public bool E_Tecnometal(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith(".TEC"))
+            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith($".{Cfg.Init.EXT_Etapa}"))
             {
                 if (mensagem)
                 {
-                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.{Cfg.Init.EXT_Etapa})" +
                    $"\nPasta atual: {this.Pasta}");
                 }
 

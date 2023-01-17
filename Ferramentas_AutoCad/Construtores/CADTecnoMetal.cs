@@ -1666,7 +1666,7 @@ namespace DLM.cad
 
                                 Hashtable att = new Hashtable();
                                 att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().String(Cfg.Init.Superficie_Decimais));
+                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
                                 att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento.String(0)}*{m.Espessura.String()}*{m.Largura.String(0)}");
                                 att.Add(TAB_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));
 
@@ -1855,7 +1855,7 @@ namespace DLM.cad
             {
                 return new TabelaBlocoTag();
             }
-            if (!this.Pasta.ToUpper().EndsWith(@".TEC\"))
+            if (!this.Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
             {
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {this.Pasta}", DLM.vars.TipoReport.Crítico));
@@ -1866,7 +1866,7 @@ namespace DLM.cad
             if (destino == null | destino == "")
             {
             setar_nome:
-                var nome_dbf = (Conexoes.Utilz.Prompt("Digine o nome do arquivo", "", $"{(etapa.Nome.Contains("B")?"T_":"")}{etapa.Nome}", false, "", false, 16)).RemoverCaracteresEspeciais().ToUpper();
+                var nome_dbf = (Conexoes.Utilz.Prompt("Digine o nome do arquivo",  $"{(etapa.Nome.Contains("B")?"T_":"")}{etapa.Nome}", false, "", false, 16)).RemoverCaracteresEspeciais().ToUpper();
 
                 if (!nome_dbf.Contains("ETAPA_") | nome_dbf.Length < 7 | nome_dbf.Length > 16)
                 {
@@ -2295,7 +2295,7 @@ namespace DLM.cad
         }
         public  string PromptFicha()
         {
-            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", "Ficha de pintura", Cfg.Init.RM_SEM_PINTURA, true, "FICHA", false, 20);
+            return  Conexoes.Utilz.Prompt("Digite a ficha de pintura", Cfg.Init.RM_SEM_PINTURA, true, "FICHA", false, 20);
         }
         public string PromptMarca(string prefix = "ARR-")
         {
@@ -2303,7 +2303,7 @@ namespace DLM.cad
             var marcas = this.GetMarcas();
             var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count +1;
             retentar:
-            var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", "Nome da marca", prefix + nnn.ToString().PadLeft(2,'0'), true, "NOME_MARCA", false, 25).ToUpper().Replace(" ","");
+            var m = Conexoes.Utilz.Prompt("Digite o nome da Marca",  prefix + nnn.ToString().PadLeft(2,'0'), true, "NOME_MARCA", false, 25).ToUpper().Replace(" ","");
 
             if(m.Length==0)
             {
