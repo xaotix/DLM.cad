@@ -297,7 +297,7 @@ namespace DLM.cad.Menus
         {
            if(selecoes.Count>0)
             {
-                var nova = Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Familia);
+                var nova = Conexoes.Utilz.Prompt("Digite",  selecoes[0].Familia);
                 if(nova==null | nova == "") { return; }
                 foreach(var s in selecoes)
                 {
@@ -316,7 +316,7 @@ namespace DLM.cad.Menus
         {
             if (selecoes.Count > 0)
             {
-                var nova = Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Descricao);
+                var nova = Conexoes.Utilz.Prompt("Digite", selecoes[0].Descricao);
                 if (nova == null | nova == "") { return; }
                 foreach (var s in selecoes)
                 {
@@ -331,7 +331,7 @@ namespace DLM.cad.Menus
         {
             if (selecoes.Count > 0)
             {
-                var nova = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Quantidade.ToString()));
+                var nova = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite", selecoes[0].Quantidade.ToString()));
                 if (nova<=0) { return; }
                 foreach (var s in selecoes)
                 {
@@ -345,7 +345,7 @@ namespace DLM.cad.Menus
         {
             if (selecoes.Count > 0)
             {
-                var nova = Conexoes.Utilz.Prompt("Digite", "", selecoes[0].Numero);
+                var nova = Conexoes.Utilz.Prompt("Digite",  selecoes[0].Numero);
                 if (nova == null | nova == "") { return; }
                 foreach (var s in selecoes)
                 {

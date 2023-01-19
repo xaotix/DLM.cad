@@ -1394,7 +1394,7 @@ namespace DLM.cad
                 return;
             }
 
-            var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", "", this.TranspassePadrao.String(0)));
+            var valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", this.TranspassePadrao.String(0)));
 
            
 
@@ -1437,7 +1437,7 @@ namespace DLM.cad
             double valor = 0;
             if(tip == "Offset")
             {
-                valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", "", this.OffsetApoio.ToString()));
+                valor = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite o valor", this.OffsetApoio.ToString()));
             }
 
 
@@ -1570,7 +1570,7 @@ namespace DLM.cad
         }
         public void SetCorrenteDescontar()
         {
-            var valor = Conexoes.Utilz.Int(Conexoes.Utilz.Prompt("Digite", "", this.CorrenteDescontar.ToString()));
+            var valor = Conexoes.Utilz.Int(Conexoes.Utilz.Prompt("Digite", this.CorrenteDescontar.ToString()));
             if (valor < 0)
             {
                 return;

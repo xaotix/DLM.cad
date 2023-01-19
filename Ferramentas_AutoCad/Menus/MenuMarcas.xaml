@@ -180,10 +180,10 @@
                     <Grid>
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <GroupBox Grid.Row="0" Header="Marca">
                             <Grid >
@@ -203,11 +203,11 @@
                         <GroupBox Header="Propriedades" Grid.Row="2">
                             <Grid VerticalAlignment="Center" >
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -218,32 +218,32 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" Content="Nome:" VerticalAlignment="Center"></Label>
+                                <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" Content="Nome:" VerticalAlignment="Center"/>
                                 <TextBox TextAlignment="Center"  Grid.Column="1" Grid.Row="0" Name="prefix" Text="{Binding Prefix}" MaxLength="9" CharacterCasing="Upper"/>
                                 <TextBox  Grid.Column="2" Grid.Row="0" Name="sufix" Text="{Binding Sufix}" MaxLength="5" CharacterCasing="Upper"/>
-                                <Label HorizontalAlignment="Right" Grid.Column="4" Grid.Row="0" Content="Escala:" VerticalAlignment="Center"></Label>
+                                <Label HorizontalAlignment="Right" Grid.Column="4" Grid.Row="0" Content="Escala:" VerticalAlignment="Center"/>
                                 <TextBox  Grid.Column="5" Grid.Row="0" Name="txt_escala" Text="{Binding Escala}" MaxLength="5" CharacterCasing="Upper"/>
 
 
 
-                                <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2" Content="Qtd.:" VerticalAlignment="Center"></Label>
+                                <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2" Content="Qtd.:" VerticalAlignment="Center"/>
                                 <TextBox  Grid.Column="1" Grid.Row="2" Name="quantidade" Text="{Binding Quantidade}" MaxLength="8" CharacterCasing="Upper"/>
 
 
-                                <Label Grid.Row="1" Grid.Column="0" Content="Mercadoria:" VerticalAlignment="Center"></Label>
+                                <Label Grid.Row="1" Grid.Column="0" Content="Mercadoria:" VerticalAlignment="Center"/>
                                 <ComboBox Grid.ColumnSpan="5" IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}" Grid.Row="1" Grid.Column="1" Name="combo_mercadoria"/>
 
-                                <Label HorizontalAlignment="Right" Grid.Row="3" Content="Material:" VerticalAlignment="Center"></Label>
+                                <Label HorizontalAlignment="Right" Grid.Row="3" Content="Material:" VerticalAlignment="Center"/>
                                 <ComboBox Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="3" Name="combo_material"/>
 
-                                <Label HorizontalAlignment="Right" Grid.Column="2" Grid.Row="2" Content="Tratamento:" VerticalAlignment="Center"></Label>
+                                <Label HorizontalAlignment="Right" Grid.Column="2" Grid.Row="2" Content="Tratamento:" VerticalAlignment="Center"/>
                                 <TextBox Grid.ColumnSpan="3" IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}"  Grid.Column="3" Grid.Row="2" Name="tratamento" Text="FICHA 01" MaxLength="20" CharacterCasing="Upper"/>
 
 
-                                <!--<Label Grid.Column="0" Grid.Row="4" Content="Larg.:" VerticalAlignment="Center"></Label>
+                                <!--<Label Grid.Column="0" Grid.Row="4" Content="Larg.:" VerticalAlignment="Center"/>
                 <TextBox  Grid.Column="1" Grid.Row="4" Name="largura" Text="{Binding Largura}" MaxLength="20" CharacterCasing="Upper"/>-->
 
-                                <!--<Label Grid.Column="2" Grid.Row="4" Content="Comp.:" VerticalAlignment="Center"></Label>
+                                <!--<Label Grid.Column="2" Grid.Row="4" Content="Comp.:" VerticalAlignment="Center"/>
                 <TextBox  Grid.Column="3" Grid.Row="4" Name="comprimento" Text="{Binding Comprimento}" MaxLength="20" CharacterCasing="Upper"/>-->
 
 
@@ -252,11 +252,11 @@
                         <GroupBox Grid.Row="1" Header="Tipo">
                             <Grid >
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
-                                    <RowDefinition Height="auto"></RowDefinition>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="150"></ColumnDefinition>

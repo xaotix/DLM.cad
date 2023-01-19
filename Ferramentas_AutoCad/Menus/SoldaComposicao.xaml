@@ -173,8 +173,8 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="35"></RowDefinition>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
         <DataGrid 
             Name="lista" 

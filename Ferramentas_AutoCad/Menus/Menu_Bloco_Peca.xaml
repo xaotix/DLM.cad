@@ -181,8 +181,8 @@
         <TabItem Header="Indicação">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <Grid>
 
@@ -190,15 +190,15 @@
 
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -207,30 +207,30 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <Label Grid.Row="0" Grid.Column="0" Content="Tipo de Peça:"></Label>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Tipo de Peça:"/>
                         <ComboBox Grid.Row="0" Grid.Column="1" Name="combo_tipo_de_peca" SelectionChanged="tipo_de_peca_SelectionChanged"></ComboBox>
                         <Button Content="[...]" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Name="bt_peca_selecionar" Click="peca_selecionar_Click"></Button>
 
-                        <Label Grid.Row="2" Grid.Column="0" Content="Código:"></Label>
+                        <Label Grid.Row="2" Grid.Column="0" Content="Código:"/>
                         <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="txt_codigo" MaxLength="13"></TextBox>
 
-                        <Label Grid.Row="2" Grid.Column="2" Content="Destino:"></Label>
+                        <Label Grid.Row="2" Grid.Column="2" Content="Destino:"/>
                         <TextBox Text="" Grid.Row="2" Grid.Column="3" Name="txt_destino" MaxLength="10"></TextBox>
 
-                        <Label Grid.Row="3" Grid.Column="0" Content="Qtd.:"></Label>
+                        <Label Grid.Row="3" Grid.Column="0" Content="Qtd.:"/>
                         <TextBox Text="{Binding qtd}" Grid.Row="3" Grid.Column="1" TextChanged="atualiza_nome" Name="txt_quantidade" MaxLength="4"></TextBox>
 
-                        <Label Grid.Row="3" Grid.Column="2" Content="Comp.:"></Label>
+                        <Label Grid.Row="3" Grid.Column="2" Content="Comp.:"/>
                         <TextBox Text="{Binding comp}" Grid.Row="3" TextChanged="atualiza_nome" Grid.Column="3" Name="txt_comprimento" MaxLength="5"></TextBox>
 
-                        <Label Grid.Row="4" Grid.Column="0" Content="Desc.:"></Label>
+                        <Label Grid.Row="4" Grid.Column="0" Content="Desc.:"/>
                         <TextBox Text="" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="txt_descricao" MaxLength="25"></TextBox>
 
 
-                        <Label Grid.Row="5" Grid.Column="0" Content="Ficha:"></Label>
+                        <Label Grid.Row="5" Grid.Column="0" Content="Ficha:"/>
                         <TextBox Text="FICHA 01" Grid.Row="5" Grid.Column="1" Name="ficha" MaxLength="15" CharacterCasing="Upper"></TextBox>
 
-                        <Label Grid.Row="5" Grid.Column="2" Content="Tabela:"></Label>
+                        <Label Grid.Row="5" Grid.Column="2" Content="Tabela:"/>
                         <TextBox Text="PEÇAS" Grid.Row="5" Grid.Column="3" Name="familia" MaxLength="25" CharacterCasing="Upper"></TextBox>
 
                       
@@ -244,14 +244,14 @@
             <TabItem Header="Mapear Vista TecnoMetal" Name="vista_tecnometal">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -273,11 +273,11 @@
     </TabControl>
         <Grid Margin="3" Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -286,13 +286,13 @@
             <ComboBox Name="combo_lista_blocos" SelectionChanged="set_imagem" Grid.ColumnSpan="2"></ComboBox>
             <Image Name="caixa_imagem" Grid.Row="1" Margin="5" Grid.ColumnSpan="2"/>
 
-            <Label HorizontalAlignment="Right"  Grid.Row="2" Grid.Column="0" Content="Prefix:"></Label>
+            <Label HorizontalAlignment="Right"  Grid.Row="2" Grid.Column="0" Content="Prefix:"/>
             <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="txt_prefix" MaxLength="1" CharacterCasing="Upper"></TextBox>
 
-            <Label HorizontalAlignment="Right"  Grid.Row="3" Grid.Column="0" Content="Sequencial:"></Label>
+            <Label HorizontalAlignment="Right"  Grid.Row="3" Grid.Column="0" Content="Sequencial:"/>
             <TextBox Text="{Binding sequencial}" Grid.Row="3" Grid.Column="1" Name="txt_sequencial" MaxLength="3" CharacterCasing="Upper"></TextBox>
 
-            <Label HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="Escala:"></Label>
+            <Label HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Content="Escala:"/>
             <TextBox  Text="{Binding escala}" Grid.Row="4" Grid.Column="3" Name="txt_escala" MaxLength="4" CharacterCasing="Upper"></TextBox>
         </Grid>
     </Grid>

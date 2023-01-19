@@ -175,8 +175,8 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <DataGrid 
             Name="lista" 
@@ -193,7 +193,7 @@
                 <DataGridTemplateColumn Width="100">
                     <DataGridTemplateColumn.Header>
                         <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Nome"></Label>
+                            <Label  HorizontalAlignment="Center" Content="Nome"/>
                         </Grid>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
@@ -205,7 +205,7 @@
                 <DataGridTemplateColumn Width="60">
                     <DataGridTemplateColumn.Header>
                         <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Qtd."></Label>
+                            <Label  HorizontalAlignment="Center" Content="Qtd."/>
                         </Grid>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
@@ -217,7 +217,7 @@
                 <DataGridTemplateColumn Width="60">
                     <DataGridTemplateColumn.Header>
                         <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="N°."></Label>
+                            <Label  HorizontalAlignment="Center" Content="N°."/>
                         </Grid>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
@@ -230,7 +230,7 @@
                 <DataGridTemplateColumn Width="auto">
                     <DataGridTemplateColumn.Header>
                         <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Família"></Label>
+                            <Label  HorizontalAlignment="Center" Content="Família"/>
                         </Grid>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
@@ -242,7 +242,7 @@
                 <DataGridTemplateColumn Width="*">
                     <DataGridTemplateColumn.Header>
                         <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Descr."></Label>
+                            <Label  HorizontalAlignment="Center" Content="Descr."/>
                         </Grid>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
@@ -254,7 +254,7 @@
                 <DataGridTemplateColumn Width="auto">
                     <DataGridTemplateColumn.Header>
                         <Grid HorizontalAlignment="{Binding Path=HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Mode=OneWayToSource}">
-                            <Label  HorizontalAlignment="Center" Content="Dest."></Label>
+                            <Label  HorizontalAlignment="Center" Content="Dest."/>
                         </Grid>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
@@ -267,10 +267,10 @@
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Editar Família" Click="set_familia"></MenuItem>
-                    <MenuItem Header="Editar Descrição" Click="set_descricao"></MenuItem>
-                    <MenuItem Header="Editar Quantidade" Click="set_quantidade"></MenuItem>
-                    <MenuItem Header="Editar Número" Click="set_numero"></MenuItem>
+                    <MenuItem Header="Editar Família" Click="set_familia"/>
+                    <MenuItem Header="Editar Descrição" Click="set_descricao"/>
+                    <MenuItem Header="Editar Quantidade" Click="set_quantidade"/>
+                    <MenuItem Header="Editar Número" Click="set_numero"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

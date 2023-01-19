@@ -351,8 +351,8 @@ namespace DLM.cad
                         int qtd = marca[0].Get(TAB_DBF1.QTA_PEZ.ToString()).Int();
                         double peso_unit = posics.Sum(x => x.Get(TAB_DBF1.PUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
                         double sup_unit = posics.Sum(x => x.Get(TAB_DBF1.SUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
-                        marca[0].Set(TAB_DBF1.PUN_LIS.ToString(), peso_unit);
-                        marca[0].Set(TAB_DBF1.SUN_LIS.ToString(), sup_unit);
+                        marca[0][TAB_DBF1.PUN_LIS.ToString()].Set(peso_unit);
+                        marca[0][TAB_DBF1.SUN_LIS.ToString()].Set(sup_unit);
                         total_superficie += (sup_unit * qtd);
                         total_peso += (peso_unit * qtd);
                     }
