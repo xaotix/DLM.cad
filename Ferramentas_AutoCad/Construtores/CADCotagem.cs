@@ -35,14 +35,14 @@ namespace DLM.cad
         }
         public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
-            return GetBlocos().FindAll(x =>
+            return Selecoes.Filter<BlockReference>().FindAll(x =>
                  Cfg.Init.GetBlocosTecnoMetalMarcas().Find(y=> y.ToUpper() == x.Name.ToUpper())!=null |
                  Cfg.Init.GetBlocosTecnoMetalPosicoes().Find(y=> y.ToUpper() == x.Name.ToUpper())!=null 
                                     );
         }
         public List<BlockReference> GetFuros_corte()
         {
-            return GetBlocos().FindAll(x => x.Name.ToUpper() == "MS");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "MS");
         }
         #endregion
         public void GetVars(CADCotagem c)
@@ -1491,7 +1491,7 @@ namespace DLM.cad
             }
 
             //limpa as cotas atuais
-            acDoc.Apagar(this.GetCotas().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
+            acDoc.Apagar(Selecoes.GetDimmensions().FindAll(x=> !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
 
                 if (GetLinhas().Count == 0 | selecao.Status != PromptStatus.OK)
                 {

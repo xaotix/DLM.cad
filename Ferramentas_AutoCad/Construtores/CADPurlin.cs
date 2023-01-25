@@ -463,7 +463,7 @@ namespace DLM.cad
         {
             List<Entity> blocos = new List<Entity>();
             blocos.AddRange(this.Selecoes);
-            blocos = blocos.FindAll(x=> this.GetBlocos().FindAll(w => w.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
+            blocos = blocos.FindAll(x=> Selecoes.Filter<BlockReference>().FindAll(w => w.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
             blocos = blocos.FindAll(x => this.GetBlocos_Eixos().Find(y => y.Bloco.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetLinhas_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetBlocosSecundariasIndicacao().Find(y => y.ObjectId == x.ObjectId) == null);
@@ -481,15 +481,15 @@ namespace DLM.cad
 
         public List<BlockReference> Getblocos_tercas()
         {
-            return this.GetBlocos().FindAll(x => x.Name.ToUpper() == "TERCA_INDICACAO");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "TERCA_INDICACAO");
         }
         public List<BlockReference> Getblocos_tirantes()
         {
-            return this.GetBlocos().FindAll(x => x.Name.ToUpper() == "TIRANTE_INDICACAO");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "TIRANTE_INDICACAO");
         }
         public List<BlockReference> Getblocos_correntes()
         {
-            return this.GetBlocos().FindAll(x => x.Name.ToUpper() == "CORRENTE_INDICACAO");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "CORRENTE_INDICACAO");
         }
 
         private List<CADMline> _correntes { get; set; } = null;

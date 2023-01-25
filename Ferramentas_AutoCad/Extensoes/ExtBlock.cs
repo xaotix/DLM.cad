@@ -6,6 +6,7 @@ namespace DLM.cad
 {
     public static class ExtBlock
     {
+
         public static List<BlockReference> Filtrar(this List<BlockReference> blocos, List<string> nomes, bool exato = true)
         {
             List<BlockReference> marcas = new List<BlockReference>();

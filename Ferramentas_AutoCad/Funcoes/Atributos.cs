@@ -91,7 +91,7 @@ namespace DLM.cad
                 }
             }
         }
-        public static BlocoTag GetBlocoTag(BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
+        public static BlocoTag GetBlocoTag(this BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
         {
 
             BlocoTag retorno = new BlocoTag(bloco,false);

@@ -91,7 +91,7 @@ namespace DLM.cad
             var s = pp.SelecionarObjetos();
             if (s.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) { return; }
 
-            var polylines = pp.GetPolyLines();
+            var polylines = pp.Selecoes.Filter<Polyline>();
 
             if (polylines.Count == 0) { return; }
 

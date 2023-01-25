@@ -11,6 +11,7 @@ namespace DLM.cad
 {
     public static class ExtDocument
     {
+   
         public static void Apagar(this Document acDoc, List<Entity> entities)
         {
             if (acDoc == null)

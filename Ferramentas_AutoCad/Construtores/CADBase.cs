@@ -50,14 +50,14 @@ namespace DLM.cad
             }
             acDoc.Apagar(remover);
         }
-        public  void SetViewport(bool block = true, string layer = "MV")
+        public void SetViewport(bool block = true, string layer = "MV")
         {
             acDoc.IrLayout();
             FLayer.Criar(layer, System.Drawing.Color.Gray);
             FLayer.Set("0");
             var view = Ut.GetViewports(layer);
             acDoc.Comando("mview", "lock", block ? "ON" : "OFF", "all", "");
-            acDoc.Comando("layer", block ? "off":"on", layer, "");
+            acDoc.Comando("layer", block ? "off" : "on", layer, "");
             acDoc.Comando("pspace", "");
             Ut.ZoomExtend();
         }
@@ -95,23 +95,167 @@ namespace DLM.cad
                 return true;
             }
         }
+        public void AjustarLayers()
+        {
+            CriarLayersPadrao();
+
+            this.SelecionarTudo();
+            var objetos = this.Selecoes;
+            //Conexoes.Utilz.Alerta(objetos.Count().ToString());
+
+
+            using (var acTrans = CAD.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                List<Entity> lista = this.Selecoes;
+                foreach (var obj in lista)
+                {
+                    AjustarLayer(obj, acTrans);
+                }
+                foreach (var obj in lista.GetBlockTableRecordEntities(acTrans))
+                {
+                    AjustarLayer(obj, acTrans);
+                }
+
+                acTrans.Commit();
+            }
+        }
+
+        private static void AjustarLayer(Entity objent, OpenCloseTransaction acTrans)
+        {
+            try
+            {
+                var bylayer = Autodesk.AutoCAD.Colors.Color.FromColorIndex(Autodesk.AutoCAD.Colors.ColorMethod.ByLayer, 256);
+                var item = (Entity)acTrans.GetObject(objent.ObjectId, OpenMode.ForWrite);
+
+                var color = item.Color;
+                var layer = item.GetLayer(acTrans);
+                var linetype = item.GetLineType(acTrans);
+
+                if (!item.Visible)
+                {
+                    return;
+                }
+
+
+                if (layer.Name.ToUpper() == "DEFPOINT" | layer.Name.ToUpper() == "DEFPOINTS" | layer.Name.ToUpper() == "MV")
+                {
+                    return;
+                }
+
+                if (item.IsDimmension())
+                {
+                    if (item.IsText())
+                    {
+                        item.Layer = "TEXTO";
+                    }
+                    else
+                    {
+                        item.Layer = "COTAS";
+                    }
+                }
+                else if (item.Is<BlockReference>())
+                {
+                    item.Layer = "BLOCOS";
+                }
+                else
+                {
+                    if (color.ColorNameForDisplay.ToUpper() == "BYLAYER")
+                    {
+                        color = layer.Color;
+                    }
+                    if (linetype.Name.ToUpper() == "BYLAYER" | linetype.Name.ToUpper() == "BYBLOCK")
+                    {
+                        linetype = layer.GetLineType(acTrans);
+                    }
+
+                    var lname = linetype.Name.ToUpper();
+
+                    if (lname == "CONTINUOUS" | lname == "HIDDEN")
+                    {
+                        var nlname = lname == "HIDDEN" ? "PROJECAO" : "CONTORNO";
+                        if (color.Is(System.Drawing.Color.Yellow))
+                        {
+                            item.Layer = $"{nlname}1";
+                        }
+                        /*o windows não usa o verde total (0,255,0) no Green*/
+                        else if (color.Is(System.Drawing.Color.Lime))
+                        {
+                            item.Layer = $"{nlname}2";
+                        }
+                        else if (color.Is(System.Drawing.Color.Red))
+                        {
+                            item.Layer = $"{nlname}3";
+                        }
+                        else if (color.Is(System.Drawing.Color.Blue))
+                        {
+                            item.Layer = $"{nlname}4";
+                        }
+                        else if (color.Is(System.Drawing.Color.Cyan))
+                        {
+                            item.Layer = $"{nlname}5";
+                        }
+                        else if (color.Is(System.Drawing.Color.Magenta))
+                        {
+                            item.Layer = $"{nlname}6";
+                        }
+                        else if (color.Is(System.Drawing.Color.White))
+                        {
+                            if (lname == "HIDDEN")
+                            {
+                                item.Layer = $"{nlname}2";
+                            }
+                            else
+                            {
+                                item.Layer = $"0";
+                            }
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else if (linetype.Name.ToUpper() == "HIDDEN")
+                    {
+                        item.Layer = "PROJECAO";
+                        item.Color = bylayer;
+                    }
+                    else if (linetype.Name.ToUpper() == "DASHDOT")
+                    {
+                        item.Layer = "EIXOS";
+                        item.Color = bylayer;
+                    }
+                    else
+                    {
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+        }
+
         public void CriarLayersPadrao()
         {
             string nome = "LAYERS_PADRAO";
-            
+
             Blocos.Inserir(CAD.acDoc, nome, new P3d(), 0.001, 0, new Hashtable());
-            acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x=> x as Entity).ToList());
+           // acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x => x as Entity).ToList());
         }
         public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
-            var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg").Select(x=>new Conexoes.Arquivo(x)).ToList();
+            var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg").Select(x => new Conexoes.Arquivo(x)).ToList();
 
-            var selecao = arqs.FindAll(x => x.Nome.ToUpper().Contains("-FA-") && x.Nome.Length>8);
+            var selecao = arqs.FindAll(x => x.Nome.ToUpper().Contains("-FA-") && x.Nome.Length > 8);
             var ultimas_revs = selecao.GroupBy(x => x.Nome.Substring(0, x.Nome.Length - 3)).Select(x => x.ToList().OrderByDescending(y => y.Nome)).Select(x => x.First()).ToList();
             selecao = ultimas_revs;
 
-            var resto = arqs.FindAll(x => selecao.Find(y=> y.Nome == x.Nome) == null);
-            if(dxfs_tecnometal && E_Tecnometal(false))
+            var resto = arqs.FindAll(x => selecao.Find(y => y.Nome == x.Nome) == null);
+            if (dxfs_tecnometal && E_Tecnometal(false))
             {
                 var etapa = new Conexoes.SubEtapaTecnoMetal(this.Pasta);
 
@@ -124,10 +268,7 @@ namespace DLM.cad
             return arquivos;
         }
 
-        public List<Circle> GetCirculos()
-        {
-            return this.Selecoes.FindAll(x => x is Circle).Select(x => x as Circle).ToList();
-        }
+
 
 
 
@@ -137,7 +278,7 @@ namespace DLM.cad
         }
         public List<BlockReference> GetBlocos_Furos_Vista()
         {
-            return GetBlocos().FindAll(x =>
+            return Selecoes.Filter<BlockReference>().FindAll(x =>
                  x.Name.ToUpper() == "M8"
                 | x.Name.ToUpper() == "M10"
                 | x.Name.ToUpper() == "M12"
@@ -171,10 +312,10 @@ namespace DLM.cad
         }
         public List<Entity> GetEntitiesdeBlocos()
         {
-            if(_Entities_Blocos==null)
+            if (_Entities_Blocos == null)
             {
                 _Entities_Blocos = new List<Entity>();
-                foreach (var bl in this.GetBlocos())
+                foreach (var bl in Selecoes.Filter<BlockReference>())
                 {
                     _Entities_Blocos.AddRange(Blocos.GetEntities(bl));
                 }
@@ -270,7 +411,7 @@ namespace DLM.cad
         {
             get
             {
-                return Conexoes.Utilz.getNome(acDoc.Name).ToUpper().Replace(".DWG","");
+                return Conexoes.Utilz.getNome(acDoc.Name).ToUpper().Replace(".DWG", "");
             }
         }
 
@@ -286,7 +427,7 @@ namespace DLM.cad
 
         [Browsable(false)]
         public List<Entity> Selecoes { get; private set; } = new List<Entity>();
-       
+
         public void SetUCSParaWorld()
         {
             acDoc.Editor.CurrentUserCoordinateSystem = Matrix3d.Identity;
@@ -309,12 +450,12 @@ namespace DLM.cad
             {
                 return;
             }
-            
+
             // Start a transaction
             using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl= acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
@@ -364,9 +505,9 @@ namespace DLM.cad
             {
                 // Open the Linetype table for read
                 LinetypeTable acLineTypTbl;
-                acLineTypTbl = acTrans.GetObject(acCurDb.LinetypeTableId,OpenMode.ForRead) as LinetypeTable;
+                acLineTypTbl = acTrans.GetObject(acCurDb.LinetypeTableId, OpenMode.ForRead) as LinetypeTable;
                 // Open the Block table for read
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
@@ -397,7 +538,7 @@ namespace DLM.cad
 
 
         #region Cotas
-        public RotatedDimension AddCotaVertical(P3d inicio, P3d fim, string texto, P3d posicao, bool dimtix =false, double tam = 0, bool juntar_cotas =false, bool ultima_cota =false)
+        public RotatedDimension AddCotaVertical(P3d inicio, P3d fim, string texto, P3d posicao, bool dimtix = false, double tam = 0, bool juntar_cotas = false, bool ultima_cota = false)
         {
             RotatedDimension acRotDim;
             // Get the current database
@@ -405,7 +546,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId,  OpenMode.ForRead) as BlockTable;
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
@@ -464,7 +605,7 @@ namespace DLM.cad
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
 
                 using (acRotDim = new RotatedDimension())
@@ -558,7 +699,7 @@ namespace DLM.cad
         #region listas de itens selecionados
         public List<CADLine> GetLinhas()
         {
-            if(_Linhas == null)
+            if (_Linhas == null)
             {
                 _Linhas = new List<CADLine>();
                 _Linhas.AddRange(Selecoes.FindAll(x => x is Line).Select(x => x as Line).ToList().Select(x => new CADLine(x)).ToList());
@@ -567,16 +708,13 @@ namespace DLM.cad
         }
         public List<CADLine> GetLinhas_Verticais()
         {
-            return GetLinhas().FindAll(x=>x.Sentido == Sentido.Vertical).OrderBy(x => x.StartPoint.X).ToList();
+            return GetLinhas().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<CADLine> GetLinhas_Horizontais()
         {
             return GetLinhas().FindAll(x => x.Sentido == Sentido.Horizontal).OrderBy(x => x.StartPoint.X).ToList();
         }
-        public List<Polyline> GetPolyLines()
-        {
-            return Selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).ToList();
-        }
+
 
         public List<PolyInfo> GetPolies()
         {
@@ -589,18 +727,19 @@ namespace DLM.cad
 
 
 
+
         public List<Furo> GetFurosSelecao()
         {
-            if(_Furos == null)
+            if (_Furos == null)
             {
                 _Furos = new List<Furo>();
 
                 var furos = this.GetFurosVista();
-                var furos_pl = this.GetCirculos();
+                var furos_pl = Selecoes.Filter<Circle>();
                 var polis = this.GetPolies().FindAll(x => x.Polyline.Closed);
                 var furos_polis = polis.FindAll(x => x.Arcos.Count == 2);
 
-                foreach (var furo in furos.FindAll(x=>x.Bloco.Name!="MA"))
+                foreach (var furo in furos.FindAll(x => x.Bloco.Name != "MA"))
                 {
                     var p3d = furo.Bloco.Position.P3d();
                     _Furos.Add(new cam.Furo(p3d.X, p3d.Y, furo.Diametro, furo.Oblongo));
@@ -628,62 +767,32 @@ namespace DLM.cad
             return _Furos;
         }
 
-        public List<MText> GetMtexts()
-        {
-            return Selecoes.FindAll(x => x is MText).Select(x => x as MText).ToList();
-        }
-        public List<DBText> GetTexts()
-        {
-            return Selecoes.FindAll(x => x is Autodesk.AutoCAD.DatabaseServices.DBText).Select(x => x as DBText).ToList();
-        }
-        public List<BlockReference> GetBlocos()
-        {
-            return Selecoes.FindAll(x => x is BlockReference).Select(x => x as BlockReference).ToList();
-        }
+
+
 
 
 
         public List<Mline> GetMultilines()
         {
             List<Mline> lista = new List<Mline>();
-            lista.AddRange(Selecoes.FindAll(x => x is Mline).Select(x => x as Mline).ToList());
+            lista.AddRange(Selecoes.Filter<Mline>());
 
             if (BuscarEmBlocos)
             {
-                lista.AddRange(this.GetEntitiesdeBlocos().FindAll(x => x is Mline).Select(x => x as Mline));
+                lista.AddRange(this.GetEntitiesdeBlocos().Filter<Mline>());
             }
 
             return lista;
         }
-        public List<Xline> GetXlines()
-        {
-            return Selecoes.FindAll(x => x is Xline).Select(x => x as Xline).ToList();
-        }
-        public List<Entity> GetCotas()
-        {
-            return Selecoes.FindAll(x =>
 
-                              x is AlignedDimension
-                            | x is ArcDimension
-                            | x is Dimension
-                            | x is DiametricDimension
-                            | x is LineAngularDimension2
-                            | x is Point3AngularDimension
-                            | x is OrdinateDimension
-                            | x is RadialDimension
-                            | x is MText
-                            | x is Leader
-                            | x is MLeader
 
-            );
-        }
 
         public List<BlocoTag> GetBlocos_Eixos(bool update = false)
         {
             /*pega blocos dinâmicos*/
-           if(_Blocos_Eixo==null | update)
+            if (_Blocos_Eixo == null | update)
             {
-                _Blocos_Eixo = this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => new BlocoTag(x)).ToList();
+                _Blocos_Eixo = Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => new BlocoTag(x)).ToList();
             }
 
             return _Blocos_Eixo;
@@ -691,15 +800,15 @@ namespace DLM.cad
         public List<BlocoTag> GetBlocos_Nivel()
         {
             /*pega blocos dinâmicos*/
-            return this.GetBlocos().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x=> new BlocoTag(x)).ToList();
+            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x => new BlocoTag(x)).ToList();
         }
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
             List<PCQuantificar> pcs = new List<PCQuantificar>();
-            var blocos = this.GetBlocos().FindAll(x => x.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).GroupBy(x => x.Name);
+            var blocos = Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).GroupBy(x => x.Name);
 
 
-            foreach(var s in blocos)
+            foreach (var s in blocos)
             {
                 PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => DLM.cad.Atributos.GetBlocoTag(x)).ToList());
                 if (npc.Nome.StartsWith(Cfg.Init.CAD_PC_Quantificar))
@@ -719,7 +828,7 @@ namespace DLM.cad
             }
 
             return pcs;
-    
+
         }
 
         #endregion
@@ -729,7 +838,7 @@ namespace DLM.cad
         }
         public void SetEscala(double valor)
         {
-            if(valor>0)
+            if (valor > 0)
             {
                 using (DocumentLock acLckDoc = acDoc.LockDocument())
                 {
@@ -791,10 +900,40 @@ namespace DLM.cad
                     return SelecionarObjetos(Conexoes.Utilz.GetLista_Enumeradores<CAD_TYPE>().ToArray());
             }
         }
+        public List<Entity> GetAllEntities()
+        {
+            List<Entity> list = new List<Entity>();
+            var dict = new Dictionary<ObjectId, string>();
+            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            {
+                var bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+                foreach (var btrId in bt)
+                {
+                    var btr = (BlockTableRecord)acTrans.GetObject(btrId, OpenMode.ForRead);
+                    if (btr.IsLayout)
+                    {
+                        foreach (var id in btr)
+                        {
+                            dict.Add(id, id.ObjectClass.Name);
+                        }
+                    }
+                }
+                foreach (var item in dict)
+                {
+                    Entity ent = (Entity)acTrans.GetObject(item.Key, OpenMode.ForRead);
+                    list.Add(ent);
+                }
+                acTrans.Commit();
+            }
+            return list;
+        }
+        public void SelecionarTudo()
+        {
+            this.Selecoes.Clear();
+            this.Selecoes.AddRange(this.GetAllEntities());
+        }
 
-
-
-        public PromptSelectionResult SelecionarObjetos(params CAD_TYPE[] filtros )
+        public PromptSelectionResult SelecionarObjetos(params CAD_TYPE[] filtros)
         {
             PromptSelectionOptions pp = new PromptSelectionOptions();
             pp.RejectObjectsOnLockedLayers = true;
@@ -804,7 +943,7 @@ namespace DLM.cad
 
 
             var lista_filtro = new List<TypedValue>();
-            lista_filtro.Add(new TypedValue(0, string.Join(",", filtros.ToList().Select(x=>x.ToString()).Distinct().ToList())));
+            lista_filtro.Add(new TypedValue(0, string.Join(",", filtros.ToList().Select(x => x.ToString()).Distinct().ToList())));
 
 
             SelectionFilter filtro = new SelectionFilter(lista_filtro.ToArray());
@@ -833,7 +972,7 @@ namespace DLM.cad
                 if (acSSPrompt.Status == PromptStatus.OK)
                 {
                     SelectionSet acSSet = acSSPrompt.Value;
-               
+
                     // Step through the objects in the selection set
                     foreach (SelectedObject acSSObj in acSSet)
                     {
@@ -868,17 +1007,17 @@ namespace DLM.cad
 
         public void RenomeiaBlocos()
         {
-          var sel =  SelecionarObjetos(Tipo_Selecao.Blocos);
+            var sel = SelecionarObjetos(Tipo_Selecao.Blocos);
 
-            if(sel.Status == PromptStatus.OK)
+            if (sel.Status == PromptStatus.OK)
             {
-                var blocos = this.GetBlocos();
+                var blocos = Selecoes.Filter<BlockReference>();
 
                 var nomes = blocos.GroupBy(x => x.Name);
-                foreach(var nome in nomes)
+                foreach (var nome in nomes)
                 {
                     var novo_nome = Conexoes.Utilz.Prompt($"Digite o novo nome para o bloco \n[{nome.Key}]");
-                    if(novo_nome!=null && novo_nome.Length>0)
+                    if (novo_nome != null && novo_nome.Length > 0)
                     {
                         novo_nome = novo_nome.Replace(" ", "_").ToUpper();
                         if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja renomear o bloco \n[{nome.Key}] para [{novo_nome}]"))

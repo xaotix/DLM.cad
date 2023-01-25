@@ -421,7 +421,7 @@ namespace DLM.cad
             {
                 if (pp.SelecionarObjetos(CAD_TYPE.INSERT).Status == PromptStatus.OK)
                 {
-                    blks = pp.GetBlocos();
+                    blks = pp.Selecoes.Filter<BlockReference>();
                     if(blks.Count==0)
                     {
                         return;
@@ -625,6 +625,13 @@ namespace DLM.cad
             b.SetViewport(false);
         }
 
+        [CommandMethod(nameof(ajustarLayers))]
+        public static void ajustarLayers()
+        {
+            CADBase b = new CADBase();
+            b.AjustarLayers();
+            b.AddMensagem("Finalizado!");
+        }
 
 
         [CommandMethod(nameof(teste))]

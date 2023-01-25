@@ -664,7 +664,7 @@ namespace DLM.cad
                     if(opt.Blocos | opt.Pecas_TecnoMetal)
                     {
                         List<PCQuantificar> blocos_montagem_tecnometal = new List<PCQuantificar>();
-                        foreach (var s in this.GetBlocos().FindAll(x => !
+                        foreach (var s in Selecoes.Filter<BlockReference>().FindAll(x => !
                          x.Name.Contains("*"))
                         .GroupBy(x => x.Name.ToUpper()
                         .Replace("SUPORTE_", "")
@@ -751,7 +751,7 @@ namespace DLM.cad
 
                     if(opt.Textos)
                     {
-                        var txt00 = this.GetMtexts().GroupBy(x => x.Text
+                        var txt00 = Selecoes.Filter<MText>().GroupBy(x => x.Text
                         .TrimStart()
                         .TrimEnd()
                         .Replace("*", " ")
@@ -790,7 +790,7 @@ namespace DLM.cad
                             pecas.Add(npc);
 
                         }
-                        var txtss = this.GetTexts().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")).ToList().FindAll(x=>x.Key.Length>0);
+                        var txtss = Selecoes.Filter<DBText>().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")).ToList().FindAll(x=>x.Key.Length>0);
                         foreach (var s in txtss)
                         {
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTag(new List<CelulaTag> { new CelulaTag("VALOR", x.TextString,null) })).ToList());
@@ -2355,7 +2355,7 @@ namespace DLM.cad
 
 
             SelecionarObjetos( Tipo_Selecao.Polyline);
-            var pols = this.GetPolyLines();
+            var pols = Selecoes.Filter<Polyline>();
             if (pols.Count > 0)
             {
 
@@ -2883,7 +2883,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = this.GetBlocos().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                var marcas = Selecoes.Filter<BlockReference>().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if(marcas.Count>0)
                 {
@@ -2906,7 +2906,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = this.GetBlocos().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                var marcas = Selecoes.Filter<BlockReference>().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if (marcas.Count > 0)
                 {
@@ -2928,7 +2928,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = this.GetBlocos().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                var marcas = Selecoes.Filter<BlockReference>().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if (marcas.Count > 0)
                 {

@@ -126,6 +126,7 @@
     <Compile Include="ClassesObjetosMultiline\ObjetoPurlin.cs" />
     <Compile Include="ClassesInput\GradeEixos.cs" />
     <Compile Include="ClassesInput\VaoObra.cs" />
+    <Compile Include="Extensoes\Ext.cs" />
     <Compile Include="Extensoes\ExtBlock.cs" />
     <Compile Include="Extensoes\ExtDocument.cs" />
     <Compile Include="Funcoes\CADVars.cs" />

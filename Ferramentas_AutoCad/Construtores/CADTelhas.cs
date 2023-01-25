@@ -50,26 +50,26 @@ namespace DLM.cad
 
         public List<BlockReference> Getpassarelas()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_PASSARELA));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_PASSARELA));
         }
 
         public List<Entity> Getcotaslinhadevida()
         {
-            return this.GetCotas().FindAll(x => x.Layer == LayerLinhaDeVidaCotas | x.Layer == LayerLinhaDeVida);
+            return Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerLinhaDeVidaCotas | x.Layer == LayerLinhaDeVida);
         }
 
         public List<Entity> GetCotasPassarelas()
         {
-            return this.GetCotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerLinhaDeVida);
+            return Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerLinhaDeVida);
         }
 
         public List<Polyline> Getcabos()
         {
-            return this.GetPolyLines().FindAll(x => x.Layer == LayerLinhaDeVida);
+            return Selecoes.Filter<Polyline>().FindAll(x => x.Layer == LayerLinhaDeVida);
         }
         public List<BlockReference> GetblocostextoLinhaDeVida()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_BL_Texto));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_BL_Texto));
         }
         public void ApagarLinhaDeVida()
         {
@@ -79,7 +79,7 @@ namespace DLM.cad
             list_apagar.AddRange(this.Getsflis());
             list_apagar.AddRange(this.Getcabos());
             list_apagar.AddRange(this.GetblocostextoLinhaDeVida().FindAll(x => x.Layer == LayerLinhaDeVida));
-            list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
+            list_apagar.AddRange(Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
 
 
             acDoc.Apagar(list_apagar);
@@ -90,7 +90,7 @@ namespace DLM.cad
             SelecionarObjetos();
             List<Entity> list_apagar = new List<Entity>();
             list_apagar.AddRange(this.Getpassarelas());
-            list_apagar.AddRange(this.GetCotas().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
+            list_apagar.AddRange(Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
 
 
             acDoc.Apagar(list_apagar);
@@ -99,7 +99,7 @@ namespace DLM.cad
 
         public List<BlockReference> Getsflhs()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLH));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLH));
         }
         public List<BlockReference> GetLinhasDeVida()
         {
@@ -110,7 +110,7 @@ namespace DLM.cad
         }
         public List<BlockReference> Getsflis()
         {
-            return this.GetBlocos().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLI));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLI));
         }
 
         public void AlinharLinhaDeVida()
@@ -122,7 +122,7 @@ namespace DLM.cad
 
 
 
-                var xls = GetXlines();
+                var xls = Selecoes.Filter<Xline>();
 
                 var sflis = Getsflis();
                 var sflhs = Getsflhs();
