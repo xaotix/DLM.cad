@@ -895,7 +895,7 @@ namespace DLM.cad
             "_zoom", "e",
             "-SCALELISTEDIT", "R", "Y", "e",
             "-SCALELISTEDIT", "d", "*", "e",
-            "-overkill", "all",
+            "-overkill", "all","",
             "_tilemode", "1",/*vai pro model*/
             "-purge", "A", "*", "N",
             "-overkill", "all", "", "", "d",

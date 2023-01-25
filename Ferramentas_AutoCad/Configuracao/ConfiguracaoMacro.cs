@@ -24,6 +24,9 @@ namespace DLM.cad
 
         [DisplayName("Limpar desenhos")]
         public bool LimparDesenhos { get; set; } = false;
+        [DisplayName("Ajustar Layers (somente montagens)")]
+        [Browsable(false)]
+        public bool Ajustar_Layers { get; set; } = false;
 
         [DisplayName("Ajustar MViews")]
         public bool AjustarMViews { get; set; } = false;

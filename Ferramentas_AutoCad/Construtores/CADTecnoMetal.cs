@@ -1016,10 +1016,15 @@ namespace DLM.cad
                         {
                             PreencheSelo();
                         }
+                        if(cfg.Ajustar_Layers)
+                        {
+                            Core.ajustarLayers();
+                        }
                         if (cfg.LimparDesenhos)
                         {
                             Core.LimparDesenho(doc);
                         }
+
                     }
                     dynamic acadDoc = doc.AcadDocument;
                     acadDoc.Save();
