@@ -1515,7 +1515,7 @@ namespace DLM.cad
             catch (Exception ex)
             {
                 DLM.log.Log(ex);
-                BlocoTag att = bloco.GetBlocoTag(false);
+                BlocoTag att = new BlocoTag(bloco, false);
                 att.Set(Cfg.Init.CAD_ATT_BLK, bloco.Name.ToUpper());
                 att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
                 att.Set("ERRO", ex.Message);
@@ -1746,7 +1746,7 @@ namespace DLM.cad
             var grp_blocos = lista.Blocos.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).ToList().ToList();
             foreach (var s in lista.Blocos)
             {
-                BlocoTag l = s.Bloco.GetBlocoTag(false);
+                BlocoTag l = s.Clonar();
                 foreach (var c in colunas)
                 {
                     var igual = s.Get(c);

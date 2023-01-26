@@ -1204,7 +1204,7 @@ namespace DLM.cad
 
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
-            var atributos = Atributos.GetBlocoTag(bloco);
+            var atributos = bloco.GetBlocoTag();
             var N = atributos.Get(Cfg.Init.CAD_ATT_N).Valor;
             var ESP = atributos.Get(Cfg.Init.CAD_ATT_Espessura).Double();
             var SECAO = atributos.Get("SECAO").Double();
@@ -1323,7 +1323,7 @@ namespace DLM.cad
         }
         public Conexoes.Macros.Tirante GetTirante(BlockReference bloco)
         {
-            var atributos = Atributos.GetBlocoTag(bloco);
+            var atributos = bloco.GetBlocoTag();
             var SFTA = atributos.Get("SFTA").Valor;
             var SFTB = atributos.Get("SFTB").Valor;
             var TIP = atributos.Get("TIP").Valor;
@@ -1343,7 +1343,7 @@ namespace DLM.cad
         }
         public Conexoes.Macros.Corrente GetCorrente(BlockReference bloco)
         {
-            var atributos = Atributos.GetBlocoTag(bloco);
+            var atributos = bloco.GetBlocoTag();
 
             var TIP = atributos.Get("TIP").Valor;
             var DESC = atributos.Get(Cfg.Init.CAD_ATT_Descricao).Double();

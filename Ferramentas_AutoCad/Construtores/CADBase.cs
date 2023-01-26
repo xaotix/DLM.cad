@@ -652,11 +652,6 @@ namespace DLM.cad
             return _Furos;
         }
 
-
-
-
-
-
         public List<Mline> GetMultilines()
         {
             List<Mline> lista = new List<Mline>();
@@ -695,7 +690,7 @@ namespace DLM.cad
 
             foreach (var s in blocos)
             {
-                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => DLM.cad.Atributos.GetBlocoTag(x)).ToList());
+                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => x.GetBlocoTag()).ToList());
                 if (npc.Nome.StartsWith(Cfg.Init.CAD_PC_Quantificar))
                 {
                     var blcs = npc.Agrupar(new List<string> { Cfg.Init.CAD_ATT_Codigo, Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);

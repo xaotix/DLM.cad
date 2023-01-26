@@ -52,7 +52,7 @@ namespace DLM.cad
         public List<db.Celula> Atributos { get; set; } = new List<db.Celula>();
         public BlocoTag Clonar()
         {
-            BlocoTag retorno = this.Bloco.GetBlocoTag(false);
+            BlocoTag retorno = new BlocoTag(this.Bloco, false);
             retorno.Descricao = this.Descricao;
             retorno.Atributos.Clear();
             foreach (var c in this.Atributos)
@@ -206,7 +206,7 @@ namespace DLM.cad
             {
                 foreach (var l in tab.Blocos)
                 {
-                    BlocoTag nl = l.Bloco.GetBlocoTag(false);
+                    BlocoTag nl = l.Clonar();
                     foreach (var c in s)
                     {
                         var igual = l.Get(c);
