@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,32 +12,40 @@ namespace DLM.cad
 {
     public static class ExtDocument
     {
-   
+
         public static void Apagar(this Document acDoc, List<Entity> entities)
         {
-            if (acDoc == null)
+            try
             {
-                acDoc = CAD.acDoc;
-            }
-            if (entities.Count == 0) { return; }
-            using (acDoc.LockDocument())
-            {
-                using (var acTrans = CAD.acCurDb.TransactionManager.StartOpenCloseTransaction())
+                if (acDoc == null)
                 {
-                    foreach (var b in entities)
-                    {
-                        Entity acEnt = acTrans.GetObject(b.ObjectId, OpenMode.ForWrite) as Entity;
-                        acEnt.Erase(true);
-                    }
-                    acTrans.Commit();
-
+                    acDoc = CAD.acDoc;
                 }
-                editor.Regen();
+                if (entities.Count == 0) { return; }
+                using (var docLock = acDoc.LockDocument())
+                {
+                    using (var acTrans = acDoc.acTransST())
+                    {
+                        foreach (var b in entities)
+                        {
+                            Entity acEnt = acTrans.GetObject(b.ObjectId, OpenMode.ForWrite) as Entity;
+                            acEnt.Erase(true);
+                        }
+                        acTrans.Commit();
+
+                    }
+                    editor.Regen();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Conexoes.Utilz.Alerta(ex);
             }
         }
         private static bool estaRodando { get; set; } = false;
         public static int Comando(this Document doc, params object[] comando)
         {
+
             /*DEPOIS DE UMA CARALHADA DE TENTATIVAS E ERROS, CHEGUEI NESSA SOLUÇÃO SIMPLES.*/
             try
             {
@@ -86,32 +95,29 @@ namespace DLM.cad
                 acDoc = CAD.acDoc;
             }
             List<Layout> retorno = new List<Layout>();
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var acTrans = acDoc.acTrans())
             {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+
+                foreach (DBDictionaryEntry item in lays)
                 {
-                    DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+                    Layout acLyrTblRec;
+                    acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
 
-                    foreach (DBDictionaryEntry item in lays)
+                    if (acLyrTblRec != null)
                     {
-                        Layout acLyrTblRec;
-                        acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
+                        retorno.Add(acLyrTblRec);
 
-                        if (acLyrTblRec != null)
+
+                        var views = acLyrTblRec.GetViewports();
+                        foreach (ObjectId view in views)
                         {
-                            retorno.Add(acLyrTblRec);
-
-
-                            var views = acLyrTblRec.GetViewports();
-                            foreach (ObjectId view in views)
-                            {
-                                Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
-                            }
-
+                            Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
                         }
+
                     }
-                    acTrans.Abort();
                 }
+                acTrans.Abort();
             }
             return retorno;
         }
@@ -131,7 +137,7 @@ namespace DLM.cad
             var lista = acDoc.GetLayouts().Select(x => x.LayoutName).ToList().FindAll(x => x.ToUpper() != "MODEL");
             if (lista.Count > 0)
             {
-                using (acDoc.LockDocument())
+                using (var docLock = acDoc.LockDocument())
                 {
                     LayoutManager.Current.CurrentLayout = lista[0];
                 }

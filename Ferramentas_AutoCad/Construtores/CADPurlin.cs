@@ -169,7 +169,7 @@ namespace DLM.cad
 
         [Category("Purlin")]
         [DisplayName("MLStyle")]
-        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360","TERCA", "TERCA1", "TERCA_SUP","Z64" };
+        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360","TERCA", "TERCA1", "TERCA_SUP","Z64", "Z89" };
         [Category("Tirantes")]
         [DisplayName("Mapear")]
         public bool MapearTirantes { get; set; } = true;
@@ -683,7 +683,7 @@ namespace DLM.cad
         {
             List<double> retorno = new List<double>();
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -823,7 +823,7 @@ namespace DLM.cad
             //verifica se a purlin é maior que 150
             if (comp_sem_transpasse > 150)
             {
-                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Incicacao_Tercas, origembloco, this.GetEscala(), 0, ht);
+                Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_Incicacao_Tercas, origembloco, this.GetEscala(), 0, ht);
             }
         }
         public void AddBlocoTirante(string letra,  P3d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
@@ -840,7 +840,7 @@ namespace DLM.cad
             ht.Add("SFTA", sfta.ToString());
             ht.Add("SFTB", sftb.ToString());
 
-            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Indicacao_Tirantes, origembloco, this.GetEscala(), 0, ht);
+            Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_Indicacao_Tirantes, origembloco, this.GetEscala(), 0, ht);
         }
         public void AddBlocoCorrente(string letra, P3d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
         {
@@ -851,7 +851,7 @@ namespace DLM.cad
             ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.String(0));
             ht.Add(Cfg.Init.CAD_ATT_Corrente_Fixador, fix);
 
-            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BLK_Indicacao_Correntes, origembloco, this.GetEscala(), 0, ht);
+            Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_Indicacao_Correntes, origembloco, this.GetEscala(), 0, ht);
         }
         public List<Entity> LinhasFuros()
         {
@@ -874,7 +874,7 @@ namespace DLM.cad
         {
 
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -941,7 +941,7 @@ namespace DLM.cad
         {
 
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -1044,7 +1044,7 @@ namespace DLM.cad
                     return;
                 }
 
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acCurDb.acTrans())
                 {
                     var sel = SelecionarObjetos();
                     if (sel.Status == PromptStatus.OK)
@@ -1209,9 +1209,9 @@ namespace DLM.cad
             var ESP = atributos.Get(Cfg.Init.CAD_ATT_Espessura).Double();
             var SECAO = atributos.Get("SECAO").Double();
             var TIPO = atributos.Get(Cfg.Init.CAD_ATT_Tipo).Valor;
-            var ID_PECA = atributos.Get("ID_PECA").Int;
+            var ID_PECA = atributos.Get("ID_PECA").Int();
             var PINTURA = atributos.Get("PINTURA").Valor;
-            var ID_DB = atributos.Get("ID_DB").Int;
+            var ID_DB = atributos.Get("ID_DB").Int();
             var VAO = atributos.Get(Cfg.Init.CAD_ATT_Vao).Double();
             var TRE = atributos.Get(Cfg.Init.CAD_ATT_Transp_Esq).Double();
             var TRD = atributos.Get(Cfg.Init.CAD_ATT_Transp_Dir).Double();
@@ -1371,7 +1371,7 @@ namespace DLM.cad
                 return;
             }
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -1398,7 +1398,7 @@ namespace DLM.cad
 
            
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -1442,7 +1442,7 @@ namespace DLM.cad
 
 
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -1523,7 +1523,7 @@ namespace DLM.cad
                 return;
             }
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -1552,7 +1552,7 @@ namespace DLM.cad
                 return;
             }
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -1576,7 +1576,7 @@ namespace DLM.cad
                 return;
             }
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
@@ -1600,7 +1600,7 @@ namespace DLM.cad
                 return;
             }
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)

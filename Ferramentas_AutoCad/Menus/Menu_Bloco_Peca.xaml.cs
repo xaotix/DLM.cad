@@ -201,8 +201,9 @@ namespace DLM.cad.Menus
 
                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Conexoes.Utilz.Alerta(ex);
             }
         }
 

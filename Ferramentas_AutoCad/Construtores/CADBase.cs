@@ -104,147 +104,32 @@ namespace DLM.cad
             //Conexoes.Utilz.Alerta(objetos.Count().ToString());
 
 
-            using (var acTrans = CAD.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            
+
+            using (var acTrans = acCurDb.acTrans())
             {
                 List<Entity> lista = this.Selecoes;
                 foreach (var obj in lista)
                 {
-                    AjustarLayer(obj, acTrans);
+                    obj.AjustarLayer(acTrans);
                 }
                 foreach (var obj in lista.GetBlockTableRecordEntities(acTrans))
                 {
-                    AjustarLayer(obj, acTrans);
+                    obj.AjustarLayer(acTrans);
                 }
 
                 acTrans.Commit();
             }
         }
 
-        private static void AjustarLayer(Entity objent, OpenCloseTransaction acTrans)
-        {
-            try
-            {
-                var bylayer = Autodesk.AutoCAD.Colors.Color.FromColorIndex(Autodesk.AutoCAD.Colors.ColorMethod.ByLayer, 256);
-                var item = (Entity)acTrans.GetObject(objent.ObjectId, OpenMode.ForWrite);
-
-                var color = item.Color;
-                var layer = item.GetLayer(acTrans);
-                var linetype = item.GetLineType(acTrans);
-
-                if (!item.Visible)
-                {
-                    return;
-                }
-
-
-                if (layer.Name.ToUpper() == "DEFPOINT" | layer.Name.ToUpper() == "DEFPOINTS" | layer.Name.ToUpper() == "MV")
-                {
-                    return;
-                }
-
-                if (item.IsDimmension())
-                {
-                    if (item.IsText())
-                    {
-                        item.Layer = "TEXTO";
-                    }
-                    else
-                    {
-                        item.Layer = "COTAS";
-                    }
-                }
-                else if (item.Is<BlockReference>())
-                {
-                    item.Layer = "BLOCOS";
-                }
-                else
-                {
-                    if (color.ColorNameForDisplay.ToUpper() == "BYLAYER")
-                    {
-                        color = layer.Color;
-                    }
-                    if (linetype.Name.ToUpper() == "BYLAYER" | linetype.Name.ToUpper() == "BYBLOCK")
-                    {
-                        linetype = layer.GetLineType(acTrans);
-                    }
-
-                    var lname = linetype.Name.ToUpper();
-
-                    if (lname == "CONTINUOUS" | lname == "HIDDEN")
-                    {
-                        var nlname = lname == "HIDDEN" ? "PROJECAO" : "CONTORNO";
-                        if (color.Is(System.Drawing.Color.Yellow))
-                        {
-                            item.Layer = $"{nlname}1";
-                        }
-                        /*o windows não usa o verde total (0,255,0) no Green*/
-                        else if (color.Is(System.Drawing.Color.Lime))
-                        {
-                            item.Layer = $"{nlname}2";
-                        }
-                        else if (color.Is(System.Drawing.Color.Red))
-                        {
-                            item.Layer = $"{nlname}3";
-                        }
-                        else if (color.Is(System.Drawing.Color.Blue))
-                        {
-                            item.Layer = $"{nlname}4";
-                        }
-                        else if (color.Is(System.Drawing.Color.Cyan))
-                        {
-                            item.Layer = $"{nlname}5";
-                        }
-                        else if (color.Is(System.Drawing.Color.Magenta))
-                        {
-                            item.Layer = $"{nlname}6";
-                        }
-                        else if (color.Is(System.Drawing.Color.White))
-                        {
-                            if (lname == "HIDDEN")
-                            {
-                                item.Layer = $"{nlname}2";
-                            }
-                            else
-                            {
-                                item.Layer = $"0";
-                            }
-                        }
-                        else
-                        {
-
-                        }
-                    }
-                    else if (linetype.Name.ToUpper() == "HIDDEN")
-                    {
-                        item.Layer = "PROJECAO";
-                        item.Color = bylayer;
-                    }
-                    else if (linetype.Name.ToUpper() == "DASHDOT")
-                    {
-                        item.Layer = "EIXOS";
-                        item.Color = bylayer;
-                    }
-                    else
-                    {
-
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-
-        }
+    
 
         public void CriarLayersPadrao()
         {
             string nome = "LAYERS_PADRAO";
 
-            Blocos.Inserir(CAD.acDoc, nome, new P3d(), 0.001, 0, new Hashtable());
-           // acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x => x as Entity).ToList());
+            Blocos.Inserir(acDoc, nome, new P3d(), 0.001, 0, new Hashtable());
+           acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x => x as Entity).ToList());
         }
         public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
@@ -315,9 +200,9 @@ namespace DLM.cad
             if (_Entities_Blocos == null)
             {
                 _Entities_Blocos = new List<Entity>();
-                foreach (var bl in Selecoes.Filter<BlockReference>())
+                foreach (var block in Selecoes.Filter<BlockReference>())
                 {
-                    _Entities_Blocos.AddRange(Blocos.GetEntities(bl));
+                    _Entities_Blocos.AddRange(block.GetEntities());
                 }
             }
 
@@ -452,7 +337,7 @@ namespace DLM.cad
             }
 
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -501,7 +386,7 @@ namespace DLM.cad
 
 
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Linetype table for read
                 LinetypeTable acLineTypTbl;
@@ -543,7 +428,7 @@ namespace DLM.cad
             RotatedDimension acRotDim;
             // Get the current database
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -599,7 +484,7 @@ namespace DLM.cad
         {
             RotatedDimension acRotDim;
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -650,7 +535,7 @@ namespace DLM.cad
             OrdinateDimension acOrdDim;
 
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -792,7 +677,7 @@ namespace DLM.cad
             /*pega blocos dinâmicos*/
             if (_Blocos_Eixo == null | update)
             {
-                _Blocos_Eixo = Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => new BlocoTag(x)).ToList();
+                _Blocos_Eixo = Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => x.GetBlocoTag()).ToList();
             }
 
             return _Blocos_Eixo;
@@ -800,7 +685,7 @@ namespace DLM.cad
         public List<BlocoTag> GetBlocos_Nivel()
         {
             /*pega blocos dinâmicos*/
-            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x => new BlocoTag(x)).ToList();
+            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x => x.GetBlocoTag()).ToList();
         }
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
@@ -840,7 +725,7 @@ namespace DLM.cad
         {
             if (valor > 0)
             {
-                using (DocumentLock acLckDoc = acDoc.LockDocument())
+                using (var docLock = acDoc.LockDocument())
                 {
                     acCurDb.Dimscale = valor;
                 }
@@ -900,37 +785,11 @@ namespace DLM.cad
                     return SelecionarObjetos(Conexoes.Utilz.GetLista_Enumeradores<CAD_TYPE>().ToArray());
             }
         }
-        public List<Entity> GetAllEntities()
-        {
-            List<Entity> list = new List<Entity>();
-            var dict = new Dictionary<ObjectId, string>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-            {
-                var bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
-                foreach (var btrId in bt)
-                {
-                    var btr = (BlockTableRecord)acTrans.GetObject(btrId, OpenMode.ForRead);
-                    if (btr.IsLayout)
-                    {
-                        foreach (var id in btr)
-                        {
-                            dict.Add(id, id.ObjectClass.Name);
-                        }
-                    }
-                }
-                foreach (var item in dict)
-                {
-                    Entity ent = (Entity)acTrans.GetObject(item.Key, OpenMode.ForRead);
-                    list.Add(ent);
-                }
-                acTrans.Commit();
-            }
-            return list;
-        }
+  
         public void SelecionarTudo()
         {
             this.Selecoes.Clear();
-            this.Selecoes.AddRange(this.GetAllEntities());
+            this.Selecoes.AddRange(acCurDb.GetAllEntities());
         }
 
         public PromptSelectionResult SelecionarObjetos(params CAD_TYPE[] filtros)
@@ -967,7 +826,7 @@ namespace DLM.cad
             _Linhas = null;
             Selecoes.Clear();
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 if (acSSPrompt.Status == PromptStatus.OK)
                 {

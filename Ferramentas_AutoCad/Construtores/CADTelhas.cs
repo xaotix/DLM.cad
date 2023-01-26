@@ -115,7 +115,7 @@ namespace DLM.cad
 
         public void AlinharLinhaDeVida()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 SelecionarObjetos();
 
@@ -240,7 +240,7 @@ namespace DLM.cad
         public void InserirPassarela(bool selecionar = false)
         {
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
 
                 //var selecao = SelecionarObjetos(acTrans);
@@ -322,7 +322,7 @@ namespace DLM.cad
                             {
                                 Hashtable tt = new Hashtable();
                                 tt.Add(Cfg.Init.CAD_ATT_Cod_SAP, this.Codigo_Passarela);
-                                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_PASSARELA, p1, 1, 0, tt);
+                                Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_PASSARELA, p1, 1, 0, tt);
                                 if(angulo==90 | angulo == 270)
                                 {
                                     mov = vert;
@@ -385,7 +385,7 @@ namespace DLM.cad
         public void InserirLinhaDeVida(bool selecionar = false)
         {
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var layer_atual = FLayer.GetAtual();
 
@@ -576,7 +576,7 @@ namespace DLM.cad
             {
                 return;
             }
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
 
                 DBRM_Offline pp = new DBRM_Offline();
@@ -600,12 +600,12 @@ namespace DLM.cad
             if (sequencia == 0)
             {
      
-                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLH, p1, 1, 0, sftlh);
+                Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_SFLH, p1, 1, 0, sftlh);
                 AddBlocoTexto(angulo, p1, SFLH, GetEscala() * 5, "");
                 Ut.AddLeader(angulo, p1,this.GetEscala(), "MANILHA\n ESTICADOR", MultiplicadorEscala*.8);
 
             }
-            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLH, p2, 1, 0, sftlh);
+            Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_SFLH, p2, 1, 0, sftlh);
             AddBlocoTexto(angulo, p2, SFLH, GetEscala() * 5,"");
             Ut.AddLeader(angulo, p2, this.GetEscala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
@@ -617,7 +617,7 @@ namespace DLM.cad
                 var pp0 = p1.Mover(angulo, espacos);
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
-                    Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_Peca_SFLI, pp0, 1, 0, sftli);
+                    Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_SFLI, pp0, 1, 0, sftli);
 
                     AddBlocoTexto(angulo, pp0, SFLI, GetEscala() * 5,"");
                     cotas.Add(pp0);
@@ -637,7 +637,7 @@ namespace DLM.cad
                 //move pro lado quando é vertical
                 p1 = pp0.Mover(angulo + 90, (GetEscala() * 16)/2);
             }
-            Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BL_Texto, p1, GetEscala(), 0, ht );
+            Blocos.Inserir(acDoc, Cfg.Init.CAD_BL_Texto, p1, GetEscala(), 0, ht );
 
         }
         private void Ajustar(ref double angulo, ref double comp, P3d p1, ref P3d p2)

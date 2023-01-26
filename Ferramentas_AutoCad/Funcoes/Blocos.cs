@@ -156,14 +156,14 @@ namespace DLM.cad
 
 
 
-
+               
                 ObjectId blkid = ObjectId.Null;
-                using (var acTrans = acDoc.TransactionManager.StartTransaction())
+                using (var acTrans = acDoc.acTransST())
                 {
                     BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                     if (acBlkTbl.Has(nomeBloco))
                     {
-                        using (DocumentLock acLckDoc = acDoc.LockDocument())
+                        using (var docLock = acDoc.LockDocument())
                         {
                             //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
 
@@ -219,12 +219,11 @@ namespace DLM.cad
                     }
                 }
 
-                using (DocumentLock loc = acDoc.LockDocument())
+                using (var docLock = acDoc.LockDocument())
                 {
-
                     using (Database AcTmpDB = new Database(false, true))
                     {
-                        using (var acTrans = acDoc.TransactionManager.StartTransaction())
+                        using (var acTrans = acDoc.acTransST())
                         {
                             BlockTable acBlkTbl = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
                             acBlkTbl.UpgradeOpen();
@@ -320,19 +319,18 @@ namespace DLM.cad
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
         }
 
-
         public static void Renomear(string nome_antigo, string novo_nome, bool auto_cont = true)
         {
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 string nome = novo_nome;
-                var bt = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
-                if (bt.Has(nome_antigo))
+                var block = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
+                if (block.Has(nome_antigo))
                 {
                     if (auto_cont)
                     {
                         int c = 1;
-                        while (bt.Has(nome))
+                        while (block.Has(nome))
                         {
                             nome = novo_nome + "_" + c;
                             c++;
@@ -340,9 +338,9 @@ namespace DLM.cad
                     }
 
 
-                    if (!bt.Has(nome))
+                    if (!block.Has(nome))
                     {
-                        var btr = (BlockTableRecord)acTrans.GetObject(bt[nome_antigo], OpenMode.ForWrite);
+                        var btr = (BlockTableRecord)acTrans.GetObject(block[nome_antigo], OpenMode.ForWrite);
                         btr.Name = nome;
                     }
                     else
@@ -375,7 +373,7 @@ namespace DLM.cad
         public static void Criar(string nome, List<Entity> Objetos, P3d origem)
         {
             string nome_fim = nome;
-            using (var acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Get the block table from the drawing
                 BlockTable bt = (BlockTable)acTrans.GetObject(CAD.acCurDb.BlockTableId,OpenMode.ForRead);
@@ -734,76 +732,18 @@ namespace DLM.cad
         }
 
 
-        public static BlockTableRecord GetPai(BlockReference bloco, Database acCurDb = null)
-        {
-            try
-            {
-                if (acCurDb == null)
-                {
-                    acCurDb = CAD.acCurDb;
-                }
-                using (DocumentLock acLckDoc = acDoc.LockDocument())
-                {
-                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
-                    {
-                        BlockReference blk = acTrans.GetObject(bloco.ObjectId, OpenMode.ForRead) as BlockReference;
-                        BlockTableRecord acBlkTblRec = blk.IsDynamicBlock ?
-                             acTrans.GetObject(blk.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord
-                             :
-                             acTrans.GetObject(blk.BlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
-
-
-                        return acBlkTblRec;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                DLM.log.Log(ex);
-                return null;
-            }
-
-        }
+    
         public static string GetNome(BlockReference bloco)
         {
-            var nt = GetPai(bloco);
-            if(nt!=null)
+            var parent = bloco.GetParent();
+            if(parent!=null)
             {
-                return nt.Name;
+                return parent.Name;
             }
             return bloco.Name;
         }
 
-        public static List<Entity> GetEntities(BlockReference bloco)
-        {
-
-            List<Entity> retorno = new List<Entity>();
-
-            try
-            {
-                DBObjectCollection acDBObjColl = new DBObjectCollection();
-                bloco.Explode(acDBObjColl);
-
-                foreach (Entity acEnt in acDBObjColl)
-                {
-                    try
-                    {
-                        retorno.Add(acEnt);
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                DLM.log.Log(ex);
-            }
-
-            return retorno.FindAll(x=>x!=null);
-        }
+        
 
         public static List<Point2d> GetInterSeccao(BlockReference obj, Entity obj2)
         {
@@ -879,7 +819,7 @@ namespace DLM.cad
 
 
 
-            using (var acTrans = acDoc.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 foreach (var blk in blocos)
                 {
@@ -925,7 +865,7 @@ namespace DLM.cad
         {
             List<BlockReference> blocos = new List<BlockReference>();
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
 
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -971,15 +911,15 @@ namespace DLM.cad
             {
                 ht.Add(cel.Coluna, cel.Valor);
             }
-            Blocos.Inserir(CAD.acDoc, bloco.Name, novaposicao, bloco.ScaleFactors.X, bloco.Rotation, ht);
+            Blocos.Inserir(acDoc, bloco.Name, novaposicao, bloco.ScaleFactors.X, bloco.Rotation, ht);
         }
         public static void SetEscala(List<BlockReference> blocos, double escala)
         {
             if (escala > 0)
             {
-                using (acDoc.LockDocument())
+                using (var docLock = acDoc.LockDocument())
                 {
-                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                    using (var acTrans = acDoc.acTransST())
                     {
                         foreach (var bl in blocos)
                         {

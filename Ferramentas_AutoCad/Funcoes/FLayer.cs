@@ -16,7 +16,7 @@ namespace DLM.cad
         {
             using (var docLock = acDoc.LockDocument())
             {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acDoc.acTransST())
                 {
                     LayerTable acLyrTbl;
                     acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
@@ -43,7 +43,7 @@ namespace DLM.cad
         {
             using (var docLock = acDoc.LockDocument())
             {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acDoc.acTransST())
                 {
                     LayerTable acLyrTbl;
                     acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForWrite) as LayerTable;
@@ -76,7 +76,7 @@ namespace DLM.cad
             using (var docLock = acDoc.LockDocument())
             {
                 LayerTable acLyrTbl;
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acDoc.acTransST())
                 {
                    
                     acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
@@ -97,7 +97,7 @@ namespace DLM.cad
                     }
                     acTrans.Commit();
                 }
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acDoc.acTransST())
                 {
 
                     acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
@@ -111,7 +111,7 @@ namespace DLM.cad
             using (var docLock = acDoc.LockDocument())
             {
                 // Start a transaction
-                using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+                using (var acTrans = acCurDb.acTransST())
                 {
                     // Open the Layer table for read
                     LayerTable acLyrTbl;
@@ -152,19 +152,17 @@ namespace DLM.cad
         public static List<string> Listar()
         {
             List<string> lstlay = new List<string>();
-            using (var docLock = acDoc.LockDocument())
-            {
+           
                 LayerTableRecord layer;
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acCurDb.acTrans())
                 {
                     LayerTable lt = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
                     foreach (ObjectId layerId in lt)
                     {
-                        layer = acTrans.GetObject(layerId, OpenMode.ForWrite) as LayerTableRecord;
+                        layer = acTrans.GetObject(layerId, OpenMode.ForRead) as LayerTableRecord;
                         lstlay.Add(layer.Name);
                     }
                 }
-            }
             return lstlay;
         }
     }

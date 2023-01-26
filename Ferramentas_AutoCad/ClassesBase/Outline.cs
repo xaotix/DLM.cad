@@ -28,13 +28,13 @@ namespace Ferramentas_DLM
         {
             using (var polyline = GetContorno(entIds))
             {
-                using (var tran = _dwg.TransactionManager.StartTransaction())
+                using (var acTrans = _dwg.TransactionManager.StartTransaction())
                 {
-                    var space = (BlockTableRecord)tran.GetObject(
+                    var space = (BlockTableRecord)acTrans.GetObject(
                         _dwg.Database.CurrentSpaceId, OpenMode.ForWrite);
                     space.AppendEntity(polyline as Entity);
-                    tran.AddNewlyCreatedDBObject(polyline as Entity, true);
-                    tran.Commit();
+                    acTrans.AddNewlyCreatedDBObject(polyline as Entity, true);
+                    acTrans.Commit();
                 }
                 return polyline;
             }
@@ -44,11 +44,11 @@ namespace Ferramentas_DLM
         {
             var regions = new List<Region>();
 
-            using (var tran = _dwg.TransactionManager.StartTransaction())
+            using (var acTrans = _dwg.TransactionManager.StartTransaction())
             {
                 foreach (var entId in entIds)
                 {
-                    var poly = tran.GetObject(entId, OpenMode.ForRead) as Polyline;
+                    var poly = acTrans.GetObject(entId, OpenMode.ForRead) as Polyline;
                     if (poly != null)
                     {
                         var rgs = GetRegionFromPolyline(poly);
@@ -57,7 +57,7 @@ namespace Ferramentas_DLM
 
                 }
 
-                tran.Commit();
+                acTrans.Commit();
             }
 
             using (var region = JuntarRegioes(regions))

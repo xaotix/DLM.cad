@@ -130,9 +130,9 @@ namespace DLM.cad
                 this.DataContext = this;
                 Update();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Conexoes.Utilz.Alerta(ex);
             }
 
 

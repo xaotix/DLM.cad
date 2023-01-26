@@ -77,9 +77,9 @@ namespace DLM.cad
         {
             Point3d p1 = new Point3d(origem.X, origem.Y, 0);
             Point3d p2 = new Point3d(pt2.X, pt2.Y, 0);
-            using (DocumentLock docLock = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acDoc.acTransST())
                 {
                     BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
@@ -138,9 +138,9 @@ namespace DLM.cad
                                     Autodesk.AutoCAD.Runtime.ErrorStatus es = attachAnnotation(acLdr.UnmanagedObject, ref textId);
                                     acLdr.EvaluateLeader();
                                 }
-                                catch (System.Exception)
+                                catch (System.Exception ex)
                                 {
-
+                                    Conexoes.Utilz.Alerta(ex);
                                 }
 
 
@@ -157,7 +157,7 @@ namespace DLM.cad
         public static List<Entity> SelecionarTudoPrancha()
         {
             List<Entity> retorno = new List<Entity>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
 
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
@@ -179,48 +179,45 @@ namespace DLM.cad
 
             try
             {
-                using (var docLock = acDoc.LockDocument())
+                using (var acTrans = acDoc.acTransST())
                 {
-                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                    DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+
+                    foreach (DBDictionaryEntry item in lays)
                     {
-                        DBDictionary lays = acTrans.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+                        Layout acLyrTblRec;
+                        acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
 
-                        foreach (DBDictionaryEntry item in lays)
+                        if (acLyrTblRec != null)
                         {
-                            Layout acLyrTblRec;
-                            acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForWrite) as Layout;
+                            //retorno.Add(acLyrTblRec);
 
-                            if (acLyrTblRec != null)
+
+                            var views = acLyrTblRec.GetViewports();
+                            foreach (ObjectId view in views)
                             {
-                                //retorno.Add(acLyrTblRec);
-
-
-                                var views = acLyrTblRec.GetViewports();
-                                foreach (ObjectId view in views)
+                                try
                                 {
-                                    try
+                                    Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
+                                    if (vp != null)
                                     {
-                                        Viewport vp = acTrans.GetObject(view, OpenMode.ForWrite) as Viewport;
-                                        if (vp != null)
+                                        retorno.Add(vp);
+                                        if (setLayerPadrao != "")
                                         {
-                                            retorno.Add(vp);
-                                            if (setLayerPadrao != "")
-                                            {
-                                                vp.Layer = setLayerPadrao;
-                                            }
+                                            vp.Layer = setLayerPadrao;
                                         }
                                     }
-                                    catch (System.Exception)
-                                    {
-
-                                    }
-
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    Conexoes.Utilz.Alerta(ex);
                                 }
 
                             }
+
                         }
-                        acTrans.Commit();
                     }
+                    acTrans.Commit();
                 }
             }
             catch (System.Exception ex)
@@ -291,7 +288,7 @@ namespace DLM.cad
             Entity ent = null;
             PromptEntityOptions peo = null;
             PromptEntityResult per = null;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 //Select first polyline
                 peo = new PromptEntityOptions("Seleciona a Xline:");
@@ -389,7 +386,7 @@ namespace DLM.cad
         }
         public static MlineStyle GetEstilo(string nome)
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 DBDictionary mlineDic =
                     (DBDictionary)acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead);
@@ -399,7 +396,7 @@ namespace DLM.cad
 
                 return acLyrTblRec;
             }
-         }
+        }
         public static List<Point2d> GetVertices(Polyline lwp)
         {
             List<Point2d> retorno = new List<Point2d>();
@@ -439,8 +436,8 @@ namespace DLM.cad
             }
             return new List<Point3d>();
         }
-        
-       
+
+
 
 
         public static List<CADMline> MlinesPassando(P3d de, P3d ate, List<CADMline> Linhas, bool dentro_do_eixo = false, double tol_X = 0)
@@ -1035,7 +1032,7 @@ namespace DLM.cad
             string msg = "";
             var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
-            using (var acTrans = id.Database.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var dbObj = acTrans.GetObject(id, OpenMode.ForRead);
                 var types = new List<Type>();
@@ -1245,13 +1242,13 @@ namespace DLM.cad
             return selecao_tipo_vista.Value;
         }
 
-        public static System.Collections.Generic.List<ObjectId> getLayoutIds(Database db)
+        public static System.Collections.Generic.List<ObjectId> getLayoutIds(Database acCurDb)
         {
             System.Collections.Generic.List<ObjectId> layoutIds = new System.Collections.Generic.List<ObjectId>();
-            using (var acTrans = db.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 DBDictionary layoutDic = acTrans.GetObject(
-                    db.LayoutDictionaryId,
+                    acCurDb.LayoutDictionaryId,
                     OpenMode.ForRead, false)
                         as DBDictionary;
                 foreach (DBDictionaryEntry entry in layoutDic)
@@ -1275,12 +1272,10 @@ namespace DLM.cad
         }
 
 
-        public static void Purge(Document acDoc)
+        public static void Purge()
         {
-            Database acCurDb = acDoc.Database;
-
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Layer table for read
                 LayerTable acLyrTbl;
@@ -1315,7 +1310,7 @@ namespace DLM.cad
                     catch (Autodesk.AutoCAD.Runtime.Exception Ex)
                     {
                         // Layer could not be deleted
-                        Application.ShowAlertDialog("Error:\n" + Ex.Message);
+                        Conexoes.Utilz.Alerta(Ex);
                     }
                 }
 
@@ -1330,15 +1325,12 @@ namespace DLM.cad
             List<Point3d> ptss = new List<Point3d>();
             if (tr == null)
             {
-                using (var docLock = acDoc.LockDocument())
+                // Start a transaction
+                using (var acTrans = acCurDb.acTrans())
                 {
-                    // Start a transaction
-                    using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+                    foreach (var obj in objs)
                     {
-                        foreach (var obj in objs)
-                        {
-                            ptss.AddRange(GetPontosAgrupados(obj, acTrans).SelectMany(x => x));
-                        }
+                        ptss.AddRange(GetPontosAgrupados(obj, acTrans).SelectMany(x => x));
                     }
                 }
             }
@@ -1357,20 +1349,17 @@ namespace DLM.cad
         public static List<Point3d> GetPontos(object obj, Transaction tr = null)
         {
             List<Point3d> ptss = new List<Point3d>();
-            if(tr==null)
+            if (tr == null)
             {
-                using (var docLock = acDoc.LockDocument())
+                // Start a transaction
+                using (var acTrans = acCurDb.acTrans())
                 {
-                    // Start a transaction
-                    using (var acTrans = acCurDb.TransactionManager.StartTransaction())
-                    {
-                        ptss.AddRange(GetPontosAgrupados(obj,acTrans).SelectMany(x => x));
-                    }
+                    ptss.AddRange(GetPontosAgrupados(obj, acTrans).SelectMany(x => x));
                 }
             }
             else
             {
-                ptss.AddRange(GetPontosAgrupados(obj,tr).SelectMany(x => x));
+                ptss.AddRange(GetPontosAgrupados(obj, tr).SelectMany(x => x));
             }
 
             return ptss;
@@ -1379,9 +1368,9 @@ namespace DLM.cad
         /// Retorna pontos dos vértices dos objetos
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="tr"></param>
+        /// <param name="acTrans"></param>
         /// <returns></returns>
-        public static List<List<Point3d>> GetPontosAgrupados(object obj, Transaction tr = null)
+        public static List<List<Point3d>> GetPontosAgrupados(object obj, Transaction acTrans = null)
         {
             List<List<Point3d>> pts2 = new List<List<Point3d>>();
             List<Point3d> pts = new List<Point3d>();
@@ -1402,7 +1391,7 @@ namespace DLM.cad
                     pts.Add(t);
                 }
 
-                if(poly.Closed && pts.Count>0)
+                if (poly.Closed && pts.Count > 0)
                 {
                     pts.Add(pts[0]);
                 }
@@ -1412,9 +1401,9 @@ namespace DLM.cad
             {
                 var tt = obj as Circle;
                 cor = Ut.GetCor(tt.Color);
-                pts.AddRange(tt.Center.P3d().GetPontosCirculo(tt.Diameter, 16).Select(x=>x.GetPoint3dCad()));
+                pts.AddRange(tt.Center.P3d().GetPontosCirculo(tt.Diameter, 16).Select(x => x.GetPoint3dCad()));
 
-                if(pts.Count>0)
+                if (pts.Count > 0)
                 {
                     pts.Add(pts[0]);
                 }
@@ -1442,20 +1431,20 @@ namespace DLM.cad
                     pts.Add(t);
                 }
 
-                if(tt.IsClosed)
+                if (tt.IsClosed)
                 {
                     pts.Add(pts[0]);
                 }
             }
-            else if (obj is BlockReference && tr!=null)
+            else if (obj is BlockReference && acTrans != null)
             {
                 var s = obj as BlockReference;
-                BlockTableRecord acBlkTblRec = (BlockTableRecord)tr.GetObject(s.BlockTableRecord, OpenMode.ForRead);
+                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(s.BlockTableRecord, OpenMode.ForRead);
 
                 foreach (ObjectId id in acBlkTblRec)
                 {
-                    var obj1 = tr.GetObject(id, OpenMode.ForRead);
-                    pts2.AddRange(Ut.GetPontosAgrupados(obj1, tr).Select(x => x.Select(y=>y.TransformBy(s.BlockTransform)).ToList()).ToList());
+                    var obj1 = acTrans.GetObject(id, OpenMode.ForRead);
+                    pts2.AddRange(Ut.GetPontosAgrupados(obj1, acTrans).Select(x => x.Select(y => y.TransformBy(s.BlockTransform)).ToList()).ToList());
                 }
             }
             pts2.Add(pts);
@@ -1463,8 +1452,8 @@ namespace DLM.cad
         }
         public static void PoliLinha(List<Point3d> points)
         {
-            using (acDoc.LockDocument())
-            using (var acTrans = acDoc.TransactionManager.StartTransaction())
+            using (var docLock = acDoc.LockDocument())
+            using (var acTrans = acCurDb.acTransST())
             using (var pline = new Polyline())
             {
                 var plane = new Plane(Point3d.Origin, Vector3d.ZAxis);
@@ -1482,7 +1471,7 @@ namespace DLM.cad
         {
             Color color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.White);
 
-            if(obj is Circle)
+            if (obj is Circle)
             {
                 var tt = obj as Circle;
                 color = tt.Color;
@@ -1509,7 +1498,7 @@ namespace DLM.cad
             }
 
 
-            var p = new  System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(color.ColorValue.R, color.ColorValue.G, color.ColorValue.B));
+            var p = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(color.ColorValue.R, color.ColorValue.G, color.ColorValue.B));
 
             return p;
         }
@@ -1591,13 +1580,13 @@ namespace DLM.cad
         public static RMLite SelecionarPurlin(RMLite purlin)
         {
             List<RMLite> parecidas = new List<RMLite>();
-            if(purlin ==null)
+            if (purlin == null)
             {
                 parecidas = GetPURLINS().GetPecas();
             }
             else
             {
-            parecidas = GetPURLINS().GetPecas().FindAll(x => x.GRUPO == x.GRUPO);
+                parecidas = GetPURLINS().GetPecas().FindAll(x => x.GRUPO == x.GRUPO);
 
             }
             return Conexoes.Utilz.Selecao.SelecionarObjeto(parecidas);
@@ -1608,7 +1597,7 @@ namespace DLM.cad
         }
         public static RMLite SelecionarCorrente()
         {
-            return Conexoes.Utilz.Selecao.SelecionarObjeto(GetCORRENTES().GetPecas().FindAll(x=>x.COMP_VAR));
+            return Conexoes.Utilz.Selecao.SelecionarObjeto(GetCORRENTES().GetPecas().FindAll(x => x.COMP_VAR));
         }
         public static RMLite SelecionarCorrenteSuporte()
         {

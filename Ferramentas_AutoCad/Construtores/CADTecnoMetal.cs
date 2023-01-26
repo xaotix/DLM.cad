@@ -142,7 +142,7 @@ namespace DLM.cad
                                 Hashtable ht = new Hashtable();
                                 ht.Add("MBPERFIL", pc);
                                 ht.Add("MBFILETE", filete.First().Filete_Minimo);
-                                Blocos.Inserir(CAD.acDoc, nome, origem, 1, 0, ht);
+                                Blocos.Inserir(acDoc, nome, origem, 1, 0, ht);
 
                                 origem = origem.Mover(-largura, 0, 0);
                             }
@@ -301,7 +301,7 @@ namespace DLM.cad
                                 Database db = new Database(false, true);
                                 db.ReadDwgFile(arquivo.Endereco, System.IO.FileShare.Read, true, "");
 
-                                using (var acTrans = db.TransactionManager.StartTransaction())
+                                using (var acTrans = db.acTransST())
                                 {
                                     var layouts = Ut.getLayoutIds(db);
                                     if (layouts.Count > 0)
@@ -553,17 +553,17 @@ namespace DLM.cad
                             att.Add(Cfg.Init.CAD_ATT_Quantidade, 1 + s.Filhos.Count);
                             if(subs_bloco)
                             {
-                            Blocos.Inserir(CAD.acDoc, arquivo_bloco, s.Bloco.Position.P3d(), escala, 0, att);
+                            Blocos.Inserir(acDoc, arquivo_bloco, s.Bloco.Position.P3d(), escala, 0, att);
                             }
                             else
                             {
                                 var angulo = s.GetAngulo();
-                                Blocos.Inserir(CAD.acDoc, Cfg.Init.CAD_BL_INDICACAO_TXT, s.Bloco.Position.P3d(), escala, angulo, att);
+                                Blocos.Inserir(acDoc, Cfg.Init.CAD_BL_INDICACAO_TXT, s.Bloco.Position.P3d(), escala, angulo, att);
                             }
                         }
 
 
-                        using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                        using (var acTrans = acDoc.acTransST())
                         {
                             foreach (var s in atuais)
                             {
@@ -623,7 +623,7 @@ namespace DLM.cad
                         ht.Add(Cfg.Init.CAD_ATT_Destino, pc.Destino);
                         ht.Add(Cfg.Init.CAD_ATT_Quantidade, 1 + s.Filhos.Count);
 
-                        Blocos.Inserir(CAD.acDoc, Cfg.Init.BlocosIndicacao()[0], s.Bloco.Position.P3d(), escala, 0, ht);
+                        Blocos.Inserir(acDoc, Cfg.Init.BlocosIndicacao()[0], s.Bloco.Position.P3d(), escala, 0, ht);
                     }
 
                 }
@@ -786,14 +786,14 @@ namespace DLM.cad
                             }
 
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,"",s.ToList().Select(x=> new BlocoTag(new List<CelulaTag> { new CelulaTag("VALOR", x.Text,null) })).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key,s.First().Text,"",s.ToList().Select(x=> new BlocoTag(new List<db.Celula> { new db.Celula("VALOR", x.Text) })).ToList());
                             pecas.Add(npc);
 
                         }
                         var txtss = Selecoes.Filter<DBText>().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")).ToList().FindAll(x=>x.Key.Length>0);
                         foreach (var s in txtss)
                         {
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTag(new List<CelulaTag> { new CelulaTag("VALOR", x.TextString,null) })).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto,s.Key, s.First().TextString,"", s.ToList().Select(x => new BlocoTag(new List<db.Celula> { new db.Celula("VALOR", x.TextString) })).ToList());
                             pecas.Add(npc);
 
                         }
@@ -988,14 +988,14 @@ namespace DLM.cad
                 foreach (var drawing in Arquivos)
                 {
 
-                    Document doc = CAD.acDoc;
+                    Document acDoc = CAD.acDoc;
                     if (drawing.Endereco.ToUpper() != this.Endereco.ToUpper())
                     {
-                        doc = CAD.documentManager.Open(drawing.Endereco, false);
+                        acDoc = CAD.documentManager.Open(drawing.Endereco, false);
                     }
 
-                    acDoc.IrLayout();
-                    using (doc.LockDocument())
+                    CAD.acDoc.IrLayout();
+                    using (var docLock = acDoc.LockDocument())
                     {
                         if (cfg.GerarTabela)
                         {
@@ -1022,11 +1022,11 @@ namespace DLM.cad
                         }
                         if (cfg.LimparDesenhos)
                         {
-                            Core.LimparDesenho(doc);
+                            Core.LimparDesenho(acDoc);
                         }
 
                     }
-                    dynamic acadDoc = doc.AcadDocument;
+                    dynamic acadDoc = acDoc.AcadDocument;
                     acadDoc.Save();
 
                     if (drawing.Endereco.ToUpper() == arq_atual.ToUpper())
@@ -1080,7 +1080,7 @@ namespace DLM.cad
                 if (blocos == null)
                 {
                     blocos = new List<BlockReference>();
-                    using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                    using (var acTrans = acCurDb.acTrans())
                     {
                         BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                         BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
@@ -1100,8 +1100,8 @@ namespace DLM.cad
 
 
 
-                List<BlockReference> mss = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
-                List<BlockReference> pos = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalPosicoes());
+                List<BlockReference> mss = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                List<BlockReference> pos = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalPosicoes());
 
 
                 foreach (var m in mss)
@@ -1296,7 +1296,7 @@ namespace DLM.cad
         {
             P3d retorno = null;
             List<BlockReference> blocos = new List<BlockReference>();
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
 
                 var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
@@ -1341,11 +1341,11 @@ namespace DLM.cad
                     }
 
                 }
-                apagar.AddRange(blocos.Filtrar(new List<string> { "TECNOMETAL_TAB" }, false));
+                apagar.AddRange(blocos.Filter(new List<string> { "TECNOMETAL_TAB" }, false));
 
 
 
-                var selo = blocos.Filtrar(new List<string> { "SELO" }, false);
+                var selo = blocos.Filter(new List<string> { "SELO" }, false);
                 foreach (var s in selo)
                 {
                     var offset = -7.01;
@@ -1392,10 +1392,10 @@ namespace DLM.cad
 
             var nomes_PECAS = marcas.Select(x => x.Marca).Distinct().ToList();
 
-            using (DocumentLock acLckDoc = acDoc.LockDocument())
+            using (var docLock = acDoc.LockDocument())
             {
 
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acDoc.acTransST())
                 {
 
                     var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
@@ -1413,8 +1413,8 @@ namespace DLM.cad
                         }
                     }
 
-                    List<BlockReference> tabela_tecno = blocos.Filtrar(new List<string> { "TECNOMETAL_TAB" }, false);
-                    List<BlockReference> selo = blocos.Filtrar(new List<string> { "SELO" }, false);
+                    List<BlockReference> tabela_tecno = blocos.Filter(new List<string> { "TECNOMETAL_TAB" }, false);
+                    List<BlockReference> selo = blocos.Filter(new List<string> { "SELO" }, false);
 
       
 
@@ -1515,7 +1515,7 @@ namespace DLM.cad
             catch (Exception ex)
             {
                 DLM.log.Log(ex);
-                BlocoTag att = new BlocoTag(bloco,false);
+                BlocoTag att = bloco.GetBlocoTag(false);
                 att.Set(Cfg.Init.CAD_ATT_BLK, bloco.Name.ToUpper());
                 att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
                 att.Set("ERRO", ex.Message);
@@ -1580,7 +1580,7 @@ namespace DLM.cad
                         using (Database acTmpDb = new Database(false, true))
                         {
                             acTmpDb.ReadDwgFile(arquivo, FileOpenMode.OpenForReadAndAllShare, false, null);
-                            using (var acTrans = acTmpDb.TransactionManager.StartOpenCloseTransaction())
+                            using (var acTrans = acTmpDb.acTrans())
                             {
                                 BlockTable acBlkTbl = acTrans.GetObject(acTmpDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);
@@ -1596,8 +1596,8 @@ namespace DLM.cad
                                 }
 
                                 //var nomes = blocos.Select(x => x.Name).Distinct().ToList();
-                                List<BlockReference> ms = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
-                                List<BlockReference> pos = blocos.Filtrar(Cfg.Init.GetBlocosTecnoMetalPosicoes());
+                                List<BlockReference> ms = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                                List<BlockReference> pos = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalPosicoes());
 
                                 if(ms.Count==0)
                                 {
@@ -1631,7 +1631,7 @@ namespace DLM.cad
             catch (System.Exception ex)
             {
                 Core.Getw().Close();
-                Conexoes.Utilz.Alerta(ex, "Abortado - Erro fatal");
+                Conexoes.Utilz.Alerta(ex);
                 return new TabelaBlocoTag();
             }
             Core.Getw().Close();
@@ -1654,7 +1654,7 @@ namespace DLM.cad
 
             var pcs = GetMarcas(ref erros, null, blocos);
 
-            using (var acTrans = CAD.acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
 
                 if (erros.Count == 0 && pcs.Count > 0)
@@ -1746,7 +1746,7 @@ namespace DLM.cad
             var grp_blocos = lista.Blocos.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).ToList().ToList();
             foreach (var s in lista.Blocos)
             {
-                BlocoTag l = new BlocoTag(s.Bloco,false);
+                BlocoTag l = s.Bloco.GetBlocoTag(false);
                 foreach (var c in colunas)
                 {
                     var igual = s.Get(c);
@@ -2769,7 +2769,7 @@ namespace DLM.cad
             }
             if (marca == null | marca == "") { return; }
 
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 bool status;
                 double comprimento = Ut.PedirDistancia("Defina o comprimento", out status);
@@ -2885,10 +2885,10 @@ namespace DLM.cad
 
         public void Mercadorias()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Selecoes.Filter<BlockReference>().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                var marcas = Selecoes.Filter<BlockReference>().Filter(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if(marcas.Count>0)
                 {
@@ -2908,10 +2908,10 @@ namespace DLM.cad
         }
         public void Materiais()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Selecoes.Filter<BlockReference>().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                var marcas = Selecoes.Filter<BlockReference>().Filter(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if (marcas.Count > 0)
                 {
@@ -2930,10 +2930,10 @@ namespace DLM.cad
         }
         public void Tratamentos()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 var selecao = SelecionarObjetos( Tipo_Selecao.Blocos);
-                var marcas = Selecoes.Filter<BlockReference>().Filtrar(Cfg.Init.GetBlocosTecnoMetalMarcas());
+                var marcas = Selecoes.Filter<BlockReference>().Filter(Cfg.Init.GetBlocosTecnoMetalMarcas());
 
                 if (marcas.Count > 0)
                 {

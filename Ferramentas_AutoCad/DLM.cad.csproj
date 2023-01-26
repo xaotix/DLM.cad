@@ -129,6 +129,7 @@
     <Compile Include="Extensoes\Ext.cs" />
     <Compile Include="Extensoes\ExtBlock.cs" />
     <Compile Include="Extensoes\ExtDocument.cs" />
+    <Compile Include="Extensoes\ExtEntity.cs" />
     <Compile Include="Funcoes\CADVars.cs" />
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using static DLM.cad.CAD;
 
 namespace DLM.cad
 {
@@ -27,24 +28,24 @@ namespace DLM.cad
 
         public List<Eixo> GetEixosVerticais()
         {
-            return _eixos.FindAll(x=>x.Sentido== Sentido.Vertical);
+            return _eixos.FindAll(x => x.Sentido == Sentido.Vertical);
         }
         public List<ObjetoPurlin> GetPurlinsSemVao()
         {
-            if(_purlins_sem_vao==null)
+            if (_purlins_sem_vao == null)
             {
-             
+
                 _purlins_sem_vao = new List<ObjetoPurlin>();
                 foreach (var s in Core.CADPurlin.GetMLPurlins().FindAll(x => !x.Mapeado && x.Comprimento >= Core.CADPurlin.PurlinCompMin))
                 {
                     var vao = _vaos_verticais.Find(x => x.Esquerda.MinX >= s.Centro.X && x.Direita.MaxX <= s.Centro.X);
 
-                    if(vao==null && _vaos_verticais.Count>0)
+                    if (vao == null && _vaos_verticais.Count > 0)
                     {
                         vao = _vaos_verticais[0];
                     }
 
-                    ObjetoPurlin pp = new ObjetoPurlin(s,this);
+                    ObjetoPurlin pp = new ObjetoPurlin(s, this);
                     _purlins_sem_vao.Add(pp);
                     //adiciona as purlins pequenas fora do vão.
                     //essa parte precisa emplementar melhor para mapear furos manuais e correntes.
@@ -55,7 +56,7 @@ namespace DLM.cad
         }
         public List<VaoObra> GetVaosVerticais(bool update = false)
         {
-            if(_vaos_verticais == null | update)
+            if (_vaos_verticais == null | update)
             {
                 _vaos_verticais = new List<VaoObra>();
                 var verticais = GetEixosVerticais();
@@ -64,11 +65,11 @@ namespace DLM.cad
                     for (int i = 1; i < verticais.Count; i++)
                     {
                         Tipo_Vao tipo = Tipo_Vao.Intermediario;
-                        if(i ==1)
+                        if (i == 1)
                         {
                             tipo = Tipo_Vao.Borda_Esquerdo;
                         }
-                        else if(i == verticais.Count-1)
+                        else if (i == verticais.Count - 1)
                         {
                             tipo = Tipo_Vao.Borda_Direito;
                         }
@@ -78,7 +79,7 @@ namespace DLM.cad
                 }
                 var alturas = this._vaos_verticais.SelectMany(x => x.GetPurlins().Select(z => z.Y)).Distinct().ToList();
 
-               
+
                 foreach (var v in _vaos_verticais)
                 {
                     List<ObjetoPurlin> pts = new List<ObjetoPurlin>();
@@ -103,12 +104,12 @@ namespace DLM.cad
                     {
                         var y = _vaos_verticais[i].PurlinsDummy[a].Y;
 
-                        if(i>0)
+                        if (i > 0)
                         {
                             _vaos_verticais[i].PurlinsDummy[a].PurlinEsquerda = _vaos_verticais[i - 1].PurlinsDummy.Find(x => x.Y == y);
                         }
 
-                        if(i<_vaos_verticais.Count-1)
+                        if (i < _vaos_verticais.Count - 1)
                         {
                             _vaos_verticais[i].PurlinsDummy[a].PurlinDireita = _vaos_verticais[i + 1].PurlinsDummy.Find(x => x.Y == y);
                         }
@@ -121,7 +122,7 @@ namespace DLM.cad
                     _vaos_verticais[i].GetCorrentes();
                 }
 
-    
+
 
             }
             return _vaos_verticais;
@@ -151,8 +152,8 @@ namespace DLM.cad
 
 
             double raio = Core.CADPurlin.Canvas_Tam_Texto * 2;
-            double esc_y = Core.CADPurlin.Canvas_Altura / (GetAltura() + (2*raio));
-      
+            double esc_y = Core.CADPurlin.Canvas_Altura / (GetAltura() + (2 * raio));
+
             double esc_x = Core.CADPurlin.Canvas_Largura / GetComprimento();
 
             Escala = esc_x > esc_y ? esc_x : esc_y;
@@ -160,26 +161,24 @@ namespace DLM.cad
 
             double espessura = Core.CADPurlin.Canvas_Esp_Linha;
 
-            var tam_txt_cotas =  Core.CADPurlin.Canvas_Txt_Cotas * Core.CADPurlin.Canvas_Tam_Texto;
+            var tam_txt_cotas = Core.CADPurlin.Canvas_Txt_Cotas * Core.CADPurlin.Canvas_Tam_Texto;
 
             P0 = new Point(GetXmin() - Core.CADPurlin.Canvas_Offset, GetYmin() - Core.CADPurlin.Canvas_Offset);
 
             List<UIElement> objetos = new List<UIElement>();
-            using (DocumentLock docLock = CAD.acDoc.LockDocument())
-            {
-                // Start a transaction
-                using (Transaction acTrans = CAD.acCurDb.TransactionManager.StartTransaction())
-                {
-                    var objs = Core.CADPurlin.GetObjetosNaoMapeados();
-                    foreach (var p in objs)
-                    {
-                        objetos.AddRange(Ut.GetCanvas(p, P0, Escala,acTrans,0.5));
-                    }
 
+            // Start a transaction
+            using (Transaction acTrans = CAD.acCurDb.acTrans())
+            {
+                var objs = Core.CADPurlin.GetObjetosNaoMapeados();
+                foreach (var p in objs)
+                {
+                    objetos.AddRange(Ut.GetCanvas(p, P0, Escala, acTrans, 0.5));
                 }
+
             }
 
-           foreach(var obj in objetos)
+            foreach (var obj in objetos)
             {
                 DLM.desenho.FuncoesCanvas.SetCor(obj, DLM.desenho.FuncoesCanvas.Cores.DarkGray);
             }
@@ -187,7 +186,7 @@ namespace DLM.cad
             retorno.AddRange(objetos);
 
             var eixos = GetEixosVerticais();
-            if(eixos.Count>1)
+            if (eixos.Count > 1)
             {
                 /*linhas de eixo*/
                 var y = this.GetYmax();
@@ -198,7 +197,7 @@ namespace DLM.cad
                     /*linha do eixo*/
                     var p1 = new Point((x - P0.X) * Escala, (y - P0.Y) * Escala);
                     var p2 = new Point((x - P0.X) * Escala, (y2 - P0.Y) * Escala);
-                    var l = DLM.desenho.FuncoesCanvas.Linha(p1, p2, DLM.desenho.FuncoesCanvas.Cores.Magenta,espessura, DLM.vars.TipoLinhaCanvas.Traco_Ponto);
+                    var l = DLM.desenho.FuncoesCanvas.Linha(p1, p2, DLM.desenho.FuncoesCanvas.Cores.Magenta, espessura, DLM.vars.TipoLinhaCanvas.Traco_Ponto);
                     retorno.Add(l);
 
                     /*bolota do eixo*/
@@ -223,17 +222,17 @@ namespace DLM.cad
 
 
                 /*cotas verticais*/
-                if(this._vaos_verticais.Count>0)
+                if (this._vaos_verticais.Count > 0)
                 {
-                    if(this._vaos_verticais.First().GetPurlins().Count>0)
+                    if (this._vaos_verticais.First().GetPurlins().Count > 0)
                     {
                         var pps = this._vaos_verticais.First().GetPurlins();
                         for (int i = 0; i < pps.Count; i++)
                         {
                             var pp = pps[i];
-                            if(pp.DistBaixo>0)
+                            if (pp.DistBaixo > 0)
                             {
-                                var pt = new System.Windows.Point((this.GetXmin() - P0.X - Core.CADPurlin.Canvas_Offset) * Escala, (pp.CentroBloco.Y- P0.Y - (pp.DistBaixo/2)) * Escala);
+                                var pt = new System.Windows.Point((this.GetXmin() - P0.X - Core.CADPurlin.Canvas_Offset) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
                                 var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.String(0), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
@@ -265,15 +264,15 @@ namespace DLM.cad
             }
 
 
-            var niveis = Core.CADPurlin.GetBlocos_Nivel().OrderBy(x=>x.GetCoordenada().Y).ToList();
+            var niveis = Core.CADPurlin.GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
 
             /*insere o nível*/
-            if(niveis.Count>0)
+            if (niveis.Count > 0)
             {
-                
+
                 var linha = DLM.desenho.FuncoesCanvas.Linha(
                     new Point((this.GetXmin() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala),
-                    new Point((this.GetXMax() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala), 
+                    new Point((this.GetXMax() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala),
                     DLM.desenho.FuncoesCanvas.Cores.Blue);
 
                 retorno.Add(linha);
@@ -282,7 +281,7 @@ namespace DLM.cad
 
 
 
-             
+
 
 
             foreach (var c in retorno)
@@ -291,7 +290,7 @@ namespace DLM.cad
             }
 
 
-            Canvas.Width = Math.Round(this.GetComprimento() * Escala) + (Core.CADPurlin.Canvas_Offset * 2*Escala);
+            Canvas.Width = Math.Round(this.GetComprimento() * Escala) + (Core.CADPurlin.Canvas_Offset * 2 * Escala);
             Canvas.Height = Math.Round(this.GetAltura() * Escala) + (Core.CADPurlin.Canvas_Offset * 2 * Escala);
 
             return retorno;
@@ -315,11 +314,11 @@ namespace DLM.cad
             var pp = sd.Tag as ObjetoPurlin;
             bool confirmado = false;
             double ntranspasse = Conexoes.Utilz.Prompt(pp.TRD, out confirmado, 0);
-            if(confirmado)
+            if (confirmado)
             {
                 pp.TRD = ntranspasse;
                 var purlin_prox = pp.PurlinDireita;
-                if(purlin_prox!=null)
+                if (purlin_prox != null)
                 {
                     purlin_prox.TRE = pp.TRD;
                 }

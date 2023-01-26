@@ -26,12 +26,12 @@ namespace DLM.cad
             }
             else
             {
-                this.Atributos.Add(new CelulaTag(coluna, valor,null));
+                this.Atributos.Add(new db.Celula(coluna, valor));
             }
 
         }
 
-        public CelulaTag Get(string Coluna)
+        public db.Celula Get(string Coluna)
         {
             var s = Atributos.FindAll(x => x != null).Find(x => x.Coluna.ToUpper() == Coluna.ToUpper());
             if (s != null)
@@ -41,7 +41,7 @@ namespace DLM.cad
             }
             else
             {
-                return new CelulaTag(Coluna, "", null);
+                return new db.Celula(Coluna, "");
             }
 
         }
@@ -49,25 +49,25 @@ namespace DLM.cad
         {
             return Atributos.Select(x => x.Coluna).ToList();
         }
-        public List<CelulaTag> Atributos { get; set; } = new List<CelulaTag>();
+        public List<db.Celula> Atributos { get; set; } = new List<db.Celula>();
         public BlocoTag Clonar()
         {
-            BlocoTag retorno = new BlocoTag(this.Bloco,false);
+            BlocoTag retorno = this.Bloco.GetBlocoTag(false);
             retorno.Descricao = this.Descricao;
             retorno.Atributos.Clear();
             foreach (var c in this.Atributos)
             {
-                retorno.Atributos.Add(new CelulaTag(c.Coluna, c.Valor,c.Atributo));
+                retorno.Atributos.Add(new db.Celula(c.Coluna, c.Valor));
             }
             return retorno;
         }
         private List<Point2d> _contorno { get; set; }
 
-        public List<Point2d> GetPontos(Transaction tr)
+        public List<Point2d> GetPontos(Transaction acTrans)
         {
             if(_contorno==null)
             {
-                _contorno = Ut.GetPontos(this.Bloco, tr).Select(x=>new Point2d(x.X,x.Y)).ToList();
+                _contorno = Ut.GetPontos(this.Bloco, acTrans).Select(x=>new Point2d(x.X,x.Y)).ToList();
             }
             return _contorno;
         }
@@ -100,7 +100,7 @@ namespace DLM.cad
             return _coordenada;
         }
 
-        public BlocoTag(List<CelulaTag> atributos)
+        public BlocoTag(List<db.Celula> atributos)
         {
             this.Atributos = atributos;
         }
@@ -114,7 +114,7 @@ namespace DLM.cad
             {
                 var bl = DLM.cad.Atributos.GetBlocoTag(bloco);
 
-                this.Atributos =new List<CelulaTag>();
+                this.Atributos =new List<db.Celula>();
                 this.Atributos.AddRange(bl.Atributos);
             }
         }
@@ -206,54 +206,15 @@ namespace DLM.cad
             {
                 foreach (var l in tab.Blocos)
                 {
-                    BlocoTag nl = new BlocoTag(l.Bloco,false);
+                    BlocoTag nl = l.Bloco.GetBlocoTag(false);
                     foreach (var c in s)
                     {
                         var igual = l.Get(c);
-                        nl.Atributos.Add(new CelulaTag(c, igual.Valor,igual.Atributo));
+                        nl.Atributos.Add(new db.Celula(c, igual.Valor));
                     }
                     this.Blocos.Add(nl);
                 }
             }
         }
-    }
-
-
-    [Serializable]
-    public class CelulaTag
-    {
-        public void Set(string valor)
-        {
-            this.Valor = valor;
-        }
-   
-        public int Int
-        {
-            get
-            {
-                return Conexoes.Utilz.Int(this.Valor);
-            }
-        }
-        public override string ToString()
-        {
-            return Valor;
-        }
-        public string Coluna { get; set; } = "";
-        public string Valor { get; set; } = "";
-
-        public AttributeReference Atributo { get; set; }
-
-        public double Double(int decimais = 4)
-        {
-            return Conexoes.Utilz.Double(this.Valor,decimais);
-        }
-
-        public CelulaTag(string Coluna, string Valor, AttributeReference Atributo)
-        {
-            this.Valor = Valor;
-            this.Coluna = Coluna;
-            this.Atributo = Atributo;
-        }
-
     }
 }

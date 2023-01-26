@@ -41,8 +41,10 @@ namespace DLM.cad
          
             
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Conexoes.Utilz.Alerta(ex);
+
                 return null;
             }
 
@@ -57,10 +59,10 @@ namespace DLM.cad
 
 
 
-            Document doc = null;
+            Document acDoc = null;
             try
             {
-                doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(res.StringResult, false);
+                acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(res.StringResult, false);
             }
             catch
             {
@@ -68,12 +70,12 @@ namespace DLM.cad
                 return;
             }
 
-            Database db = doc.Database;
+            
             string path = Path.GetDirectoryName(res.StringResult),  name = Path.GetFileName(res.StringResult), iconPath = path + "\\" + name + " icons";
             int numIcons = 0;
-            using (var acTrans = doc.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
-                BlockTable table = (BlockTable)acTrans.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTable table = (BlockTable)acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead);
 
                 foreach (ObjectId blkId in table)
                 {
@@ -86,7 +88,7 @@ namespace DLM.cad
                     // Attempt to generate an icon, where one doesn't exist
                     if (acBlkTblRec.PreviewIcon == null)
                     {
-                        object ActiveDocument = doc.AcadDocument;
+                        object ActiveDocument = acDoc.AcadDocument;
                         object[] data = { "_.BLOCKICON " + acBlkTblRec.Name + "\n" };
                         ActiveDocument.GetType().InvokeMember("SendCommand",System.Reflection.BindingFlags.InvokeMethod,null, ActiveDocument, data);
                     }
@@ -111,7 +113,7 @@ namespace DLM.cad
                 acTrans.Commit();
 
             }
-            doc.CloseAndDiscard();
+            acDoc.CloseAndDiscard();
         }
     }
 }

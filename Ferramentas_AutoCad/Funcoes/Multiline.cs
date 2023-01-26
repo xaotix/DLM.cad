@@ -14,9 +14,9 @@ using DLM.desenho;
 
 namespace DLM.cad
 {
-   public static class Multiline
+    public static class Multiline
     {
-        private  static  List<MlineStyle> _mlstyles { get; set; }
+        private static List<MlineStyle> _mlstyles { get; set; }
 
         public static MlineStyle GetMlStyle(ObjectId nome)
         {
@@ -65,10 +65,10 @@ namespace DLM.cad
         }
         public static List<MlineStyle> GetMLStyles(bool update = false)
         {
-            if (_mlstyles == null|update)
+            if (_mlstyles == null | update)
             {
                 _mlstyles = new List<MlineStyle>();
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                using (var acTrans = acCurDb.acTrans())
                 {
                     DBDictionary acLyrTbl;
                     acLyrTbl = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForRead) as DBDictionary;
@@ -99,13 +99,13 @@ namespace DLM.cad
             if (estilo != null)
             {
                 var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);
-                if(ml!=null)
+                if (ml != null)
                 {
                     List<Entity> apagar = new List<Entity>();
                     foreach (var p in polylines)
                     {
                         FLayer.Set(p.Layer);
-                        if (DesenharMLine(estilo,ml.Arquivo, new List<Point3d> { p.StartPoint, p.EndPoint }))
+                        if (DesenharMLine(estilo, ml.Arquivo, new List<Point3d> { p.StartPoint, p.EndPoint }))
                         {
                             apagar.Add(p);
                         }
@@ -138,7 +138,7 @@ namespace DLM.cad
 
             var st = Multiline.GetMlStyle(estilo_subst);
 
-            if(st==null)
+            if (st == null)
             {
                 return;
             }
@@ -188,7 +188,7 @@ namespace DLM.cad
                     {
                         if (File.Exists(destino))
                         {
-                            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                            using (var acTrans = acCurDb.acTrans())
                             {
                                 acCurDb.LoadMlineStyleFile(estilo, destino);
                                 acTrans.Commit();
@@ -219,7 +219,7 @@ namespace DLM.cad
                 {
                     using (var docLock = acDoc.LockDocument())
                     {
-                        using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                        using (var acTrans = acDoc.acTransST())
                         {
                             //get the mline style
                             Mline line = new Mline();
@@ -265,24 +265,21 @@ namespace DLM.cad
         public static List<MlineStyle> GetMLineStyles()
         {
             List<MlineStyle> retorno = new List<MlineStyle>();
-            using (var docLock = acDoc.LockDocument())
+            using (var acTrans = acCurDb.acTrans())
             {
-                using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+                DBDictionary lays = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForWrite) as DBDictionary;
+
+                foreach (DBDictionaryEntry item in lays)
                 {
-                    DBDictionary lays = acTrans.GetObject(acCurDb.MLStyleDictionaryId, OpenMode.ForWrite) as DBDictionary;
+                    MlineStyle acLyrTblRec;
+                    acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForRead) as MlineStyle;
 
-                    foreach (DBDictionaryEntry item in lays)
+                    if (acLyrTblRec != null)
                     {
-                        MlineStyle acLyrTblRec;
-                        acLyrTblRec = acTrans.GetObject(item.Value, OpenMode.ForRead) as MlineStyle;
-
-                        if (acLyrTblRec != null)
-                        {
-                            retorno.Add(acLyrTblRec);
-                        }
+                        retorno.Add(acLyrTblRec);
                     }
-                    acTrans.Abort();
                 }
+                acTrans.Abort();
             }
             return retorno;
         }
@@ -337,14 +334,14 @@ namespace DLM.cad
         }
         public static void GetOrigens(Mline s, out P3d p1, out P3d p2, out double largura)
         {
-            List<P3d> lista = Ut.GetPontos(s).Select(x=>x.P3d()).ToList();
+            List<P3d> lista = Ut.GetPontos(s).Select(x => x.P3d()).ToList();
 
             /*tem q ver como ele trata quando a purlin tem mais de 2 vertices*/
             var pts = new List<P3d>();
             pts.Add(s.Bounds.Value.MinPoint.P3d());
             pts.Add(s.Bounds.Value.MaxPoint.P3d());
 
-            
+
 
             p1 = new P3d();
             p2 = new P3d();
@@ -352,9 +349,9 @@ namespace DLM.cad
             largura = 0;
             var isvertical = GetVerticais(new List<Mline> { s }).Count > 0;
 
-            if(isvertical)
+            if (isvertical)
             {
-                largura = Math.Abs(pts.Max(x=>x.X) - pts.Min(x => x.X));
+                largura = Math.Abs(pts.Max(x => x.X) - pts.Min(x => x.X));
             }
             else
             {

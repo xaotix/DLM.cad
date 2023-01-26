@@ -839,7 +839,7 @@ namespace DLM.cad
         }
         public void Contornar(bool calculo = true)
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 SelecionarObjetos();
 
@@ -862,7 +862,7 @@ namespace DLM.cad
         }
         public void ContornarConvexo()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 SelecionarObjetos();
 
@@ -1216,7 +1216,7 @@ namespace DLM.cad
         {
           
 
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace],OpenMode.ForWrite) as BlockTableRecord;
@@ -1428,7 +1428,7 @@ namespace DLM.cad
         {
             TextStyleTableRecord ret = null;
             Database acCurDb = HostApplicationServices.WorkingDatabase;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 SymbolTable symTable = (SymbolTable)acTrans.GetObject(acCurDb.TextStyleTableId, OpenMode.ForRead);
                 foreach (ObjectId id in symTable)
@@ -1453,7 +1453,7 @@ namespace DLM.cad
         {
             // Get the current database
             // Start a transaction
-            using (var acTrans = acCurDb.TransactionManager.StartTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Block table for read
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;

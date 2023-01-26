@@ -28,11 +28,10 @@ namespace DLM.cad
     public class Core
     {
         private static Conexoes.ControleWait _w { get; set; }
-
         private static MenuMarcas _MenuMarcas { get; set; }
         private static CADCotagem _Cotas { get; set; }
         private static CADTecnoMetal _TecnMetal { get; set; }
-        private static Menus.Menu_Bloco_Peca menu_bloco { get; set; }
+        private static Menus.Menu_Bloco_Peca _menu_bloco { get; set; }
         public static CADMonitoramento monitoramento { get; set; }
 
         public static Conexoes.ControleWait Getw()
@@ -296,7 +295,7 @@ namespace DLM.cad
             var selecao = editor.GetEntity("\nSelecione: ");
             if (selecao.Status != PromptStatus.OK)
                 return;
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTrans())
             {
                 Entity obj = acTrans.GetObject(selecao.ObjectId, OpenMode.ForRead) as Entity;
 
@@ -379,8 +378,7 @@ namespace DLM.cad
         [CommandMethod(nameof(abrepasta))]
         public static void abrepasta()
         {
-            CADBase pp = new CADBase();
-            pp.AbrePasta();
+            Cotas.AbrePasta();
         }
 
 
@@ -614,23 +612,20 @@ namespace DLM.cad
         [CommandMethod(nameof(bloqueiamviews))]
         public static void bloqueiamviews()
         {
-            CADBase b = new CADBase();
-            b.SetViewport(true);
+            Cotas.SetViewport(true);
         }
 
         [CommandMethod(nameof(desbloqueiamviews))]
         public static void desbloqueiamviews()
         {
-            CADBase b = new CADBase();
-            b.SetViewport(false);
+            Cotas.SetViewport(false);
         }
 
         [CommandMethod(nameof(ajustarLayers))]
         public static void ajustarLayers()
         {
-            CADBase b = new CADBase();
-            b.AjustarLayers();
-            b.AddMensagem("Finalizado!");
+            Cotas.AjustarLayers();
+            Cotas.AddMensagem("Finalizado!");
         }
 
 
@@ -780,15 +775,15 @@ namespace DLM.cad
         [CommandMethod(nameof(marcarmontagem))]
         public static void marcarmontagem()
         {
-         if(menu_bloco==null)
+         if(_menu_bloco==null)
             {
-                menu_bloco = new Menus.Menu_Bloco_Peca(TecnoMetal);
-                menu_bloco.Show();
+                _menu_bloco = new Menus.Menu_Bloco_Peca(TecnoMetal);
+                _menu_bloco.Show();
             }
          else
             {
-                menu_bloco.txt_escala.Text = TecnoMetal.GetEscala().String();
-                menu_bloco.Visibility = System.Windows.Visibility.Visible;
+                _menu_bloco.txt_escala.Text = TecnoMetal.GetEscala().String();
+                _menu_bloco.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
@@ -820,8 +815,7 @@ namespace DLM.cad
         [CommandMethod(nameof(criarlayersPadrao))]
         public static void criarlayersPadrao()
         {
-            CADBase p = new CADBase();
-            p.CriarLayersPadrao();
+            Cotas.CriarLayersPadrao();
         }
 
         [CommandMethod(nameof(gerardxf))]
@@ -837,7 +831,7 @@ namespace DLM.cad
         }
 
         [CommandMethod(nameof(preencheSelo))]
-        static public void preencheSelo()
+        public static void preencheSelo()
         {
             acDoc.IrLayout();
             acDoc.SetLts(10);
@@ -848,8 +842,7 @@ namespace DLM.cad
         }
         /*Esse cara força o CAD rodar sincrono, CommandFlags.Session*/
         [CommandMethod(nameof(tabela_limpa))]
-
-        static public void tabela_limpa()
+        public static void tabela_limpa()
         {
             acDoc.IrLayout();
             acDoc.SetLts(10);
@@ -863,15 +856,13 @@ namespace DLM.cad
 
 
         [CommandMethod(nameof(gerarPDFEtapa))]
-
-        static public void gerarPDFEtapa()
+        public static void gerarPDFEtapa()
         {
             TecnoMetal.GerarPDF();
         }
 
         [CommandMethod(nameof(gerarPDFEtapacarrega))]
-
-        static public void gerarPDFEtapacarrega()
+        public static void gerarPDFEtapacarrega()
         {
             var arquivos = Conexoes.Utilz.Arquivo.Ler(TecnoMetal.Pasta + @"DAT\plotar.txt").Select(x=> new Conexoes.Arquivo(x)).ToList();
             arquivos = arquivos.FindAll(x => x.Existe());
@@ -879,7 +870,7 @@ namespace DLM.cad
         }
 
         [CommandMethod(nameof(composicao))]
-        static public void composicao()
+        public static void composicao()
         {
             TecnoMetal.InserirSoldaComposicao();
         }
@@ -890,12 +881,13 @@ namespace DLM.cad
         {
             if(doc == null) { doc = CAD.acDoc; }
             doc.Comando(
-                "_tilemode", "0",/*vai pro layout*/
+            "REMOVEAEC",
+            "_tilemode", "0",/*vai pro layout*/
             "_layout", "r", "", "Layout",/*renomeia o layout para "Layout"*/
             "_zoom", "e",
             "-SCALELISTEDIT", "R", "Y", "e",
             "-SCALELISTEDIT", "d", "*", "e",
-            "-overkill", "all","",
+            "-overkill", "all ",
             "_tilemode", "1",/*vai pro model*/
             "-purge", "A", "*", "N",
             "-overkill", "all", "", "", "d",
@@ -910,7 +902,7 @@ namespace DLM.cad
         [CommandMethod(nameof(ListarQuantidadeBlocos))]
         public static void ListarQuantidadeBlocos()
         {
-            using (var acTrans = acCurDb.TransactionManager.StartOpenCloseTransaction())
+            using (var acTrans = acCurDb.acTransST())
             {
                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(acCurDb), OpenMode.ForRead);
 
