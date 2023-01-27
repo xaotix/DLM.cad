@@ -22,14 +22,14 @@ namespace DLM.cad
         {
             return $"[{this.Tipo}] { this.Nome} - {this.Quantidade}x";
         }
-        public List<BlocoTag> Blocos { get; private set; } = new List<BlocoTag>();
+        public List<BlockAttributes> Blocos { get; private set; } = new List<BlockAttributes>();
 
         public List<string> GetAtributos()
         {
-            var s = this.Blocos.SelectMany(x => x.Atributos).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
+            var s = this.Blocos.SelectMany(x => x.Attributes).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
             return s;
         }
-        public BlocoTag Atributos
+        public BlockAttributes Atributos
         {
             get
             {
@@ -37,7 +37,7 @@ namespace DLM.cad
                 {
                     return Blocos[0];
                 }
-                return new BlocoTag(null);
+                return new BlockAttributes(null);
             }
         }
         public string Nome { get; set; } = "";
@@ -164,7 +164,7 @@ namespace DLM.cad
             }
         }
 
-        public PCQuantificar(Tipo_Objeto Tipo, string nom, string desc, string nome_bloco,List<BlocoTag> objetos)
+        public PCQuantificar(Tipo_Objeto Tipo, string nom, string desc, string nome_bloco,List<BlockAttributes> objetos)
         {
             this.Tipo = Tipo;
             this.Nome = nom;
@@ -233,7 +233,7 @@ namespace DLM.cad
                 this.Quantidade = qtd;
             }
         }
-        public PCQuantificar(Tipo_Objeto tipo, string nome, string desc, string nome_bloco, List<BlocoTag> blocos, string numero,  string familia = "", string destino = "",  string perfil = "", string material = "", double comprimento = 0 )
+        public PCQuantificar(Tipo_Objeto tipo, string nome, string desc, string nome_bloco, List<BlockAttributes> blocos, string numero,  string familia = "", string destino = "",  string perfil = "", string material = "", double comprimento = 0 )
         {
             this.Comprimento = comprimento;
             this.Descricao = desc;

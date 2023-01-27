@@ -24,8 +24,8 @@ namespace DLM.cad
     /// </summary>
     public partial class MenuMarcas : Window
     {
-        public List<MarcaTecnoMetal> Marcas { get; set; } = new List<MarcaTecnoMetal>();
-        public List<MarcaTecnoMetal> Posicoes { get; set; } = new List<MarcaTecnoMetal>();
+        public List<BlocoPecaTecnoMetal> Marcas { get; set; } = new List<BlocoPecaTecnoMetal>();
+        public List<BlocoPecaTecnoMetal> Posicoes { get; set; } = new List<BlocoPecaTecnoMetal>();
 
         public void Iniciar()
         {
@@ -86,13 +86,13 @@ namespace DLM.cad
                 return null;
             }
         }
-        public MarcaTecnoMetal marca_selecionada
+        public BlocoPecaTecnoMetal marca_selecionada
         {
             get
             {
-                if(this.seleciona_marca_composta.SelectedItem is MarcaTecnoMetal)
+                if(this.seleciona_marca_composta.SelectedItem is BlocoPecaTecnoMetal)
                 {
-                    return this.seleciona_marca_composta.SelectedItem as MarcaTecnoMetal;
+                    return this.seleciona_marca_composta.SelectedItem as BlocoPecaTecnoMetal;
                 }
                 return null;
             }

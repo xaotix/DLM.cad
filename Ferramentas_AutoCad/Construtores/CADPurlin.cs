@@ -464,10 +464,10 @@ namespace DLM.cad
             List<Entity> blocos = new List<Entity>();
             blocos.AddRange(this.Selecoes);
             blocos = blocos.FindAll(x=> Selecoes.Filter<BlockReference>().FindAll(w => w.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
-            blocos = blocos.FindAll(x => this.GetBlocos_Eixos().Find(y => y.Bloco.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetBlocos_Eixos().Find(y => y.Block.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetLinhas_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetBlocosSecundariasIndicacao().Find(y => y.ObjectId == x.ObjectId) == null);
-            blocos = blocos.FindAll(x => this.GetBlocos_Nivel().Select(y => y.Bloco).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetBlocos_Nivel().Select(y => y.Block).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
             if(!ignorar_multilines)
             {
                 blocos = blocos.FindAll(x => this.GetMLPurlins().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
@@ -625,7 +625,7 @@ namespace DLM.cad
 
                         if(dist>=DistanciaMinimaEixos | _grade.GetEixosHorizontais().Count ==0)
                         {
-                            List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
+                            List<BlockAttributes> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
 
 
                             if (blks.Count >= 1)
@@ -657,7 +657,7 @@ namespace DLM.cad
 
                         if(dist >= DistanciaMinimaEixos | _grade.GetEixosVerticais().Count == 0)
                         {
-                            List<BlocoTag> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
+                            List<BlockAttributes> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
 
 
                             if (blks.Count >= 1)
@@ -1204,7 +1204,7 @@ namespace DLM.cad
 
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
-            var atributos = bloco.GetBlocoTag();
+            var atributos = bloco.GetAttributes();
             var N = atributos.Get(Cfg.Init.CAD_ATT_N).Valor;
             var ESP = atributos.Get(Cfg.Init.CAD_ATT_Espessura).Double();
             var SECAO = atributos.Get("SECAO").Double();
@@ -1323,7 +1323,7 @@ namespace DLM.cad
         }
         public Conexoes.Macros.Tirante GetTirante(BlockReference bloco)
         {
-            var atributos = bloco.GetBlocoTag();
+            var atributos = bloco.GetAttributes();
             var SFTA = atributos.Get("SFTA").Valor;
             var SFTB = atributos.Get("SFTB").Valor;
             var TIP = atributos.Get("TIP").Valor;
@@ -1343,7 +1343,7 @@ namespace DLM.cad
         }
         public Conexoes.Macros.Corrente GetCorrente(BlockReference bloco)
         {
-            var atributos = bloco.GetBlocoTag();
+            var atributos = bloco.GetAttributes();
 
             var TIP = atributos.Get("TIP").Valor;
             var DESC = atributos.Get(Cfg.Init.CAD_ATT_Descricao).Double();

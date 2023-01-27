@@ -132,7 +132,7 @@ namespace DLM.cad
             return _eixos.FindAll(x => x.Sentido == Sentido.Horizontal);
         }
 
-        public void AddEixo(Sentido Sentido, double Vao, BlocoTag bloco, CADLine line)
+        public void AddEixo(Sentido Sentido, double Vao, BlockAttributes bloco, CADLine line)
         {
             var neixo = new Eixo(Sentido, bloco, line, Vao);
             _eixos.Add(neixo);

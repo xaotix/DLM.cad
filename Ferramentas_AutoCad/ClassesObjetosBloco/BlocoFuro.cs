@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace DLM.cad
 {
-    public class BlocoFuro:BlocoTag
+    public class BlocoFuro:BlockAttributes
     {
         public override string ToString()
         {
@@ -23,7 +23,7 @@ namespace DLM.cad
             this.Diametro = 0;
             this.Oblongo = 0;
 
-            if (Bloco.Name.ToUpper().Contains("HOLE") | Bloco.Name.ToUpper().Contains("MA"))
+            if (Block.Name.ToUpper().Contains("HOLE") | Block.Name.ToUpper().Contains("MA"))
             {
 
 
@@ -56,7 +56,7 @@ namespace DLM.cad
             {
                 var tolerancia = this.Get("TOLE").Double();
 
-                double diametro = Conexoes.Utilz.Double(this.Bloco.Name.Replace("M", "").Replace(Cfg.Init.CAD_ATT_N, ""));
+                double diametro = Conexoes.Utilz.Double(this.Block.Name.Replace("M", "").Replace(Cfg.Init.CAD_ATT_N, ""));
                 this.Diametro = diametro;
                 if (tolerancia !=0)
                 {

@@ -84,10 +84,9 @@ namespace DLM.cad
                 }
             }
         }
-        public static BlocoTag GetBlocoTag(this BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
+        public static BlockAttributes GetAttributes(this BlockReference bloco, bool somente_visiveis = true, Database acCurDb = null)
         {
-
-            BlocoTag retorno = new BlocoTag(bloco, false);
+            BlockAttributes retorno = new BlockAttributes(bloco, false);
 
             if (acCurDb == null)
             {
@@ -107,7 +106,7 @@ namespace DLM.cad
                     }
                     else
                     {
-                        retorno.Atributos.Add(new db.Celula(acAttRef.Tag, acAttRef.TextString));
+                        retorno.Attributes.Add(new db.Celula(acAttRef.Tag, acAttRef.TextString));
                     }
                 }
             }
@@ -116,7 +115,7 @@ namespace DLM.cad
         }
         public static db.Celula GetValor(this BlockReference bloco, string atributo)
         {
-            var blktag = GetBlocoTag(bloco);
+            var blktag = GetAttributes(bloco);
             return blktag.Get(atributo);
         }
     }

@@ -735,7 +735,7 @@ namespace DLM.cad
     
         public static string GetNome(BlockReference bloco)
         {
-            var parent = bloco.GetParent();
+            var parent = bloco.GetTableRecord();
             if(parent!=null)
             {
                 return parent.Name;
@@ -777,7 +777,7 @@ namespace DLM.cad
             return ptss;
         }
 
-        public static List<BlocoTag> GetBlocosProximos(List<BlocoTag> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1)
+        public static List<BlockAttributes> GetBlocosProximos(List<BlockAttributes> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1)
         {
             return GetBlocosProximos(blocos, new P3d(pt1.X, pt1.Y), new P3d(pt2.X, pt2.Y), tolerancia);
         }
@@ -785,9 +785,9 @@ namespace DLM.cad
         
 
 
-        public static List<BlocoTag> GetBlocosProximos(List<BlocoTag> blocos, P3d pt1, P3d pt2, double tolerancia = 1)
+        public static List<BlockAttributes> GetBlocosProximos(List<BlockAttributes> blocos, P3d pt1, P3d pt2, double tolerancia = 1)
         {
-            List<BlocoTag> blks = new List<BlocoTag>();
+            List<BlockAttributes> blks = new List<BlockAttributes>();
 
 
             Line p = new Line();
@@ -824,8 +824,8 @@ namespace DLM.cad
                 foreach (var blk in blocos)
                 {
 
-                    var d1 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(pt1.GetPoint3dCad())));
-                    var d2 = Math.Round(Math.Abs(blk.Bloco.Position.DistanceTo(pt2.GetPoint3dCad())));
+                    var d1 = Math.Round(Math.Abs(blk.Block.Position.DistanceTo(pt1.GetPoint3dCad())));
+                    var d2 = Math.Round(Math.Abs(blk.Block.Position.DistanceTo(pt2.GetPoint3dCad())));
 
 
 
@@ -904,10 +904,10 @@ namespace DLM.cad
         }
         public static void Clonar(BlockReference bloco, P3d novaposicao)
         {
-            var atributos = Atributos.GetBlocoTag(bloco);
+            var atributos = bloco.GetAttributes();
 
             Hashtable ht = new Hashtable();
-            foreach (var cel in atributos.Atributos)
+            foreach (var cel in atributos.Attributes)
             {
                 ht.Add(cel.Coluna, cel.Valor);
             }

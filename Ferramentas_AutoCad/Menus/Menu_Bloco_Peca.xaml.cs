@@ -38,10 +38,10 @@ namespace DLM.cad.Menus
         public RME rmu_sel { get; set; }
         public Conexoes.RMT rmt_sel { get; set; }
 
-        private List<MarcaTecnoMetal> marcas_tecnometal { get; set; } = new List<MarcaTecnoMetal>();
+        private List<BlocoPecaTecnoMetal> marcas_tecnometal { get; set; } = new List<BlocoPecaTecnoMetal>();
 
 
-        public MarcaTecnoMetal marca_sel { get; set; }
+        public BlocoPecaTecnoMetal marca_sel { get; set; }
 
         public CADTecnoMetal TecnoMetal { get; set; }
         public Menu_Bloco_Peca(CADTecnoMetal tec)

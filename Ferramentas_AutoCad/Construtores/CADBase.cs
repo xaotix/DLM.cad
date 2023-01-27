@@ -24,7 +24,7 @@ namespace DLM.cad
         private List<CADLine> _Linhas { get; set; }
         private List<string> _Layers { get; set; }
         private List<Furo> _Furos { get; set; }
-        private List<BlocoTag> _Blocos_Eixo { get; set; }
+        private List<BlockAttributes> _Blocos_Eixo { get; set; }
         private List<PolyInfo> _Polies { get; set; }
 
         public void ApagarCotas()
@@ -624,9 +624,9 @@ namespace DLM.cad
                 var polis = this.GetPolies().FindAll(x => x.Polyline.Closed);
                 var furos_polis = polis.FindAll(x => x.Arcos.Count == 2);
 
-                foreach (var furo in furos.FindAll(x => x.Bloco.Name != "MA"))
+                foreach (var furo in furos.FindAll(x => x.Block.Name != "MA"))
                 {
-                    var p3d = furo.Bloco.Position.P3d();
+                    var p3d = furo.Block.Position.P3d();
                     _Furos.Add(new cam.Furo(p3d.X, p3d.Y, furo.Diametro, furo.Oblongo));
                 }
                 foreach (var furo in furos_pl)
@@ -667,20 +667,20 @@ namespace DLM.cad
 
 
 
-        public List<BlocoTag> GetBlocos_Eixos(bool update = false)
+        public List<BlockAttributes> GetBlocos_Eixos(bool update = false)
         {
             /*pega blocos dinâmicos*/
             if (_Blocos_Eixo == null | update)
             {
-                _Blocos_Eixo = Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => x.GetBlocoTag()).ToList();
+                _Blocos_Eixo = Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => x.GetAttributes()).ToList();
             }
 
             return _Blocos_Eixo;
         }
-        public List<BlocoTag> GetBlocos_Nivel()
+        public List<BlockAttributes> GetBlocos_Nivel()
         {
             /*pega blocos dinâmicos*/
-            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x => x.GetBlocoTag()).ToList();
+            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x => x.GetAttributes()).ToList();
         }
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
@@ -690,7 +690,7 @@ namespace DLM.cad
 
             foreach (var s in blocos)
             {
-                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => x.GetBlocoTag()).ToList());
+                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => x.GetAttributes()).ToList());
                 if (npc.Nome.StartsWith(Cfg.Init.CAD_PC_Quantificar))
                 {
                     var blcs = npc.Agrupar(new List<string> { Cfg.Init.CAD_ATT_Codigo, Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);

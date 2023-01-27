@@ -119,6 +119,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="ClassesBase\PolyInfo.cs" />
+    <Compile Include="ClassesObjetosBloco\BlockAttributes.cs" />
+    <Compile Include="ClassesObjetosBloco\BlocoPecaTecnoMetal.cs" />
+    <Compile Include="ClassesObjetosBloco\TableBlockAttributes.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoMultiLineBase.cs" />
     <Compile Include="ClassesObjetosMultiline\ObjetoCorrente.cs" />
     <Compile Include="Construtores\CADLine.cs" />
@@ -179,9 +182,7 @@
     <Compile Include="ClassesBase\CTV_de_para.cs" />
     <Compile Include="ClassesObjetosBloco\BlocoFuro.cs" />
     <Compile Include="ClassesObjetosBloco\LinhaBlocoFuro.cs" />
-    <Compile Include="ClassesObjetosBloco\MarcaTecnoMetal.cs" />
     <Compile Include="ClassesBase\PCQuantificar.cs" />
-    <Compile Include="ClassesObjetosBloco\BlocoTag.cs" />
     <Compile Include="ClassesBase\Enumeradores.cs" />
     <Compile Include="ClassesBase\Outline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

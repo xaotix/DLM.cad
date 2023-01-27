@@ -411,7 +411,7 @@ namespace DLM.cad
         }
 
 
-        public static P3d TecnoMetal(List<MarcaTecnoMetal> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)
+        public static P3d TecnoMetal(List<BlocoPecaTecnoMetal> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)
         {
             double x0 = 0;
             double y0 = 0;
@@ -478,7 +478,7 @@ namespace DLM.cad
                                 p_pes_uni = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;
                             }
 
-                            var p_pes_tot = (Pos.PesoUnit / 1000) * Pos.Quantidade;
+                            var p_pes_tot = (Pos.PesoUnit / 1000) * Pos.Quantidade * (Marca.Tipo_Marca == Tipo_Marca.MarcaSimples?Marca.Quantidade:1);
                             if (p_pes_tot < Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON)
                             {
                                 p_pes_tot = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;

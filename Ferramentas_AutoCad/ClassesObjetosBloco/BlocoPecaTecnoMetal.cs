@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DLM.cad
 {
-    public class MarcaTecnoMetal
+    public class BlocoPecaTecnoMetal
     {
         public string GetInfo()
         {
@@ -28,7 +28,7 @@ namespace DLM.cad
 
             return retorno;
         }
-        public MarcaTecnoMetal Pai { get; set; }
+        public BlocoPecaTecnoMetal Pai { get; set; }
         public override string ToString()
         {
             return $"[{Marca}{(Tipo_Marca == Tipo_Marca.Posicao? $" - P = {Posicao}": $" - {Tipo_Bloco}")} ] - QTD.: {Quantidade}";
@@ -286,20 +286,31 @@ namespace DLM.cad
         public string NomeBloco { get; private set; } = "";
         public string Prancha { get; private set; } = "";
         public string Material { get; private set; } = "";
-        public List<MarcaTecnoMetal> GetPosicoes()
+
+        private List<BlocoPecaTecnoMetal> _Posicoes { get; set; }
+        public List<BlocoPecaTecnoMetal> GetPosicoes(bool update = false)
         {
-            var pcs = this.SubItens.GroupBy(x => x.Posicao).ToList();
-            List<MarcaTecnoMetal> marcaTecnoMetals = new List<MarcaTecnoMetal>();
-
-            foreach(var pc in pcs)
+            if(this._Posicoes==null && this.SubItens.Count>0 | update)
             {
-                marcaTecnoMetals.Add(new MarcaTecnoMetal(pc.ToList(),this));
-            }
+                var pcs = this.SubItens.GroupBy(x => x.Posicao).ToList();
+                _Posicoes = new List<BlocoPecaTecnoMetal>();
 
-            return marcaTecnoMetals;
+                foreach (var pc in pcs)
+                {
+                    _Posicoes.Add(new BlocoPecaTecnoMetal(pc.ToList(), this));
+                }
+
+                return _Posicoes;
+            }
+            else if(this._Posicoes==null)
+            {
+                return new List<BlocoPecaTecnoMetal>();
+            }
+            return _Posicoes;
+            
         }
-        public List<MarcaTecnoMetal> SubItens { get; private set; } = new List<MarcaTecnoMetal>();
-        public BlocoTag Bloco { get; set; }
+        public List<BlocoPecaTecnoMetal> SubItens { get; private set; } = new List<BlocoPecaTecnoMetal>();
+        public BlockAttributes Bloco { get; set; }
 
 
         private Conexoes.Bobina _bobina { get; set; }
@@ -322,8 +333,8 @@ namespace DLM.cad
 
 
 
-        public List<MarcaTecnoMetal> Posicoes_Iguais { get; set; } = new List<MarcaTecnoMetal>();
-        public MarcaTecnoMetal(List<MarcaTecnoMetal> posicoes_iguais, MarcaTecnoMetal pai)
+        public List<BlocoPecaTecnoMetal> Posicoes_Iguais { get; set; } = new List<BlocoPecaTecnoMetal>();
+        public BlocoPecaTecnoMetal(List<BlocoPecaTecnoMetal> posicoes_iguais, BlocoPecaTecnoMetal pai)
         {
             this.Pai = pai;
             var m = posicoes_iguais[0];
@@ -346,7 +357,7 @@ namespace DLM.cad
             this.Bloco = m.Bloco;
             this.Posicoes_Iguais = posicoes_iguais;
         }
-        public MarcaTecnoMetal(BlocoTag l)
+        public BlocoPecaTecnoMetal(BlockAttributes l)
         {
             this.Bloco = l;
             this.Marca =        l.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
