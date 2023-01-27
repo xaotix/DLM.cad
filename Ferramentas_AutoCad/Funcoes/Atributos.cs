@@ -51,7 +51,7 @@ namespace DLM.cad
                 }
             }
         }
-        public static void Set(this BlockReference myBlockRef, Transaction acTrans, string tag, string valor)
+        public static void Set(this BlockReference myBlockRef, Transaction acTrans, string tag, string value)
         {
             if (myBlockRef == null) { return; }
             using (var docLock = acDoc.LockDocument())
@@ -63,7 +63,7 @@ namespace DLM.cad
                     if (att.Tag.ToUpper().Replace(" ", "") == tag.ToUpper().Replace(" ", ""))
                     {
                         att.UpgradeOpen();
-                        att.TextString = valor;
+                        att.TextString = value;
                     }
                 }
             }
