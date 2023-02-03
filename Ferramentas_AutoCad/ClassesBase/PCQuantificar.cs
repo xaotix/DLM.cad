@@ -26,7 +26,7 @@ namespace DLM.cad
 
         public List<string> GetAtributos()
         {
-            var s = this.Blocos.SelectMany(x => x.Attributes).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
+            var s = this.Blocos.SelectMany(x => x.Celulas).ToList().FindAll(x => x.Valor != "").Select(x => x.Coluna).Distinct().ToList().OrderBy(x => x).ToList();
             return s;
         }
         public BlockAttributes Atributos

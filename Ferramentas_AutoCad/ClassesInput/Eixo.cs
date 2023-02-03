@@ -114,14 +114,14 @@ namespace DLM.cad
             if (bloco != null)
             {
 
-                var nomes = this.Bloco.Attributes.FindAll(x => x.Coluna.ToUpper().Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
+                var nomes = this.Bloco.Celulas.FindAll(x => x.Coluna.ToUpper().Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
 
                 if (nomes.Count > 0)
                 {
                     Nome = nomes[0];
                 }
                 if (Nome == "") { Nome = this.Bloco.Get("Nome").Valor; };
-                var preenchidos = this.Bloco.Attributes.FindAll(x => x.Valor.Replace(" ", "") != "");
+                var preenchidos = this.Bloco.Celulas.FindAll(x => x.Valor.Replace(" ", "") != "");
                 if (Nome == "" && preenchidos.Count > 0)
                 {
                     Nome = preenchidos[0].Valor;

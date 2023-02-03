@@ -907,7 +907,7 @@ namespace DLM.cad
             var atributos = bloco.GetAttributes();
 
             Hashtable ht = new Hashtable();
-            foreach (var cel in atributos.Attributes)
+            foreach (var cel in atributos.Celulas)
             {
                 ht.Add(cel.Coluna, cel.Valor);
             }

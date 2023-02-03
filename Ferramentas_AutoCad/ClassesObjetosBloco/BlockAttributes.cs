@@ -5,55 +5,23 @@ using System.Linq;
 
 namespace DLM.cad
 {
-    public class BlockAttributes
+    public class BlockAttributes : db.Linha
     {
         public override string ToString()
         {
             return this.Descricao;
         }
-        public string Descricao { get; set; } = "";
         public BlockReference Block { get; private set; }
-        public void Set(string coluna, string valor)
-        {
-            var t = this.Attributes.Find(x => x.Coluna.ToUpper() == coluna.ToUpper());
-            if (t != null)
-            {
-                t.Set(valor);
-            }
-            else
-            {
-                this.Attributes.Add(new db.Celula(coluna, valor));
-            }
 
-        }
-
-        public db.Celula Get(string Coluna)
-        {
-            var s = Attributes.FindAll(x => x != null).Find(x => x.Coluna.ToUpper() == Coluna.ToUpper());
-            if (s != null)
-            {
-                return s;
-
-            }
-            else
-            {
-                return new db.Celula(Coluna, "");
-            }
-
-        }
-        public List<string> GetColunas()
-        {
-            return Attributes.Select(x => x.Coluna).ToList();
-        }
-        public List<db.Celula> Attributes { get; set; } = new List<db.Celula>();
-        public BlockAttributes Clonar()
+        public new  BlockAttributes Clonar()
         {
             BlockAttributes retorno = new BlockAttributes(this.Block, false);
+           
             retorno.Descricao = this.Descricao;
-            retorno.Attributes.Clear();
-            foreach (var c in this.Attributes)
+            retorno.Celulas.Clear();
+            foreach (var c in this.Celulas)
             {
-                retorno.Attributes.Add(new db.Celula(c.Coluna, c.Valor));
+                retorno.Celulas.Add(new db.Celula(c.Coluna, c.Valor));
             }
             return retorno;
         }
@@ -96,27 +64,22 @@ namespace DLM.cad
             return _coordenada;
         }
 
-        public db.Linha GetLinha()
-        {
-            return new DLM.db.Linha(this.Attributes.Select(x => new DLM.db.Celula(x.Coluna, x.Valor)).ToList());
-        }
-
         public BlockAttributes(List<db.Celula> atributos)
         {
-            this.Attributes = atributos;
+            this.Celulas = atributos;
         }
 
         public BlockAttributes(BlockReference bloco, bool carregar = true)
         {
             this.Block = bloco;
 
-
+            
             if (carregar)
             {
                 var bl = bloco.GetAttributes();
 
-                this.Attributes =new List<db.Celula>();
-                this.Attributes.AddRange(bl.Attributes);
+                this.Celulas =new List<db.Celula>();
+                this.Celulas.AddRange(bl.Celulas);
             }
         }
 

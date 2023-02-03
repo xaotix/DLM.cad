@@ -933,7 +933,7 @@ namespace DLM.cad
         }
 
 
-        public List<BlocoPecaTecnoMetal> GetMarcas(ref List<Report> erros, TableBlockAttributes tabela = null, List<BlockReference> blocos = null)
+        public List<BlocoPecaTecnoMetal> GetMarcas(ref List<Report> erros, db.Tabela tabela = null, List<BlockReference> blocos = null)
         {
             var _Marcas = new List<BlocoPecaTecnoMetal>();
 
@@ -945,7 +945,7 @@ namespace DLM.cad
                 tabela = GetBlocosMarcas(acCurDb, ref erros,acDoc.Name);
             }
 
-            foreach (var pc in tabela.BlockAttributes)
+            foreach (var pc in tabela.Linhas)
             {
                 lista_pecas.Add(new BlocoPecaTecnoMetal(pc));
             }
@@ -1323,14 +1323,14 @@ namespace DLM.cad
                     acCurDb = CAD.acCurDb;
                 }
                 var att = bloco.GetAttributes(somente_visiveis, acCurDb);
-                att.Set(Cfg.Init.CAD_ATT_ARQ, arquivo);
+                att[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
                 if (this.E_Tecnometal(false))
                 {
                     try
                     {
-                        att.Set(TAB_DBF1.NUM_COM.ToString(), this.GetPedido().NomePedido);
-                        att.Set(TAB_DBF1.DES_COM.ToString(), this.GetObra().Nome);
-                        att.Set(TAB_DBF1.LOT_COM.ToString(), this.GetSubEtapa().NomeEtapa);
+                        att[TAB_DBF1.NUM_COM.ToString()].Valor = this.GetPedido().NomePedido;
+                        att[TAB_DBF1.DES_COM.ToString()].Valor = this.GetObra().Nome;
+                        att[TAB_DBF1.LOT_COM.ToString()].Valor = this.GetSubEtapa().NomeEtapa;
                     }
                     catch (Exception ex)
                     {
@@ -1338,11 +1338,11 @@ namespace DLM.cad
                     }
                 }
 
-                att.Set(TAB_DBF1.NUM_DIS.ToString(), nome);
-                att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
-                att.Set(TAB_DBF1.FLG_REC.ToString(), att.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO);
-                att.Set(TAB_DBF1.DAT_DIS.ToString(), ultima_edicao);
-                att.Set(Cfg.Init.CAD_ATT_BLK, bloco.Name.ToUpper());
+                att[TAB_DBF1.NUM_DIS.ToString()].Valor = nome;
+                att[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
+                att[TAB_DBF1.FLG_REC.ToString()].Valor = att.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
+                att[TAB_DBF1.DAT_DIS.ToString()].Valor = ultima_edicao;
+                att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
 
                 return att;
             }
@@ -1350,18 +1350,18 @@ namespace DLM.cad
             {
                 DLM.log.Log(ex);
                 BlockAttributes att = new BlockAttributes(bloco, false);
-                att.Set(Cfg.Init.CAD_ATT_BLK, bloco.Name.ToUpper());
-                att.Set(TAB_DBF1.FLG_DWG.ToString(), nome);
-                att.Set("ERRO", ex.Message);
-                att.Set(Cfg.Init.CAD_ATT_ARQ, arquivo);
+                att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
+                att[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
+                att["ERRO"].Valor = ex.Message;
+                att[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
 
                 return att;
             }
         }
-        public TableBlockAttributes GetPecasPranchas(ref List<Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true)
+        public db.Tabela GetPecasPranchas(ref List<Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true)
         {
 
-            TableBlockAttributes marcas = new TableBlockAttributes();
+            db.Tabela marcas = new db.Tabela();
             try
             {
                 List<FileInfo> arquivos = new List<FileInfo>();
@@ -1384,7 +1384,7 @@ namespace DLM.cad
                 if (arquivos.Count == 0)
                 {
                     erros.Add(new Report("Erro", "Operação abortada - Nada Selecionado."));
-                    return new TableBlockAttributes();
+                    return new db.Tabela();
                 }
 
                 Core.Getw().SetProgresso(1,arquivos.Count(), "Carregando...");
@@ -1400,7 +1400,7 @@ namespace DLM.cad
                         {
                             acTmpDb.ReadDwgFile(arquivo, FileOpenMode.OpenForReadAndAllShare, false, null);
                            var marcas_prancha = GetBlocosMarcas(acTmpDb,ref erros, arquivo);
-                            marcas.BlockAttributes.AddRange(marcas_prancha.BlockAttributes);
+                            marcas.Linhas.AddRange(marcas_prancha.Linhas);
                             acTmpDb.CloseInput(true);
                         }
                     }
@@ -1408,7 +1408,7 @@ namespace DLM.cad
                     {
                         Core.Getw().Close();
                         Conexoes.Utilz.Alerta(ex);
-                        return new TableBlockAttributes();
+                        return new db.Tabela();
                     }
 
                 }
@@ -1418,16 +1418,16 @@ namespace DLM.cad
             {
                 Core.Getw().Close();
                 Conexoes.Utilz.Alerta(ex);
-                return new TableBlockAttributes();
+                return new db.Tabela();
             }
             Core.Getw().Close();
 
             return marcas;
         }
-        private TableBlockAttributes GetBlocosMarcas(Database acCurdb, ref List<Report> erros,  string arquivo, bool converter_para_dbf = true)
+        private db.Tabela GetBlocosMarcas(Database acCurdb, ref List<Report> erros,  string arquivo, bool converter_para_dbf = true)
         {
-            TableBlockAttributes marcas = new TableBlockAttributes();
-            TableBlockAttributes posicoes = new TableBlockAttributes();
+            db.Tabela marcas = new db.Tabela();
+            db.Tabela posicoes = new db.Tabela();
             using (var acTrans = acCurdb.acTrans())
             {
                 var nome_arq = Conexoes.Utilz.getNome(arquivo);
@@ -1451,17 +1451,17 @@ namespace DLM.cad
 
                 foreach (var m in ms)
                 {
-                    marcas.BlockAttributes.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao, false, acCurdb));
+                    marcas.Linhas.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao, false, acCurdb));
                 }
 
                 foreach (var m in pos)
                 {
-                    posicoes.BlockAttributes.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao, false, acCurdb));
+                    posicoes.Linhas.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao, false, acCurdb));
                 }
 
             }
 
-            var lista = new TableBlockAttributes(new List<TableBlockAttributes> { marcas, posicoes });
+            var lista = new db.Tabela(new List<db.Tabela> { marcas, posicoes });
 
             if(converter_para_dbf)
             {
@@ -1515,23 +1515,23 @@ namespace DLM.cad
                 colunas.Add(Cfg.Init.CAD_ATT_BLK);
 
 
-                TableBlockAttributes tab_pecas = new TableBlockAttributes();
-                var grp_blocos = lista.BlockAttributes.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).ToList().ToList();
-                foreach (var blk in lista.BlockAttributes)
+                db.Tabela tab_pecas = new db.Tabela();
+                var grp_blocos = lista.Linhas.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).ToList().ToList();
+                foreach (var blk in lista.Linhas)
                 {
-                    BlockAttributes nblk = new BlockAttributes(blk.Block, false);
+                    db.Linha nblk = new db.Linha();
                     foreach (var col in colunas)
                     {
                         var igual = blk.Get(col);
-                        nblk.Attributes.Add(igual);
+                        nblk.Celulas.Add(igual);
                     }
-                    tab_pecas.BlockAttributes.Add(nblk);
+                    tab_pecas.Linhas.Add(nblk);
                 }
 
-                tab_pecas.BlockAttributes = tab_pecas.BlockAttributes.OrderBy(x => x.Descricao).ToList();
+                tab_pecas.Linhas = tab_pecas.Linhas.OrderBy(x => x.Descricao).ToList();
 
-                List<BlockAttributes> l_marcas = new List<BlockAttributes>();
-                var agrupado = tab_pecas.BlockAttributes.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).Select(x => x.ToList()).ToList();
+                List<db.Linha> l_marcas = new List<db.Linha>();
+                var agrupado = tab_pecas.Linhas.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).Select(x => x.ToList()).ToList();
 
 
                 foreach (var m in agrupado)
@@ -1564,22 +1564,22 @@ namespace DLM.cad
                         {
                             var p_simples = m_simples.Clonar();
 
-                            m_simples.Set(TAB_DBF1.FLG_REC.ToString(), Cfg.Init.CAD_ATT_REC_MARCA);
-                            m_simples.Set(TAB_DBF1.POS_PEZ.ToString(), "");
-                            m_simples.Set(TAB_DBF1.COD_PEZ.ToString(), "");
-                            m_simples.Set(TAB_DBF1.NOM_PRO.ToString(), "");
-                            m_simples.Set(TAB_DBF1.LUN_PRO.ToString(), "");
-                            m_simples.Set(TAB_DBF1.LAR_PRO.ToString(), "");
-                            m_simples.Set(TAB_DBF1.SPE_PRO.ToString(), "");
-                            m_simples.Set(TAB_DBF1.MAT_PRO.ToString(), "");
-                            m_simples.Set(TAB_DBF1.PUN_LIS.ToString(), "");
-                            m_simples.Set(TAB_DBF1.SUN_LIS.ToString(), "");
-                            m_simples.Set(TAB_DBF1.PRE_LIS.ToString(), "");
+                            m_simples[TAB_DBF1.FLG_REC.ToString()].Valor = Cfg.Init.CAD_ATT_REC_MARCA;
+                            m_simples[TAB_DBF1.POS_PEZ.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.COD_PEZ.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.NOM_PRO.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.LUN_PRO.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.LAR_PRO.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.SPE_PRO.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.MAT_PRO.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.PUN_LIS.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.SUN_LIS.ToString()].Valor = "";
+                            m_simples[TAB_DBF1.PRE_LIS.ToString()].Valor = "";
 
-                            p_simples.Set(TAB_DBF1.QTA_PEZ.ToString(), "1");
-                            p_simples.Set(TAB_DBF1.FLG_REC.ToString(), Cfg.Init.CAD_ATT_REC_POSICAO);
-                            p_simples.Set(TAB_DBF1.POS_PEZ.ToString(), p_simples.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor);
-                            p_simples.Set(Cfg.Init.CAD_ATT_BLK, "DUMMY");
+                            p_simples[TAB_DBF1.QTA_PEZ.ToString()].Valor =  "1";
+                            p_simples[TAB_DBF1.FLG_REC.ToString()].Valor =  Cfg.Init.CAD_ATT_REC_POSICAO;
+                            p_simples[TAB_DBF1.POS_PEZ.ToString()].Valor = p_simples.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
+                            p_simples[Cfg.Init.CAD_ATT_BLK].Valor = "DUMMY";
 
                             l_marcas.Add(p_simples);
 
@@ -1591,7 +1591,7 @@ namespace DLM.cad
                             foreach (var pos in posicoes_tbl)
                             {
                                 var lfim = pos[0].Clonar();
-                                lfim.Set(TAB_DBF1.QTA_PEZ.ToString(), pos.Sum(x => x.Get(TAB_DBF1.QTA_PEZ.ToString()).Double()).ToString().Replace(",", "."));
+                                lfim[TAB_DBF1.QTA_PEZ.ToString()].Valor = pos.Sum(x => x.Get(TAB_DBF1.QTA_PEZ.ToString()).Double()).ToString().Replace(",", ".");
                                 l_marcas.Add(lfim);
                             }
 
@@ -1621,26 +1621,26 @@ namespace DLM.cad
                 //ordena as peças, colocando as marcas antes das posições
                 l_marcas = l_marcas.OrderBy(x => x.Get("FLG_REC").Valor.PadLeft(2, '0') + x.Descricao).ToList();
 
-                TableBlockAttributes lista_convertida = new TableBlockAttributes();
-                lista_convertida.BlockAttributes.AddRange(l_marcas);
-
+                db.Tabela lista_convertida = new db.Tabela();
+                lista_convertida.Linhas.AddRange(l_marcas);
+                lista_convertida.Nome = "DBF";
                 return lista_convertida;
             }
 
 
             return lista;
         }
-        public TableBlockAttributes GerarDBF(ref List<Report> erros, bool atualizar_cams,string destino = null, List<Conexoes.Arquivo> pranchas = null)
+        public db.Tabela GerarDBF(ref List<Report> erros, bool atualizar_cams,string destino = null, List<Conexoes.Arquivo> pranchas = null)
         {
             if(!E_Tecnometal())
             {
-                return new TableBlockAttributes();
+                return new db.Tabela();
             }
             if (!this.Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
             {
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {this.Pasta}", DLM.vars.TipoReport.Crítico));
-                return new TableBlockAttributes();
+                return new db.Tabela();
             }
 
             var etapa = this.GetSubEtapa();
@@ -1663,7 +1663,7 @@ namespace DLM.cad
                     else
                     {
                         erros.Add(new Report("Cancelado", "Nome da DBF inválido", DLM.vars.TipoReport.Crítico));
-                        return new TableBlockAttributes();
+                        return new db.Tabela();
                     }
                 }
                 destino = $"{etapa.PastaDBF}{nome_dbf}.{Cfg.Init.EXT_DBF}";
@@ -1674,17 +1674,17 @@ namespace DLM.cad
 
 
 
-            TableBlockAttributes lista_pecas = GetPecasPranchas(ref erros, pranchas);
+            var lista_pecas = GetPecasPranchas(ref erros, pranchas);
 
 
             Core.Getw().SetProgresso(1,5, "Fazendo Verificações...");
             Core.Getw().Show();
 
-            if (lista_pecas.BlockAttributes.Count == 0)
+            if (lista_pecas.Linhas.Count == 0)
             {
                 erros.Add(new Report("Erro", "Nenhuma peça encontrada nas pranchas selecionadas", DLM.vars.TipoReport.Crítico));
                 Core.Getw().Close();
-                return new TableBlockAttributes();
+                return new db.Tabela();
             }
 
             var marcas = GetMarcas(ref erros, lista_pecas);
@@ -1778,11 +1778,11 @@ namespace DLM.cad
 
                 Core.Getw().Close();
 
-                if (destino != "" && destino != null && lista_pecas.BlockAttributes.Count > 0)
+                if (destino != "" && destino != null && lista_pecas.Linhas.Count > 0)
                 {
-                    if (!Conexoes.Utilz.DBF.Gerar(lista_pecas.GetTable(), destino))
+                    if (!Conexoes.Utilz.DBF.Gerar(lista_pecas, destino))
                     {
-                        lista_pecas.Name = "";
+                        lista_pecas.Nome = "";
                         return lista_pecas;
                     }
                 }
@@ -1792,7 +1792,7 @@ namespace DLM.cad
                 Core.Getw().Close();
             }
             
-            lista_pecas.Name = destino;
+            lista_pecas.Nome = destino;
             return lista_pecas;
         }
 

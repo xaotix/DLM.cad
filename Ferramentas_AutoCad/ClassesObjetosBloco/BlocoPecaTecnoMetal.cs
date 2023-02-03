@@ -360,24 +360,33 @@ namespace DLM.cad
         public BlocoPecaTecnoMetal(BlockAttributes block)
         {
             this.Bloco = block;
-            this.Marca =        block.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
-            this.Posicao =      block.Get(TAB_DBF1.POS_PEZ.ToString()).Valor;
-            this.Quantidade =   block.Get(TAB_DBF1.QTA_PEZ.ToString()).Double();
-            this.NomeBloco =    block.Get(Cfg.Init.CAD_ATT_BLK).Valor;
-            this.Prancha =      block.Get(TAB_DBF1.FLG_DWG.ToString()).Valor;
+            CarregarDados(block);
+        }
+        public BlocoPecaTecnoMetal(db.Linha block)
+        {
+            CarregarDados(block);
+        }
 
-            this.Comprimento =  block.Get(TAB_DBF1.LUN_PRO.ToString()).Double(0);
-            this.Largura =      block.Get(TAB_DBF1.LAR_PRO.ToString()).Double(0);
-            this.Espessura =    block.Get(TAB_DBF1.SPE_PRO.ToString()).Double(2);
-            this.Perfil =       block.Get(TAB_DBF1.NOM_PRO.ToString()).Valor;
+        private void CarregarDados(db.Linha block)
+        {
+            this.Marca = block.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
+            this.Posicao = block.Get(TAB_DBF1.POS_PEZ.ToString()).Valor;
+            this.Quantidade = block.Get(TAB_DBF1.QTA_PEZ.ToString()).Double();
+            this.NomeBloco = block.Get(Cfg.Init.CAD_ATT_BLK).Valor;
+            this.Prancha = block.Get(TAB_DBF1.FLG_DWG.ToString()).Valor;
 
-            this.Mercadoria =   block.Get(TAB_DBF1.DES_PEZ.ToString()).Valor;
-            this.Material =     block.Get(TAB_DBF1.MAT_PRO.ToString()).Valor;
-            this.Tratamento =   block.Get(TAB_DBF1.TRA_PEZ.ToString()).Valor;
-            this.SAP =          block.Get(TAB_DBF1.COD_PEZ.ToString()).Valor;
+            this.Comprimento = block.Get(TAB_DBF1.LUN_PRO.ToString()).Double(0);
+            this.Largura = block.Get(TAB_DBF1.LAR_PRO.ToString()).Double(0);
+            this.Espessura = block.Get(TAB_DBF1.SPE_PRO.ToString()).Double(2);
+            this.Perfil = block.Get(TAB_DBF1.NOM_PRO.ToString()).Valor;
 
-            this._PesoUnit =    block.Get(TAB_DBF1.PUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS);
-            this._Superficie =  block.Get(TAB_DBF1.SUN_LIS.ToString()).Double(Cfg.Init.DECIMAIS_Superficie);
+            this.Mercadoria = block.Get(TAB_DBF1.DES_PEZ.ToString()).Valor;
+            this.Material = block.Get(TAB_DBF1.MAT_PRO.ToString()).Valor;
+            this.Tratamento = block.Get(TAB_DBF1.TRA_PEZ.ToString()).Valor;
+            this.SAP = block.Get(TAB_DBF1.COD_PEZ.ToString()).Valor;
+
+            this._PesoUnit = block.Get(TAB_DBF1.PUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS);
+            this._Superficie = block.Get(TAB_DBF1.SUN_LIS.ToString()).Double(Cfg.Init.DECIMAIS_Superficie);
         }
     }
 

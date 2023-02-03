@@ -25,9 +25,9 @@ namespace DLM.cad
         public DLM.db.Tabela GetTable()
         {
             DLM.db.Tabela tb = new DLM.db.Tabela(this.Name);
-            foreach(BlockAttributes bl in this.BlockAttributes)
+            foreach(BlockAttributes linha in this.BlockAttributes)
             {
-                tb.Linhas.Add(bl.GetLinha());
+                tb.Linhas.Add(linha);
             }
             return tb;
         }
@@ -49,7 +49,7 @@ namespace DLM.cad
                     foreach (var c in colunas)
                     {
                         var igual = l.Get(c);
-                        nl.Attributes.Add(new db.Celula(c, igual.Valor));
+                        nl.Celulas.Add(new db.Celula(c, igual.Valor));
                     }
                     this.BlockAttributes.Add(nl);
                 }
