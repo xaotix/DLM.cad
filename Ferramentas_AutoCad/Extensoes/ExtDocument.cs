@@ -79,6 +79,15 @@ namespace DLM.cad
 
             return 1;
         }
+
+
+        public static void SalvarEFechar(this Document doc, params object[] comando)
+        {
+            doc.AcadDocument.GetType().InvokeMember("Save", System.Reflection.BindingFlags.InvokeMethod, null, doc.AcadDocument, null);
+            doc.CloseAndDiscard();
+        }
+
+
         private static void ComandoIniciou(object sender, CommandEventArgs e)
         {
             estaRodando = true;

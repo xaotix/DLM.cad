@@ -53,22 +53,24 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static List<BlockReference> Filter(this List<BlockReference> blocos, List<string> nomes, bool exato = true)
+        public static List<BlockReference> Filter(this List<BlockReference> blocos, List<string> nomes, out string erros, bool exato = true)
         {
             List<BlockReference> marcas = new List<BlockReference>();
-
-            foreach (var b in blocos)
+            erros = "";
+            var c = 1;
+            List<string> mensagem_erro = new List<string>();
+            foreach (var bloco in blocos)
             {
                 try
                 {
-                    var nome = b.Name.ToUpper();
+                    var nome = bloco.Name.ToUpper();
                     foreach (var s in nomes)
                     {
                         if (exato)
                         {
                             if (nome.ToUpper() == s.ToUpper())
                             {
-                                marcas.Add(b);
+                                marcas.Add(bloco);
                                 break;
                             }
                         }
@@ -76,7 +78,7 @@ namespace DLM.cad
                         {
                             if (nome.ToUpper().Contains(s.ToUpper()))
                             {
-                                marcas.Add(b);
+                                marcas.Add(bloco);
                                 break;
                             }
                         }
@@ -84,17 +86,27 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex, $"Erro ao tentar ler um bloco.");
+                    c++;
+                    mensagem_erro.Add(Conexoes.Utilz.GetTexto(ex));
+                    //Conexoes.Utilz.Alerta(ex, $"Erro ao tentar ler um bloco.");
                 }
-
+                
             }
-
+            if (c > 1)
+            {
+                mensagem_erro = mensagem_erro.Distinct().ToList();
+                erros = $"Dos {blocos.Count} blocos, {c} não foi possível ler os dados. Para resolver este problema, utilize os comandos de limpeza no DWG (Audit, purge):\n{string.Join("\n",mensagem_erro)}";
+            }
             return marcas;
         }
-        public static List<BlockReference> GetBlockReferences(this Database acCurDb)
+        public static List<BlockReference> GetBlockReferences(this Database acCurDb, OpenCloseTransaction acTrans = null)
         {
-           var blocos = new List<BlockReference>();
-            using (var acTrans = acCurDb.acTrans())
+            if (acTrans == null)
+            {
+                acTrans = CAD.acCurDb.acTrans();
+            }
+            var blocos = new List<BlockReference>();
+            using (acTrans)
             {
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForRead);

@@ -471,8 +471,9 @@ namespace DLM.cad
         [CommandMethod(nameof(rodarmacros), CommandFlags.Session | CommandFlags.Modal)]
         public static void rodarmacros()
         {
-            CADTecnoMetal pp = new CADTecnoMetal();
-            pp.RodarMacros();
+            Conexoes.Utilz.Alerta("Descontinuado por muitos problemas de compatibilidade.");
+            //CADTecnoMetal pp = new CADTecnoMetal();
+            //pp.RodarMacros();
         }
 
 
@@ -500,26 +501,8 @@ namespace DLM.cad
                 else
                 {
                     Conexoes.Utilz.Alerta($"Arquivo {tbl.Name} gerado!", "", System.Windows.MessageBoxImage.Information);
+                    Conexoes.Utilz.ShowReports(erros);
                     Conexoes.Utilz.getPasta(tbl.Name).Abrir();
-                    //if(Conexoes.Utilz.Pergunta($"Arquivo {tbl.Banco} gerado! Deseja fazer um testlist?"))
-                    //{
-                    //    var etapa = TecnoMetal.GetSubEtapa();
-                    //    if(etapa!=null)
-                    //    {
-                    //        var pacote = etapa.GetPacote();
-                    //        if(pacote!=null)
-                    //        {
-                    //            pacote.Selecionar(Conexoes.Tipo_Pacote.DBF);
-                    //            var testlist = pacote.GetTestList();
-                    //            Conexoes.Utilz.ShowReports(testlist.Verificar());
-                    //        }
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    Conexoes.Utilz.Abrir(Conexoes.Utilz.getPasta(tbl.Banco));
-
-                    //}
                 }
             }
 
@@ -879,20 +862,24 @@ namespace DLM.cad
         [CommandMethod(nameof(LimparDesenho), CommandFlags.Session | CommandFlags.Modal)]
         public static void LimparDesenho(Document doc)
         {
+            
             if(doc == null) { doc = CAD.acDoc; }
+            
+            
+
             doc.Comando(
             "REMOVEAEC",
             "_tilemode", "0",/*vai pro layout*/
-            "_layout", "r", "", "Layout",/*renomeia o layout para "Layout"*/
+            //"_layout", "r", "", "Layout",/*renomeia o layout para "Layout"*/
             "_zoom", "e",
             "-SCALELISTEDIT", "R", "Y", "e",
             "-SCALELISTEDIT", "d", "*", "e",
             "-overkill", "all ",
             "_tilemode", "1",/*vai pro model*/
             "-purge", "A", "*", "N",
-            "-overkill", "all", "", "", "d",
-            "-layer", "set", "0","",
-            "-layer", "off", "mv","",
+            "-overkill", "all", "", "", "d","",
+            //"-layer", "set", "0","",
+            //"-layer", "off", "mv","",
             "AUDIT", "Y",
             "_tilemode", "0",""
             );/*vai pro layout*/

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.EditorInput;
+using DLM.cad;
 
 namespace Ferramentas_DLM
 {
@@ -150,7 +151,7 @@ namespace Ferramentas_DLM
 
         public static void GetContornoPolyLines()
         {
-            var dwg = CadApp.DocumentManager.MdiActiveDocument;
+            var dwg = CAD.acDoc;
             var ed = dwg.Editor;
 
             try
