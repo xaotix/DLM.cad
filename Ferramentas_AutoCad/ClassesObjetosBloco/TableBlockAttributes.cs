@@ -27,7 +27,7 @@ namespace DLM.cad
             DLM.db.Tabela tb = new DLM.db.Tabela(this.Name);
             foreach(BlockAttributes bl in this.BlockAttributes)
             {
-                tb.Linhas.Add(new DLM.db.Linha(bl.Attributes.Select(x=> new DLM.db.Celula(x.Coluna,x.Valor)).ToList()));
+                tb.Linhas.Add(bl.GetLinha());
             }
             return tb;
         }

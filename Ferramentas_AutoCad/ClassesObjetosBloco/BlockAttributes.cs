@@ -96,6 +96,11 @@ namespace DLM.cad
             return _coordenada;
         }
 
+        public db.Linha GetLinha()
+        {
+            return new DLM.db.Linha(this.Attributes.Select(x => new DLM.db.Celula(x.Coluna, x.Valor)).ToList());
+        }
+
         public BlockAttributes(List<db.Celula> atributos)
         {
             this.Attributes = atributos;

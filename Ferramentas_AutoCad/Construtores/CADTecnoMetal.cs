@@ -937,7 +937,7 @@ namespace DLM.cad
         {
             var _Marcas = new List<BlocoPecaTecnoMetal>();
 
-            List<BlocoPecaTecnoMetal> mm = new List<BlocoPecaTecnoMetal>();
+            List<BlocoPecaTecnoMetal> lista_pecas = new List<BlocoPecaTecnoMetal>();
 
 
             if (tabela == null)
@@ -947,14 +947,14 @@ namespace DLM.cad
 
             foreach (var pc in tabela.BlockAttributes)
             {
-                mm.Add(new BlocoPecaTecnoMetal(pc));
+                lista_pecas.Add(new BlocoPecaTecnoMetal(pc));
             }
 
-            var ms = mm.Select(x => x.Marca).Distinct().ToList();
+            var ms = lista_pecas.Select(x => x.Marca).Distinct().ToList();
 
             foreach (var m in ms)
             {
-                var iguais = mm.FindAll(x => x.Marca == m);
+                var iguais = lista_pecas.FindAll(x => x.Marca == m);
 
                 var marcas = iguais.FindAll(x => x.Posicao == "");
                 var posicoes = iguais.FindAll(x => x.Posicao != "");
@@ -985,15 +985,15 @@ namespace DLM.cad
             }
             return _Marcas;
         }
-        public List<BlocoPecaTecnoMetal> GetMarcas()
-        {
-            List<Report> erros = new List<Report>();
 
-            return GetMarcas(ref erros);
-        }
-        public List<BlocoPecaTecnoMetal> GetMarcasCompostas()
+        public List<BlocoPecaTecnoMetal> GetMarcasPranchas(ref List<Report> erros)
         {
-            return this.GetMarcas().FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).ToList();
+            if (!this.E_Tecnometal())
+            {
+                return new List<BlocoPecaTecnoMetal>();
+            }
+            var pcs = GetPecasPranchas(ref erros);
+            return GetMarcas(ref erros, pcs);
         }
 
         public Conexoes.SubEtapaTecnoMetal GetSubEtapa()
@@ -1358,18 +1358,6 @@ namespace DLM.cad
                 return att;
             }
         }
-
-
-
-        public List<BlocoPecaTecnoMetal> GetMarcasPranchas(ref List<Report> erros)
-        {
-            if(!this.E_Tecnometal())
-            {
-                return new List<BlocoPecaTecnoMetal>();
-            }
-            var pcs = GetPecasPranchas(ref erros);
-            return GetMarcas(ref erros,pcs);
-        }
         public TableBlockAttributes GetPecasPranchas(ref List<Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true)
         {
 
@@ -1436,7 +1424,6 @@ namespace DLM.cad
 
             return marcas;
         }
-
         private TableBlockAttributes GetBlocosMarcas(Database acCurdb, ref List<Report> erros,  string arquivo, bool converter_para_dbf = true)
         {
             TableBlockAttributes marcas = new TableBlockAttributes();
@@ -1533,9 +1520,9 @@ namespace DLM.cad
                 foreach (var blk in lista.BlockAttributes)
                 {
                     BlockAttributes nblk = new BlockAttributes(blk.Block, false);
-                    foreach (var c in colunas)
+                    foreach (var col in colunas)
                     {
-                        var igual = blk.Get(c);
+                        var igual = blk.Get(col);
                         nblk.Attributes.Add(igual);
                     }
                     tab_pecas.BlockAttributes.Add(nblk);
@@ -1643,51 +1630,6 @@ namespace DLM.cad
 
             return lista;
         }
-
-        public List<Report> AtualizarPesoChapaFina(List<BlockReference> blocos =null)
-        {
-            List<Report> erros = new List<Report>();
-
-            var pcs = GetMarcas(ref erros, null, blocos);
-
-            using (var acTrans = acCurDb.acTransST())
-            {
-
-                if (erros.Count == 0 && pcs.Count > 0)
-                {
-                    foreach (var m in pcs)
-                    {
-                        if (m.Tipo_Marca == Tipo_Marca.MarcaSimples && m.Tipo_Bloco == Tipo_Bloco.Arremate)
-                        {
-                            var bob = m.GetBobina();
-                            if (bob != null)
-                            {
-                                var peso = m.CalcularPesoLinear();
-                                var sup = m.CalcularSuperficieLinear();
-
-                                Hashtable att = new Hashtable();
-                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
-                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento.String(0)}*{m.Espessura.String()}*{m.Largura.String(0)}");
-                                att.Add(TAB_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));
-
-                                DLM.cad.Atributos.Set(m.Bloco.Block, acTrans, att);
-                            }
-                            else
-                            {
-                                erros.Add(new Report("Bobina não existe ou está em branco", $"Marca: {m.Marca}", DLM.vars.TipoReport.Crítico));
-                            }
-                        }
-                    }
-                    acTrans.Commit();
-                }
-            }
-            Conexoes.Utilz.ShowReports(erros);
-            return erros;
-        }
-
-   
-
         public TableBlockAttributes GerarDBF(ref List<Report> erros, bool atualizar_cams,string destino = null, List<Conexoes.Arquivo> pranchas = null)
         {
             if(!E_Tecnometal())
@@ -1830,71 +1772,7 @@ namespace DLM.cad
                 Core.Getw().somaProgresso();
                 if (atualizar_cams)
                 {
-                    var cams = GetCams();
-
-                    foreach (var pos in posicoes_grp)
-                    {
-                        var cam = cams.Find(x => x.Nome.ToUpper() == pos.Key.ToUpper());
-                        var p0 = pos.First();
-
-
-
-                        if (cam != null)
-                        {
-                            cam.Quantidade = (int)Math.Round(pos.Sum(x => x.Quantidade));
-                            cam.Obra = this.GetObra().Descrição;
-                            cam.Pedido = this.GetPedido().NomePedido;
-                            cam.Etapa = this.GetSubEtapa().Nome;
-                            cam.Material = p0.Material;
-                            cam.Tratamento = p0.Tratamento;
-                            cam.Prancha = cam.Etapa;
-                            cam.Peso = p0.PesoUnit;
-
-                            if (cam.Mercadoria == "")
-                            {
-                                cam.Mercadoria = "POSICAO";
-                            }
-                            cam.Peso = p0.PesoUnit;
-
-                            foreach (var subcam in cam.GetSubCams())
-                            {
-                                var arq = $"{this.GetSubEtapa().PastaCAM_Pedido}{subcam}.{Cfg.Init.EXT_CAM}";
-                                if (!arq.Existe())
-                                {
-                                    var arq2 = $"{this.GetSubEtapa().PastaCAM_Etapa}{subcam}.{Cfg.Init.EXT_CAM}";
-                                    if (arq2.Existe())
-                                    {
-                                        arq = arq2;
-                                    }
-                                }
-
-                                if (!arq.Existe())
-                                {
-                                    erros.Add(new Report("Falta Arquivo", $"{arq}", DLM.vars.TipoReport.Alerta));
-                                }
-                                else
-                                {
-                                    DLM.cam.ReadCAM sub = new DLM.cam.ReadCAM(arq);
-                                    sub.Obra = this.GetObra().Descrição;
-                                    sub.Pedido = this.GetPedido().NomePedido;
-                                    sub.Etapa = this.GetSubEtapa().Nome;
-                                    sub.Material = p0.Material;
-                                    sub.Tratamento = p0.Tratamento;
-                                    sub.Salvar();
-                                }
-
-
-                            }
-                            cam.Salvar();
-                        }
-                        else
-                        {
-                            if (p0.Espessura >= DBases.GetBancoRM().TEST_LIST_CHAPA_FINA_IGNORAR)
-                            {
-                                erros.Add(new Report("Falta Arquivo", $"{p0.Posicao}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", DLM.vars.TipoReport.Alerta));
-                            }
-                        }
-                    }
+                    AtualizarCAMs(ref erros, posicoes_grp);
                 }
 
 
@@ -1917,6 +1795,118 @@ namespace DLM.cad
             lista_pecas.Name = destino;
             return lista_pecas;
         }
+
+        private void AtualizarCAMs(ref List<Report> erros, List<IGrouping<string, BlocoPecaTecnoMetal>> posicoes_grp)
+        {
+            var cams = GetCams();
+
+            foreach (var pos in posicoes_grp)
+            {
+                var cam = cams.Find(x => x.Nome.ToUpper() == pos.Key.ToUpper());
+                var p0 = pos.First();
+
+
+
+                if (cam != null)
+                {
+                    cam.Quantidade = (int)Math.Round(pos.Sum(x => x.Quantidade));
+                    cam.Obra = this.GetObra().Descrição;
+                    cam.Pedido = this.GetPedido().NomePedido;
+                    cam.Etapa = this.GetSubEtapa().Nome;
+                    cam.Material = p0.Material;
+                    cam.Tratamento = p0.Tratamento;
+                    cam.Prancha = cam.Etapa;
+                    cam.Peso = p0.PesoUnit;
+
+                    if (cam.Mercadoria == "")
+                    {
+                        cam.Mercadoria = "POSICAO";
+                    }
+                    cam.Peso = p0.PesoUnit;
+
+                    foreach (var subcam in cam.GetSubCams())
+                    {
+                        var arq = $"{this.GetSubEtapa().PastaCAM_Pedido}{subcam}.{Cfg.Init.EXT_CAM}";
+                        if (!arq.Existe())
+                        {
+                            var arq2 = $"{this.GetSubEtapa().PastaCAM_Etapa}{subcam}.{Cfg.Init.EXT_CAM}";
+                            if (arq2.Existe())
+                            {
+                                arq = arq2;
+                            }
+                        }
+
+                        if (!arq.Existe())
+                        {
+                            erros.Add(new Report("Falta Arquivo", $"{arq}", DLM.vars.TipoReport.Alerta));
+                        }
+                        else
+                        {
+                            DLM.cam.ReadCAM sub = new DLM.cam.ReadCAM(arq);
+                            sub.Obra = this.GetObra().Descrição;
+                            sub.Pedido = this.GetPedido().NomePedido;
+                            sub.Etapa = this.GetSubEtapa().Nome;
+                            sub.Material = p0.Material;
+                            sub.Tratamento = p0.Tratamento;
+                            sub.Salvar();
+                        }
+
+
+                    }
+                    cam.Salvar();
+                }
+                else
+                {
+                    if (p0.Espessura >= DBases.GetBancoRM().TEST_LIST_CHAPA_FINA_IGNORAR)
+                    {
+                        erros.Add(new Report("Falta Arquivo", $"{p0.Posicao}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", DLM.vars.TipoReport.Alerta));
+                    }
+                }
+            }
+        }
+
+        public List<Report> AtualizarPesoChapaFina(List<BlockReference> blocos =null)
+        {
+            List<Report> erros = new List<Report>();
+
+            var pcs = GetMarcas(ref erros, null, blocos);
+
+            using (var acTrans = acCurDb.acTransST())
+            {
+
+                if (erros.Count == 0 && pcs.Count > 0)
+                {
+                    foreach (var m in pcs)
+                    {
+                        if (m.Tipo_Marca == Tipo_Marca.MarcaSimples && m.Tipo_Bloco == Tipo_Bloco.Arremate)
+                        {
+                            var bob = m.GetBobina();
+                            if (bob != null)
+                            {
+                                var peso = m.CalcularPesoLinear();
+                                var sup = m.CalcularSuperficieLinear();
+
+                                Hashtable att = new Hashtable();
+                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
+                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento.String(0)}*{m.Espessura.String()}*{m.Largura.String(0)}");
+                                att.Add(TAB_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));
+
+                                DLM.cad.Atributos.Set(m.Bloco.Block, acTrans, att);
+                            }
+                            else
+                            {
+                                erros.Add(new Report("Bobina não existe ou está em branco", $"Marca: {m.Marca}", DLM.vars.TipoReport.Crítico));
+                            }
+                        }
+                    }
+                    acTrans.Commit();
+                }
+            }
+            Conexoes.Utilz.ShowReports(erros);
+            return erros;
+        }
+
 
 
 
@@ -2148,7 +2138,8 @@ namespace DLM.cad
         public string PromptMarca(string prefix = "ARR-")
         {
 
-            var marcas = this.GetMarcas();
+            List<Report> erros = new List<Report>();
+            var marcas = this.GetMarcas(ref erros);
             var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count +1;
             retentar:
             var m = Conexoes.Utilz.Prompt("Digite o nome da Marca",  prefix + nnn.ToString().PadLeft(2,'0'), true, "NOME_MARCA", false, 25).ToUpper().Replace(" ","");
@@ -2716,7 +2707,7 @@ namespace DLM.cad
                         if (mercadoria != null && mercadoria != "")
                         {
                             Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
-                            return this.GetMarcasCompostas().Find(x=>x.Marca == nome);
+                            return this.GetMarcas(ref erros).FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).Find(x=>x.Marca == nome);
                         }
                     }
                 }
