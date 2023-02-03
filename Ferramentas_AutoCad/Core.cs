@@ -491,7 +491,7 @@ namespace DLM.cad
             List<Report> erros = new List<Report>();
             var tbl = TecnoMetal.GerarDBF(ref erros,Conexoes.Utilz.Pergunta("Atualizar CAMs?\nAo ativar essa opção também será verificado CAM x Projeto"));
 
-            if (File.Exists(tbl.Name))
+            if (File.Exists(tbl.Nome))
             {
           
                 if(erros.FindAll(x=>x.Tipo == DLM.vars.TipoReport.Crítico).Count>0)
@@ -500,9 +500,9 @@ namespace DLM.cad
                 }
                 else
                 {
-                    Conexoes.Utilz.Alerta($"Arquivo {tbl.Name} gerado!", "", System.Windows.MessageBoxImage.Information);
+                    Conexoes.Utilz.Alerta($"Arquivo {tbl.Nome} gerado!", "", System.Windows.MessageBoxImage.Information);
                     Conexoes.Utilz.ShowReports(erros);
-                    Conexoes.Utilz.getPasta(tbl.Name).Abrir();
+                    Conexoes.Utilz.getPasta(tbl.Nome).Abrir();
                 }
             }
 
