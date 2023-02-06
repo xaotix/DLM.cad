@@ -7,6 +7,7 @@ using DLM.cad;
 using DLM.cam;
 using DLM.desenho;
 using DLM.vars;
+using DLM.vars.cad;
 using System;
 using System.Collections;
 using System.Collections.Generic;

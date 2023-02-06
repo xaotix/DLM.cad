@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Conexoes;
+using DLM.vars.cad;
 using System.Collections.Generic;
 using System.Linq;
 

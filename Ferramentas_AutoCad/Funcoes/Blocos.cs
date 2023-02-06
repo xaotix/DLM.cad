@@ -15,6 +15,7 @@ using System.Windows;
 using DLM.vars;
 using DLM.desenho;
 using Conexoes;
+using DLM.vars.cad;
 
 namespace DLM.cad
 {

@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.Geometry;
 using Conexoes;
 using DLM.desenho;
 using DLM.vars;
+using DLM.vars.cad;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -411,7 +412,7 @@ namespace DLM.cad
         }
 
 
-        public static P3d TecnoMetal(List<BlocoPecaTecnoMetal> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)
+        public static P3d TecnoMetal(List<MarcaTecnoMetal> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)
         {
             double x0 = 0;
             double y0 = 0;

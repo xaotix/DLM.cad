@@ -20,6 +20,7 @@ using DLM.encoder;
 using DLM.vars;
 using Conexoes;
 using DLM.desenho;
+using DLM.vars.cad;
 
 [assembly: CommandClass(typeof(DLM.cad.Core))]
 
@@ -489,23 +490,20 @@ namespace DLM.cad
 
 
             List<Report> erros = new List<Report>();
-            var tbl = TecnoMetal.GerarDBF(ref erros,Conexoes.Utilz.Pergunta("Atualizar CAMs?\nAo ativar essa opção também será verificado CAM x Projeto"));
 
-            if (File.Exists(tbl.Nome))
+            if (!TecnoMetal.Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
             {
-          
-                if(erros.FindAll(x=>x.Tipo == DLM.vars.TipoReport.Crítico).Count>0)
-                {
-                    Conexoes.Utilz.ShowReports(erros);
-                }
-                else
-                {
-                    Conexoes.Utilz.Alerta($"Arquivo {tbl.Nome} gerado!", "", System.Windows.MessageBoxImage.Information);
-                    Conexoes.Utilz.ShowReports(erros);
-                    Conexoes.Utilz.getPasta(tbl.Nome).Abrir();
-                }
+                erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                    $"\nPasta atual: {TecnoMetal.Pasta}", DLM.vars.TipoReport.Crítico));
+
+                Conexoes.Utilz.ShowReports(erros);
+                return;
             }
 
+            var lista_pecas = TecnoMetal.GetPecasPranchas(ref erros);
+            var etapa = TecnoMetal.GetSubEtapa();
+
+            Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
         }
 
 

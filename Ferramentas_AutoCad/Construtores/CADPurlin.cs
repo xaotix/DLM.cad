@@ -15,6 +15,7 @@ using Autodesk.AutoCAD.EditorInput;
 using DLM.vars;
 using Conexoes;
 using DLM.desenho;
+using DLM.vars.cad;
 
 namespace DLM.cad
 {

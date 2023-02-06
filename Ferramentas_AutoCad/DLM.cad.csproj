@@ -183,7 +183,6 @@
     <Compile Include="ClassesObjetosBloco\BlocoFuro.cs" />
     <Compile Include="ClassesObjetosBloco\LinhaBlocoFuro.cs" />
     <Compile Include="ClassesBase\PCQuantificar.cs" />
-    <Compile Include="ClassesBase\Enumeradores.cs" />
     <Compile Include="ClassesBase\Outline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Construtores\CADPurlin.cs" />

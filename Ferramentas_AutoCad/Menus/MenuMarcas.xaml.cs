@@ -2,6 +2,7 @@
 using DLM.db;
 using DLM.encoder;
 using DLM.vars;
+using DLM.vars.cad;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +25,8 @@ namespace DLM.cad
     /// </summary>
     public partial class MenuMarcas : Window
     {
-        public List<BlocoPecaTecnoMetal> Marcas { get; set; } = new List<BlocoPecaTecnoMetal>();
-        public List<BlocoPecaTecnoMetal> Posicoes { get; set; } = new List<BlocoPecaTecnoMetal>();
+        public List<MarcaTecnoMetal> Marcas { get; set; } = new List<MarcaTecnoMetal>();
+        public List<MarcaTecnoMetal> Posicoes { get; set; } = new List<MarcaTecnoMetal>();
 
         public void Iniciar()
         {
@@ -86,13 +87,13 @@ namespace DLM.cad
                 return null;
             }
         }
-        public BlocoPecaTecnoMetal marca_selecionada
+        public MarcaTecnoMetal marca_selecionada
         {
             get
             {
-                if(this.seleciona_marca_composta.SelectedItem is BlocoPecaTecnoMetal)
+                if(this.seleciona_marca_composta.SelectedItem is MarcaTecnoMetal)
                 {
-                    return this.seleciona_marca_composta.SelectedItem as BlocoPecaTecnoMetal;
+                    return this.seleciona_marca_composta.SelectedItem as MarcaTecnoMetal;
                 }
                 return null;
             }

@@ -2,6 +2,8 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Conexoes;
+using DLM.vars;
+using DLM.vars.cad;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 using DLM.desenho;
+using DLM.vars.cad;
 using System;
 using System.Collections.Generic;
 using System.Linq;

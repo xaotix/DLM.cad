@@ -6,6 +6,7 @@ using Conexoes;
 using DLM.desenho;
 using DLM.encoder;
 using DLM.vars;
+using DLM.vars.cad;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace DLM.cad
 {
     public class CADTecnoMetal : CADBase
     {
-        private List<DLM.cam.ReadCAM> _cams { get; set; } = new List<DLM.cam.ReadCAM>();
         private Conexoes.SubEtapaTecnoMetal _subetapa { get; set; }
         private Conexoes.ObraTecnoMetal _obra { get; set; }
         private Conexoes.PedidoTecnoMetal _pedido { get; set; }
@@ -31,7 +31,7 @@ namespace DLM.cad
         private List<string> _Materiais { get; set; }
         private List<string> _Mercadorias { get; set; }
 
-        public List<BlocoPecaTecnoMetal> Getposicoes(ref List<Report> erros, bool update)
+        public List<MarcaTecnoMetal> Getposicoes(ref List<Report> erros, bool update)
         {
             var marcas = GetMarcas(ref erros);
             var pos = marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao).Select(x => x.First()).ToList();
@@ -875,26 +875,7 @@ namespace DLM.cad
 
         }
 
-
-        public List<DLM.cam.ReadCAM> GetCams(bool atualizar = false)
-        {
-            if (_cams.Count == 0 && this.E_Tecnometal(false) | atualizar && this.E_Tecnometal(false))
-            {
-                var sub = this.GetSubEtapa();
-                var cams = sub.PastaCAM_Pedido.GetArquivos($"*.{Cfg.Init.EXT_CAM}");
-                cams.AddRange(sub.PastaCAM_Etapa.GetArquivos($"*.{Cfg.Init.EXT_CAM}"));
-                Core.Getw().SetProgresso(1, cams.Count, "Carregando CAMs...");
-                Core.Getw().Show();
-
-                foreach (var CAM in cams)
-                {
-                    _cams.Add(new DLM.cam.ReadCAM(CAM.Endereco));
-                    Core.Getw().somaProgresso();
-                }
-                Core.Getw().Close();
-            }
-            return _cams;
-        }
+        
         /*
          Section 'PROFILEDATA' contain:
                     MAT_PRO = MATERIAL
@@ -933,22 +914,16 @@ namespace DLM.cad
         }
 
 
-        public List<BlocoPecaTecnoMetal> GetMarcas(ref List<Report> erros, db.Tabela tabela = null, List<BlockReference> blocos = null)
+        public List<MarcaTecnoMetal> GetMarcas(ref List<Report> erros)
         {
-            var _Marcas = new List<BlocoPecaTecnoMetal>();
-
-            List<BlocoPecaTecnoMetal> lista_pecas = new List<BlocoPecaTecnoMetal>();
+            var _Marcas = new List<MarcaTecnoMetal>();
 
 
-            if (tabela == null)
-            {
-                tabela = GetBlocosMarcas(acCurDb, ref erros, acDoc.Name);
-            }
 
-            foreach (var pc in tabela.Linhas)
-            {
-                lista_pecas.Add(new BlocoPecaTecnoMetal(pc));
-            }
+            var tabela = GetBlocosMarcas(acCurDb, ref erros, acDoc.Name);
+            List<MarcaTecnoMetal> lista_pecas = tabela.GetMarcas(ref erros);
+
+           
 
             var ms = lista_pecas.Select(x => x.Marca).Distinct().ToList();
 
@@ -977,7 +952,7 @@ namespace DLM.cad
             var posp = _Marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao);
             foreach (var posicao in posp)
             {
-                var diferencas = posicao.ToList().GroupBy(x => x.GetInfo()).ToList();
+                var diferencas = posicao.ToList().GroupBy(x => $"{x.Comprimento.String(0)}x{x.Largura.String(0)}x{x.Espessura.String(2)}x{x.Material}x{x.Perfil}x{x.NomeBloco}").ToList();
                 if (diferencas.Count > 1)
                 {
                     erros.Add(new Report($"{posicao.Key} => Posição com divergências", string.Join("\n", diferencas.Select(x => x.Key)), DLM.vars.TipoReport.Crítico));
@@ -986,14 +961,14 @@ namespace DLM.cad
             return _Marcas;
         }
 
-        public List<BlocoPecaTecnoMetal> GetMarcasPranchas(ref List<Report> erros)
+        public List<MarcaTecnoMetal> GetMarcasPranchas(ref List<Report> erros)
         {
             if (!this.E_Tecnometal())
             {
-                return new List<BlocoPecaTecnoMetal>();
+                return new List<MarcaTecnoMetal>();
             }
             var pcs = GetPecasPranchas(ref erros);
-            return GetMarcas(ref erros, pcs);
+            return pcs.GetMarcas(ref erros);
         }
 
         public Conexoes.SubEtapaTecnoMetal GetSubEtapa()
@@ -1314,37 +1289,40 @@ namespace DLM.cad
             }
 
         }
-        public BlockAttributes GetDadosBloco(BlockReference bloco, string arquivo, string nome, string ultima_edicao, bool somente_visiveis = true, Database acCurDb = null)
+        public BlockAttributes GetBlocoTecnoMetal(BlockReference bloco, string arquivo, bool somente_visiveis = true, Database acCurDb = null)
         {
+            var ultima_edicao = Conexoes.Utilz.getEdicao(arquivo);
+            var nome = Conexoes.Utilz.getNome(arquivo);
             try
             {
                 if (acCurDb == null)
                 {
                     acCurDb = CAD.acCurDb;
                 }
-                var att = bloco.GetAttributes(somente_visiveis, acCurDb);
-                att[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
-                if (this.E_Tecnometal(false))
+
+      
+
+                var atributos = bloco.GetAttributes(somente_visiveis, acCurDb);
+                atributos[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
+
+                try
                 {
-                    try
-                    {
-                        att[TAB_DBF1.NUM_COM.ToString()].Valor = this.GetPedido().NomePedido;
-                        att[TAB_DBF1.DES_COM.ToString()].Valor = this.GetObra().Nome;
-                        att[TAB_DBF1.LOT_COM.ToString()].Valor = this.GetSubEtapa().NomeEtapa;
-                    }
-                    catch (Exception ex)
-                    {
-                        DLM.log.Log(ex);
-                    }
+                    atributos[TAB_DBF1.NUM_COM.ToString()].Valor = this.GetPedido().NomePedido;
+                    atributos[TAB_DBF1.DES_COM.ToString()].Valor = this.GetObra().Nome;
+                    atributos[TAB_DBF1.LOT_COM.ToString()].Valor = this.GetSubEtapa().NomeEtapa;
+                }
+                catch (Exception ex)
+                {
+                    DLM.log.Log(ex);
                 }
 
-                att[TAB_DBF1.NUM_DIS.ToString()].Valor = nome;
-                att[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
-                att[TAB_DBF1.FLG_REC.ToString()].Valor = att.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
-                att[TAB_DBF1.DAT_DIS.ToString()].Valor = ultima_edicao;
-                att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
+                atributos[TAB_DBF1.NUM_DIS.ToString()].Valor = nome;
+                atributos[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
+                atributos[TAB_DBF1.FLG_REC.ToString()].Valor = atributos.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
+                atributos[TAB_DBF1.DAT_DIS.ToString()].Valor = ultima_edicao;
+                atributos[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
 
-                return att;
+                return atributos;
             }
             catch (Exception ex)
             {
@@ -1358,7 +1336,7 @@ namespace DLM.cad
                 return att;
             }
         }
-        public db.Tabela GetPecasPranchas(ref List<Report> erros, List<Conexoes.Arquivo> pranchas = null, bool filtrar = true)
+        public db.Tabela GetPecasPranchas(ref List<Report> erros, List<Conexoes.Arquivo> pranchas = null)
         {
 
             db.Tabela marcas = new db.Tabela();
@@ -1422,16 +1400,16 @@ namespace DLM.cad
             }
             Core.Getw().Close();
 
-            return marcas;
+            return Conexoes.Utilz.DBF.ConverterParaDBF(marcas, ref erros); ;
         }
-        private db.Tabela GetBlocosMarcas(Database acCurdb, ref List<Report> erros, string arquivo, bool converter_para_dbf = true)
+        private db.Tabela GetBlocosMarcas(Database acCurdb, ref List<Report> erros, string arquivo)
         {
             db.Tabela marcas = new db.Tabela();
             db.Tabela posicoes = new db.Tabela();
             using (var acTrans = acCurdb.acTrans())
             {
                 var nome_arq = Conexoes.Utilz.getNome(arquivo);
-                var ultima_edicao = System.IO.File.GetLastWriteTime(arquivo).ToString("dd/MM/yyyy");
+                var ultima_edicao = Conexoes.Utilz.getEdicao(arquivo);
 
                 List<BlockReference> blocos = acCurdb.GetBlockReferences(acTrans);
                 string errosm = "";
@@ -1451,460 +1429,63 @@ namespace DLM.cad
 
                 foreach (var m in ms)
                 {
-                    marcas.Linhas.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao, false, acCurdb));
+                    marcas.Linhas.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
                 }
 
                 foreach (var m in pos)
                 {
-                    posicoes.Linhas.Add(GetDadosBloco(m, arquivo, nome_arq, ultima_edicao, false, acCurdb));
+                    posicoes.Linhas.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
                 }
 
             }
 
-            var lista = new db.Tabela(new List<db.Tabela> { marcas, posicoes });
-
-            if (converter_para_dbf)
-            {
-                //var lista = new TableBlockAttributes(new List<TableBlockAttributes> { marcas, posicoes });
-                List<string> colunas = new List<string>();
-                colunas.Add(TAB_DBF1.FLG_REC.ToString());
-                colunas.Add(TAB_DBF1.NUM_COM.ToString());
-                colunas.Add(TAB_DBF1.DES_COM.ToString());
-                colunas.Add(TAB_DBF1.LOT_COM.ToString());
-                colunas.Add(TAB_DBF1.DLO_COM.ToString());
-                colunas.Add(TAB_DBF1.CLI_COM.ToString());
-                colunas.Add(TAB_DBF1.IND_COM.ToString());
-                colunas.Add(TAB_DBF1.DT1_COM.ToString());
-                colunas.Add(TAB_DBF1.DT2_COM.ToString());
-                colunas.Add(TAB_DBF1.NUM_DIS.ToString());
-                colunas.Add(TAB_DBF1.DES_DIS.ToString());
-                colunas.Add(TAB_DBF1.NOM_DIS.ToString());
-                colunas.Add(TAB_DBF1.REV_DIS.ToString());
-                colunas.Add(TAB_DBF1.DAT_DIS.ToString());
-                colunas.Add(TAB_DBF1.TRA_PEZ.ToString());
-                colunas.Add(TAB_DBF1.SBA_PEZ.ToString());
-                colunas.Add(TAB_DBF1.TIP_PEZ.ToString());
-                colunas.Add(TAB_DBF1.MAR_PEZ.ToString());
-                colunas.Add(TAB_DBF1.MBU_PEZ.ToString());
-                colunas.Add(TAB_DBF1.DES_PEZ.ToString());
-                colunas.Add(TAB_DBF1.POS_PEZ.ToString());
-                colunas.Add(TAB_DBF1.NOT_PEZ.ToString());
-                colunas.Add(TAB_DBF1.ING_PEZ.ToString());
-                colunas.Add(TAB_DBF1.QTA_PEZ.ToString());
-                colunas.Add(TAB_DBF1.QT1_PEZ.ToString());
-                colunas.Add(TAB_DBF1.MCL_PEZ.ToString());
-                colunas.Add(TAB_DBF1.COD_PEZ.ToString());
-                colunas.Add(TAB_DBF1.COS_PEZ.ToString());
-                colunas.Add(TAB_DBF1.NOM_PRO.ToString());
-                colunas.Add(TAB_DBF1.LUN_PRO.ToString());
-                colunas.Add(TAB_DBF1.LAR_PRO.ToString());
-                colunas.Add(TAB_DBF1.SPE_PRO.ToString());
-                colunas.Add(TAB_DBF1.MAT_PRO.ToString());
-                colunas.Add(TAB_DBF1.TIP_BUL.ToString());
-                colunas.Add(TAB_DBF1.DIA_BUL.ToString());
-                colunas.Add(TAB_DBF1.LUN_BUL.ToString());
-                colunas.Add(TAB_DBF1.PRB_BUL.ToString());
-                colunas.Add(TAB_DBF1.PUN_LIS.ToString());
-                colunas.Add(TAB_DBF1.SUN_LIS.ToString());
-                colunas.Add(TAB_DBF1.PRE_LIS.ToString());
-                colunas.Add(TAB_DBF1.FLG_DWG.ToString());
+            var retorno = new List<db.Tabela> { marcas, posicoes }.Unir();
 
 
-                //propriedades que não vão para a DBF
-                colunas.Add(Cfg.Init.CAD_ATT_ARQ);
-                colunas.Add(Cfg.Init.CAD_ATT_BLK);
+            return retorno;
 
-
-                db.Tabela tab_pecas = new db.Tabela();
-                var grp_blocos = lista.Linhas.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).ToList().ToList();
-                foreach (var blk in lista.Linhas)
-                {
-                    db.Linha nblk = new db.Linha();
-                    foreach (var col in colunas)
-                    {
-                        var igual = blk.Get(col);
-                        nblk.Celulas.Add(igual);
-                    }
-                    tab_pecas.Linhas.Add(nblk);
-                }
-
-                tab_pecas.Linhas = tab_pecas.Linhas.OrderBy(x => x.Descricao).ToList();
-
-                List<db.Linha> l_marcas = new List<db.Linha>();
-                var agrupado = tab_pecas.Linhas.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).Select(x => x.ToList()).ToList();
-
-
-                foreach (var m in agrupado)
-                {
-
-                    var blocos_marca = m.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "");
-                    if (blocos_marca.Count > 1)
-                    {
-                        string mm = blocos_marca[0].Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
-                        erros.Add(new Report("Marca Duplicada",
-                            $"\n{mm}" +
-                            $"\nMarca duplicada ou se encontra em mais de uma prancha." +
-                            $"\nOcorrências: {blocos_marca.Count} x\n" +
-                            $"{string.Join("\n", blocos_marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
-                           DLM.vars.TipoReport.Crítico
-                            ));
-                    }
-                    else if (blocos_marca.Count == 1)
-                    {
-                        var m_simples = blocos_marca[0].Clonar();
-                        var marca = new BlocoPecaTecnoMetal(m_simples);
-
-                        l_marcas.Add(m_simples);
-
-                        var posicoes_tbl = m.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor != "").GroupBy(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor).Select(X => X.ToList());
-
-
-                        //CRIA A LINHA DA MARCA SIMPLES
-                        if (marca.Tipo_Marca == Tipo_Marca.MarcaSimples)
-                        {
-                            var p_simples = m_simples.Clonar();
-
-                            m_simples[TAB_DBF1.FLG_REC.ToString()].Valor = Cfg.Init.CAD_ATT_REC_MARCA;
-                            m_simples[TAB_DBF1.POS_PEZ.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.COD_PEZ.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.NOM_PRO.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.LUN_PRO.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.LAR_PRO.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.SPE_PRO.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.MAT_PRO.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.PUN_LIS.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.SUN_LIS.ToString()].Valor = "";
-                            m_simples[TAB_DBF1.PRE_LIS.ToString()].Valor = "";
-
-                            p_simples[TAB_DBF1.QTA_PEZ.ToString()].Valor = "1";
-                            p_simples[TAB_DBF1.FLG_REC.ToString()].Valor = Cfg.Init.CAD_ATT_REC_POSICAO;
-                            p_simples[TAB_DBF1.POS_PEZ.ToString()].Valor = p_simples.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
-                            p_simples[Cfg.Init.CAD_ATT_BLK].Valor = "DUMMY";
-
-                            l_marcas.Add(p_simples);
-
-
-                        }
-                        else
-                        {
-                            //adiciona as posições
-                            foreach (var pos in posicoes_tbl)
-                            {
-                                var lfim = pos[0].Clonar();
-                                lfim[TAB_DBF1.QTA_PEZ.ToString()].Valor = pos.Sum(x => x.Get(TAB_DBF1.QTA_PEZ.ToString()).Double()).ToString().Replace(",", ".");
-                                l_marcas.Add(lfim);
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        erros.Add(new Report("Marca Não existe",
-                                               $"\n{string.Join("\n", m.Select(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor + @"/" + x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor))}" +
-                                               $"\nMarca indicada nas posições não existe." +
-                                               $"{string.Join("\n", blocos_marca.Select(x => x.Get("FLG_DWG")).Distinct().ToList())}",
-                                              DLM.vars.TipoReport.Crítico
-                                               ));
-                    }
-
-                }
-                foreach (var marca in l_marcas)
-                {
-                    var pos = marca.Get(TAB_DBF1.POS_PEZ.ToString()).Valor;
-                    marca.Descricao = marca.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor;
-                    if (pos != "")
-                    {
-                        marca.Descricao = marca.Descricao + " - P = " + pos;
-                    }
-                }
-
-                //ordena as peças, colocando as marcas antes das posições
-                l_marcas = l_marcas.OrderBy(x => x.Get("FLG_REC").Valor.PadLeft(2, '0') + x.Descricao).ToList();
-
-                db.Tabela lista_convertida = new db.Tabela();
-                lista_convertida.Linhas.AddRange(l_marcas);
-                lista_convertida.Nome = "DBF";
-                return lista_convertida;
-            }
-
-
-            return lista;
         }
-        public db.Tabela GerarDBF(ref List<Report> erros, bool atualizar_cams, string destino = null, List<Conexoes.Arquivo> pranchas = null)
-        {
-            if (!E_Tecnometal())
-            {
-                return new db.Tabela();
-            }
-            if (!this.Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
-            {
-                erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
-                    $"\nPasta atual: {this.Pasta}", DLM.vars.TipoReport.Crítico));
-                return new db.Tabela();
-            }
+        
 
-            var etapa = this.GetSubEtapa();
-            if (destino == null | destino == "")
-            {
-            setar_nome:
-                var nome_dbf = (Conexoes.Utilz.Prompt("Digine o nome do arquivo", $"{(etapa.Nome.Contains("B") ? "T_" : "")}{etapa.Nome}", false, "", false, 16)).RemoverCaracteresEspeciais().ToUpper();
+        
 
-                if (!nome_dbf.Contains("ETAPA_") | nome_dbf.Length < 7 | nome_dbf.Length > 16)
-                {
-                    if (Conexoes.Utilz.Pergunta(
-
-                        "Nome da DBF deve conter 'ETAPA_'" +
-                        "\n Mínimo 7 caracteres." +
-                        "\n Máximo 16 caracteres." +
-                        "\n Tentar novamente?"))
-                    {
-                        goto setar_nome;
-                    }
-                    else
-                    {
-                        erros.Add(new Report("Cancelado", "Nome da DBF inválido", DLM.vars.TipoReport.Crítico));
-                        return new db.Tabela();
-                    }
-                }
-                destino = $"{etapa.PastaDBF}{nome_dbf}.{Cfg.Init.EXT_DBF}";
-            }
-
-
-
-
-
-
-            var lista_pecas = GetPecasPranchas(ref erros, pranchas);
-
-
-            Core.Getw().SetProgresso(1, 5, "Fazendo Verificações...");
-            Core.Getw().Show();
-
-            if (lista_pecas.Linhas.Count == 0)
-            {
-                erros.Add(new Report("Erro", "Nenhuma peça encontrada nas pranchas selecionadas", DLM.vars.TipoReport.Crítico));
-                Core.Getw().Close();
-                return new db.Tabela();
-            }
-
-            Core.Getw().somaProgresso();
-            erros = Verificar_E_Atualizar_CAMs(erros, atualizar_cams, lista_pecas);
-
-            if (erros.FindAll(x => x.Tipo == TipoReport.Crítico).Count == 0)
-            {
-
-
-
-                Core.Getw().Close();
-
-                if (destino != "" && destino != null && lista_pecas.Linhas.Count > 0)
-                {
-                    if (!Conexoes.Utilz.DBF.Gerar(lista_pecas, destino))
-                    {
-                        lista_pecas.Nome = "";
-                        return lista_pecas;
-                    }
-                }
-            }
-            else
-            {
-                Core.Getw().Close();
-            }
-
-            lista_pecas.Nome = destino;
-            return lista_pecas;
-        }
-
-        private List<Report> Verificar_E_Atualizar_CAMs(List<Report> erros, bool atualizar_cams, db.Tabela lista_pecas)
-        {
-            var marcas = GetMarcas(ref erros, lista_pecas);
-
-
-            var posicoes = marcas.SelectMany(x => x.SubItens).ToList();
-            var marcas_compostas = marcas.FindAll(x => x.Tipo_Marca != Tipo_Marca.MarcaSimples);
-            var posicoes_perfis = posicoes.FindAll(x => x.TemCadastroDBF).ToList();
-            var posicoes_elem_unit = posicoes.FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Elemento_Unitario).ToList();
-            var marcas_elemento_unit = marcas.FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Elemento_Unitario).ToList();
-            var perfis = posicoes_perfis.GroupBy(x => x.Perfil.ToUpper().TrimStart().TrimEnd()).ToList();
-            var mercs = marcas.GroupBy(x => x.Mercadoria);
-            var mats = posicoes.FindAll(x => x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).GroupBy(x => x.Material);
-            var posicoes_grp = posicoes.FindAll(x => x.Tipo_Bloco != Tipo_Bloco.Arremate && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).GroupBy(x => x.Posicao).ToList();
-
-            erros.AddRange(marcas_compostas.FindAll(x => x.SubItens.Count == 0).Select(x => new Report("Marca Composta sem posições", $"{x.Prancha} - {x.Marca}", DLM.vars.TipoReport.Crítico)));
-
-
-            erros.AddRange(marcas_elemento_unit.FindAll(x => !x.Marca.ToUpper().EndsWith("_A")).Select(x => new Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", DLM.vars.TipoReport.Crítico)));
-            erros.AddRange(posicoes_elem_unit.FindAll(x => !x.Posicao.ToUpper().EndsWith("_A")).Select(x => new Report("Nome Inválido", $"{x.Prancha} - M: {x.Marca} - P: {x.Posicao}: Peças com elemento unitário devem ser marcadas com '_A' no fim.", DLM.vars.TipoReport.Crítico)));
-
-
-            erros.AddRange(marcas.GroupBy(x => x.Marca).ToList().FindAll(x => x.Count() > 1).Select(x => new Report("Mesma marca em pranchas diferentes.", $"Marca: {x.Key} nas pranchas: {string.Join("\n", x.Select(y => y.Prancha))}", DLM.vars.TipoReport.Crítico)));
-            erros.AddRange(marcas.FindAll(x => x.Marca.Replace("-", "").Replace("_", "").CaracteresEspeciais() | x.Marca.Contains(" ")).Select(x => x.Marca).Distinct().ToList().Select(x => new Report("Nome de marca com caracteres inválidos.", $"Marca: {x}", DLM.vars.TipoReport.Crítico)));
-            erros.AddRange(posicoes.FindAll(x => x.Posicao.Replace("-", "").Replace("_", "").CaracteresEspeciais() | x.Marca.Contains(" ") | x.Marca.Replace(" ", "").Length == 0).Select(x => "M: " + x.Marca + "Pos: " + x.Posicao).Distinct().ToList().Select(x => new Report("Nome de posição com caracteres inválidos ou em branco.", $"{x}", DLM.vars.TipoReport.Crítico)));
-
-
-            var ppos = posicoes.GroupBy(x => x.Posicao);
-
-            foreach (var p in ppos)
-            {
-                var pos1 = p.ToList();
-                var pos_comps = pos1.GroupBy(x => x.Comprimento.Round(0)).ToList();
-                var pos_perfis = pos1.GroupBy(x => x.Perfil).ToList();
-                var pos_larguras = pos1.GroupBy(x => x.Largura.Round(0)).ToList();
-                var pos_esps = pos1.GroupBy(x => x.Espessura.Round(2)).ToList();
-                var pos_materiais = pos1.GroupBy(x => x.Material).ToList();
-                var pos_sap = pos1.GroupBy(x => x.SAP).ToList();
-
-
-                if (pos_comps.Count > 1)
-                {
-                    erros.AddRange(
-                        pos_comps
-                        .Select(x => new Report("Posição com divergência de Comprimento",
-                        $"Posição: {p.Key} Nos locais:" +
-                        $"\n{string.Join("\n", x.Select(y => $"==> Comprimento: {y.Comprimento} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
-                }
-                if (pos_perfis.Count > 1)
-                {
-                    erros.AddRange(pos_perfis.Select(x => new Report("Posição com divergência de Perfil", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Perfil: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
-                }
-
-                if (pos_larguras.Count > 1)
-                {
-                    erros.AddRange(pos_larguras.Select(x => new Report("Posição com divergência de Largura", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Largura: {y.Largura} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
-                }
-
-                if (pos_esps.Count > 1)
-                {
-                    erros.AddRange(pos_esps.Select(x => new Report("Posição com divergência de Espessura", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Espessura: {y.Espessura} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
-                }
-
-                if (pos_materiais.Count > 1)
-                {
-                    erros.AddRange(pos_materiais.Select(x => new Report("Posição com divergência de Material", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> Material: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
-                }
-
-                if (pos_sap.Count > 1)
-                {
-                    erros.AddRange(pos_sap.Select(x => new Report("Posição com divergência de Código SAP", $"Posição: {p.Key} Nos locais: \n{string.Join("\n", x.Select(y => $"==> SAP: {y.Perfil} => {y.Prancha} / {y.Marca} /  {y.Posicao} "))}", DLM.vars.TipoReport.Crítico)));
-                }
-            }
-
-            erros.AddRange(posicoes.FindAll(x => x.Posicao.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", DLM.vars.TipoReport.Crítico)));
-            erros.AddRange(marcas.FindAll(x => x.Marca.ToUpper().EndsWith("_A") && x.Tipo_Bloco != Tipo_Bloco.Elemento_Unitario).Select(x => new Report("Nome Inválido", $"Prancha: {x.Prancha} Marca: {x.Marca} ==> Posição {x.Posicao} termina com _A e não é um elemento unitário. Somente itens de almox podem terminar com _A", DLM.vars.TipoReport.Crítico)));
-
-            if (erros.FindAll(x => x.Tipo == TipoReport.Crítico).Count == 0)
-            {
-                Core.Getw().somaProgresso();
-                if (atualizar_cams)
-                {
-                    AtualizarCAMs(ref erros, posicoes_grp);
-                }
-            }
-
-            return erros;
-        }
-
-        private void AtualizarCAMs(ref List<Report> erros, List<IGrouping<string, BlocoPecaTecnoMetal>> posicoes_grp)
-        {
-            var cams = GetCams();
-
-            foreach (var pos in posicoes_grp)
-            {
-                var cam = cams.Find(x => x.Nome.ToUpper() == pos.Key.ToUpper());
-                var p0 = pos.First();
-
-
-
-                if (cam != null)
-                {
-                    cam.Quantidade = (int)Math.Round(pos.Sum(x => x.Quantidade));
-                    cam.Obra = this.GetObra().Descrição;
-                    cam.Pedido = this.GetPedido().NomePedido;
-                    cam.Etapa = this.GetSubEtapa().Nome;
-                    cam.Material = p0.Material;
-                    cam.Tratamento = p0.Tratamento;
-                    cam.Prancha = cam.Etapa;
-                    cam.Peso = p0.PesoUnit;
-
-                    if (cam.Mercadoria == "")
-                    {
-                        cam.Mercadoria = "POSICAO";
-                    }
-                    cam.Peso = p0.PesoUnit;
-
-                    foreach (var subcam in cam.GetSubCams())
-                    {
-                        var arq = $"{this.GetSubEtapa().PastaCAM_Pedido}{subcam}.{Cfg.Init.EXT_CAM}";
-                        if (!arq.Existe())
-                        {
-                            var arq2 = $"{this.GetSubEtapa().PastaCAM_Etapa}{subcam}.{Cfg.Init.EXT_CAM}";
-                            if (arq2.Existe())
-                            {
-                                arq = arq2;
-                            }
-                        }
-
-                        if (!arq.Existe())
-                        {
-                            erros.Add(new Report("Falta Arquivo", $"{arq}", DLM.vars.TipoReport.Alerta));
-                        }
-                        else
-                        {
-                            DLM.cam.ReadCAM sub = new DLM.cam.ReadCAM(arq);
-                            sub.Obra = this.GetObra().Descrição;
-                            sub.Pedido = this.GetPedido().NomePedido;
-                            sub.Etapa = this.GetSubEtapa().Nome;
-                            sub.Material = p0.Material;
-                            sub.Tratamento = p0.Tratamento;
-                            sub.Salvar();
-                        }
-
-
-                    }
-                    cam.Salvar();
-                }
-                else
-                {
-                    if (p0.Espessura >= DBases.GetBancoRM().TEST_LIST_CHAPA_FINA_IGNORAR)
-                    {
-                        erros.Add(new Report("Falta Arquivo", $"{p0.Posicao}.CAM \n {string.Join("\n", pos.Select(x => $"{x.Prancha} - M: {x.Marca}"))}", DLM.vars.TipoReport.Alerta));
-                    }
-                }
-            }
-        }
 
         public List<Report> AtualizarPesoChapaFina(List<BlockReference> blocos = null)
         {
             List<Report> erros = new List<Report>();
 
-            var pcs = GetMarcas(ref erros, null, blocos);
+           // var pcs = GetMarcas(ref erros, blocos);
 
             using (var acTrans = acCurDb.acTransST())
             {
 
-                if (erros.Count == 0 && pcs.Count > 0)
+                if (erros.Count == 0 && blocos.Count > 0)
                 {
-                    foreach (var m in pcs)
+
+                    foreach (var blk in blocos)
                     {
-                        if (m.Tipo_Marca == Tipo_Marca.MarcaSimples && m.Tipo_Bloco == Tipo_Bloco.Arremate)
+                        var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
+                        var marca = new MarcaTecnoMetal(bkm);
+
+                        if (marca.Tipo_Marca == Tipo_Marca.MarcaSimples && marca.Tipo_Bloco == Tipo_Bloco.Arremate)
                         {
-                            var bob = m.GetBobina();
+                            var bob = marca.GetBobina();
                             if (bob != null)
                             {
-                                var peso = m.CalcularPesoLinear();
-                                var sup = m.CalcularSuperficieLinear();
+                                var peso = marca.CalcularPesoLinear();
+                                var sup = marca.CalcularSuperficieLinear();
 
                                 Hashtable att = new Hashtable();
                                 att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                                att.Add(TAB_DBF1.SUN_LIS.ToString(), m.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
-                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{m.Comprimento.String(0)}*{m.Espessura.String()}*{m.Largura.String(0)}");
-                                att.Add(TAB_DBF1.SPE_PRO.ToString(), m.Espessura.ToString("N2"));
+                                att.Add(TAB_DBF1.SUN_LIS.ToString(), marca.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
+                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{marca.Comprimento.String(0)}*{marca.Espessura.String()}*{marca.Largura.String(0)}");
+                                att.Add(TAB_DBF1.SPE_PRO.ToString(), marca.Espessura.ToString("N2"));
 
-                                DLM.cad.Atributos.Set(m.Bloco.Block, acTrans, att);
+                                DLM.cad.Atributos.Set(blk, acTrans, att);
                             }
                             else
                             {
-                                erros.Add(new Report("Bobina não existe ou está em branco", $"Marca: {m.Marca}", DLM.vars.TipoReport.Crítico));
+                                erros.Add(new Report("Bobina não existe ou está em branco", $"Marca: {marca.Marca}", DLM.vars.TipoReport.Crítico));
                             }
                         }
                     }
@@ -2435,7 +2016,7 @@ namespace DLM.cad
                                 Blocos.MarcaChapa(origem, chapa_dobrada, Tipo_Bloco.Chapa, escala, posicao);
                             }
 
-                            if (chapa_dobrada.GerarCam == Opcao.Sim)
+                            if (chapa_dobrada.GerarCam == vars.Opcao.Sim)
                             {
                                 string destino = this.Pasta;
                                 if (this.E_Tecnometal(false))
@@ -2690,7 +2271,7 @@ namespace DLM.cad
             Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
 
         }
-        public BlocoPecaTecnoMetal InserirMarcaComposta(double escala)
+        public MarcaTecnoMetal InserirMarcaComposta(double escala)
         {
             List<Report> erros = new List<Report>();
             this.SetEscala(escala);
