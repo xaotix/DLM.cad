@@ -139,7 +139,7 @@ namespace DLM.cad
 
                             foreach (var pc in pcs)
                             {
-                                Hashtable ht = new Hashtable();
+                                var ht = new db.Linha();
                                 ht.Add("MBPERFIL", pc);
                                 ht.Add("MBFILETE", filete.First().Filete_Minimo);
                                 Blocos.Inserir(acDoc, nome, origem, 1, 0, ht);
@@ -541,7 +541,7 @@ namespace DLM.cad
                         foreach (var s in bl_agrupados)
                         {
 
-                            Hashtable att = new Hashtable();
+                            var att = new db.Linha();
                             att.Add(Cfg.Init.CAD_ATT_N, numero);
                             att.Add(Cfg.Init.CAD_ATT_Familia, familia);
                             att.Add(Cfg.Init.CAD_ATT_Tipo, Cfg.Init.CAD_ATT_TECNOMETAL);
@@ -574,7 +574,7 @@ namespace DLM.cad
                                 s.Familia = familia;
                                 s.Destino = Cfg.Init.CAD_ATT_RME;
                                 s.Perfil = perfil;
-                                Hashtable att = new Hashtable();
+                                var att = new db.Linha();
                                 //att.Add("LUN_PRO", comp);
                                 att.Add("MARK", codigo);
                                 att.Add(TAB_DBF1.MAR_PEZ.ToString(), codigo);
@@ -612,7 +612,7 @@ namespace DLM.cad
                     {
                         Core.Getw().somaProgresso();
 
-                        Hashtable ht = new Hashtable();
+                        var ht = new db.Linha();
                         ht.Add(Cfg.Init.CAD_ATT_N, pc.Numero);
                         ht.Add(Cfg.Init.CAD_ATT_Familia, pc.Familia);
                         ht.Add(Cfg.Init.CAD_ATT_Tipo, Cfg.Init.CAD_ATT_TECNOMETAL);
@@ -952,7 +952,7 @@ namespace DLM.cad
             var posp = _Marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao);
             foreach (var posicao in posp)
             {
-                var diferencas = posicao.ToList().GroupBy(x => $"{x.Comprimento.String(0)}x{x.Largura.String(0)}x{x.Espessura.String(2)}x{x.Material}x{x.Perfil}x{x.NomeBloco}").ToList();
+                var diferencas = posicao.ToList().GroupBy(x => x.GetChave()).ToList();
                 if (diferencas.Count > 1)
                 {
                     erros.Add(new Report($"{posicao.Key} => Posição com divergências", string.Join("\n", diferencas.Select(x => x.Key)), DLM.vars.TipoReport.Crítico));
@@ -1103,7 +1103,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.acTransST())
             {
 
-                var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
+                var ultima_edicao = Conexoes.Utilz.getEdicao(this.Endereco);
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<Line> linhas = new List<Line>();
@@ -1203,7 +1203,7 @@ namespace DLM.cad
                 using (var acTrans = acDoc.acTransST())
                 {
 
-                    var ultima_edicao = System.IO.File.GetLastWriteTime(this.Endereco).ToString("dd/MM/yyyy");
+                    var ultima_edicao = Conexoes.Utilz.getEdicao(this.Endereco);
 
                     BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                     BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
@@ -1229,7 +1229,7 @@ namespace DLM.cad
 
                     foreach (var s in selo)
                     {
-                        Hashtable ht = new Hashtable();
+                        var ht = new db.Linha();
 
                         if (limpar)
                         {
@@ -1253,7 +1253,7 @@ namespace DLM.cad
                         }
                         else
                         {
-                            ht.Add("TIPO_DE_PROJETO", this.Nome.Contains("-FA-") ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
+                            ht.Add("TIPO_DE_PROJETO", this.Nome.Contains(Cfg.Init.DWG_FAB_FILTRO) ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
                             ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Marca.ToUpper()))}");
                             ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Marca.ToUpper()))}");
                             ht.Add("OBRA", this.GetObra().Descrição.ToUpper());
@@ -1461,7 +1461,6 @@ namespace DLM.cad
 
                 if (erros.Count == 0 && blocos.Count > 0)
                 {
-
                     foreach (var blk in blocos)
                     {
                         var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
@@ -1475,7 +1474,7 @@ namespace DLM.cad
                                 var peso = marca.CalcularPesoLinear();
                                 var sup = marca.CalcularSuperficieLinear();
 
-                                Hashtable att = new Hashtable();
+                                var att = new db.Linha();
                                 att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                                 att.Add(TAB_DBF1.SUN_LIS.ToString(), marca.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
                                 att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{marca.Comprimento.String(0)}*{marca.Espessura.String()}*{marca.Largura.String(0)}");

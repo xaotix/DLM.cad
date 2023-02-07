@@ -289,7 +289,7 @@ namespace DLM.cad.Menus
 
             this.Visibility = Visibility.Collapsed;
             bool cancelado = false;
-            Hashtable ht = new Hashtable();
+            var ht = new db.Linha();
             ht.Add(Cfg.Init.CAD_ATT_N, this.txt_prefix.Text + this.txt_sequencial.Text);
             ht.Add(Cfg.Init.CAD_ATT_Familia, this.familia.Text);
             ht.Add(Cfg.Init.CAD_ATT_Tipo, this.tipo_selecionado);

@@ -30,7 +30,7 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static void Set(this  List<Autodesk.AutoCAD.DatabaseServices.BlockReference> blocos, Transaction acTrans, Hashtable valores)
+        public static void Set(this  List<Autodesk.AutoCAD.DatabaseServices.BlockReference> blocos, Transaction acTrans, db.Linha valores)
         {
 
             using (var docLock = acDoc.LockDocument())
@@ -42,7 +42,7 @@ namespace DLM.cad
                     {
 
                         AttributeReference att = acTrans.GetObject(attId, OpenMode.ForRead, false) as AttributeReference;
-                        if (valores.ContainsKey(att.Tag.ToUpper()))
+                        if (valores.Contem(att.Tag.ToUpper()))
                         {
                             att.UpgradeOpen();
                             att.TextString = valores[att.Tag.ToUpper()].ToString();
@@ -68,18 +68,18 @@ namespace DLM.cad
                 }
             }
         }
-        public static void Set(this BlockReference myBlockRef, Transaction acTrans, Hashtable atributos)
+        public static void Set(this BlockReference myBlockRef, Transaction acTrans, db.Linha atributos)
         {
             using (var docLock = acDoc.LockDocument())
             {
                 AttributeCollection attCol = myBlockRef.AttributeCollection;
                 foreach (ObjectId attId in attCol)
                 {
-                    AttributeReference att = acTrans.GetObject(attId, OpenMode.ForRead, false) as AttributeReference;
-                    if (atributos.ContainsKey(att.Tag.ToUpper()))
+                    AttributeReference attRef = acTrans.GetObject(attId, OpenMode.ForRead, false) as AttributeReference;
+                    if (atributos.Contem(attRef.Tag))
                     {
-                        att.UpgradeOpen();
-                        att.TextString = atributos[att.Tag.ToUpper()].ToString();
+                        attRef.UpgradeOpen();
+                        attRef.TextString = atributos[attRef.Tag.ToUpper()].ToString();
                     }
                 }
             }

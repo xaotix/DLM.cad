@@ -136,7 +136,6 @@
     <Compile Include="Funcoes\CADVars.cs" />
     <Compile Include="Funcoes\FLayer.cs" />
     <Compile Include="Funcoes\Imagem.cs" />
-    <Compile Include="Funcoes\Linha.cs" />
     <Compile Include="Funcoes\Multiline.cs" />
     <Compile Include="ClassesInput\Eixo.cs" />
     <Compile Include="Menus\MenuConfigurarVaos.xaml.cs">

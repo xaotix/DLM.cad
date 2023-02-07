@@ -759,9 +759,9 @@ namespace DLM.cad
             }
         }
 
-        public Hashtable GetHashtable(Conexoes.Macros.Purlin p)
+        public db.Linha GetHashtable(Conexoes.Macros.Purlin p)
         {
-            Hashtable ht = new Hashtable();
+            var ht = new db.Linha();
 
             ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia.ToString().PadLeft(3,'0'));
             ht.Add("CRD", string.Join(";", p.Correntes_Direita));
@@ -793,9 +793,7 @@ namespace DLM.cad
         {
             Conexoes.RMLite pc = Ut.GetPURLINS().Get(id_purlin);
             //AddMensagem("Origem: " + centro + "\n");
-            Hashtable ht = new Hashtable();
-
-     
+            var ht = new db.Linha();    
 
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
             ht.Add("CRD", "");
@@ -830,7 +828,7 @@ namespace DLM.cad
         public void AddBlocoTirante(string letra,  P3d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
         {
             //AddMensagem("Origem: " + centro + "\n");
-            Hashtable ht = new Hashtable();
+            var ht = new db.Linha();
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
 
             ht.Add(Cfg.Init.CAD_ATT_Comprimento, Comp.String(0));
@@ -845,7 +843,7 @@ namespace DLM.cad
         }
         public void AddBlocoCorrente(string letra, P3d origembloco, double Comp, double desc = 18, string tip = "DLDA", string fix = "F156")
         {
-            Hashtable ht = new Hashtable();
+            var ht = new db.Linha();
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
             ht.Add("TIP", tip);
             ht.Add(Cfg.Init.CAD_ATT_Descricao, desc.String(3));
@@ -1366,7 +1364,7 @@ namespace DLM.cad
 
         public void SetFicha()
         {
-            var valor = Conexoes.Utilz.Selecao.SelecionarObjeto(new Conexoes.its.TipoPintura().GetValues().Select(x => x.Value.ToString()).ToList(),null,"Selecione a ficha");
+            var valor = DBases.GetBancoRM().Get_Pinturas().Selecao<string>();
             if (valor == null)
             {
                 return;
@@ -1532,7 +1530,7 @@ namespace DLM.cad
 
                     foreach (var s in this.Getblocos_tercas())
                     {
-                        Hashtable ht = new Hashtable();
+                        var ht = new db.Linha();
                         ht.Add("ID_PECA", perfil.id_db.ToString());
                         ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.String());
                         ht.Add("SECAO", perfil.SECAO.String(0));

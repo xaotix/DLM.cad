@@ -320,7 +320,7 @@ namespace DLM.cad
                             Utils.SetUndoMark(true);
                             for (int i = 0; i < qtd; i++)
                             {
-                                Hashtable tt = new Hashtable();
+                                var tt = new db.Linha();
                                 tt.Add(Cfg.Init.CAD_ATT_Cod_SAP, this.Codigo_Passarela);
                                 Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_PASSARELA, p1, 1, 0, tt);
                                 if(angulo==90 | angulo == 270)
@@ -593,9 +593,9 @@ namespace DLM.cad
         private void AddVaoSFLH(double angulo, double comp, P3d p1, int sequencia, P3d p2,  ref List<P3d> cotas)
         {
            
-            Hashtable sftlh = new Hashtable();
+            var sftlh = new db.Linha();
             sftlh.Add(Cfg.Init.CAD_ATT_Cod_SAP, Codigo_SFLH);
-            Hashtable sftli = new Hashtable();
+            var sftli = new db.Linha();
             sftli.Add(Cfg.Init.CAD_ATT_Cod_SAP, Codigo_SFLI);
             if (sequencia == 0)
             {
@@ -629,7 +629,7 @@ namespace DLM.cad
         private void AddBlocoTexto(double angulo, P3d pp0, string nome, double offset, string sap)
         {
             var p1 = pp0.Mover(angulo + 90, offset);
-            var ht = new Hashtable();
+            var ht = new db.Linha();
             ht.Add(Cfg.Init.CAD_ATT_Texto, nome);
             ht.Add(Cfg.Init.CAD_ATT_Cod_SAP, sap);
             if(angulo==90 | angulo == 270)

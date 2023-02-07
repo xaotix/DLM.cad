@@ -115,7 +115,7 @@ namespace DLM.cad
             if (bloco != null)
             {
 
-                var nomes = this.Bloco.Celulas.FindAll(x => x.Coluna.ToUpper().Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
+                var nomes = this.Bloco.Celulas.FindAll(x => x.ColunaUpper.Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
 
                 if (nomes.Count > 0)
                 {

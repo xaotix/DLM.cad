@@ -91,7 +91,7 @@ namespace DLM.cad
         //    return pts;
         //}
 
-        public static void Inserir(Document acDoc, string nome, P3d origem, double escala, double rotacao, Hashtable atributos)
+        public static void Inserir(Document acDoc, string nome, P3d origem, double escala, double rotacao, db.Linha atributos)
         {
             string endereco = "";
             if (File.Exists(nome))
@@ -111,9 +111,9 @@ namespace DLM.cad
                     s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Simbologias, nome + ".dwg"); ;
                 }
 
-                if(s.Count==0)
+                if (s.Count == 0)
                 {
-                s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_Indicacao, nome + ".dwg");
+                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_Indicacao, nome + ".dwg");
 
                 }
 
@@ -157,7 +157,7 @@ namespace DLM.cad
 
 
 
-               
+
                 ObjectId blkid = ObjectId.Null;
                 using (var acTrans = acDoc.acTransST())
                 {
@@ -169,7 +169,7 @@ namespace DLM.cad
                             //ed.WriteMessage("\nBloco já existe, adicionando atual...\n");
 
                             blkid = acBlkTbl[nomeBloco];
-                            BlockReference bref = new BlockReference(new Point3d(origem.X, origem.Y,0), blkid);
+                            BlockReference bref = new BlockReference(new Point3d(origem.X, origem.Y, 0), blkid);
                             BlockTableRecord btr2 = (BlockTableRecord)acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite);
                             using (BlockTableRecord bdef = (BlockTableRecord)acTrans.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
                             {
@@ -190,17 +190,17 @@ namespace DLM.cad
                                     DBObject obj = (DBObject)acTrans.GetObject(eid, OpenMode.ForRead);
                                     if (obj is AttributeDefinition)
                                     {
-                                        AttributeDefinition atdef = (AttributeDefinition)obj;
+                                        AttributeDefinition attRef = (AttributeDefinition)obj;
                                         AttributeReference atref = new AttributeReference();
-                                        if (atdef != null)
+                                        if (attRef != null)
                                         {
                                             atref = new AttributeReference();
-                                            atref.SetAttributeFromBlock(atdef, bref.BlockTransform);
+                                            atref.SetAttributeFromBlock(attRef, bref.BlockTransform);
                                             //atref.Position = atdef.Position + bref.Position.GetAsVector();
-                                            atref.Position = atdef.Position.TransformBy(bref.BlockTransform);
-                                            if (atributos.ContainsKey(atdef.Tag.ToUpper()))
+                                            atref.Position = attRef.Position.TransformBy(bref.BlockTransform);
+                                            if (atributos.Contem(attRef.Tag))
                                             {
-                                                atref.TextString = atributos[atdef.Tag.ToUpper()].ToString();
+                                                atref.TextString = atributos[attRef.Tag.ToUpper()].ToString();
                                             }
                                         }
                                         bref.AttributeCollection.AppendAttribute(atref);
@@ -242,7 +242,7 @@ namespace DLM.cad
 
                             using (BlockTableRecord btr = (BlockTableRecord)acCurDb.CurrentSpaceId.GetObject(OpenMode.ForWrite))
                             {
-                                using (BlockReference bref = new BlockReference(new Point3d(origem.X, origem.Y,0), blkid))
+                                using (BlockReference bref = new BlockReference(new Point3d(origem.X, origem.Y, 0), blkid))
                                 {
                                     Matrix3d mat = Matrix3d.Identity;
                                     bref.TransformBy(mat);
@@ -283,7 +283,7 @@ namespace DLM.cad
 
                                                 attRef.AdjustAlignment(acCurDb);//?
 
-                                                if (atributos.ContainsKey(attRef.Tag.ToUpper()))
+                                                if (atributos.Contem(attRef.Tag))
                                                 {
                                                     attRef.TextString = atributos[attRef.Tag.ToUpper()].ToString();
                                                 }
@@ -314,7 +314,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta( ex, $"Algo de errado aconteceu ao tentar inserir o bloco {endereco}");
+                Conexoes.Utilz.Alerta(ex, $"Algo de errado aconteceu ao tentar inserir o bloco {endereco}");
                 return;
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
@@ -356,9 +356,9 @@ namespace DLM.cad
         }
 
 
-        public static void IndicacaoPeca(string Bloco, string CODIGO,double COMP, int ID,  P3d origem,string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1",  string DESTINO = "RME",  string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
+        public static void IndicacaoPeca(string Bloco, string CODIGO, double COMP, int ID, P3d origem, string DESC = "", double escala = 1, double rotacao = 0, string QTD = "1", string DESTINO = "RME", string N = "", string FAMILIA = "PECA", string TIPO = "PECA")
         {
-            Hashtable ht = new Hashtable();
+            var ht = new db.Linha();
             ht.Add(Cfg.Init.CAD_ATT_N, N);
             ht.Add(Cfg.Init.CAD_ATT_Familia, FAMILIA);
             ht.Add(Cfg.Init.CAD_ATT_Tipo, TIPO);
@@ -377,7 +377,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.acTransST())
             {
                 // Get the block table from the drawing
-                BlockTable bt = (BlockTable)acTrans.GetObject(CAD.acCurDb.BlockTableId,OpenMode.ForRead);
+                BlockTable bt = (BlockTable)acTrans.GetObject(CAD.acCurDb.BlockTableId, OpenMode.ForRead);
 
                 int c = 1;
                 while (bt.Has(nome_fim))
@@ -385,7 +385,7 @@ namespace DLM.cad
                     nome_fim = nome + "_" + c;
                     c++;
                 }
-                
+
                 //cria o bloco
                 BlockTableRecord btr = new BlockTableRecord();
                 btr.Name = nome_fim;
@@ -400,7 +400,7 @@ namespace DLM.cad
                     acTrans.AddNewlyCreatedDBObject(ent, true);
                 }
                 // Insere o bloco
-                BlockTableRecord ms = (BlockTableRecord)acTrans.GetObject(bt[BlockTableRecord.ModelSpace],OpenMode.ForWrite);
+                BlockTableRecord ms = (BlockTableRecord)acTrans.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
                 BlockReference br = new BlockReference(origem.GetPoint3dCad(), btrId);
 
                 ms.AppendEntity(br);
@@ -414,7 +414,7 @@ namespace DLM.cad
             try
             {
 
-                Hashtable ht = new Hashtable();
+                var ht = new db.Linha();
 
 
                 ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
@@ -434,7 +434,7 @@ namespace DLM.cad
         {
             try
             {
-                Hashtable ht = new Hashtable();
+                var ht = new db.Linha();
                 ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
                 ht.Add(TAB_DBF1.POS_PEZ.ToString(), posicao);
@@ -490,7 +490,7 @@ namespace DLM.cad
             try
             {
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
-                Hashtable ht = new Hashtable();
+                var ht = new db.Linha();
                 //Pairs of tag-value:
                 ht.Add(TAB_DBF1.MAR_PEZ.ToString(), pf.Marca);
                 ht.Add(TAB_DBF1.POS_PEZ.ToString(), posicao);
@@ -570,7 +570,7 @@ namespace DLM.cad
 
         }
 
-        public static void MarcaChapa(P3d p0, List<P3d> pts, double Espessura, int Quantidade,string Marca, string Material, string Ficha, double escala)
+        public static void MarcaChapa(P3d p0, List<P3d> pts, double Espessura, int Quantidade, string Marca, string Material, string Ficha, double escala)
         {
             try
             {
@@ -584,7 +584,7 @@ namespace DLM.cad
                 var Geometria = $"{Comprimento.ToString("N0").Replace(",", "")}*{Espessura.ToString("N2").Replace(",", "")}*{Largura.ToString("N0").Replace(",", "")}";
 
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
-                Hashtable ht = new Hashtable();
+                var ht = new db.Linha();
                 //Pairs of tag-value:
                 ht.Add(TAB_DBF1.MAR_PEZ.ToString(), Marca);
                 ht.Add(TAB_DBF1.POS_PEZ.ToString(), Marca);
@@ -600,7 +600,7 @@ namespace DLM.cad
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), "CHAPA");
                 ht.Add(TAB_DBF1.ING_PEZ.ToString(), Geometria);
 
-                               
+
                 Inserir(acDoc, bloco, p0, escala, 0, ht);
             }
             catch (System.Exception ex)
@@ -614,7 +614,7 @@ namespace DLM.cad
             try
             {
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
-                Hashtable ht = new Hashtable();
+                var ht = new db.Linha();
 
                 double superficie = area * 2 / 1000 / 100;
                 //Pairs of tag-value:
@@ -662,7 +662,7 @@ namespace DLM.cad
             try
             {
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
-                Hashtable ht = new Hashtable();
+                var ht = new db.Linha();
                 //Pairs of tag-value:
                 ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
                 ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
@@ -733,18 +733,18 @@ namespace DLM.cad
         }
 
 
-    
+
         public static string GetNome(BlockReference bloco)
         {
             var parent = bloco.GetTableRecord();
-            if(parent!=null)
+            if (parent != null)
             {
                 return parent.Name;
             }
             return bloco.Name;
         }
 
-        
+
 
         public static List<Point2d> GetInterSeccao(BlockReference obj, Entity obj2)
         {
@@ -752,10 +752,10 @@ namespace DLM.cad
 
 
 
-         
+
             DBObjectCollection acDBObjColl = new DBObjectCollection();
             obj.Explode(acDBObjColl);
-           
+
             foreach (Entity acEnt in acDBObjColl)
             {
                 try
@@ -783,7 +783,7 @@ namespace DLM.cad
             return GetBlocosProximos(blocos, new P3d(pt1.X, pt1.Y), new P3d(pt2.X, pt2.Y), tolerancia);
         }
 
-        
+
 
 
         public static List<BlockAttributes> GetBlocosProximos(List<BlockAttributes> blocos, P3d pt1, P3d pt2, double tolerancia = 1)
@@ -792,8 +792,8 @@ namespace DLM.cad
 
 
             Line p = new Line();
-            p.StartPoint = new Point3d(pt1.X, pt1.Y,0);
-            p.EndPoint = new Point3d(pt2.X, pt2.Y,0);
+            p.StartPoint = new Point3d(pt1.X, pt1.Y, 0);
+            p.EndPoint = new Point3d(pt2.X, pt2.Y, 0);
 
             //foreach(var b in blocos)
             //{
@@ -815,7 +815,7 @@ namespace DLM.cad
             //{
             //return blks;
             //}
-            
+
 
 
 
@@ -845,7 +845,7 @@ namespace DLM.cad
                     dists.AddRange(pts.Select(x => Math.Round(pt1.Distancia(x.P3d()))).Distinct().ToList());
                     dists.AddRange(pts.Select(x => Math.Round(pt2.Distancia(x.P3d()))).Distinct().ToList());
 
-                    if(dists.Count>0)
+                    if (dists.Count > 0)
                     {
                         var min = dists.Min();
 
@@ -856,7 +856,7 @@ namespace DLM.cad
 
                         }
                     }
-                    
+
 
                 }
             }
@@ -907,7 +907,7 @@ namespace DLM.cad
         {
             var atributos = bloco.GetAttributes();
 
-            Hashtable ht = new Hashtable();
+            var ht = new db.Linha();
             foreach (var cel in atributos.Celulas)
             {
                 ht.Add(cel.Coluna, cel.Valor);
