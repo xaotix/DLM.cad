@@ -916,49 +916,7 @@ namespace DLM.cad
 
         public List<MarcaTecnoMetal> GetMarcas(ref List<Report> erros)
         {
-            var _Marcas = new List<MarcaTecnoMetal>();
-
-
-
-            var tabela = GetBlocosMarcas(acCurDb, ref erros, acDoc.Name);
-            List<MarcaTecnoMetal> lista_pecas = tabela.GetMarcas(ref erros);
-
-           
-
-            var ms = lista_pecas.Select(x => x.Marca).Distinct().ToList();
-
-            foreach (var m in ms)
-            {
-                var iguais = lista_pecas.FindAll(x => x.Marca == m);
-
-                var marcas = iguais.FindAll(x => x.Posicao == "");
-                var posicoes = iguais.FindAll(x => x.Posicao != "");
-
-                if (marcas.Count == 1)
-                {
-                    var marca = marcas[0];
-                    marca.SubItens.AddRange(posicoes);
-                    foreach (var pos in posicoes)
-                    {
-                        pos.Pai = marca;
-                    }
-                    _Marcas.Add(marca);
-                }
-                else if (marcas.Count > 1)
-                {
-                    erros.Add(new Report("Marcas duplicadas", $" {marcas[0].Prancha} - M: {m}"));
-                }
-            }
-            var posp = _Marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao);
-            foreach (var posicao in posp)
-            {
-                var diferencas = posicao.ToList().GroupBy(x => x.GetChave()).ToList();
-                if (diferencas.Count > 1)
-                {
-                    erros.Add(new Report($"{posicao.Key} => Posição com divergências", string.Join("\n", diferencas.Select(x => x.Key)), DLM.vars.TipoReport.Crítico));
-                }
-            }
-            return _Marcas;
+            return GetBlocosMarcas(acCurDb, ref erros, acDoc.Name).GetMarcas(ref erros);
         }
 
         public List<MarcaTecnoMetal> GetMarcasPranchas(ref List<Report> erros)
