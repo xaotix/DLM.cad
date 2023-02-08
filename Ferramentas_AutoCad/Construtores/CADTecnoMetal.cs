@@ -1288,7 +1288,7 @@ namespace DLM.cad
                 BlockAttributes att = new BlockAttributes(bloco, false);
                 att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
                 att[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
-                att["ERRO"].Valor = ex.Message;
+                att[Cfg.Init.CAD_ATT_ERRO].Valor = ex.Message;
                 att[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
 
                 return att;
