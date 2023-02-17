@@ -43,8 +43,8 @@
 
 
         <WrapPanel Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1">
-            <Button FontSize="15" Margin="2" Content="Cancelar" Click="Button_Click"></Button>
-            <Button FontSize="15" Margin="2" Content="Inserir"  Click="Button_Click_1"></Button>
+            <Button FontSize="15" Margin="2" Content="Cancelar" Click="Button_Click"/>
+            <Button FontSize="15" Margin="2" Content="Inserir"  Click="Button_Click_1"/>
         </WrapPanel>
     </Grid>
 </Window>

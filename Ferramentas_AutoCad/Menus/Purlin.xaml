@@ -118,8 +118,8 @@
                     </ScrollViewer>
 
                     <StackPanel Grid.Row="10">
-                        <!--<Button Content="Propriedades Avançadas..." Click="ver_propriedades"></Button>-->
-                        <Button Content="Abrir Editor" Click="mapeia"></Button>
+                        <!--<Button Content="Propriedades Avançadas..." Click="ver_propriedades"/>-->
+                        <Button Content="Abrir Editor" Click="mapeia"/>
                     </StackPanel>
                 </Grid>
             </TabItem>

@@ -199,8 +199,8 @@
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Margin="0,2,2,2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1">
-            <Button FontSize="15" Margin="2" Content="Cancelar" Click="cancelar"></Button>
-            <Button FontSize="15" Margin="2" Content="_Inserir"  Click="inserir"></Button>
+            <Button FontSize="15" Margin="2" Content="Cancelar" Click="cancelar"/>
+            <Button FontSize="15" Margin="2" Content="_Inserir"  Click="inserir"/>
         </WrapPanel>
     </Grid>
 </Window>

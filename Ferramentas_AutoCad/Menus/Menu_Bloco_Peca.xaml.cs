@@ -179,7 +179,7 @@ namespace DLM.cad.Menus
                 {
                     bt_peca_selecionar.Content = this.rmt_sel.ToString();
                     var pc = new Conexoes.RMT(this.rmt_sel, DBases.GetBobinaDummyPP());
-                    this.rmt_sel.Comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
+                    this.rmt_sel.COMP = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
                     this.txt_descricao.Text = rmt_sel.Desc;
                 }
                 else if (tipo_selecionado == Cfg.Init.CAD_ATT_TECNOMETAL)
