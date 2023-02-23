@@ -17,7 +17,7 @@ namespace DLM.cad
         public TercasMenu()
         {
             InitializeComponent();
-            DBases.GetBancoRM().GetTercas();
+            DBases.GetBancoRM().GetPurlins();
             this.Text = $"xPurlin V.{Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local)} [{DLM.vars.Cfg_User.Init.MySQL_Servidor}]";
         }
         public string acao { get; set; } = "";
