@@ -1477,7 +1477,7 @@ namespace DLM.cad
         {
             if (_Materiais == null)
             {
-                _Materiais = DBases.GetBancoRM().GetMateriais().Select(x => x.nome).ToList();
+                _Materiais = DBases.GetBancoRM().GetMateriais().Select(x => x.Nome).ToList();
             }
             return _Materiais;
         }
