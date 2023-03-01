@@ -1225,7 +1225,7 @@ namespace DLM.cad
                             ht.Add("COORDENAÇÃO", this.GetSubEtapa().Coordenador.ToUpper());
                             ht.Add("COORDENACAO", this.GetSubEtapa().Coordenador.ToUpper());
                             ht.Add("PROJETO", this.GetSubEtapa().Projetista.ToUpper());
-                            ht.Add("DESENHO", DBases.GetUserAtual().nome.ToUpper());
+                            ht.Add("DESENHO", DBases.GetUserAtual().Nome.ToUpper());
                             ht.Add("RESPONSAVEL_TECNICO", this.GetSubEtapa().Calculista.ToUpper());
                             ht.Add("CREA", this.GetSubEtapa().CalculistaCREA.ToUpper());
                         }

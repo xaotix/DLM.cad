@@ -540,7 +540,7 @@ namespace DLM.cad
                     combo_mercadoria.Text = "ALMOX";
                     combo_material.Text = "A325";
                     this.combo_material.Visibility = Visibility.Collapsed;
-                    this.tratamento.Visibility = Visibility.Collapsed;
+                    this.tratamento.Text = Cfg.Init.RM_SEM_PINTURA;
                     this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0') + "_A";
                     break;
                 case Tipo_Bloco.Arremate:
@@ -550,7 +550,7 @@ namespace DLM.cad
                     }
                     combo_mercadoria.Text = "ARREMATE";
                     combo_material.Text = "PP ZINC";
-                    this.tratamento.Visibility = Visibility.Collapsed;
+                    this.tratamento.Text = Cfg.Init.RM_SEM_PINTURA;
                     break;
                 case Tipo_Bloco._:
                     break;
