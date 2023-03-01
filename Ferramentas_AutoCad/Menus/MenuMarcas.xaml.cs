@@ -65,28 +65,8 @@ namespace DLM.cad
                 return Tipo_Bloco._;
             }
         }
-        public string db_mercadoria
-        {
-            get
-            {
-                if (combo_mercadoria.SelectedItem is string)
-                {
-                    return combo_mercadoria.SelectedItem as string;
-                }
-                return null;
-            }
-        }
-        public string db_material
-        {
-            get
-            {
-                if (combo_material.SelectedItem is string)
-                {
-                    return combo_material.SelectedItem as string;
-                }
-                return null;
-            }
-        }
+
+
         public MarcaTecnoMetal marca_selecionada
         {
             get
@@ -116,8 +96,8 @@ namespace DLM.cad
 
                 this.Title = $"Medabil Plugin CAD V." + Conexoes.Utilz.GetVersao(Cfg.Init.CAD_DLL_Local) + $" [{DLM.vars.Cfg_User.Init.MySQL_Servidor}]";
 
-                this.combo_mercadoria.ItemsSource = Core.TecnoMetal.GetMercadorias();
-                this.combo_material.ItemsSource = Core.TecnoMetal.GetMateriais();
+
+
 
                 this.Escala = Core.TecnoMetal.GetEscala();
 
@@ -125,8 +105,12 @@ namespace DLM.cad
 
                 combo_tipo_marca.SelectedIndex = 0;
 
-                this.combo_mercadoria.SelectedIndex = 0;
-                this.combo_material.SelectedIndex = 0;
+                if (Conexoes.DBases.GetBancoRM().GetMercadorias().Count > 0)
+                {
+                    this.combo_mercadoria.Content = DBases.GetBancoRM().GetMercadorias().First();
+                }
+                this.bt_material.Content = Cfg.Init.Material;
+                this.bt_tratamento.Content = Cfg.Init.RM_SEM_PINTURA;
 
                 this.DataContext = this;
                 Update();
@@ -171,7 +155,7 @@ namespace DLM.cad
                     {
                         perfil.Content = db_chapa.ToString();
                         db_bobina.Espessura = db_chapa.valor;
-                        db_bobina.Material = this.db_material;
+                        db_bobina.Material = this.bt_material.Content.ToString();
                     }
                     break;
                 case Tipo_Bloco.Perfil:
@@ -238,7 +222,7 @@ namespace DLM.cad
             }
             else
             {
-                if(db_mercadoria==null)
+                if(combo_mercadoria.Content.ToString() == "")
                 {
                     Conexoes.Utilz.Alerta($"Selecione uma mercadoria.");
                     return;
@@ -370,33 +354,33 @@ namespace DLM.cad
                     var sel = Conexoes.Utilz.Selecao.SelecionaCombo(new List<string> { "Sem Dobras", "Com Dobras" }, null);
                     if(sel == "Com Dobras")
                     {
-                        this.combo_mercadoria.Text = "PERFIL DOBRADO";
-                        Core.TecnoMetal.InserirArremate(escala,nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, false, this.db_mercadoria);
+                        this.combo_mercadoria.Content = "PERFIL DOBRADO";
+                        Core.TecnoMetal.InserirArremate(escala,nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, false, this.combo_mercadoria.Content.ToString());
                     }
                     else if(sel == "Sem Dobras")
                     {
-                        Core.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria);
+                        Core.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_chapa, this.combo_mercadoria.Content.ToString());
                     }
                   
                     break;
                 case Tipo_Bloco.Perfil:
-                    Core.TecnoMetal.InserirPerfil(escala, nomeMarca, nomePos, this.db_material, this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil, this.db_mercadoria);
+                    Core.TecnoMetal.InserirPerfil(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil, this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_M2:
-                    Core.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos,this.db_material,this.tratamento.Text, (int)qtd_double, MenuMarcas.db_perfil,this.db_mercadoria);
+                    Core.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos,this.bt_material.Content.ToString(),this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil,this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    Core.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.db_mercadoria, MenuMarcas.db_unitario);
+                    Core.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_unitario);
                     break;
                 case Tipo_Bloco.Arremate:
                     var sel2 = Conexoes.Utilz.Selecao.SelecionaCombo(new List<string> { "Corte", "Vista" }, null);
                     if (sel2 == "Corte")
                     {
-                        Core.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_bobina, true, this.db_mercadoria);
+                        Core.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, true, this.combo_mercadoria.Content.ToString());
                     }
                     else if (sel2 == "Vista")
                     {
-                        Core.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.db_material, (int)qtd_double, this.tratamento.Text, MenuMarcas.db_chapa, this.db_mercadoria, MenuMarcas.db_bobina);
+                        Core.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_chapa, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_bobina);
                     }
                     break;
                 case Tipo_Bloco._:
@@ -429,7 +413,7 @@ namespace DLM.cad
             {
                 this.Update();
                 this.seleciona_marca_composta.SelectedItem = nova;
-                this.tratamento.Text = nova.Tratamento;
+                this.bt_tratamento.Content = nova.Tratamento;
                 
             }
             this.Visibility = Visibility.Visible;
@@ -485,8 +469,8 @@ namespace DLM.cad
             this.bt_criar.IsEnabled = true;
 
             this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0');
-            this.tratamento.Visibility = Visibility.Visible;
-            this.combo_material.Visibility = Visibility.Visible;
+            this.bt_tratamento.Visibility = Visibility.Visible;
+            this.bt_material.Visibility = Visibility.Visible;
 
             if ((bool)rad_m_composta.IsChecked)
             {
@@ -505,16 +489,16 @@ namespace DLM.cad
                     {
                         perfil.Content = db_chapa.ToString();
                     }
-                    combo_mercadoria.Text = "CHAPA";
-                    combo_material.Text = Cfg.Init.Material;
-                    this.tratamento.Visibility = Visibility.Visible;
+                    combo_mercadoria.Content = "CHAPA";
+                    bt_material.Content = Cfg.Init.Material;
+                    this.bt_tratamento.Visibility = Visibility.Visible;
                     break;
                 case Tipo_Bloco.Perfil:
                     if (db_perfil != null)
                     {
                         perfil.Content = db_perfil.ToString();
                     }
-                    combo_material.Text = Cfg.Init.Material;
+                    bt_material.Content = Cfg.Init.Material;
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     if (db_perfil_m2 != null)
@@ -522,8 +506,8 @@ namespace DLM.cad
                         perfil.Content = db_perfil_m2.ToString();
 
                     }
-                    combo_mercadoria.Text = "CHAPA DE PISO";
-                    combo_material.Text = "A572";
+                    combo_mercadoria.Content = "CHAPA DE PISO";
+                    bt_material.Content = "A572";
 
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
@@ -537,10 +521,10 @@ namespace DLM.cad
                         bt_criar.IsEnabled = false;
                     }
 
-                    combo_mercadoria.Text = "ALMOX";
-                    combo_material.Text = "A325";
-                    this.combo_material.Visibility = Visibility.Collapsed;
-                    this.tratamento.Text = Cfg.Init.RM_SEM_PINTURA;
+                    combo_mercadoria.Content = "ALMOX";
+                    bt_material.Content = "A325";
+                    this.bt_material.Visibility = Visibility.Collapsed;
+                    this.bt_tratamento.Content = Cfg.Init.RM_SEM_PINTURA;
                     this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0') + "_A";
                     break;
                 case Tipo_Bloco.Arremate:
@@ -548,9 +532,9 @@ namespace DLM.cad
                     {
                         perfil.Content = db_bobina.ToString();
                     }
-                    combo_mercadoria.Text = "ARREMATE";
-                    combo_material.Text = "PP ZINC";
-                    this.tratamento.Text = Cfg.Init.RM_SEM_PINTURA;
+                    combo_mercadoria.Content = "ARREMATE";
+                    bt_material.Content = "PP ZINC";
+                    this.bt_tratamento.Content = Cfg.Init.RM_SEM_PINTURA;
                     break;
                 case Tipo_Bloco._:
                     break;
@@ -926,7 +910,7 @@ namespace DLM.cad
         private void atualiza_peso_arremate(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-           Core.AtualizarPesoChapaFina();
+           Core.AtualizarPesoChapas();
         }
 
         private void criar_cam_polyline(object sender, RoutedEventArgs e)
@@ -950,6 +934,33 @@ namespace DLM.cad
                 {
                     textBox.SelectAll();
                 }));
+            }
+        }
+
+        private void set_material(object sender, RoutedEventArgs e)
+        {
+            var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+            if(sel!=null)
+            {
+                bt_material.Content = sel.Nome;
+            }
+        }
+
+        private void set_mercadoria(object sender, RoutedEventArgs e)
+        {
+            var sel = DBases.GetBancoRM().GetMercadorias().ListaSelecionar();
+            if(sel!=null)
+            {
+                combo_mercadoria.Content = sel;
+            }
+        }
+
+        private void set_ficha(object sender, RoutedEventArgs e)
+        {
+            var sel = DBases.GetBancoRM().Get_Pinturas().ListaSelecionar();
+            if(sel!=null)
+            {
+                bt_tratamento.Content = sel;
             }
         }
     }

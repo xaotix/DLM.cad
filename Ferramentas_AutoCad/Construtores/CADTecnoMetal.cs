@@ -22,14 +22,13 @@ namespace DLM.cad
         private Conexoes.SubEtapaTecnoMetal _subetapa { get; set; }
         private Conexoes.ObraTecnoMetal _obra { get; set; }
         private Conexoes.PedidoTecnoMetal _pedido { get; set; }
-        private string _Material_sel { get; set; }
+
         private string _Mercadoria_sel { get; set; }
         private Conexoes.Chapa _Chapa_sel { get; set; }
         private Conexoes.Bobina _Bobina_sel { get; set; }
-        private List<Conexoes.Bobina> _Bobinas { get; set; }
         private List<Conexoes.Chapa> _Chapas { get; set; }
         private List<string> _Materiais { get; set; }
-        private List<string> _Mercadorias { get; set; }
+
 
         public List<MarcaTecnoMetal> Getposicoes(ref List<Report> erros, bool update)
         {
@@ -875,7 +874,7 @@ namespace DLM.cad
 
         }
 
-        
+
         /*
          Section 'PROFILEDATA' contain:
                     MAT_PRO = MATERIAL
@@ -1258,7 +1257,7 @@ namespace DLM.cad
                     acCurDb = CAD.acCurDb;
                 }
 
-      
+
 
                 var atributos = bloco.GetAttributes(somente_visiveis, acCurDb);
                 atributos[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
@@ -1403,16 +1402,16 @@ namespace DLM.cad
             return retorno;
 
         }
-        
-
-        
 
 
-        public List<Report> AtualizarPesoChapaFina(List<BlockReference> blocos = null)
+
+
+
+        public List<Report> AtualizarPesoChapa(List<BlockReference> blocos)
         {
             List<Report> erros = new List<Report>();
 
-           // var pcs = GetMarcas(ref erros, blocos);
+            // var pcs = GetMarcas(ref erros, blocos);
 
             using (var acTrans = acCurDb.acTransST())
             {
@@ -1422,27 +1421,27 @@ namespace DLM.cad
                     foreach (var blk in blocos)
                     {
                         var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
-                        var marca = new MarcaTecnoMetal(bkm);
+                        var bloco = new MarcaTecnoMetal(bkm);
 
-                        if (marca.Tipo_Marca == Tipo_Marca.MarcaSimples && marca.Tipo_Bloco == Tipo_Bloco.Arremate)
+                        if ((bloco.Tipo_Marca != Tipo_Marca.MarcaComposta) && (bloco.Tipo_Bloco == Tipo_Bloco.Arremate| bloco.Tipo_Bloco == Tipo_Bloco.Chapa))
                         {
-                            var bob = marca.GetBobina();
+                            var bob = bloco.GetBobina();
                             if (bob != null)
                             {
-                                var peso = marca.CalcularPesoLinear();
-                                var sup = marca.CalcularSuperficieLinear();
+                                var peso = bloco.CalcularPesoLinear();
+                                var sup = bloco.CalcularSuperficieLinear();
 
                                 var att = new db.Linha();
                                 att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                                att.Add(TAB_DBF1.SUN_LIS.ToString(), marca.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
-                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{marca.Comprimento.String(0)}*{marca.Espessura.String()}*{marca.Largura.String(0)}");
-                                att.Add(TAB_DBF1.SPE_PRO.ToString(), marca.Espessura.ToString("N2"));
+                                att.Add(TAB_DBF1.SUN_LIS.ToString(), bloco.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
+                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String()}*{bloco.Largura.String(0)}");
+                                att.Add(TAB_DBF1.SPE_PRO.ToString(), bloco.Espessura.ToString("N2"));
 
                                 DLM.cad.Atributos.Set(blk, acTrans, att);
                             }
                             else
                             {
-                                erros.Add(new Report("Bobina não existe ou está em branco", $"Marca: {marca.Marca}", DLM.vars.TipoReport.Crítico));
+                                erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Marca} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Crítico));
                             }
                         }
                     }
@@ -1457,44 +1456,16 @@ namespace DLM.cad
 
 
 
-        public List<Conexoes.Bobina> GetBobinas()
-        {
-            if (_Bobinas == null)
-            {
-                _Bobinas = DBases.GetBancoRM().GetBobinas();
-            }
-            return _Bobinas;
-        }
-        public List<Conexoes.Chapa> GetChapas()
-        {
-            if (_Chapas == null)
-            {
-                _Chapas = DBases.GetChapas();
-            }
-            return _Chapas;
-        }
-        public List<string> GetMateriais()
-        {
-            if (_Materiais == null)
-            {
-                _Materiais = DBases.GetBancoRM().GetMateriais().Select(x => x.Nome).ToList();
-            }
-            return _Materiais;
-        }
-        public List<string> GetMercadorias()
-        {
-            if (_Mercadorias == null)
-            {
-                _Mercadorias = DBases.GetBancoRM().GetMercadorias();
-            }
-            return _Mercadorias;
-        }
+
+
+
+
 
 
         public Conexoes.Bobina PromptBobina(Conexoes.Chapa espessura = null)
         {
             List<Conexoes.Bobina> bobinas = new List<Conexoes.Bobina>();
-            bobinas.AddRange(GetBobinas());
+            bobinas.AddRange(Conexoes.DBases.GetBancoRM().GetBobinas());
             if (espessura != null)
             {
                 bobinas = bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte);
@@ -1511,7 +1482,7 @@ namespace DLM.cad
         {
 
             List<Conexoes.Chapa> chapas = new List<Conexoes.Chapa>();
-            chapas.AddRange(GetChapas());
+            chapas.AddRange(DBases.GetChapas());
             if (tipo == Tipo_Chapa.Fina)
             {
                 chapas = chapas.FindAll(x => x.GetChapa_Fina());
@@ -1521,7 +1492,7 @@ namespace DLM.cad
                 chapas = chapas.FindAll(x => !x.GetChapa_Fina());
             }
 
-            var sel = Conexoes.Utilz.Selecao.SelecionaCombo(chapas, _Chapa_sel, "Selecione uma espessura");
+            var sel = chapas.ListaSelecionar();
 
             if (sel != null)
             {
@@ -1529,18 +1500,10 @@ namespace DLM.cad
             }
             return sel;
         }
-        public string PromptMaterial()
-        {
-            string sel = Conexoes.Utilz.Selecao.SelecionaCombo(GetMateriais(), _Material_sel, "Selecione o Material");
-            if (sel != null)
-            {
-                _Material_sel = sel;
-            }
-            return sel;
-        }
+
         public string PromptMercadoria()
         {
-            var sel = Conexoes.Utilz.Selecao.SelecionaCombo(GetMercadorias(), _Mercadoria_sel, "Selecione a Mercadoria");
+            var sel = Conexoes.DBases.GetBancoRM().GetMercadorias().ListaSelecionar();
             if (sel != null)
             {
                 _Mercadoria_sel = sel;
@@ -1570,7 +1533,12 @@ namespace DLM.cad
                     var marca = PromptMarca("P01");
                     if (marca != null)
                     {
-                        var material = PromptMaterial();
+                        string material = null;
+                        var selm = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                        if (selm != null)
+                        {
+                            material = selm.Nome;
+                        }
                         if (material != null)
                         {
                             var esp = PromptChapa(Tipo_Chapa.Tudo);
@@ -1929,7 +1897,11 @@ namespace DLM.cad
                         {
                             if (material == null)
                             {
-                                material = PromptMaterial();
+                                var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                                if (sel != null)
+                                {
+                                    material = sel.Nome;
+                                }
                             }
                             bobina.Espessura = espessura.valor;
                             bobina.Material = material;
@@ -2092,7 +2064,11 @@ namespace DLM.cad
             {
                 if (material == null)
                 {
-                    material = PromptMaterial();
+                    var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                    if (sel != null)
+                    {
+                        material = sel.Nome;
+                    }
                 }
 
                 if (material != null)
@@ -2163,7 +2139,11 @@ namespace DLM.cad
                 {
                     if (material == null)
                     {
-                        material = PromptMaterial();
+                        var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                        if (sel != null)
+                        {
+                            material = sel.Nome;
+                        }
                     }
                     if (material != null)
                     {
@@ -2297,12 +2277,12 @@ namespace DLM.cad
 
                 if (marcas.Count > 0)
                 {
-                    var mercadoria = PromptMaterial();
-                    if (mercadoria != null && mercadoria != "")
+                    var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                    if (sel != null)
                     {
                         foreach (var bloco in marcas)
                         {
-                            Atributos.Set(bloco, acTrans, TAB_DBF1.MAT_PRO.ToString(), mercadoria);
+                            Atributos.Set(bloco, acTrans, TAB_DBF1.MAT_PRO.ToString(), sel.Nome);
                         }
                     }
                     acTrans.Commit();

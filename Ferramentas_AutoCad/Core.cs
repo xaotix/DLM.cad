@@ -410,8 +410,8 @@ namespace DLM.cad
             pp.InserirTabela();
         }
 
-        [CommandMethod(nameof(AtualizarPesoChapaFina))]
-        public static void AtualizarPesoChapaFina()
+        [CommandMethod(nameof(AtualizarPesoChapas))]
+        public static void AtualizarPesoChapas()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
 
@@ -432,7 +432,7 @@ namespace DLM.cad
                 }
             }
 
-            var err = pp.AtualizarPesoChapaFina(blks);
+            var err = pp.AtualizarPesoChapa(blks);
             if (err.Count == 0)
             {
                 if (Conexoes.Utilz.Pergunta("Pesos Atualizados! Deseja gerar/atualizar a tabela?}"))

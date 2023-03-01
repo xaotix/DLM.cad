@@ -231,13 +231,13 @@
 
 
                                 <Label Grid.Row="1" Grid.Column="0" Content="Mercadoria:" VerticalAlignment="Center"/>
-                                <ComboBox Grid.ColumnSpan="5" IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}" Grid.Row="1" Grid.Column="1" Name="combo_mercadoria"/>
+                                <Button Grid.ColumnSpan="5" IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}" Grid.Row="1" Grid.Column="1" Name="combo_mercadoria" Click="set_mercadoria"/>
 
                                 <Label HorizontalAlignment="Right" Grid.Row="3" Content="Material:" VerticalAlignment="Center"/>
-                                <ComboBox Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="3" Name="combo_material"/>
+                                <Button Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="3" Name="bt_material" Click="set_material"/>
 
                                 <Label HorizontalAlignment="Right" Grid.Column="2" Grid.Row="2" Content="Tratamento:" VerticalAlignment="Center"/>
-                                <TextBox Grid.ColumnSpan="3" IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}"  Grid.Column="3" Grid.Row="2" Name="tratamento" Text="FICHA 01" MaxLength="20" CharacterCasing="Upper"/>
+                                <Button Grid.ColumnSpan="3" IsEnabled="{Binding ElementName=m_simples, Path=IsChecked,TargetNullValue=false}"  Grid.Column="3" Grid.Row="2" Name="bt_tratamento" Content="" Click="set_ficha"/>
 
 
                                 <!--<Label Grid.Column="0" Grid.Row="4" Content="Larg.:" VerticalAlignment="Center"/>
@@ -285,7 +285,7 @@
                    
                     <GroupBox Header="TecnoMetal">
                         <StackPanel>
-                            <Button Content="Atualizar Pesos Arremates"  Click="atualiza_peso_arremate"/>
+                            <Button Content="Atualizar Pesos Chapas e Arremates"  Click="atualiza_peso_arremate"/>
                             <Button Content="Inserir Tabela TecnoMetal"  Click="insere_tabela_auto"/>
                             <Button Content="Solda de composição"  Click="composicao"/>
                             <Separator></Separator>
