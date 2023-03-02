@@ -243,8 +243,8 @@ namespace DLM.cad.Menus
             }
             else if(tipo_selecionado == Cfg.Init.CAD_ATT_TECNOMETAL)
             {
-                List<Report> erros = new List<Report>();
-                marcas_tecnometal = this.TecnoMetal.GetMarcasPranchas(ref erros);
+                var erros = new List<Report>();
+                marcas_tecnometal = this.TecnoMetal.GetMarcas(ref erros);
                 if (marcas_tecnometal.Count > 0)
                 {
                     this.marca_sel = marcas_tecnometal.ListaSelecionar();

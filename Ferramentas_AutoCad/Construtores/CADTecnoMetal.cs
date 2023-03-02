@@ -913,19 +913,20 @@ namespace DLM.cad
         }
 
 
-        public List<MarcaTecnoMetal> GetMarcas(ref List<Report> erros)
-        {
-            return GetBlocosMarcas(acCurDb, ref erros, acDoc.Name).GetMarcas(ref erros);
-        }
+        //public List<MarcaTecnoMetal> GetMarcas(ref List<Report> erros)
+        //{
+        //    return GetBlocosMarcas(acCurDb, ref erros, acDoc.Name).GetMarcas(ref erros);
+        //}
 
-        public List<MarcaTecnoMetal> GetMarcasPranchas(ref List<Report> erros)
+        public List<MarcaTecnoMetal> GetMarcas(ref List<Report> erros)
         {
             if (!this.E_Tecnometal())
             {
                 return new List<MarcaTecnoMetal>();
             }
-            var pcs = GetPecasPranchas(ref erros);
-            return pcs.GetMarcas(ref erros);
+            var pcs = GetBlocosMarcas(acCurDb, ref erros,acDoc.Name);
+            var tbl = Conexoes.Utilz.DBF.ConverterParaDBF(pcs,ref erros);
+            return tbl.GetMarcas(ref erros);
         }
 
         public Conexoes.SubEtapaTecnoMetal GetSubEtapa()
@@ -1357,7 +1358,7 @@ namespace DLM.cad
             }
             Core.Getw().Close();
 
-            return Conexoes.Utilz.DBF.ConverterParaDBF(marcas, ref erros); ;
+            return Conexoes.Utilz.DBF.ConverterParaDBF(marcas, ref erros); 
         }
         private db.Tabela GetBlocosMarcas(Database acCurdb, ref List<Report> erros, string arquivo)
         {
@@ -1376,12 +1377,12 @@ namespace DLM.cad
 
                 if (errosm.Length > 0 | errosp.Length > 0)
                 {
-                    erros.Add(new Report($"{nome_arq}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", TipoReport.Crítico));
+                    erros.Add(new Report($"{nome_arq}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", nome_arq, TipoReport.Crítico));
                 }
 
                 if (ms.Count == 0)
                 {
-                    erros.Add(new Report($"{nome_arq}", $"Prancha não tem marcas", DLM.vars.TipoReport.Crítico));
+                    erros.Add(new Report($"{nome_arq}", $"Prancha não tem marcas", nome_arq, DLM.vars.TipoReport.Crítico));
                 }
 
                 foreach (var m in ms)
@@ -1397,6 +1398,7 @@ namespace DLM.cad
             }
 
             var retorno = new List<db.Tabela> { marcas, posicoes }.Unir();
+
 
 
             return retorno;
@@ -1432,8 +1434,8 @@ namespace DLM.cad
                                 var sup = bloco.CalcularSuperficieLinear();
 
                                 var att = new db.Linha();
-                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                                att.Add(TAB_DBF1.SUN_LIS.ToString(), bloco.CalcularSuperficieLinear().String(Cfg.Init.DECIMAIS_Superficie));
+                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso);
+                                att.Add(TAB_DBF1.SUN_LIS.ToString(), sup);
                                 att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String()}*{bloco.Largura.String(0)}");
                                 att.Add(TAB_DBF1.SPE_PRO.ToString(), bloco.Espessura.ToString("N2"));
 
@@ -1856,6 +1858,60 @@ namespace DLM.cad
 
             }
         }
+        public void GerarCamsChapasRetas()
+        {
+            string destino = this.Pasta;
+            if (this.E_Tecnometal(false))
+            {
+                destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), Cfg.Init.EXT_CAM);
+            }
+            else
+            {
+                return;
+            }
+            var erros = new List<Report>();
+            var marcas = this.GetMarcas(ref erros);
+
+
+
+            var marcas_chapas = marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaSimples | x.Tipo_Marca == Tipo_Marca.Posicao).FindAll(x=>x.Tipo_Bloco == Tipo_Bloco.Chapa | x.Tipo_Bloco == Tipo_Bloco.Arremate);
+
+            if(marcas_chapas.Count>0)
+            {
+                var selecoes = marcas_chapas.ListaSelecionarVarios(true);
+                if (Directory.Exists(destino) && selecoes.Count>0)
+                {
+                    if(Conexoes.Utilz.Pergunta($"Tem certeza que deseja gerar os CAMs das Chapas selecionadas?\nAtenção: Serão gerados CAMs retos, sem furações e sem recortes."))
+                    {
+                        foreach (var chapa_dobrada in selecoes)
+                        {
+                            var Perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
+
+                            string arquivo = $"{destino}{chapa_dobrada.Marca}.{Cfg.Init.EXT_CAM}";
+
+                            DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, chapa_dobrada.Comprimento);
+
+                            pcam.Cabecalho.TRA_PEZ = chapa_dobrada.Tratamento;
+                            pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade.Int();
+                            pcam.Cabecalho.Material = chapa_dobrada.Material;
+                            pcam.Cabecalho.Marca = chapa_dobrada.Marca;
+                            pcam.Gerar();
+                        }
+                    }
+                    
+                   
+                    destino.Abrir();
+
+                }
+            }
+
+
+
+
+        
+        }
+
+
         public void InserirChapa(double escala, string marca = "", string posicao = "", string material = null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null, Conexoes.Bobina bobina = null)
         {
             this.SetEscala(escala);

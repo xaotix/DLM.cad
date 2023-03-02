@@ -143,10 +143,10 @@ namespace DLM.cad
         }
         public static void IrLayout(this Document acDoc)
         {
-            var lista = acDoc.GetLayouts().Select(x => x.LayoutName).ToList().FindAll(x => x.ToUpper() != "MODEL");
-            if (lista.Count > 0)
+            using (var docLock = acDoc.LockDocument())
             {
-                using (var docLock = acDoc.LockDocument())
+                var lista = acDoc.GetLayouts().Select(x => x.LayoutName).ToList().FindAll(x => x.ToUpper() != "MODEL");
+                if (lista.Count > 0)
                 {
                     LayoutManager.Current.CurrentLayout = lista[0];
                 }

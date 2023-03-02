@@ -30,43 +30,22 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static void Set(this  List<Autodesk.AutoCAD.DatabaseServices.BlockReference> blocos, Transaction acTrans, db.Linha valores)
+        public static void Set(this List<Autodesk.AutoCAD.DatabaseServices.BlockReference> blocos, Transaction acTrans, db.Linha valores)
         {
-
             using (var docLock = acDoc.LockDocument())
             {
                 foreach (var bloco in blocos)
                 {
-                    AttributeCollection attCol = bloco.AttributeCollection;
-                    foreach (ObjectId attId in attCol)
-                    {
-
-                        AttributeReference att = acTrans.GetObject(attId, OpenMode.ForRead, false) as AttributeReference;
-                        if (valores.Contem(att.Tag.ToUpper()))
-                        {
-                            att.UpgradeOpen();
-                            att.TextString = valores[att.Tag.ToUpper()].ToString();
-                        }
-                    }
+                    Set(bloco, acTrans, valores);
                 }
             }
         }
         public static void Set(this BlockReference myBlockRef, Transaction acTrans, string tag, string value)
         {
             if (myBlockRef == null) { return; }
-            using (var docLock = acDoc.LockDocument())
-            {
-                AttributeCollection attCol = myBlockRef.AttributeCollection;
-                foreach (ObjectId attId in attCol)
-                {
-                    AttributeReference att = acTrans.GetObject(attId, OpenMode.ForRead, false) as AttributeReference;
-                    if (att.Tag.ToUpper().Replace(" ", "") == tag.ToUpper().Replace(" ", ""))
-                    {
-                        att.UpgradeOpen();
-                        att.TextString = value;
-                    }
-                }
-            }
+            var linha = new db.Linha();
+            linha.Add(tag, value);
+            Set(myBlockRef, acTrans, linha);
         }
         public static void Set(this BlockReference myBlockRef, Transaction acTrans, db.Linha atributos)
         {
@@ -79,7 +58,13 @@ namespace DLM.cad
                     if (atributos.Contem(attRef.Tag))
                     {
                         attRef.UpgradeOpen();
-                        attRef.TextString = atributos[attRef.Tag.ToUpper()].ToString();
+                        var celula = atributos[attRef.Tag.ToUpper()];
+                        var valor = celula.ValorCadastro();
+                        if (valor == "NULL")
+                        {
+                            valor = "";
+                        }
+                        attRef.TextString = valor;
                     }
                 }
             }

@@ -963,5 +963,11 @@ namespace DLM.cad
                 bt_tratamento.Content = sel;
             }
         }
+
+        private void gerar_cams_chapas(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Core.TecnoMetal.GerarCamsChapasRetas();
+        }
     }
 }

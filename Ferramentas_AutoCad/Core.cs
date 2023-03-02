@@ -410,26 +410,31 @@ namespace DLM.cad
             pp.InserirTabela();
         }
 
+        [CommandMethod(nameof(GerarCamsChapasRetas))]
+        public static void GerarCamsChapasRetas()
+        {
+            CADTecnoMetal pp = new CADTecnoMetal();
+            pp.GerarCamsChapasRetas();
+        }
+
         [CommandMethod(nameof(AtualizarPesoChapas))]
         public static void AtualizarPesoChapas()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
 
-            List<BlockReference> blks = null;
-            if (!Conexoes.Utilz.Pergunta("Selecionar tudo?"))
+            List<BlockReference> blks = pp.Selecoes.Filter<BlockReference>();
+            if (blks.Count == 0)
             {
-                if (pp.SelecionarObjetos(CAD_TYPE.INSERT).Status == PromptStatus.OK)
+                if (Conexoes.Utilz.Pergunta("Nada Selecionado. Selecionar tudo?"))
                 {
+                    pp.SelecionarTudo();
                     blks = pp.Selecoes.Filter<BlockReference>();
-                    if(blks.Count==0)
-                    {
-                        return;
-                    }
                 }
-                else
-                {
-                    return;
-                }
+
+            }
+            if(blks.Count==0)
+            {
+                return;
             }
 
             var err = pp.AtualizarPesoChapa(blks);
