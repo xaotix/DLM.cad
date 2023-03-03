@@ -136,7 +136,7 @@ namespace DLM.cad
         {
             var arqs = Conexoes.Utilz.GetArquivos(this.Pasta, "*.dwg").Select(x => new Conexoes.Arquivo(x)).ToList();
 
-            var selecao = arqs.FindAll(x => x.Nome.ToUpper().Contains(Cfg.Init.DWG_FAB_FILTRO) && x.Nome.Length > 8);
+            var selecao = arqs.FindAll(x => x.Nome.Contains(Cfg.Init.DWG_FAB_FILTRO) && x.Nome.Length > 8);
             var ultimas_revs = selecao.GroupBy(x => x.Nome.Substring(0, x.Nome.Length - 3)).Select(x => x.ToList().OrderByDescending(y => y.Nome)).Select(x => x.First()).ToList();
             selecao = ultimas_revs;
 
