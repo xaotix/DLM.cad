@@ -285,7 +285,7 @@ namespace DLM.cad
                             {
                                 nome = "Model";
                             }
-                            else if (arquivo.Endereco.ToUpper() == this.Endereco.ToUpper())
+                            else if (arquivo.Endereco == this.Endereco)
                             {
 
 
@@ -1311,7 +1311,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    pranchas = pranchas.FindAll(x => x.Endereco.ToUpper().EndsWith(".DWG")).ToList();
+                    pranchas = pranchas.FindAll(x => x.Extensao == "DWG").ToList();
                     arquivos = pranchas.Select(x => new FileInfo(x.Endereco)).ToList();
                 }
 
