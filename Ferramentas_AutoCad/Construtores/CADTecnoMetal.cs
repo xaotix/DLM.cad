@@ -33,7 +33,7 @@ namespace DLM.cad
         public List<MarcaTecnoMetal> Getposicoes(ref List<Report> erros, bool update)
         {
             var marcas = GetMarcas(ref erros);
-            var pos = marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Posicao).Select(x => x.First()).ToList();
+            var pos = marcas.SelectMany(x => x.GetPosicoes()).GroupBy(x => x.Nome_Posicao).Select(x => x.First()).ToList();
             return pos;
         }
         public List<Conexoes.Filete> InserirSoldaComposicao()
@@ -42,23 +42,23 @@ namespace DLM.cad
             List<Report> erros = new List<Report>();
 
             var pos = Getposicoes(ref erros, true);
-            var pos_soldados_desmembrados = pos.FindAll(y => !y.Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
+            var pos_soldados_desmembrados = pos.FindAll(y => !y.Nome_Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
             var montar_desmembrado = pos.FindAll(y =>
-            y.Posicao.Contains("_1") |
-            y.Posicao.Contains("_2") |
-            y.Posicao.Contains("_3") |
-            y.Posicao.Contains("_4")
+            y.Nome_Posicao.Contains("_1") |
+            y.Nome_Posicao.Contains("_2") |
+            y.Nome_Posicao.Contains("_3") |
+            y.Nome_Posicao.Contains("_4")
             );
 
 
-            var marcas_desmembrados = montar_desmembrado.GroupBy(x => x.Posicao.Substring(0, x.Posicao.Length - 2));
+            var marcas_desmembrados = montar_desmembrado.GroupBy(x => x.Nome_Posicao.Substring(0, x.Nome_Posicao.Length - 2));
 
 
             foreach (var m in marcas_desmembrados)
             {
-                var almas = m.ToList().FindAll(x => x.Posicao.EndsWith("_1") | x.Posicao.EndsWith("_4") | x.Posicao.EndsWith("_7") | x.Posicao.EndsWith("_10") | x.Posicao.EndsWith("_13")).ToList();
-                var resto = m.ToList().FindAll(x => almas.Find(y => y.Posicao == x.Posicao) == null).ToList();
+                var almas = m.ToList().FindAll(x => x.Nome_Posicao.EndsWith("_1") | x.Nome_Posicao.EndsWith("_4") | x.Nome_Posicao.EndsWith("_7") | x.Nome_Posicao.EndsWith("_10") | x.Nome_Posicao.EndsWith("_13")).ToList();
+                var resto = m.ToList().FindAll(x => almas.Find(y => y.Nome_Posicao == x.Nome_Posicao) == null).ToList();
 
                 if (almas.Count > 0 && resto.Count > 0)
                 {
@@ -92,7 +92,7 @@ namespace DLM.cad
                     {
                         var np = cmp.Clonar();
                         np.Perfil = pp;
-                        np.Nome_Pos = p.Posicao;
+                        np.Nome_Pos = p.Nome_Posicao;
                         retorno.Add(np);
                     }
                 }
@@ -1153,7 +1153,7 @@ namespace DLM.cad
 
             var marcas = GetMarcas(ref erros);
 
-            var nomes_PECAS = marcas.Select(x => x.Marca).Distinct().ToList();
+            var nomes_PECAS = marcas.Select(x => x.Nome).Distinct().ToList();
 
             using (var docLock = acDoc.LockDocument())
             {
@@ -1212,8 +1212,8 @@ namespace DLM.cad
                         else
                         {
                             ht.Add("TIPO_DE_PROJETO", this.Nome.Contains(Cfg.Init.DWG_FAB_FILTRO) ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
-                            ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Marca.ToUpper()))}");
-                            ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Marca.ToUpper()))}");
+                            ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
+                            ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
                             ht.Add("OBRA", this.GetObra().Descrição.ToUpper());
                             ht.Add("PREDIO", this.GetSubEtapa().Predio.ToUpper());
                             ht.Add("CLIENTE", this.GetObra().Cliente.ToUpper());
@@ -1443,7 +1443,7 @@ namespace DLM.cad
                             }
                             else
                             {
-                                erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Marca} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Crítico));
+                                erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Crítico));
                             }
                         }
                     }
@@ -1656,7 +1656,7 @@ namespace DLM.cad
 
             List<Report> erros = new List<Report>();
             var marcas = this.GetMarcas(ref erros);
-            var nnn = marcas.FindAll(x => x.Marca.StartsWith(prefix)).Count + 1;
+            var nnn = marcas.FindAll(x => x.Nome.StartsWith(prefix)).Count + 1;
         retentar:
             var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", prefix + nnn.ToString().PadLeft(2, '0'), true, "NOME_MARCA", false, 25).ToUpper().Replace(" ", "");
 
@@ -1671,7 +1671,7 @@ namespace DLM.cad
                     return "";
                 }
             }
-            var iguais = marcas.FindAll(x => x.Marca == m);
+            var iguais = marcas.FindAll(x => x.Nome == m);
             if (iguais.Count > 0)
             {
                 if (Conexoes.Utilz.Pergunta($"[{m}] Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?"))
@@ -1887,14 +1887,14 @@ namespace DLM.cad
                         {
                             var Perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
 
-                            string arquivo = $"{destino}{chapa_dobrada.Marca}.{Cfg.Init.EXT_CAM}";
+                            string arquivo = $"{destino}{chapa_dobrada.Nome}.{Cfg.Init.EXT_CAM}";
 
                             DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, chapa_dobrada.Comprimento);
 
                             pcam.Cabecalho.TRA_PEZ = chapa_dobrada.Tratamento;
                             pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade.Int();
                             pcam.Cabecalho.Material = chapa_dobrada.Material;
-                            pcam.Cabecalho.Marca = chapa_dobrada.Marca;
+                            pcam.Cabecalho.Marca = chapa_dobrada.Nome;
                             pcam.Gerar();
                         }
                     }
@@ -2289,7 +2289,7 @@ namespace DLM.cad
                         if (mercadoria != null && mercadoria != "")
                         {
                             Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
-                            return this.GetMarcas(ref erros).FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).Find(x => x.Marca == nome);
+                            return this.GetMarcas(ref erros).FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).Find(x => x.Nome == nome);
                         }
                     }
                 }

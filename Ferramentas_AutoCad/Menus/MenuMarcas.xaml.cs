@@ -248,7 +248,7 @@ namespace DLM.cad
                 return;
             }
 
-           if(this.Posicoes.FindAll(x=>x.Marca.ToUpper() == NomeFim.ToUpper()).Count>0)
+           if(this.Posicoes.FindAll(x=>x.Nome.ToUpper() == NomeFim.ToUpper()).Count>0)
             {
                 Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} Já existe uma posição com o mesmo nome.");
                 return;
@@ -270,7 +270,7 @@ namespace DLM.cad
 
 
 
-            if (ms.FindAll(x => x.Marca == NomeFim).Count > 0 | pos.FindAll(x => x.Posicao == NomeFim).Count > 0)
+            if (ms.FindAll(x => x.Nome == NomeFim).Count > 0 | pos.FindAll(x => x.Nome_Posicao == NomeFim).Count > 0)
             {
                 if (this.marca_selecionada == null)
                 {
@@ -343,7 +343,7 @@ namespace DLM.cad
             }
             else
             {
-                nomeMarca = this.marca_selecionada.Marca;
+                nomeMarca = this.marca_selecionada.Nome;
                 nomePos = this.NomeFim;
             }
 

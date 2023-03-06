@@ -459,7 +459,7 @@ namespace DLM.cad
                             m_pes_tot = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;
                         }
                         var mp = new db.Linha();
-                        mp.Add(Cfg.Init.CAD_ATT_Marca, Marca.Marca);
+                        mp.Add(Cfg.Init.CAD_ATT_Marca, Marca.Nome);
                         mp.Add(Cfg.Init.CAD_ATT_Quantidade, Marca.Quantidade.Round(2).ToString());
                         mp.Add(Cfg.Init.CAD_ATT_Descricao, Marca.Mercadoria);
                         mp.Add(Cfg.Init.CAD_ATT_Material, Marca.Material);
@@ -485,7 +485,7 @@ namespace DLM.cad
                             }
 
                             var hp = new db.Linha();
-                            hp.Add(Cfg.Init.CAD_ATT_Marca, Pos.Posicao);
+                            hp.Add(Cfg.Init.CAD_ATT_Marca, Pos.Nome_Posicao);
                             hp.Add(Cfg.Init.CAD_ATT_Quantidade, (Pos.Quantidade * Marca.Quantidade).Round(2).ToString());
                             hp.Add(Cfg.Init.CAD_ATT_Descricao, Pos.Perfil.CortarString(34,false));
                             hp.Add(Cfg.Init.CAD_ATT_Material, Pos.Material);

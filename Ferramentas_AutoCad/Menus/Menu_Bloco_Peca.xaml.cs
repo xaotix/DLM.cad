@@ -186,7 +186,7 @@ namespace DLM.cad.Menus
                 {
                     if (this.marca_sel != null)
                     {
-                        this.txt_codigo.Text = this.marca_sel.Marca;
+                        this.txt_codigo.Text = this.marca_sel.Nome;
                         this.txt_comprimento.Text = this.marca_sel.Comprimento.String(0);
                         this.txt_descricao.Text = this.marca_sel.Mercadoria;
                         this.txt_destino.Text = Cfg.Init.CAD_ATT_TECNOMETAL;
