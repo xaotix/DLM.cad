@@ -851,7 +851,7 @@ namespace DLM.cad
         public static void gerarPDFEtapacarrega()
         {
             var arquivos = Conexoes.Utilz.Arquivo.Ler(TecnoMetal.Pasta + @"DAT\plotar.txt").Select(x=> new Conexoes.Arquivo(x)).ToList();
-            arquivos = arquivos.FindAll(x => x.Existe);
+            arquivos = arquivos.FindAll(x => x.Existe());
             TecnoMetal.GerarPDF(arquivos);
         }
 
