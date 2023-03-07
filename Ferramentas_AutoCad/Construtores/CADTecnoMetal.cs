@@ -249,7 +249,6 @@ namespace DLM.cad
             var pacotes = arquivos.Quebrar(pranchas_por_page_setup);
 
 
-            Core.Getw().Show();
             int c = 1;
 
 
@@ -484,7 +483,6 @@ namespace DLM.cad
                 //List<Autodesk.AutoCAD.DatabaseServices.BlockReference> excluir = new List<Autodesk.AutoCAD.DatabaseServices.BlockReference>();
 
                 Core.Getw().SetProgresso(1, tipos.Count);
-                Core.Getw().Show();
 
                 List<BlockAttributes> final = new List<BlockAttributes>();
                 List<BlockAttributes> desagrupado = new List<BlockAttributes>();
@@ -602,7 +600,6 @@ namespace DLM.cad
             {
                 var tot = outros.Sum(x => x.Blocos.Count);
                 Core.Getw().SetProgresso(1, tot, $"Inserindo {tot} blocos de outras peças");
-                Core.Getw().Show();
                 foreach (var pc in outros)
                 {
                     pc.Numero = seq.ToString().PadLeft(2, '0');
@@ -970,7 +967,6 @@ namespace DLM.cad
             {
                 var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
                 Core.Getw().SetProgresso(1, dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
-                Core.Getw().Show();
 
                 foreach (var s in dxfs)
                 {
@@ -1324,7 +1320,6 @@ namespace DLM.cad
                 }
 
                 Core.Getw().SetProgresso(1, arquivos.Count(), "Carregando...");
-                Core.Getw().Show();
                 foreach (FileInfo file in arquivos)
                 {
                     Core.Getw().somaProgresso($"Mapeando peças: {file.Name}");
