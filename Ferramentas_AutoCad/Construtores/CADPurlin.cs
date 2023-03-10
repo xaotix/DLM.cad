@@ -766,8 +766,8 @@ namespace DLM.cad
             ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia.ToString().PadLeft(3,'0'));
             ht.Add("CRD", string.Join(";", p.Correntes_Direita));
             ht.Add("CRE", string.Join(";",p.Correntes_Esquerda));
-            ht.Add("AD", this.OffsetApoio.ToString());
-            ht.Add("AE", this.OffsetApoio.ToString());
+            ht.Add("AD", this.OffsetApoio);
+            ht.Add("AE", this.OffsetApoio);
             ht.Add("FBD", "");
             ht.Add("FBE", "");
             ht.Add("REB", p.Rebater_Furos ? "Sim" : "Não");
@@ -780,7 +780,7 @@ namespace DLM.cad
             ht.Add(Cfg.Init.CAD_ATT_Transp_Esq, p.Esquerda.Comprimento);
             ht.Add("ID_DB", "");
             ht.Add("PINTURA", p.Pintura);
-            ht.Add("ID_PECA", p.id_peca.ToString());
+            ht.Add("ID_PECA", p.id_peca);
             ht.Add(Cfg.Init.CAD_ATT_Tipo, p.Perfil.Contains("C")?"C":"Z");
             ht.Add("SECAO", p.Secao);
             ht.Add(Cfg.Init.CAD_ATT_Espessura, p.Espessura);
@@ -798,8 +798,8 @@ namespace DLM.cad
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
             ht.Add("CRD", "");
             ht.Add("CRE", string.Join(";", Correntes_Esq));
-            ht.Add("AD", this.OffsetApoio.ToString());
-            ht.Add("AE", this.OffsetApoio.ToString());
+            ht.Add("AD", this.OffsetApoio);
+            ht.Add("AE", this.OffsetApoio);
             ht.Add("FBD", "");
             ht.Add("FBE", "");
             ht.Add("REB", this.RebaterFuros ? "Sim" : "Não");
@@ -835,9 +835,9 @@ namespace DLM.cad
             ht.Add("OFFSET1", offset1.String(0));
             ht.Add("OFFSET2", offset2.String(0));
 
-            ht.Add("TIP", TIP.ToString());
-            ht.Add("SFTA", sfta.ToString());
-            ht.Add("SFTB", sftb.ToString());
+            ht.Add("TIP", TIP);
+            ht.Add("SFTA", sfta);
+            ht.Add("SFTB", sftb);
 
             Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_Indicacao_Tirantes, origembloco, this.GetEscala(), 0, ht);
         }
@@ -1531,7 +1531,7 @@ namespace DLM.cad
                     foreach (var s in this.Getblocos_tercas())
                     {
                         var ht = new db.Linha();
-                        ht.Add("ID_PECA", perfil.id_db.ToString());
+                        ht.Add("ID_PECA", perfil.id_db);
                         ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.String());
                         ht.Add("SECAO", perfil.SECAO.String(0));
                         ht.Add(Cfg.Init.CAD_ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");

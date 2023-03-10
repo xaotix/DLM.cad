@@ -460,7 +460,7 @@ namespace DLM.cad
                         }
                         var mp = new db.Linha();
                         mp.Add(Cfg.Init.CAD_ATT_Marca, Marca.Nome);
-                        mp.Add(Cfg.Init.CAD_ATT_Quantidade, Marca.Quantidade.Round(2).ToString());
+                        mp.Add(Cfg.Init.CAD_ATT_Quantidade, Marca.Quantidade.Round(2));
                         mp.Add(Cfg.Init.CAD_ATT_Descricao, Marca.Mercadoria);
                         mp.Add(Cfg.Init.CAD_ATT_Material, Marca.Material);
                         mp.Add(Cfg.Init.CAD_ATT_Cod_SAP, Marca.SAP);
@@ -486,7 +486,7 @@ namespace DLM.cad
 
                             var hp = new db.Linha();
                             hp.Add(Cfg.Init.CAD_ATT_Marca, Pos.Nome_Posicao);
-                            hp.Add(Cfg.Init.CAD_ATT_Quantidade, (Pos.Quantidade * Marca.Quantidade).Round(2).ToString());
+                            hp.Add(Cfg.Init.CAD_ATT_Quantidade, (Pos.Quantidade * Marca.Quantidade).Round(2));
                             hp.Add(Cfg.Init.CAD_ATT_Descricao, Pos.Perfil.CortarString(34,false));
                             hp.Add(Cfg.Init.CAD_ATT_Material, Pos.Material);
                             hp.Add(Cfg.Init.CAD_ATT_Cod_SAP, Pos.SAP);
