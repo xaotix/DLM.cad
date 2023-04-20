@@ -310,7 +310,7 @@ namespace DLM.cad.Menus
                 }
             }
 
-            var sequencial = Conexoes.Utilz.Int(txt_sequencial.Text);
+            var sequencial = txt_sequencial.Text.Int();
 
             if (sequencial > 0)
             {
@@ -326,9 +326,9 @@ namespace DLM.cad.Menus
         {
 
 
-            int seq = Conexoes.Utilz.Int(this.txt_sequencial.Text);
+            int seq = this.txt_sequencial.Text.Int();
 
-            int arredon = Conexoes.Utilz.Int(txt_arredondamento.Text);
+            int arredon = txt_arredondamento.Text.Int();
 
             var subs_bloco = (bool)chk_bloco_ctv.IsChecked;
             bool agrupar = (bool)chk_agrupar.IsChecked;
@@ -355,8 +355,8 @@ namespace DLM.cad.Menus
 
         private void atualiza_nome(object sender, TextChangedEventArgs e)
         {
-            double qtd = Conexoes.Utilz.Double(this.txt_quantidade.Text);
-            double comprimento = Conexoes.Utilz.Double(this.txt_comprimento.Text, 0);
+            double qtd = this.txt_quantidade.Text.Double();
+            double comprimento = this.txt_comprimento.Double(0);
 
             if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && rma_sel!=null)
             {
