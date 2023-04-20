@@ -716,7 +716,7 @@ namespace DLM.cad
                     }
                     else
                     {
-                        MarcaPerfil(origem, cam.Posicao, cam.Comprimento, perfil, cam.Quantidade, cam.Material, cam.Tratamento, cam.Peso, cam.Superficie, escala);
+                        MarcaPerfil(origem, cam.Nome, cam.Comprimento, perfil, cam.Quantidade, cam.Material, cam.Tratamento, cam.Peso, cam.Superficie, escala);
                     }
                 }
 
