@@ -38,26 +38,19 @@ namespace DLM.cad
         }
         public List<Conexoes.Filete> InserirSoldaComposicao()
         {
-            List<Conexoes.Filete> retorno = new List<Conexoes.Filete>();
-            List<Report> erros = new List<Report>();
+            var retorno = new List<Conexoes.Filete>();
+            var erros = new List<Report>();
 
             var pos = Getposicoes(ref erros, true);
-            var pos_soldados_desmembrados = pos.FindAll(y => !y.Nome_Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
+            var pos_soldados_desmembrados = pos.FindAll(x => !x.Nome_Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
-            var montar_desmembrado = pos.FindAll(y =>
-            y.Nome_Posicao.Contains("_1") |
-            y.Nome_Posicao.Contains("_2") |
-            y.Nome_Posicao.Contains("_3") |
-            y.Nome_Posicao.Contains("_4")
-            );
-
-
+            var montar_desmembrado = pos.FindAll(x => x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma | x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa);
             var marcas_desmembrados = montar_desmembrado.GroupBy(x => x.Nome_Posicao.Substring(0, x.Nome_Posicao.Length - 2));
 
 
             foreach (var m in marcas_desmembrados)
             {
-                var almas = m.ToList().FindAll(x => x.Nome_Posicao.EndsWith("_1") | x.Nome_Posicao.EndsWith("_4") | x.Nome_Posicao.EndsWith("_7") | x.Nome_Posicao.EndsWith("_10") | x.Nome_Posicao.EndsWith("_13")).ToList();
+                var almas = m.ToList().FindAll(x => x.Nome_Posicao.GetTipoDesmembrado() ==  CAM_TIPO_DESMEMBRADO.Alma).ToList();
                 var resto = m.ToList().FindAll(x => almas.Find(y => y.Nome_Posicao == x.Nome_Posicao) == null).ToList();
 
                 if (almas.Count > 0 && resto.Count > 0)
@@ -1841,7 +1834,7 @@ namespace DLM.cad
                                 pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade;
                                 pcam.Cabecalho.Material = chapa_dobrada.Material;
                                 pcam.Cabecalho.Marca = chapa_dobrada.Marca;
-                                pcam.Nota = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
+                                pcam.Nota_Custom = "PARA DOBRAS = SEGUIR DESENHO DA PRANCHA DE FABRICAÇÃO.";
                                 pcam.Gerar();
                                 arquivo.Abrir();
 

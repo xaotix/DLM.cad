@@ -577,7 +577,7 @@ namespace DLM.cad
                     foreach (var s in cams)
                     {
 
-                        DLM.cam.ReadCAM cam = new DLM.cam.ReadCAM(s);
+                        var cam = new DLM.cam.ReadCAM(s);
                         Blocos.CamToMarcaSimples(cam, p0, Cotas.GetEscala());
 
                         p0 = new P3d(p0.X + offset, p0.Y);
