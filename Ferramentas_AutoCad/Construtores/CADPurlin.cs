@@ -879,16 +879,16 @@ namespace DLM.cad
                 if (sel.Status == PromptStatus.OK)
                 {
 
-                    var s = this.Getblocos_tercas().Select(x => GetPurlin(x)).ToList();
-                    if(s.Count>0)
+                    var selecao = this.Getblocos_tercas().Select(x => GetPurlin(x)).ToList();
+                    if(selecao.Count>0)
                     {
-                        var st = Conexoes.Utilz.Editar(s);
+                        var purlins = Conexoes.Utilz.Editar(selecao);
                         if(Conexoes.Utilz.Pergunta("Salvar edições?"))
                         {
-                            foreach(var p in st)
+                            foreach(var purlin in purlins)
                             {
-                                var ll = p.Objeto as BlockReference;
-                                Atributos.Set(ll, acTrans, GetHashtable(p));
+                                var ll = purlin.Objeto as BlockReference;
+                                Atributos.Set(ll, acTrans, GetHashtable(purlin));
                             }
                         }
                     }
