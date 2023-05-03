@@ -44,7 +44,11 @@ namespace DLM.cad
             var pos = Getposicoes(ref erros, true);
             var pos_soldados_desmembrados = pos.FindAll(x => !x.Nome_Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
-            var montar_desmembrado = pos.FindAll(x => x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma | x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa);
+            var montar_desmembrado = pos.FindAll(x => 
+            x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma | 
+            x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_S|
+            x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_I
+            );
             var marcas_desmembrados = montar_desmembrado.GroupBy(x => x.Nome_Posicao.Substring(0, x.Nome_Posicao.Length - 2));
 
 

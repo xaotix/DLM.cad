@@ -570,7 +570,7 @@ namespace DLM.cad
                 largura = ((double)l.LineWeight);
             }
 
-            angulo = Math.Round(Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(p1.X, p1.Y, p1.Z), new DLM.desenho.P3d(p2.X, p2.Y, p2.Z))), 2);
+            angulo = Math.Round(Math.Abs(new DLM.desenho.P3d(p1.X, p1.Y, p1.Z).GetAngulo(new DLM.desenho.P3d(p2.X, p2.Y, p2.Z))), 2);
             if (angulo > 180)
             {
                 angulo = angulo - 180;
@@ -586,7 +586,7 @@ namespace DLM.cad
             List<Line> retorno = new List<Line>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z), new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
+                var angulo = Math.Abs(new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z).GetAngulo(new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -623,7 +623,7 @@ namespace DLM.cad
             List<Polyline> retorno = new List<Polyline>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, 0), new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, 0)));
+                var angulo = new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, 0).GetAngulo(new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, 0));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -642,7 +642,7 @@ namespace DLM.cad
             List<RotatedDimension> retorno = new List<RotatedDimension>();
             foreach (var s in LS.FindAll(x => x is RotatedDimension).Select(x => x as RotatedDimension))
             {
-                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(s.XLine1Point.X, s.XLine1Point.Y, 0), new DLM.desenho.P3d(s.XLine2Point.X, s.XLine2Point.Y, 0)));
+                var angulo = Math.Abs(new DLM.desenho.P3d(s.XLine1Point.X, s.XLine1Point.Y, 0).GetAngulo(new DLM.desenho.P3d(s.XLine2Point.X, s.XLine2Point.Y, 0)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -865,7 +865,7 @@ namespace DLM.cad
             List<RotatedDimension> retorno = new List<RotatedDimension>();
             foreach (var s in LS.FindAll(x => x is RotatedDimension).Select(x => x as RotatedDimension))
             {
-                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(s.XLine1Point.X, s.XLine1Point.Y, s.XLine1Point.Z), new DLM.desenho.P3d(s.XLine2Point.X, s.XLine2Point.Y, s.XLine2Point.Z)));
+                var angulo = Math.Abs(new DLM.desenho.P3d(s.XLine1Point.X, s.XLine1Point.Y, s.XLine1Point.Z).GetAngulo(new DLM.desenho.P3d(s.XLine2Point.X, s.XLine2Point.Y, s.XLine2Point.Z)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -886,7 +886,7 @@ namespace DLM.cad
             List<Line> retorno = new List<Line>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, 0), new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, 0)));
+                var angulo = Math.Abs(new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, 0).GetAngulo(new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, 0)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;
@@ -905,7 +905,7 @@ namespace DLM.cad
             List<Polyline> retorno = new List<Polyline>();
             foreach (var s in LS)
             {
-                var angulo = Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z), new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
+                var angulo = Math.Abs(new DLM.desenho.P3d(s.StartPoint.X, s.StartPoint.Y, s.StartPoint.Z).GetAngulo(new DLM.desenho.P3d(s.EndPoint.X, s.EndPoint.Y, s.EndPoint.Z)));
                 if (angulo >= 180)
                 {
                     angulo = angulo - 180;

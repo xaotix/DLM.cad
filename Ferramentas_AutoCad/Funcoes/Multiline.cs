@@ -292,7 +292,7 @@ namespace DLM.cad
                 List<Point3d> lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
-                    var angulo = Math.Round(Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
+                    var angulo = Math.Round(Math.Abs(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y), 0).GetAngulo(new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
                     var comp = Math.Abs(DLM.desenho.Trigonometria.Distancia(lista.Max(x => x.X), lista.Max(x => x.Y), lista.Min(x => x.X), lista.Min(x => x.Y)));
                     if (angulo >= 180)
                     {
@@ -316,7 +316,7 @@ namespace DLM.cad
                 List<Point3d> lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
-                    var angulo = Math.Round(Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y), 0), new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
+                    var angulo = Math.Round(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y), 0).GetAngulo(new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y), 0)), 2);
                     var comp = lista.Max(x => x.X) - lista.Min(x => x.X);
                     if (angulo >= 180)
                     {

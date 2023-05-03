@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using System;
 using System.Collections.Generic;
 
@@ -9,22 +10,16 @@ namespace DLM.cad
     {
         public static double Get(Xline s)
         {
-            return Math.Abs(DLM.desenho.Trigonometria.Angulo(new DLM.desenho.P3d(0, 0, 0), new DLM.desenho.P3d(s.UnitDir.X, s.UnitDir.Y, 0)));
-        }
-        public static double Get(Point2d pt1, Point2d pt2)
-        {
-
-            return RadianosParaGraus(pt1.GetVectorTo(pt2).Angle);
+            return Math.Abs(new DLM.desenho.P3d(0, 0, 0).GetAngulo(new DLM.desenho.P3d(s.UnitDir.X, s.UnitDir.Y, 0)));
         }
 
-
-        public static bool E_Horizontal(double Angulo)
+        public static bool E_Horizontal(double Radianos)
         {
-            if (Angulo == 0 | Angulo == 180)
+            if (Radianos == 0 | Radianos == 180)
             {
                 return true;
             }
-            else if (RadianosParaGraus(Angulo) == 0 | RadianosParaGraus(Angulo) == 180)
+            else if (Utilz.RadianosParaGraus(Radianos) == 0 | Utilz.RadianosParaGraus(Radianos) == 180)
             {
                 return true;
             }
@@ -36,7 +31,7 @@ namespace DLM.cad
             {
                 return true;
             }
-            else if (RadianosParaGraus(Angulo) == 90 | RadianosParaGraus(Angulo) == 270)
+            else if (Utilz.RadianosParaGraus(Angulo) == 90 | Utilz.RadianosParaGraus(Angulo) == 270)
             {
                 return true;
             }
@@ -58,7 +53,7 @@ namespace DLM.cad
 
 
 
-            var angulo = RadianosParaGraus(rad_angulo, 0);
+            var angulo = Utilz.RadianosParaGraus(rad_angulo, 0);
             angulo = 180 + angulo;
             return angulo;
         }
@@ -117,11 +112,6 @@ namespace DLM.cad
             }
             return 0;
 
-        }
-        public static double RadianosParaGraus(double angle, int decimais = 0)
-        {
-
-            return Math.Round(angle * (180.0 / Math.PI), decimais);
         }
     }
 }

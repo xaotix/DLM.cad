@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using DLM.desenho;
 using DLM.vars;
 using System;
@@ -96,7 +97,7 @@ namespace DLM.cad
             this.EndPoint  = L.EndPoint.P3d();
             this.Layer = L.Layer;
             this.Linetype = L.Linetype;
-            this.Angulo = DLM.cad.Angulo.RadianosParaGraus(L.Angle);
+            this.Angulo = Utilz.RadianosParaGraus(L.Angle);
             this.ObjectId = L.ObjectId;
         }
     }

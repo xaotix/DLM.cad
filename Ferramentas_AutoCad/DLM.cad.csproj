@@ -75,6 +75,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Clipper2Lib, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="DataGridExtensions, Version=2.5.14.0, Culture=neutral, PublicKeyToken=43de855f87de903a, processorArchitecture=MSIL">
       <HintPath>..\..\_Todos_Conexoes\packages\DataGridExtensions.2.5.14\lib\net452\DataGridExtensions.dll</HintPath>
     </Reference>

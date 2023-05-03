@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using DLM.vars.cad;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace DLM.cad
         {
             if(Block!=null)
             {
-                Angulo.RadianosParaGraus(Block.Rotation);
+                Utilz.RadianosParaGraus(Block.Rotation);
             }
             return 0;
         }
