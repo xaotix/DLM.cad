@@ -181,9 +181,21 @@ namespace DLM.cad
 
         public P3dCAD Centro(Point3d pt)
         {
-            return (P3dCAD)Centro(new P3dCAD(pt));
+            var centro = new P3d(this).Centro(new P3d(pt.X,pt.Y,pt.Z));
+            return new P3dCAD(centro);
         }
 
+        public P3d P3d()
+        {
+            return new P3d(this);
+        }
+
+        public P3dCAD(P3d p3D)
+        {
+            this.X = p3D.X;
+            this.Y = p3D.Y;
+            this.Z = p3D.Z;
+        }
         public P3dCAD()
         {
 

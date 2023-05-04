@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Conexoes;
+using DLM.desenho;
 using DLM.vars;
 using DLM.vars.cad;
 using System;
@@ -303,7 +304,7 @@ namespace DLM.cad
             var niveis = Core.CADPurlin.GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
             if (niveis.Count > 0)
             {
-                var nivel = niveis.Last().GetCoordenada().GetPoint3D();
+                var nivel = niveis.Last().GetCoordenada().P3d().GetPoint3D();
                 return nivel.Y;
             }
 

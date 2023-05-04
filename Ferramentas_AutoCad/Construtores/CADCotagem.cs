@@ -290,7 +290,7 @@ namespace DLM.cad
             AddMensagem("\nCoordenadas Horizontais:\n");
             pp = pp.OrderBy(x => x.X).ToList();
             pp = pp.GroupBy(x => x.X).Select(x => x.First()).ToList();
-            Setids(pp);
+            Aninhar(pp);
 
 
             //se ativou pra cotar em cima e é uma vista inferior
@@ -308,7 +308,7 @@ namespace DLM.cad
 
         }
 
-        private void Setids(List<P3dCAD> pp)
+        private void Aninhar(List<P3dCAD> pp)
         {
             for (int i = 0; i < pp.Count; i++)
             {
@@ -391,7 +391,7 @@ namespace DLM.cad
             lista = RemovePtsDistMin_Y(lista, D_Min_Y);
 
 
-            Setids(lista);
+            Aninhar(lista);
 
             return lista;
         }
@@ -448,7 +448,7 @@ namespace DLM.cad
 
             lista = RemovePtsDistMin_Y(lista, D_Min_Y);
 
-            Setids(lista);
+            Aninhar(lista);
             return lista;
         }
 
