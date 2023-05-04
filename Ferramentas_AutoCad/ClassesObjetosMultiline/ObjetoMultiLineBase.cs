@@ -240,7 +240,7 @@ namespace DLM.cad
 
             P1 = new P3d((P1.X - this.Grade.P0.X) * this.Grade.Escala, (P1.Y - this.Grade.P0.Y) * this.Grade.Escala);
             P2 = new P3d((P2.X - this.Grade.P0.X) * this.Grade.Escala, (P2.Y - this.Grade.P0.Y) * this.Grade.Escala);
-            _linha = DLM.desenho.FuncoesCanvas.Linha(P1.GetPoint(), P2.GetPoint(), this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
+            _linha = DLM.desenho.FuncoesCanvas.Linha(ExtensoesP3d.GetPoint(P1), ExtensoesP3d.GetPoint(P2), this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;

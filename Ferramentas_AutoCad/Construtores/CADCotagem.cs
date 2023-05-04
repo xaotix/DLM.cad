@@ -360,7 +360,7 @@ namespace DLM.cad
             }
 
 
-            lista = lista.Select(x => new P3dCAD(x, 1)).ToList().GroupBy(x => x.chave).Select(x => x.First()).ToList().OrderBy(x => x.Y).ToList();
+            lista = lista.Select(x => new P3dCAD(x, 1)).ToList().GroupBy(x => x.GetCid()).Select(x => x.First()).ToList().OrderBy(x => x.Y).ToList();
 
             if (lista.Count == 0)
             {
@@ -415,7 +415,7 @@ namespace DLM.cad
             }
             AddMensagemCotas(lista, "Cotas Verticais Lado Direito - Com furos");
 
-            lista = lista.Select(x => new P3dCAD(x, 1)).ToList().GroupBy(x => x.chave).Select(x => x.First()).ToList().OrderBy(x => x.Y).ToList();
+            lista = lista.Select(x => new P3dCAD(x, 1)).ToList().GroupBy(x => x.GetCid()).Select(x => x.First()).ToList().OrderBy(x => x.Y).ToList();
             AddMensagemCotas(lista, "Cotas Verticais Lado Direito - Agrupadas");
 
             if (lista.Count == 0)
