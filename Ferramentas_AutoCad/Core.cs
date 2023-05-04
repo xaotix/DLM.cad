@@ -154,7 +154,7 @@ namespace DLM.cad
             {
                 var pts = Ut.GetPontos(Cotas.Selecoes);
                 var p3ds = pts.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
-                var contorno = p3ds.GetContorno(Ut.PedirInteger("Digite a escala",1),Ut.PedirDouble("Digite a concavidade",0.5));
+                var contorno = p3ds.GetContornoHull(Ut.PedirInteger("Digite a escala",1),Ut.PedirDouble("Digite a concavidade",0.5));
                 Cotas.AddPolyLine(contorno, 0, 10, System.Drawing.Color.Red);
             }
         }
