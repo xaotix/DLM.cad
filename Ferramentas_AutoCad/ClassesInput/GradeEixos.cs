@@ -200,11 +200,11 @@ namespace DLM.cad
                     /*linha do eixo*/
                     var p1 = new P3d((x - P0.X) * Escala, (y - P0.Y) * Escala);
                     var p2 = new P3d((x - P0.X) * Escala, (y2 - P0.Y) * Escala);
-                    var l = DLM.desenho.FuncoesCanvas.Linha(p1, p2, System.Windows.Media.Brushes.Magenta, espessura, DLM.vars.TipoLinhaCanvas.Traco_Ponto);
+                    var l = p1.Linha(p2, System.Windows.Media.Brushes.Magenta, espessura, DLM.vars.TipoLinhaCanvas.Traco_Ponto);
                     retorno.Add(l);
 
                     /*bolota do eixo*/
-                    var centro_circulo = new Point((x - P0.X) * Escala, (y - P0.Y + raio) * Escala);
+                    var centro_circulo = new P3d((x - P0.X) * Escala, (y - P0.Y + raio) * Escala);
                     var c = centro_circulo.Circulo(raio, espessura, System.Windows.Media.Brushes.Red);
                     retorno.Add(c);
 
