@@ -240,7 +240,7 @@ namespace DLM.cad
 
             P1 = new P3d((P1.X - this.Grade.P0.X) * this.Grade.Escala, (P1.Y - this.Grade.P0.Y) * this.Grade.Escala);
             P2 = new P3d((P2.X - this.Grade.P0.X) * this.Grade.Escala, (P2.Y - this.Grade.P0.Y) * this.Grade.Escala);
-            _linha = DLM.desenho.FuncoesCanvas.Linha(ExtensoesP3d.GetPoint(P1), ExtensoesP3d.GetPoint(P2), this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
+            _linha = P1.Linha(P2, this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;
@@ -255,7 +255,7 @@ namespace DLM.cad
                 angulo = 90;
             }
 
-            _botao = DLM.desenho.FuncoesCanvas.Botao(this.Nome + $"\n#{this.Espessura.ToString("N2")}", pt, this.GetCor().Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, DLM.desenho.FuncoesCanvas.Cores.Black);
+            _botao = (this.Nome + $"\n#{this.Espessura.ToString("N2")}").Botao(pt, this.GetCor().Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, System.Windows.Media.Brushes.Black);
 
             _botao.MouseRightButtonUp += Botao_Direito;
             _botao.MouseMove += Evento_Sobre;
@@ -342,12 +342,12 @@ namespace DLM.cad
 
         public void Evento_Sair(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            DLM.desenho.FuncoesCanvas.SetCor(_linha, this.GetCor(), DLM.desenho.FuncoesCanvas.Cores.Black);
+            _linha.SetCor(this.GetCor(), System.Windows.Media.Brushes.Black);
             _botao.Visibility = Visibility.Collapsed;
             _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline;
-            DLM.desenho.FuncoesCanvas.SetCor(_botao, this.GetCor(), DLM.desenho.FuncoesCanvas.Cores.Black);
-            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_linha);
-            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_botao);
+            _botao.SetCor(this.GetCor(), System.Windows.Media.Brushes.Black);
+            _linha.TrazerPraFrente();
+            _botao.TrazerPraFrente();
         }
 
         public void Evento_Sobre(object sender, System.Windows.Input.MouseEventArgs e)
@@ -356,8 +356,8 @@ namespace DLM.cad
 
             _botao.Visibility = Visibility.Visible;
             _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline * 4;
-            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_linha);
-            DLM.desenho.FuncoesCanvas.TrazerPraFrente(_botao);
+            _linha.TrazerPraFrente();
+            _botao.TrazerPraFrente();
 
         }
 
@@ -378,19 +378,19 @@ namespace DLM.cad
             {
                 if (this.Tipo == Tipo_ObjetoBase.Purlin)
                 {
-                    _Cor = DLM.desenho.FuncoesCanvas.Cores.Yellow.Clone();
+                    _Cor = System.Windows.Media.Brushes.Yellow.Clone();
                 }
                 else if (this.Tipo == Tipo_ObjetoBase.Corrente)
                 {
-                    _Cor = DLM.desenho.FuncoesCanvas.Cores.Red.Clone();
+                    _Cor = System.Windows.Media.Brushes.Red.Clone();
                 }
                 else if (this.Tipo == Tipo_ObjetoBase.Tirante)
                 {
-                    _Cor = DLM.desenho.FuncoesCanvas.Cores.White.Clone();
+                    _Cor = System.Windows.Media.Brushes.White.Clone();
                 }
                 else
                 {
-                    return DLM.desenho.FuncoesCanvas.Cores.White.Clone();
+                    return System.Windows.Media.Brushes.White.Clone();
                 }
             }
             return _Cor;

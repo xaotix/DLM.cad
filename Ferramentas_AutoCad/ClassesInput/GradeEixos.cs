@@ -183,7 +183,7 @@ namespace DLM.cad
 
             foreach (var obj in objetos)
             {
-                DLM.desenho.FuncoesCanvas.SetCor(obj, DLM.desenho.FuncoesCanvas.Cores.DarkGray);
+                obj.SetCor(System.Windows.Media.Brushes.DarkGray);
             }
 
             retorno.AddRange(objetos);
@@ -198,17 +198,17 @@ namespace DLM.cad
                 {
                     var x = eixo.MinX;
                     /*linha do eixo*/
-                    var p1 = new Point((x - P0.X) * Escala, (y - P0.Y) * Escala);
-                    var p2 = new Point((x - P0.X) * Escala, (y2 - P0.Y) * Escala);
-                    var l = DLM.desenho.FuncoesCanvas.Linha(p1, p2, DLM.desenho.FuncoesCanvas.Cores.Magenta, espessura, DLM.vars.TipoLinhaCanvas.Traco_Ponto);
+                    var p1 = new P3d((x - P0.X) * Escala, (y - P0.Y) * Escala);
+                    var p2 = new P3d((x - P0.X) * Escala, (y2 - P0.Y) * Escala);
+                    var l = DLM.desenho.FuncoesCanvas.Linha(p1, p2, System.Windows.Media.Brushes.Magenta, espessura, DLM.vars.TipoLinhaCanvas.Traco_Ponto);
                     retorno.Add(l);
 
                     /*bolota do eixo*/
                     var centro_circulo = new Point((x - P0.X) * Escala, (y - P0.Y + raio) * Escala);
-                    var c = DLM.desenho.FuncoesCanvas.Circulo(centro_circulo, raio, espessura, DLM.desenho.FuncoesCanvas.Cores.Red);
+                    var c = centro_circulo.Circulo(raio, espessura, System.Windows.Media.Brushes.Red);
                     retorno.Add(c);
 
-                    var ptexto = DLM.desenho.FuncoesCanvas.Label(eixo.Nome, centro_circulo, DLM.desenho.FuncoesCanvas.Cores.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
+                    var ptexto = eixo.Nome.Label(centro_circulo, System.Windows.Media.Brushes.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
                     retorno.Add(ptexto);
                 }
 
@@ -236,7 +236,7 @@ namespace DLM.cad
                             if (pp.DistBaixo > 0)
                             {
                                 var pt = new System.Windows.Point((this.GetXmin() - P0.X - Core.CADPurlin.Canvas_Offset) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
-                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.String(0), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
+                                var cota = pp.DistBaixo.String(0).Botao(pt, System.Windows.Media.Brushes.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
                                 cota.ToolTip = pp;
@@ -256,7 +256,7 @@ namespace DLM.cad
                             if (pp.DistBaixo > 0)
                             {
                                 var pt = new System.Windows.Point((this.GetXMax() - P0.X) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
-                                var cota = DLM.desenho.FuncoesCanvas.Botao(pp.DistBaixo.String(), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, tam_txt_cotas, 90);
+                                var cota = pp.DistBaixo.String().Botao(pt, System.Windows.Media.Brushes.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
                                 retorno.Add(cota);
@@ -273,10 +273,10 @@ namespace DLM.cad
             if (niveis.Count > 0)
             {
 
-                var linha = DLM.desenho.FuncoesCanvas.Linha(
-                    new Point((this.GetXmin() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala),
-                    new Point((this.GetXMax() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala),
-                    DLM.desenho.FuncoesCanvas.Cores.Blue);
+                var linha = 
+                    new P3d((this.GetXmin() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala).Linha(
+                    new P3d((this.GetXMax() - P0.X) * Escala, (GetNivel() - P0.Y) * Escala),
+                    System.Windows.Media.Brushes.Blue);
 
                 retorno.Add(linha);
             }
@@ -348,12 +348,12 @@ namespace DLM.cad
 
         public void evento_Botao_Sai(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            DLM.desenho.FuncoesCanvas.SetCor(sender as UIElement, DLM.desenho.FuncoesCanvas.Cores.Cyan, DLM.desenho.FuncoesCanvas.Cores.Black);
+            (sender as UIElement).SetCor(System.Windows.Media.Brushes.Cyan, System.Windows.Media.Brushes.Black);
         }
 
         public void evento_Botao_Sobre(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            DLM.desenho.FuncoesCanvas.SetCor(sender as UIElement, DLM.desenho.FuncoesCanvas.Cores.Black, DLM.desenho.FuncoesCanvas.Cores.Cyan);
+           (sender as UIElement).SetCor(System.Windows.Media.Brushes.Black, System.Windows.Media.Brushes.Cyan);
         }
 
         public double GetComprimento()

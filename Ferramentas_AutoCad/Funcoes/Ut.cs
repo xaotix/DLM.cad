@@ -922,7 +922,7 @@ namespace DLM.cad
 
         public static List<UIElement> GetCanvas(object obj, Point p0, double escala, Transaction tr, double opacidade, double comp_min = 50)
         {
-            var cor = DLM.desenho.FuncoesCanvas.Cores.White;
+            var cor = System.Windows.Media.Brushes.White;
             List<UIElement> retorno = new List<UIElement>();
             if (obj is BlockReference)
             {
@@ -949,12 +949,12 @@ namespace DLM.cad
                                 var pt2 = pts[i].TransformBy(s.BlockTransform);
                                 if (Math.Abs(pt1.DistanceTo(pt2)) >= comp_min)
                                 {
-                                    var p1 = new P3dCAD(pt1).GetWinPoint();
-                                    var p2 = new P3dCAD(pt2).GetWinPoint();
-                                    p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
-                                    p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
+                                    var p1 = new P3dCAD(pt1).P3d();
+                                    var p2 = new P3dCAD(pt2).P3d();
+                                    p1 = new P3d((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
+                                    p2 = new P3d((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
 
-                                    retorno.Add(DLM.desenho.FuncoesCanvas.Linha(p1, p2, cor));
+                                    retorno.Add(p1.Linha(p2, cor));
                                 }
 
                             }
@@ -975,12 +975,12 @@ namespace DLM.cad
 
                         if (Math.Abs(pt1.DistanceTo(pt2)) >= comp_min)
                         {
-                            var p1 = new P3dCAD(pt1).GetWinPoint();
-                            var p2 = new P3dCAD(pt2).GetWinPoint();
-                            p1 = new Point((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
-                            p2 = new Point((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
+                            var p1 = new P3dCAD(pt1).P3d();
+                            var p2 = new P3dCAD(pt2).P3d();
+                            p1 = new P3d((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
+                            p2 = new P3d((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
                             cor.Opacity = opacidade;
-                            retorno.Add(DLM.desenho.FuncoesCanvas.Linha(p1, p2, cor));
+                            retorno.Add(p1.Linha(p2, cor));
                         }
 
                     }
@@ -1372,9 +1372,9 @@ namespace DLM.cad
         /// <returns></returns>
         public static List<List<Point3d>> GetPontosAgrupados(object obj, Transaction acTrans = null)
         {
-            List<List<Point3d>> pts2 = new List<List<Point3d>>();
-            List<Point3d> pts = new List<Point3d>();
-            var cor = DLM.desenho.FuncoesCanvas.Cores.White;
+            var pts2 = new List<List<Point3d>>();
+            var pts = new List<Point3d>();
+            var cor = System.Windows.Media.Brushes.White;
             if (obj is Line)
             {
                 var tt = obj as Line;

@@ -24,7 +24,7 @@ namespace DLM.cad
 
             /*Cotas*/
             var pt = new System.Windows.Point((this.CentroX - p0.X) * escala, (this.Ymax - p0.Y) * escala);
-            cota = DLM.desenho.FuncoesCanvas.Botao(this.Vao.String(0), pt, DLM.desenho.FuncoesCanvas.Cores.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
+            cota = this.Vao.String(0).Botao(pt, System.Windows.Media.Brushes.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
             cota.MouseEnter += Grade.evento_Botao_Sobre;
             cota.MouseLeave += Grade.evento_Botao_Sai;
             cota.ToolTip = this;
