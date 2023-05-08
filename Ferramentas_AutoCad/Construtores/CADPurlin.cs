@@ -1014,7 +1014,7 @@ namespace DLM.cad
                 txt.Color = (Autodesk.AutoCAD.Colors.Color)fr.Color.Clone();
                 txt.TextString = $"{s.Posicao.ToString()} - {s.X} [{s.Origem}]";
                 txt.Position = new Point3d(fr.StartPoint.X, fr.StartPoint.Y - 5, 0);
-                txt.Rotation = Conexoes.Utilz.GrausParaRadianos(-90);
+                txt.Rotation = (-90.0).GrausParaRadianos();
                 txt.Height = fonte;
 
                 linhas.Add(txt);
@@ -1126,7 +1126,7 @@ namespace DLM.cad
         private List<Conexoes.Macros.Purlin> JuntarERenomearPurlinsIguais(IEnumerable<Conexoes.Macros.Purlin> purlins, OpenCloseTransaction acTrans)
         {
             int c = 1;
-            List<Conexoes.Macros.Purlin> ss = new List<Conexoes.Macros.Purlin>();
+            var ss = new List<Conexoes.Macros.Purlin>();
             purlins = purlins.OrderBy(x => x.ToString()).ToList();
             foreach(var p in purlins)
             {
@@ -1239,7 +1239,7 @@ namespace DLM.cad
             p.Rebater_Furos = REB;
             p.Corrente_SBR = SBR;
 
-            p.Origem = new System.Windows.Media.Media3D.Point3D(bloco.Position.X, bloco.Position.Y, 0);
+            p.Origem = new P3d(bloco.Position.X, bloco.Position.Y, 0);
 
             //CORRENTES RÍGIDAS
             if (CRE.Length > 0)

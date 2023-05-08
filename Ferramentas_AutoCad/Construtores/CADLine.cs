@@ -97,7 +97,7 @@ namespace DLM.cad
             this.EndPoint  = L.EndPoint.P3d();
             this.Layer = L.Layer;
             this.Linetype = L.Linetype;
-            this.Angulo = Utilz.RadianosParaGraus(L.Angle);
+            this.Angulo = L.Angle.RadianosParaGraus();
             this.ObjectId = L.ObjectId;
         }
     }

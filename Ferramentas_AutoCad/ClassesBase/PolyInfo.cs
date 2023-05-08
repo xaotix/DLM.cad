@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using DLM.cad;
 using DLM.desenho;
 using System;

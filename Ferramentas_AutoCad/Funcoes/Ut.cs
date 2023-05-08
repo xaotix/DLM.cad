@@ -552,7 +552,7 @@ namespace DLM.cad
             if (s is Mline)
             {
                 Multiline.GetOrigens(s as Mline, out p1, out p2, out largura);
-                comprimento = DLM.desenho.Trigonometria.Distancia(p1.X, p1.Y, p2.X, p2.Y);
+                comprimento = p1.Distancia(p2);
             }
             else if (s is Line)
             {

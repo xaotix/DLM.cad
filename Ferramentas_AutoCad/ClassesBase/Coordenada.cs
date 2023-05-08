@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using DLM.desenho;
 using DLM.vars.cad;
 using System;

@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using DLM.desenho;
 using System;
 using System.ComponentModel;
@@ -22,7 +23,7 @@ namespace DLM.cad
             {
                 if(PurlinEmCima!=null && PurlinEmBaixo!=null)
                 {
-                    return Math.Abs(Math.Round(this.Origem_Direita.Distancia(this.Origem_Esquerda)));
+                    return Math.Abs(Math.Round(this.Origem_Direita.Distancia(Origem_Esquerda)));
                 }
                 else
                 {

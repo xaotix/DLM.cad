@@ -11,6 +11,7 @@ using System.IO;
 using Autodesk.AutoCAD.ApplicationServices;
 using DLM.vars;
 using DLM.desenho;
+using Conexoes;
 
 namespace DLM.cad
 {
@@ -292,8 +293,8 @@ namespace DLM.cad
                 List<Point3d> lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
-                    var angulo = Math.Round(Math.Abs(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y), 0).GetAngulo(new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y), 0))), 2);
-                    var comp = Math.Abs(DLM.desenho.Trigonometria.Distancia(lista.Max(x => x.X), lista.Max(x => x.Y), lista.Min(x => x.X), lista.Min(x => x.Y)));
+                    var angulo = Math.Round(Math.Abs(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y)).GetAngulo(new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y)))), 2);
+                    var comp = Math.Abs(new P3d(lista.Max(x => x.X), lista.Max(x => x.Y)).Distancia(new P3d(lista.Min(x => x.X), lista.Min(x => x.Y))));
                     if (angulo >= 180)
                     {
                         angulo = angulo - 180;

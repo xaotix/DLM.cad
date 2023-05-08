@@ -174,7 +174,7 @@ namespace DLM.cad
                             using (BlockTableRecord bdef = (BlockTableRecord)acTrans.GetObject(bref.BlockTableRecord, OpenMode.ForWrite))
                             {
                                 bref.ScaleFactors = new Scale3d(escala, escala, escala);
-                                bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
+                                bref.Rotation = rotacao.GrausParaRadianos();
                                 bref.TransformBy(editor.CurrentUserCoordinateSystem);
                                 bref.RecordGraphicsModified(true);
                                 if (bdef.Annotative == AnnotativeStates.True)
@@ -247,7 +247,7 @@ namespace DLM.cad
                                     Matrix3d mat = Matrix3d.Identity;
                                     bref.TransformBy(mat);
                                     bref.ScaleFactors = new Scale3d(escala, escala, escala);
-                                    bref.Rotation = Conexoes.Utilz.GrausParaRadianos(rotacao);
+                                    bref.Rotation = rotacao.GrausParaRadianos();
                                     bref.Position = new Point3d(origem.X, origem.Y, 0);
                                     btr.AppendEntity(bref);
                                     acTrans.AddNewlyCreatedDBObject(bref, true);

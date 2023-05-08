@@ -20,7 +20,7 @@ namespace DLM.cad
             {
                 return true;
             }
-            else if (Utilz.RadianosParaGraus(Radianos) == 0 | Utilz.RadianosParaGraus(Radianos) == 180)
+            else if (Radianos.RadianosParaGraus() == 0 | Radianos.RadianosParaGraus() == 180)
             {
                 return true;
             }
@@ -32,7 +32,7 @@ namespace DLM.cad
             {
                 return true;
             }
-            else if (Utilz.RadianosParaGraus(Angulo) == 90 | Utilz.RadianosParaGraus(Angulo) == 270)
+            else if (Angulo.RadianosParaGraus() == 90 | Angulo.RadianosParaGraus() == 270)
             {
                 return true;
             }
@@ -54,7 +54,7 @@ namespace DLM.cad
 
 
 
-            var angulo = Utilz.RadianosParaGraus(rad_angulo, 0);
+            var angulo = rad_angulo.RadianosParaGraus(0);
             angulo = 180 + angulo;
             return angulo;
         }

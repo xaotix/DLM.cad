@@ -44,7 +44,7 @@ namespace DLM.cad
         {
             if(Block!=null)
             {
-                Utilz.RadianosParaGraus(Block.Rotation);
+                Block.Rotation.RadianosParaGraus();
             }
             return 0;
         }
