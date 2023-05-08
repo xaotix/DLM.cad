@@ -509,13 +509,13 @@ namespace DLM.cad
             {
                 return s.FindAll(x =>
                 (
-                Utilz.RadianosParaGraus(x.Rotation) >= -8
+                x.Rotation.RadianosParaGraus() >= -8
                 &&
-                Utilz.RadianosParaGraus(x.Rotation) <= 8
+                x.Rotation.RadianosParaGraus() <= 8
                 ) | (
-                Utilz.RadianosParaGraus(x.Rotation) >= 172
+                x.Rotation.RadianosParaGraus() >= 172
                 &&
-                Utilz.RadianosParaGraus(x.Rotation) <= 188
+                x.Rotation.RadianosParaGraus() <= 188
                 )
 
                 ).Select(x => x.Position).Select(x => new P3d(Math.Round(x.X, 2), Math.Round(x.Y, 2), 0)).ToList();
@@ -533,8 +533,8 @@ namespace DLM.cad
             try
             {
                 return s.FindAll(x =>
-                Utilz.RadianosParaGraus(x.Rotation) == 90 |
-                Utilz.RadianosParaGraus(x.Rotation) == 270
+                x.Rotation.RadianosParaGraus() == 90 |
+                x.Rotation.RadianosParaGraus() == 270
 
                 ).Select(x => x.Position).Select(x => new P3d(Math.Round(x.X, 2), Math.Round(x.Y, 2), 0)).ToList();
 
