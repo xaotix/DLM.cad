@@ -1041,11 +1041,11 @@ namespace DLM.cad
         private int Max_Sequencia { get; set; } = 0;
         [XmlIgnore]
         private int Cotas_Movidas_Contagem { get; set; } = 0;
-        private void AddCotasHorizontais(List<P3dCAD> pp, double y, bool superior = true)
+        private void AddCotasHorizontais(List<P3dCAD> coords, double y, bool superior = true)
         {
-            if (pp.Count < 2)
+            if (coords.Count < 2)
             {
-                AddMensagem("Cotagem Horizontal abortada - Lista contém apenas " + pp.Count + " coordenadas");
+                AddMensagem("Cotagem Horizontal abortada - Lista contém apenas " + coords.Count + " coordenadas");
                 return;
             }
             Sequencia = 0;
@@ -1053,61 +1053,61 @@ namespace DLM.cad
             Cota_Anterior_Movida = false;
             Ultima_Cota = false;
             this.Cota_Horizontal_Superior = superior;
-            Max_Sequencia = pp.Count - 2;
+            Max_Sequencia = coords.Count - 2;
             if (superior)
             {
 
-                for (int i = 0; i < pp.Count - 1; i++)
+                for (int i = 0; i < coords.Count - 1; i++)
                 {
 
 
                     Sequencia = i;
-                    var dist = Math.Abs(pp[i + 1].X - pp[i].X);
-                    if (pp[i].PegarIguaisX().Count > 0 && Juntar_Cotas)
+                    var dist = Math.Abs(coords[i + 1].X - coords[i].X);
+                    if (coords[i].PegarIguaisX().Count > 0 && Juntar_Cotas)
                     {
-                        AddCotaHorizontal(pp[i], pp[i + pp[i].PegarIguaisX().Count + 1], Offset1 + y);
-                        i = i + pp[i].PegarIguaisX().Count;
+                        AddCotaHorizontal(coords[i], coords[i + coords[i].PegarIguaisX().Count + 1], Offset1 + y);
+                        i = i + coords[i].PegarIguaisX().Count;
                     }
                     else if (i == 0)
                     {
                         //cota da esquerda pra direita, ajustanto automaticamente a primeira cota, se a mesma for pequena
-                        AddCotaHorizontal(pp[i + 1], pp[i], Offset1 + y);
+                        AddCotaHorizontal(coords[i + 1], coords[i], Offset1 + y);
                     }
                     else
                     {
-                        AddCotaHorizontal(pp[i], pp[i + 1], Offset1 + y);
+                        AddCotaHorizontal(coords[i], coords[i + 1], Offset1 + y);
 
                     }
                 }
                 //cota de ponta a ponta
                 Ultima_Cota = true;
-                AddCotaHorizontal(pp[0], pp[pp.Count - 1], Offset0 + y + (Cotas_Movidas_Contagem > 0 ? (Offset0 - Offset1) : 0));
+                AddCotaHorizontal(coords[0], coords[coords.Count - 1], Offset0 + y + (Cotas_Movidas_Contagem > 0 ? (Offset0 - Offset1) : 0));
             }
             else
             {
                 //cotar em baixo
-                for (int i = 0; i < pp.Count - 1; i++)
+                for (int i = 0; i < coords.Count - 1; i++)
                 {
 
                     Sequencia = i;
-                    if (pp[i].PegarIguaisX().Count > 0 && Juntar_Cotas)
+                    if (coords[i].PegarIguaisX().Count > 0 && Juntar_Cotas)
                     {
-                        AddCotaHorizontal(pp[i], pp[i + pp[i].PegarIguaisX().Count + 1], -Offset1 + y);
-                        i = i + pp[i].PegarIguaisX().Count;
+                        AddCotaHorizontal(coords[i], coords[i + coords[i].PegarIguaisX().Count + 1], -Offset1 + y);
+                        i = i + coords[i].PegarIguaisX().Count;
                     }
                     else if (i == 0)
                     {
                         //cota da esquerda pra direita, ajustanto automaticamente a primeira cota, se a mesma for pequena
-                        AddCotaHorizontal(pp[i + 1], pp[i], -Offset1 + y);
+                        AddCotaHorizontal(coords[i + 1], coords[i], -Offset1 + y);
                     }
                     else
                     {
-                        AddCotaHorizontal(pp[i], pp[i + 1], -Offset1 + y);
+                        AddCotaHorizontal(coords[i], coords[i + 1], -Offset1 + y);
                     }
                 }
                 //cota de ponta a ponta
                 Ultima_Cota = true;
-                AddCotaHorizontal(pp[0], pp[pp.Count - 1], -Offset0 + y - (Cotas_Movidas_Contagem > 0 ? (Offset0 - Offset1) : 0));
+                AddCotaHorizontal(coords[0], coords[coords.Count - 1], -Offset0 + y - (Cotas_Movidas_Contagem > 0 ? (Offset0 - Offset1) : 0));
             }
 
         }

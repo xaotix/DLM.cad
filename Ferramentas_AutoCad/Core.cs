@@ -562,7 +562,7 @@ namespace DLM.cad
         public static void criarmarcasdecam()
         {
 
-            var cams = Conexoes.Utilz.AbrirArquivos("Selecione os arquivos", new List<string> { Cfg.Init.EXT_CAM });
+            var cams = Conexoes.Utilz.Abrir_Strings(Cfg.Init.EXT_CAM);
             var offset = Cotas.GetEscala() * 70;
             if (cams.Count > 0)
             {
