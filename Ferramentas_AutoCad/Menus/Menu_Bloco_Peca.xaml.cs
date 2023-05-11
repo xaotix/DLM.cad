@@ -161,7 +161,7 @@ namespace DLM.cad.Menus
                 else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU && this.rmu_sel != null)
                 {
                     var selec = this.rmu_sel;
-                    var pc = new RME(selec);
+                    var pc = selec.Clonar();
                     bt_peca_selecionar.Content = selec.COD_DB;
                     if (this.rmu_sel.VARIAVEL)
                     {
@@ -360,35 +360,25 @@ namespace DLM.cad.Menus
 
             if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && rma_sel!=null)
             {
-                Conexoes.RMA mm = new Conexoes.RMA(rma_sel, qtd);
+                var mm = new Conexoes.RMA(rma_sel, qtd);
                 id = mm.id_db;
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && rme_sel!=null)
             {
-                Conexoes.RME mm = rme_sel.Clonar();
-                if (mm.VARIAVEL)
-                {
-                    mm.COMP = comprimento;
-                }
-                mm.Quantidade = (int)qtd;
+                var mm = rme_sel.Clonar((int)qtd, comprimento);
                 id = mm.id_codigo;
                 txt_codigo.Text = mm.CODIGOFIM;
 
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU && rmu_sel!=null)
             {
-                RME mm = new RME(rmu_sel);
-                if (mm.VARIAVEL)
-                {
-                    mm.COMP = comprimento;
-                }
-                mm.Quantidade = (int)qtd;
+                var mm = rmu_sel.Clonar((int)qtd, comprimento);
                 id = mm.id_codigo;
                 txt_codigo.Text = mm.CODIGOFIM;
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMT && rmt_sel!=null)
             {
-                Conexoes.RMT mm = new Conexoes.RMT(rmt_sel, DBases.GetBobinaDummy(Cfg.Init.Material_RMT));
+                var mm = new Conexoes.RMT(rmt_sel, DBases.GetBobinaDummy(Cfg.Init.Material_RMT));
                 mm.Qtd = (int)qtd;
                 id = mm.id_telha;
                 txt_codigo.Text = mm.NomeFim;
