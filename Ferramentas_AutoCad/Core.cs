@@ -632,7 +632,7 @@ namespace DLM.cad
         {
             List<Report> erros = new List<Report>();
             var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
-            if(pasta.Existe())
+            if(pasta.Exists())
             {
                 var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
                 if (arquivos.Count > 0)
@@ -694,10 +694,10 @@ namespace DLM.cad
         public static void converterDWG()
         {
             var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
-            if (pasta.Existe())
+            if (pasta.Exists())
             {
                 var destino = Conexoes.Utilz.Selecao.SelecionarPasta("Selecione o destino", pasta);
-                if (destino.Existe())
+                if (destino.Exists())
                 {
                     var arquivos = pasta.GetArquivos("*.DXF").ListaSelecionarVarios();
                     if (arquivos.Count > 0)
@@ -719,7 +719,7 @@ namespace DLM.cad
                                     doc.Database.SaveAs(nome_fim, DwgVersion.AC1021);
                                     doc.CloseAndDiscard();
                                 }
-                                if(nome_fim.Existe())
+                                if(nome_fim.Exists())
                                 {
                                     using (Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(nome_fim, false))
                                     {
@@ -851,7 +851,7 @@ namespace DLM.cad
         public static void gerarPDFEtapacarrega()
         {
             var arquivos = Conexoes.Utilz.Arquivo.Ler(TecnoMetal.Pasta + @"DAT\plotar.txt").Select(x=> new Conexoes.Arquivo(x)).ToList();
-            arquivos = arquivos.FindAll(x => x.Existe());
+            arquivos = arquivos.FindAll(x => x.Exists());
             TecnoMetal.GerarPDF(arquivos);
         }
 
