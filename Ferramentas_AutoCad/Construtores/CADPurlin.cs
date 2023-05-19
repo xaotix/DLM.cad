@@ -741,7 +741,7 @@ namespace DLM.cad
                         c++;
                     }
                  
-                    var dest = acDoc.Name.getPasta() + $@"\{acDoc.Name.getNome()}_boneco.txt";
+                    var dest = Utilz.getPasta(acDoc.Name) + $@"\{acDoc.Name.getNome()}_boneco.txt";
                    if(textos.Count>0)
                     {
                         Conexoes.Utilz.Arquivo.Gravar(dest, textos);

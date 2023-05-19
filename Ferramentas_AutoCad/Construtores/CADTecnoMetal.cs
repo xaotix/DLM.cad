@@ -967,7 +967,7 @@ namespace DLM.cad
 
                 foreach (var arq in dxfs)
                 {
-                    arq.Apagar();
+                    arq.Delete();
                     Core.Getw().somaProgresso();
                 }
                 Core.Getw().Close();
@@ -1054,7 +1054,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.acTransST())
             {
 
-                var ultima_edicao = Conexoes.Utilz.getEdicao(this.Endereco);
+                var ultima_edicao = this.Endereco.getEdicao();
                 BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                 BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);
                 List<Line> linhas = new List<Line>();
@@ -1154,7 +1154,7 @@ namespace DLM.cad
                 using (var acTrans = acDoc.acTransST())
                 {
 
-                    var ultima_edicao = Conexoes.Utilz.getEdicao(this.Endereco);
+                    var ultima_edicao = this.Endereco.getEdicao();
 
                     BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForWrite) as BlockTable;
                     BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(acBlkTbl[BlockTableRecord.PaperSpace], OpenMode.ForWrite);

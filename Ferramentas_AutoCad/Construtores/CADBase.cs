@@ -267,7 +267,7 @@ namespace DLM.cad
         {
             get
             {
-                var pasta = Conexoes.Utilz.getPasta(acDoc.Name).ToUpper();
+                var pasta = Utilz.getPasta(acDoc.Name).ToUpper();
 
                 if (!Directory.Exists(pasta))
                 {
