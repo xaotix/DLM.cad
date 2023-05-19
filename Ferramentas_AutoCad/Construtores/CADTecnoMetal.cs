@@ -232,7 +232,7 @@ namespace DLM.cad
             var dsds = Conexoes.Utilz.GetArquivos(pasta_dsd, "*.dsd");
             foreach (var arq in dsds)
             {
-                if (!Conexoes.Utilz.Apagar(arq))
+                if (!arq.Delete())
                 {
                     return;
                 }
@@ -256,7 +256,7 @@ namespace DLM.cad
                 string arquivo_dsd = pasta_dsd + $@"\Plotagem_{c}.dsd";
                 try
                 {
-                    if (!Conexoes.Utilz.Apagar(arquivo_dsd))
+                    if (!arquivo_dsd.Delete())
                     {
                         return;
                     }
@@ -271,7 +271,7 @@ namespace DLM.cad
                         try
                         {
                             var pdf = destino + @"\" + arquivo.Nome + ".PDF";
-                            if (!Conexoes.Utilz.Apagar(pdf))
+                            if (!pdf.Delete())
                             {
                                 Core.Getw().Close();
                                 return;
@@ -401,7 +401,7 @@ namespace DLM.cad
             DsdEntry entry = new DsdEntry();
             entry.DwgName = arquivo;
             entry.Layout = layout;
-            entry.Title = Conexoes.Utilz.getNome(arquivo);
+            entry.Title = arquivo.getNome();
             entry.NpsSourceDwg = "";
             entry.Nps = "";
             return entry;
@@ -409,7 +409,7 @@ namespace DLM.cad
         public int MapearPCsTecnoMetal(int seq, int arredon, bool subs_bloco, List<CTV_de_para> perfis_mapeaveis, double escala, string arquivo_bloco, bool agrupar_proximos = true, bool contraventos = true, bool mapear_pecas = true)
         {
             this.SetEscala(escala);
-            string nome_bloco = Conexoes.Utilz.getNome(arquivo_bloco);
+            string nome_bloco = arquivo_bloco.getNome();
 
             List<PCQuantificar> pecas = this.Quantificar(false, false, false, false, true);
             if (pecas.Count == 0)
@@ -965,9 +965,9 @@ namespace DLM.cad
                 var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
                 Core.Getw().SetProgresso(1, dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
 
-                foreach (var s in dxfs)
+                foreach (var arq in dxfs)
                 {
-                    Conexoes.Utilz.Apagar(s.Endereco);
+                    arq.Apagar();
                     Core.Getw().somaProgresso();
                 }
                 Core.Getw().Close();
@@ -1242,8 +1242,8 @@ namespace DLM.cad
         }
         public BlockAttributes GetBlocoTecnoMetal(BlockReference bloco, string arquivo, bool somente_visiveis = true, Database acCurDb = null)
         {
-            var ultima_edicao = Conexoes.Utilz.getEdicao(arquivo);
-            var nome = Conexoes.Utilz.getNome(arquivo);
+            var ultima_edicao = arquivo.getEdicao();
+            var nome = arquivo.getNome();
             try
             {
                 if (acCurDb == null)
@@ -1358,8 +1358,8 @@ namespace DLM.cad
             db.Tabela posicoes = new db.Tabela();
             using (var acTrans = acCurdb.acTrans())
             {
-                var nome_arq = Conexoes.Utilz.getNome(arquivo);
-                var ultima_edicao = Conexoes.Utilz.getEdicao(arquivo);
+                var nome_arq = arquivo.getNome();
+                var ultima_edicao = arquivo.getEdicao();
 
                 List<BlockReference> blocos = acCurdb.GetBlockReferences(acTrans);
                 string errosm = "";
@@ -1811,7 +1811,7 @@ namespace DLM.cad
                             string destino = this.Pasta;
                             if (this.E_Tecnometal(false))
                             {
-                                destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), Cfg.Init.EXT_CAM);
+                                destino = destino.getUpdir().CriarPasta(Cfg.Init.EXT_CAM);
                             }
                             else
                             {
@@ -1855,7 +1855,7 @@ namespace DLM.cad
             string destino = this.Pasta;
             if (this.E_Tecnometal(false))
             {
-                destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), Cfg.Init.EXT_CAM);
+                destino = destino.getUpdir().CriarPasta(Cfg.Init.EXT_CAM);
             }
             else
             {
@@ -1998,7 +1998,7 @@ namespace DLM.cad
                                 string destino = this.Pasta;
                                 if (this.E_Tecnometal(false))
                                 {
-                                    destino = Conexoes.Utilz.CriarPasta(Conexoes.Utilz.getUpdir(destino), Cfg.Init.EXT_CAM);
+                                    destino = destino.getUpdir().CriarPasta(Cfg.Init.EXT_CAM);
                                 }
                                 else
                                 {

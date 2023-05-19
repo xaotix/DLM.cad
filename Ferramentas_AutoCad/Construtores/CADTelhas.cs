@@ -50,7 +50,7 @@ namespace DLM.cad
 
         public List<BlockReference> Getpassarelas()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_PASSARELA));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Cfg.Init.CAD_Peca_PASSARELA.getNome());
         }
 
         public List<Entity> Getcotaslinhadevida()
@@ -69,7 +69,7 @@ namespace DLM.cad
         }
         public List<BlockReference> GetblocostextoLinhaDeVida()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_BL_Texto));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Cfg.Init.CAD_BL_Texto.getNome());
         }
         public void ApagarLinhaDeVida()
         {
@@ -99,7 +99,7 @@ namespace DLM.cad
 
         public List<BlockReference> Getsflhs()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLH));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Cfg.Init.CAD_Peca_SFLH.getNome());
         }
         public List<BlockReference> GetLinhasDeVida()
         {
@@ -110,7 +110,7 @@ namespace DLM.cad
         }
         public List<BlockReference> Getsflis()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Conexoes.Utilz.getNome(Cfg.Init.CAD_Peca_SFLI));
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name == Cfg.Init.CAD_Peca_SFLI.getNome());
         }
 
         public void AlinharLinhaDeVida()

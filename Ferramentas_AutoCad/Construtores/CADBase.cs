@@ -284,7 +284,7 @@ namespace DLM.cad
                 string destino = this.Pasta;
                 if (this.E_Tecnometal(false))
                 {
-                    destino = Conexoes.Utilz.CriarPasta(destino, Cfg.Init.EXT_CAM);
+                    destino = destino.CriarPasta(Cfg.Init.EXT_CAM);
                 }
 
                 return destino;
@@ -297,7 +297,7 @@ namespace DLM.cad
         {
             get
             {
-                return Conexoes.Utilz.getNome(acDoc.Name).ToUpper().Replace(".DWG", "");
+                return acDoc.Name.getNome().ToUpper().Replace(".DWG", "");
             }
         }
 

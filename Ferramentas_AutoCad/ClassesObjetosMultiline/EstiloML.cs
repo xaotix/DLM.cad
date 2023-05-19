@@ -12,7 +12,7 @@ namespace DLM.cad
     {
         public override string ToString()
         {
-            return Conexoes.Utilz.getNome(this.Arquivo);
+            return this.Arquivo.getNome();
         }
         public List<string> Estilos { get; set; } = new List<string>();
         public string Arquivo { get; set; } 

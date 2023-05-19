@@ -93,16 +93,16 @@ namespace DLM.cad
 
         public static void Inserir(Document acDoc, string nome, P3d origem, double escala, double rotacao, db.Linha atributos)
         {
-            string endereco = "";
+            string Endereco = "";
             if (File.Exists(nome))
             {
-                endereco = nome;
+                Endereco = nome;
             }
             else
             {
                 if (nome.Contains(@"\"))
                 {
-                    nome = Conexoes.Utilz.getNome(nome);
+                    nome = nome.getNome();
                 }
                 var s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Marcacao, nome + ".dwg");
 
@@ -139,21 +139,21 @@ namespace DLM.cad
                 }
                 else
                 {
-                    endereco = s[0];
+                    Endereco = s[0];
 
                 }
             }
 
-            if (!File.Exists(endereco))
+            if (!File.Exists(Endereco))
             {
-                Conexoes.Utilz.Alerta($"Bloco não encontrado\n! {endereco}");
+                Conexoes.Utilz.Alerta($"Bloco não encontrado\n! {Endereco}");
                 return;
             }
 
 
             try
             {
-                string nomeBloco = Conexoes.Utilz.getNome(endereco);
+                string nomeBloco = Endereco.getNome(Endereco);
 
 
 
@@ -230,8 +230,8 @@ namespace DLM.cad
                             acBlkTbl.UpgradeOpen();
 
                             //se nao tem, ai ele vai tentar abrir e inserir
-                            AcTmpDB.ReadDwgFile(endereco, System.IO.FileShare.Read, true, "");
-                            blkid = acCurDb.Insert(endereco, AcTmpDB, true);
+                            AcTmpDB.ReadDwgFile(Endereco, System.IO.FileShare.Read, true, "");
+                            blkid = acCurDb.Insert(Endereco, AcTmpDB, true);
 
                             BlockTableRecord btrec = (BlockTableRecord)blkid.GetObject(OpenMode.ForRead);
                             btrec.UpgradeOpen();
@@ -314,7 +314,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex, $"Algo de errado aconteceu ao tentar inserir o bloco {endereco}");
+                Conexoes.Utilz.Alerta(ex, $"Algo de errado aconteceu ao tentar inserir o bloco {Endereco}");
                 return;
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
