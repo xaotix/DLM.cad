@@ -1304,7 +1304,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    pranchas = pranchas.FindAll(x => x.Extensao == "DWG").ToList();
+                    pranchas = pranchas.FindAll(x => x.Extensao == Cfg.Init.EXT_DWG).ToList();
                     arquivos = pranchas.Select(x => new FileInfo(x.Endereco)).ToList();
                 }
 
