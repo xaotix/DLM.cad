@@ -184,7 +184,7 @@ namespace DLM.cad
                 {
                     /*tive que copiar o arquivo pra raiz do CAD, pq se não ele não aceita.*/
                     var destino = System.Environment.CurrentDirectory + $@"\{estilo}.mln";
-                    Conexoes.Utilz.Copiar(arquivo, destino, false);
+                    arquivo.Copiar(destino, false);
                     try
                     {
                         if (File.Exists(destino))
