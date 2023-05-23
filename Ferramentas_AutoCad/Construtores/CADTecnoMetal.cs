@@ -229,7 +229,7 @@ namespace DLM.cad
               3	    Background	Background
              */
             Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
-            var dsds = Conexoes.Utilz.GetArquivos(pasta_dsd, "*.dsd");
+            var dsds = pasta_dsd.GetArquivos("*.dsd");
             foreach (var arq in dsds)
             {
                 if (!arq.Delete())
@@ -616,7 +616,7 @@ namespace DLM.cad
                         ht.Add(Cfg.Init.CAD_ATT_Destino, pc.Destino);
                         ht.Add(Cfg.Init.CAD_ATT_Quantidade, 1 + s.Filhos.Count);
 
-                        Blocos.Inserir(acDoc, Cfg.Init.BlocosIndicacao()[0], s.Block.Position.P3d(), escala, 0, ht);
+                        Blocos.Inserir(acDoc, Cfg.Init.BlocosIndicacao()[0].Endereco, s.Block.Position.P3d(), escala, 0, ht);
                     }
 
                 }
