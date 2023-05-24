@@ -1811,7 +1811,7 @@ namespace DLM.cad
                             string destino = this.Pasta;
                             if (this.E_Tecnometal(false))
                             {
-                                destino = destino.getUpdir().CriarPasta(Cfg.Init.EXT_CAM);
+                                destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
                             }
                             else
                             {
@@ -1855,7 +1855,7 @@ namespace DLM.cad
             string destino = this.Pasta;
             if (this.E_Tecnometal(false))
             {
-                destino = destino.getUpdir().CriarPasta(Cfg.Init.EXT_CAM);
+                destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
             }
             else
             {
@@ -1998,7 +1998,7 @@ namespace DLM.cad
                                 string destino = this.Pasta;
                                 if (this.E_Tecnometal(false))
                                 {
-                                    destino = destino.getUpdir().CriarPasta(Cfg.Init.EXT_CAM);
+                                    destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
                                 }
                                 else
                                 {

@@ -284,7 +284,7 @@ namespace DLM.cad
                 string destino = this.Pasta;
                 if (this.E_Tecnometal(false))
                 {
-                    destino = destino.CriarPasta(Cfg.Init.EXT_CAM);
+                    destino = destino.GetSubPasta(Cfg.Init.EXT_CAM);
                 }
 
                 return destino;
