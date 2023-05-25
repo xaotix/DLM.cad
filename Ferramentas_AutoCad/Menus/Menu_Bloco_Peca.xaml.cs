@@ -49,7 +49,7 @@ namespace DLM.cad.Menus
             this.TecnoMetal = tec;
             InitializeComponent();
             this.DataContext = this;
-            this.combo_lista_blocos.ItemsSource = Cfg.Init.BlocosIndicacao().Select(x=> x.getNome()).ToList();
+            this.combo_lista_blocos.ItemsSource = Cfg.Init.BlocosIndicacao().Select(x=> x.Nome).ToList();
             this.combo_tipo_de_peca.ItemsSource = new List<string> { Cfg.Init.CAD_ATT_RMA, Cfg.Init.CAD_ATT_RME, Cfg.Init.CAD_ATT_RMU, Cfg.Init.CAD_ATT_RMT, Cfg.Init.CAD_ATT_TECNOMETAL, "DIGITAR" };
             this.escala = this.TecnoMetal.GetEscala();
 

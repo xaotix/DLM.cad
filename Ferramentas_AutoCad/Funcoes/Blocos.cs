@@ -104,33 +104,33 @@ namespace DLM.cad
                 {
                     nome = nome.getNome();
                 }
-                var s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Marcacao, nome + ".dwg");
+                var s = Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Marcacao.GetArquivos(nome + ".dwg");
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Simbologias, nome + ".dwg"); ;
+                    s = Cfg.Init.CAD_Raiz_Blocos_TecnoMetal_Simbologias.GetArquivos(nome + ".dwg"); ;
                 }
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_Indicacao, nome + ".dwg");
+                    s = Cfg.Init.CAD_Raiz_Blocos_Indicacao.GetArquivos(nome + ".dwg");
 
                 }
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_Pcs, nome + ".dwg"); ;
+                    s = Cfg.Init.CAD_Raiz_Blocos_Pcs.GetArquivos(nome + ".dwg"); ;
                 }
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos_A2, nome + ".dwg", SearchOption.AllDirectories);
+                    s = Cfg.Init.CAD_Raiz_Blocos_A2.GetArquivos(nome + ".dwg", true);
                 }
 
 
                 if (s.Count == 0)
                 {
-                    s = Conexoes.Utilz.GetArquivos(Cfg.Init.CAD_Raiz_Blocos, nome + ".dwg", SearchOption.TopDirectoryOnly);
+                    s = Cfg.Init.CAD_Raiz_Blocos.GetArquivos(nome + ".dwg", true);
                 }
                 if (s.Count == 0)
                 {
@@ -139,7 +139,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    Endereco = s[0];
+                    Endereco = s[0].Endereco;
 
                 }
             }
@@ -153,7 +153,7 @@ namespace DLM.cad
 
             try
             {
-                string nomeBloco = Endereco.getNome(Endereco);
+                string nomeBloco = Endereco.getNome();
 
 
 

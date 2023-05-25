@@ -676,7 +676,7 @@ namespace DLM.cad
                             catch (System.Exception ex)
                             {
                                 erros.Add(new Report(ex, arq.Nome + ".DWG"));
-                                Conexoes.Utilz.Apagar(nome_fim);
+                                nome_fim.Delete();
                                 //Conexoes.Utilz.Alerta(ex);
                             }
                             doc.CloseAndDiscard();
