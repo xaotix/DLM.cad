@@ -270,7 +270,7 @@
     <Content Include="Logo-Medabil-Vertical-01.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Conexoes\DLM.csproj">
+    <ProjectReference Include="..\..\DLM\DLM.csproj">
       <Project>{def82547-9fab-457e-89bf-c10ed1dd9162}</Project>
       <Name>DLM</Name>
     </ProjectReference>
