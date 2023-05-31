@@ -1207,7 +1207,7 @@ namespace DLM.cad
                             ht.Add("TIPO_DE_PROJETO", this.Nome.Contains(Cfg.Init.DWG_FAB_FILTRO) ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
                             ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
                             ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
-                            ht.Add("OBRA", this.GetObra().Descrição.ToUpper());
+                            ht.Add("OBRA", this.GetObra().Descricao.ToUpper());
                             ht.Add("PREDIO", this.GetSubEtapa().Predio.ToUpper());
                             ht.Add("CLIENTE", this.GetObra().Cliente.ToUpper());
                             ht.Add("LOCAL", this.GetObra().Lugar.ToUpper());
