@@ -454,7 +454,7 @@ namespace DLM.cad
             List<Report> erros = new List<Report>();
             pp.InserirTabelaAuto(ref erros);
 
-            Conexoes.Utilz.ShowReports(erros);
+            erros.Show();
         }
 
         
@@ -501,7 +501,7 @@ namespace DLM.cad
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {TecnoMetal.Pasta}", DLM.vars.TipoReport.Crítico));
 
-                Conexoes.Utilz.ShowReports(erros);
+                erros.Show();
                 return;
             }
 
@@ -685,7 +685,7 @@ namespace DLM.cad
                         w.somaProgresso();
                     }
                     w.Close();
-                    Conexoes.Utilz.ShowReports(erros);
+                    erros.Show();
                 }
 
             }
@@ -737,7 +737,7 @@ namespace DLM.cad
                         }
 
                         w.Close();
-                        Conexoes.Utilz.ShowReports(erros);
+                        erros.Show();
                     }
                 }
 
@@ -837,7 +837,7 @@ namespace DLM.cad
             TecnoMetal.ApagarTabelaAuto();
             TecnoMetal.PreencheSelo(true);
 
-            Conexoes.Utilz.ShowReports(erros);
+            erros.Show();
         }
 
 

@@ -104,7 +104,7 @@ namespace DLM.cad
 
 
 
-            Conexoes.Utilz.ShowReports(erros);
+            erros.Show();
 
             if (retorno.Count > 0)
             {
@@ -999,7 +999,7 @@ namespace DLM.cad
                     }
                     else
                     {
-                        Conexoes.Utilz.ShowReports(erros);
+                        erros.Show();
                     }
                 }
             }
@@ -1015,7 +1015,7 @@ namespace DLM.cad
         {
             List<Report> erros = new List<Report>();
             InserirTabelaAuto(ref erros);
-            Conexoes.Utilz.ShowReports(erros);
+            erros.Show();
         }
         public void InserirTabelaAuto(ref List<Report> erros)
         {
@@ -1442,7 +1442,7 @@ namespace DLM.cad
                     acTrans.Commit();
                 }
             }
-            Conexoes.Utilz.ShowReports(erros);
+            erros.Show();
             return erros;
         }
 
