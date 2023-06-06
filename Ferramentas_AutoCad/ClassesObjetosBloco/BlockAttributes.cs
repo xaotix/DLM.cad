@@ -15,15 +15,15 @@ namespace DLM.cad
         }
         public BlockReference Block { get; private set; }
 
-        public new  BlockAttributes Clonar()
+        public new BlockAttributes Clonar()
         {
-            BlockAttributes retorno = new BlockAttributes(this.Block, false);
-           
+            var retorno = new BlockAttributes(this.Block, false);
+
             retorno.Descricao = this.Descricao;
             retorno.Celulas.Clear();
-            foreach (var c in this.Celulas)
+            foreach (var celula in this.Celulas)
             {
-                retorno.Add(new db.Celula(c.Coluna, c.Valor));
+                retorno.Add(new db.Celula(celula.Coluna, celula.Valor));
             }
             return retorno;
         }
@@ -31,9 +31,9 @@ namespace DLM.cad
 
         public List<Point2d> GetPontos(Transaction acTrans)
         {
-            if(_contorno==null)
+            if (_contorno == null)
             {
-                _contorno = Ut.GetPontos(this.Block, acTrans).Select(x=>new Point2d(x.X,x.Y)).ToList();
+                _contorno = Ut.GetPontos(this.Block, acTrans).Select(x => new Point2d(x.X, x.Y)).ToList();
             }
             return _contorno;
         }
@@ -42,7 +42,7 @@ namespace DLM.cad
 
         public double GetAngulo()
         {
-            if(Block!=null)
+            if (Block != null)
             {
                 Block.Rotation.RadianosParaGraus();
             }
@@ -52,7 +52,7 @@ namespace DLM.cad
         private P3dCAD _coordenada { get; set; }
         public P3dCAD GetCoordenada()
         {
-            if(_coordenada==null)
+            if (_coordenada == null)
             {
                 if (Block == null)
                 {
@@ -68,19 +68,19 @@ namespace DLM.cad
 
         public BlockAttributes(List<db.Celula> atributos)
         {
-            this.Celulas = atributos;
+            this.Celulas.AddRange(atributos);
         }
 
         public BlockAttributes(BlockReference bloco, bool carregar = true)
         {
             this.Block = bloco;
 
-            
+
             if (carregar)
             {
                 var bl = bloco.GetAttributes();
 
-                this.Celulas =new List<db.Celula>();
+                this.Celulas = new List<db.Celula>();
                 this.Celulas.AddRange(bl.Celulas);
             }
         }
