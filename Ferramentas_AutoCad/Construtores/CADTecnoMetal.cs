@@ -44,9 +44,9 @@ namespace DLM.cad
             var pos = Getposicoes(ref erros, true);
             var pos_soldados_desmembrados = pos.FindAll(x => !x.Nome_Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
-            var montar_desmembrado = pos.FindAll(x => 
-            x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma | 
-            x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_S|
+            var montar_desmembrado = pos.FindAll(x =>
+            x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma |
+            x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_S |
             x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_I
             );
             var marcas_desmembrados = montar_desmembrado.GroupBy(x => x.Nome_Posicao.Substring(0, x.Nome_Posicao.Length - 2));
@@ -54,7 +54,7 @@ namespace DLM.cad
 
             foreach (var m in marcas_desmembrados)
             {
-                var almas = m.ToList().FindAll(x => x.Nome_Posicao.GetTipoDesmembrado() ==  CAM_TIPO_DESMEMBRADO.Alma).ToList();
+                var almas = m.ToList().FindAll(x => x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma).ToList();
                 var resto = m.ToList().FindAll(x => almas.Find(y => y.Nome_Posicao == x.Nome_Posicao) == null).ToList();
 
                 if (almas.Count > 0 && resto.Count > 0)
@@ -918,8 +918,8 @@ namespace DLM.cad
             {
                 return new List<MarcaTecnoMetal>();
             }
-            var pcs = GetBlocosMarcas(acCurDb, ref erros,acDoc.Name);
-            var tbl = Conexoes.Utilz.DBF.ConverterParaDBF(pcs,ref erros);
+            var pcs = GetBlocosMarcas(acCurDb, ref erros, acDoc.Name);
+            var tbl = Conexoes.Utilz.DBF.ConverterParaDBF(pcs, ref erros);
             return tbl.GetMarcas(ref erros);
         }
 
@@ -1350,7 +1350,7 @@ namespace DLM.cad
             }
             Core.Getw().Close();
 
-            return Conexoes.Utilz.DBF.ConverterParaDBF(marcas, ref erros); 
+            return Conexoes.Utilz.DBF.ConverterParaDBF(marcas, ref erros);
         }
         private db.Tabela GetBlocosMarcas(Database acCurdb, ref List<Report> erros, string arquivo)
         {
@@ -1379,12 +1379,12 @@ namespace DLM.cad
 
                 foreach (var m in ms)
                 {
-                    marcas.Linhas.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
+                    marcas.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
                 }
 
                 foreach (var m in pos)
                 {
-                    posicoes.Linhas.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
+                    posicoes.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
                 }
 
             }
@@ -1417,7 +1417,7 @@ namespace DLM.cad
                         var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
                         var bloco = new MarcaTecnoMetal(bkm);
 
-                        if ((bloco.Tipo_Marca != Tipo_Marca.MarcaComposta) && (bloco.Tipo_Bloco == Tipo_Bloco.Arremate| bloco.Tipo_Bloco == Tipo_Bloco.Chapa))
+                        if ((bloco.Tipo_Marca != Tipo_Marca.MarcaComposta) && (bloco.Tipo_Bloco == Tipo_Bloco.Arremate | bloco.Tipo_Bloco == Tipo_Bloco.Chapa))
                         {
                             var bob = bloco.GetBobina();
                             if (bob != null)
@@ -1866,14 +1866,14 @@ namespace DLM.cad
 
 
 
-            var marcas_chapas = marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaSimples | x.Tipo_Marca == Tipo_Marca.Posicao).FindAll(x=>x.Tipo_Bloco == Tipo_Bloco.Chapa | x.Tipo_Bloco == Tipo_Bloco.Arremate);
+            var marcas_chapas = marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaSimples | x.Tipo_Marca == Tipo_Marca.Posicao).FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Chapa | x.Tipo_Bloco == Tipo_Bloco.Arremate);
 
-            if(marcas_chapas.Count>0)
+            if (marcas_chapas.Count > 0)
             {
                 var selecoes = marcas_chapas.ListaSelecionarVarios(true);
-                if (Directory.Exists(destino) && selecoes.Count>0)
+                if (Directory.Exists(destino) && selecoes.Count > 0)
                 {
-                    if(Conexoes.Utilz.Pergunta($"Tem certeza que deseja gerar os CAMs das Chapas selecionadas?\nAtenção: Serão gerados CAMs retos, sem furações e sem recortes."))
+                    if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja gerar os CAMs das Chapas selecionadas?\nAtenção: Serão gerados CAMs retos, sem furações e sem recortes."))
                     {
                         foreach (var chapa_dobrada in selecoes)
                         {
@@ -1890,8 +1890,8 @@ namespace DLM.cad
                             pcam.Gerar();
                         }
                     }
-                    
-                   
+
+
                     destino.Abrir();
 
                 }
@@ -1900,7 +1900,7 @@ namespace DLM.cad
 
 
 
-        
+
         }
 
 
