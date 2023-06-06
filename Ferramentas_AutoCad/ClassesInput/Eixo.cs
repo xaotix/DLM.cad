@@ -121,7 +121,7 @@ namespace DLM.cad
                 {
                     Nome = nomes[0];
                 }
-                if (Nome == "") { Nome = this.Bloco.Get("Nome").Valor; };
+                if (Nome == "") { Nome = this.Bloco.Get("nome").Valor; };
                 var preenchidos = this.Bloco.Celulas.FindAll(x => x.Valor.Replace(" ", "") != "");
                 if (Nome == "" && preenchidos.Count > 0)
                 {

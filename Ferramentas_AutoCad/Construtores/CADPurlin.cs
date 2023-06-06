@@ -1203,30 +1203,30 @@ namespace DLM.cad
 
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
-            var atributos = bloco.GetAttributes();
-            var N = atributos.Get(Cfg.Init.CAD_ATT_N).Valor;
-            var ESP = atributos.Get(Cfg.Init.CAD_ATT_Espessura).Double();
-            var SECAO = atributos.Get("SECAO").Double();
-            var TIPO = atributos.Get(Cfg.Init.CAD_ATT_Tipo).Valor;
-            var ID_PECA = atributos.Get("ID_PECA").Int();
-            var PINTURA = atributos.Get("PINTURA").Valor;
-            var ID_DB = atributos.Get("ID_DB").Int();
-            var VAO = atributos.Get(Cfg.Init.CAD_ATT_Vao).Double();
-            var TRE = atributos.Get(Cfg.Init.CAD_ATT_Transp_Esq).Double();
-            var TRD = atributos.Get(Cfg.Init.CAD_ATT_Transp_Dir).Double();
-            var AD = atributos.Get("AD").Double();
-            var AE = atributos.Get("AE").Double();
-            var REB = atributos.Get("REB").Valor.ToUpper() == "SIM";
-            var SBR = atributos.Get("SBR").Valor.ToUpper() == "SIM";
+            var linha = bloco.GetAttributes();
+            var N = linha.Get(Cfg.Init.CAD_ATT_N).Valor;
+            var ESP = linha.Get(Cfg.Init.CAD_ATT_Espessura).Double();
+            var SECAO = linha.Get("SECAO").Double();
+            var TIPO = linha.Get(Cfg.Init.CAD_ATT_Tipo).Valor;
+            var ID_PECA = linha.Get("ID_PECA").Int();
+            var PINTURA = linha.Get("PINTURA").Valor;
+            var ID_DB = linha.Get("ID_DB").Int();
+            var VAO = linha.Get(Cfg.Init.CAD_ATT_Vao).Double();
+            var TRE = linha.Get(Cfg.Init.CAD_ATT_Transp_Esq).Double();
+            var TRD = linha.Get(Cfg.Init.CAD_ATT_Transp_Dir).Double();
+            var AD = linha.Get("AD").Double();
+            var AE = linha.Get("AE").Double();
+            var REB = linha.Get("REB").Valor.ToUpper() == "SIM";
+            var SBR = linha.Get("SBR").Valor.ToUpper() == "SIM";
 
-            var NOME = atributos.Get("NOME").Valor;
-            var FE = atributos.Get("FE").Valor;
-            var FD = atributos.Get("FD").Valor;
-            var FBE = atributos.Get("FBE").Valor;
-            var FBD = atributos.Get("FBD").Valor;
+            var NOME = linha.Get("NOME").Valor;
+            var FE = linha.Get("FE").Valor;
+            var FD = linha.Get("FD").Valor;
+            var FBE = linha.Get("FBE").Valor;
+            var FBD = linha.Get("FBD").Valor;
 
-            var CRE = atributos.Get("CRE").Valor;
-            var CRD = atributos.Get("CRD").Valor;
+            var CRE = linha.Get("CRE").Valor;
+            var CRD = linha.Get("CRD").Valor;
 
             Conexoes.Macros.Purlin p = new Conexoes.Macros.Purlin();
 
