@@ -45,11 +45,11 @@ namespace DLM.cad
             {
                 foreach (var l in tab.BlockAttributes)
                 {
-                    BlockAttributes nl = new BlockAttributes(l.Block, false);
+                    var nl = new BlockAttributes(l.Block, false);
                     foreach (var c in colunas)
                     {
                         var igual = l.Get(c);
-                        nl.Celulas.Add(new db.Celula(c, igual.Valor));
+                        nl.Add(new db.Celula(c, igual.Valor));
                     }
                     this.BlockAttributes.Add(nl);
                 }

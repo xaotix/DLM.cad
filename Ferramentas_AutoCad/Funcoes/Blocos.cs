@@ -908,9 +908,9 @@ namespace DLM.cad
             var atributos = bloco.GetAttributes();
 
             var ht = new db.Linha();
-            foreach (var cel in atributos.Celulas)
+            foreach (var celula in atributos.Celulas)
             {
-                ht.Add(cel.Coluna, cel.Valor);
+                ht.Add(celula.Coluna, celula.Valor);
             }
             Blocos.Inserir(acDoc, bloco.Name, novaposicao, bloco.ScaleFactors.X, bloco.Rotation, ht);
         }
