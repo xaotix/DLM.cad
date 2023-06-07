@@ -58,7 +58,7 @@ namespace DLM.cad
 
            if(atributoNome.Count>0)
             {
-                var ss = blocos.GroupBy(x => string.Join("|",(atributoNome.Select(y=> x.Get(y).Valor).Distinct().ToList()))).ToList();
+                var ss = blocos.GroupBy(x => string.Join("|",(atributoNome.Select(y=> x[y].Valor).Distinct().ToList()))).ToList();
 
                 foreach (var s in ss.ToList())
                 {
@@ -82,7 +82,7 @@ namespace DLM.cad
 
         public void SetDescPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if(s!="")
             {
                 this.Descricao = s;
@@ -90,7 +90,7 @@ namespace DLM.cad
         }
         public void SetNumeroPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if (s != "")
             {
                 this.Numero = s;
@@ -98,7 +98,7 @@ namespace DLM.cad
         }
         public void SetDestinoPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if (s != "")
             {
                 this.Destino = s;
@@ -106,7 +106,7 @@ namespace DLM.cad
         }
         public void SetCompPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if (s != "")
             {
                 this.Comprimento = Conexoes.Utilz.Double(s);
@@ -114,7 +114,7 @@ namespace DLM.cad
         }
         public void SetIdPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if (s != "")
             {
                 this.id = Conexoes.Utilz.Int(s);
@@ -122,7 +122,7 @@ namespace DLM.cad
         }
         public void SetPerfilPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if (s != "")
             {
                 this.Perfil = s;
@@ -131,7 +131,7 @@ namespace DLM.cad
 
         public void SetMaterialPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if (s != "")
             {
                 this.Material = s;
@@ -142,7 +142,7 @@ namespace DLM.cad
             double tot = 0;
             foreach (var p in this.Blocos)
             {
-                var qtd = p.Get(tag_qtd).Double();
+                var qtd = p[tag_qtd].Double();
                 if (qtd > 0)
                 {
                     tot = tot + qtd;
@@ -158,7 +158,7 @@ namespace DLM.cad
 
         public void SetFamiliaPorAtributo(string tag)
         {
-            var s = this.Atributos.Get(tag).Valor;
+            var s = this.Atributos[tag].Valor;
             if (s != "")
             {
                 this.Familia = s;
@@ -187,7 +187,7 @@ namespace DLM.cad
 
             if(Tipo== Tipo_Objeto.Texto)
             {
-                List<string> atts = this.Blocos.Select(x => x.Get("VALOR").Valor).ToList();
+                List<string> atts = this.Blocos.Select(x => x["VALOR"].Valor).ToList();
 
              
 

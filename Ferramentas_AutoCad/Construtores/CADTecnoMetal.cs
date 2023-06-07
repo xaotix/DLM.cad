@@ -1269,7 +1269,7 @@ namespace DLM.cad
 
                 atributos[TAB_DBF1.NUM_DIS.ToString()].Valor = nome;
                 atributos[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
-                atributos[TAB_DBF1.FLG_REC.ToString()].Valor = atributos.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
+                atributos[TAB_DBF1.FLG_REC.ToString()].Valor = atributos[TAB_DBF1.POS_PEZ.ToString()].Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
                 atributos[TAB_DBF1.DAT_DIS.ToString()].Valor = ultima_edicao;
                 atributos[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
 

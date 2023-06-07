@@ -97,7 +97,7 @@ namespace DLM.cad
         public static db.Celula GetValor(this BlockReference bloco, string atributo)
         {
             var blktag = GetAttributes(bloco);
-            return blktag.Get(atributo);
+            return blktag[atributo];
         }
     }
 }

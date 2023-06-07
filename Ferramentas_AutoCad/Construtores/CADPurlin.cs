@@ -1204,29 +1204,29 @@ namespace DLM.cad
         public Conexoes.Macros.Purlin GetPurlin(BlockReference bloco)
         {
             var linha = bloco.GetAttributes();
-            var N = linha.Get(Cfg.Init.CAD_ATT_N).Valor;
-            var ESP = linha.Get(Cfg.Init.CAD_ATT_Espessura).Double();
-            var SECAO = linha.Get("SECAO").Double();
-            var TIPO = linha.Get(Cfg.Init.CAD_ATT_Tipo).Valor;
-            var ID_PECA = linha.Get("ID_PECA").Int();
-            var PINTURA = linha.Get("PINTURA").Valor;
-            var ID_DB = linha.Get("ID_DB").Int();
-            var VAO = linha.Get(Cfg.Init.CAD_ATT_Vao).Double();
-            var TRE = linha.Get(Cfg.Init.CAD_ATT_Transp_Esq).Double();
-            var TRD = linha.Get(Cfg.Init.CAD_ATT_Transp_Dir).Double();
-            var AD = linha.Get("AD").Double();
-            var AE = linha.Get("AE").Double();
-            var REB = linha.Get("REB").Valor.ToUpper() == "SIM";
-            var SBR = linha.Get("SBR").Valor.ToUpper() == "SIM";
+            var N = linha[Cfg.Init.CAD_ATT_N].Valor;
+            var ESP = linha[Cfg.Init.CAD_ATT_Espessura].Double();
+            var SECAO = linha["SECAO"].Double();
+            var TIPO = linha[Cfg.Init.CAD_ATT_Tipo].Valor;
+            var ID_PECA = linha["ID_PECA"].Int();
+            var PINTURA = linha["PINTURA"].Valor;
+            var ID_DB = linha["ID_DB"].Int();
+            var VAO = linha[Cfg.Init.CAD_ATT_Vao].Double();
+            var TRE = linha[Cfg.Init.CAD_ATT_Transp_Esq].Double();
+            var TRD = linha[Cfg.Init.CAD_ATT_Transp_Dir].Double();
+            var AD = linha["AD"].Double();
+            var AE = linha["AE"].Double();
+            var REB = linha["REB"].Valor.ToUpper() == "SIM";
+            var SBR = linha["SBR"].Valor.ToUpper() == "SIM";
 
-            var NOME = linha.Get("NOME").Valor;
-            var FE = linha.Get("FE").Valor;
-            var FD = linha.Get("FD").Valor;
-            var FBE = linha.Get("FBE").Valor;
-            var FBD = linha.Get("FBD").Valor;
+            var NOME = linha["NOME"].Valor;
+            var FE = linha["FE"].Valor;
+            var FD = linha["FD"].Valor;
+            var FBE = linha["FBE"].Valor;
+            var FBD = linha["FBD"].Valor;
 
-            var CRE = linha.Get("CRE").Valor;
-            var CRD = linha.Get("CRD").Valor;
+            var CRE = linha["CRE"].Valor;
+            var CRD = linha["CRD"].Valor;
 
             Conexoes.Macros.Purlin p = new Conexoes.Macros.Purlin();
 
@@ -1322,15 +1322,15 @@ namespace DLM.cad
         }
         public Conexoes.Macros.Tirante GetTirante(BlockReference bloco)
         {
-            var atributos = bloco.GetAttributes();
-            var SFTA = atributos.Get("SFTA").Valor;
-            var SFTB = atributos.Get("SFTB").Valor;
-            var TIP = atributos.Get("TIP").Valor;
-            var OFF1 = atributos.Get("OFF1").Double();
-            var OFF2 = atributos.Get("OFF2").Double();
-            var COMP = atributos.Get(Cfg.Init.CAD_ATT_Comprimento).Double();
+            var linha = bloco.GetAttributes();
+            var SFTA = linha["SFTA"].Valor;
+            var SFTB = linha["SFTB"].Valor;
+            var TIP =  linha["TIP"].Valor;
+            var OFF1 = linha["OFF1"].Double();
+            var OFF2 = linha["OFF2"].Double();
+            var COMP = linha[Cfg.Init.CAD_ATT_Comprimento].Double();
 
-            Conexoes.Macros.Tirante p = new Conexoes.Macros.Tirante();
+            var p = new Conexoes.Macros.Tirante();
             p.SFT1 = SFTA;
             p.SFT2 = SFTB;
             p.Tipo = TIP;
@@ -1344,10 +1344,10 @@ namespace DLM.cad
         {
             var atributos = bloco.GetAttributes();
 
-            var TIP = atributos.Get("TIP").Valor;
-            var DESC = atributos.Get(Cfg.Init.CAD_ATT_Descricao).Double();
-            var COMP = atributos.Get(Cfg.Init.CAD_ATT_Comprimento).Double();
-            var FIX = atributos.Get("FIX").Valor;
+            var TIP =   atributos["TIP"].Valor;
+            var DESC =  atributos[Cfg.Init.CAD_ATT_Descricao].Double();
+            var COMP =  atributos[Cfg.Init.CAD_ATT_Comprimento].Double();
+            var FIX =   atributos["FIX"].Valor;
 
             Conexoes.Macros.Corrente p = new Conexoes.Macros.Corrente();
             p.Vao = COMP;

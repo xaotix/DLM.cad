@@ -27,16 +27,15 @@ namespace DLM.cad
             {
 
 
-                    this.Diametro = this.Get("DIAM").Double();
-                    this.Oblongo = this.Get("LENGTH").Double();
+                    this.Diametro = this["DIAM"].Double();
+                    this.Oblongo =  this["LENGTH"].Double();
 
                 if(this.Oblongo==0)
                 {
-                    var x1 = this.Get("X1").Double();
-                    var x2 = this.Get("X2").Double();
-
-                    var y1 = this.Get("Y1").Double();
-                    var y2 = this.Get("Y2").Double();
+                    var x1 = this["X1"].Double();
+                    var x2 = this["X2"].Double();
+                    var y1 = this["Y1"].Double();
+                    var y2 = this["Y2"].Double();
 
                     var xobl = Math.Abs(x1) + Math.Abs(x2);
                     var yobl = Math.Abs(y1) + Math.Abs(y2);
@@ -54,7 +53,7 @@ namespace DLM.cad
             }
             else
             {
-                var tolerancia = this.Get("TOLE").Double();
+                var tolerancia = this["TOLE"].Double();
 
                 double diametro = Conexoes.Utilz.Double(this.Block.Name.Replace("M", "").Replace(Cfg.Init.CAD_ATT_N, ""));
                 this.Diametro = diametro;

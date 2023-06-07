@@ -287,7 +287,7 @@ namespace DLM.cad
                             //    bl.Add(obj.Coluna, obj.Valor);
                             //}
                            
-                            bl.Add(Cfg.Init.CAD_ATT_N, p.Atributos.Get(Cfg.Init.CAD_ATT_N).Valor);
+                            bl.Add(Cfg.Init.CAD_ATT_N, p.Atributos[Cfg.Init.CAD_ATT_N].Valor);
                             bl.Add(Cfg.Init.CAD_ATT_Familia, p.Familia);
                             bl.Add(Cfg.Init.CAD_ATT_Tipo, p.Tipo);
                             bl.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento);

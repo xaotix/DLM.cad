@@ -27,7 +27,7 @@ namespace DLM.cad
             DLM.db.Tabela tb = new DLM.db.Tabela(this.Name);
             foreach(BlockAttributes linha in this.BlockAttributes)
             {
-                tb.Linhas.Add(linha);
+                tb.Add(linha);
             }
             return tb;
         }
@@ -43,13 +43,13 @@ namespace DLM.cad
             var colunas = unir.SelectMany(x => x.GetColunas()).Distinct().ToList();
             foreach (var tab in unir)
             {
-                foreach (var l in tab.BlockAttributes)
+                foreach (var linha in tab.BlockAttributes)
                 {
-                    var nl = new BlockAttributes(l.Block, false);
-                    foreach (var c in colunas)
+                    var nl = new BlockAttributes(linha.Block, false);
+                    foreach (var coluna in colunas)
                     {
-                        var igual = l.Get(c);
-                        nl.Add(new db.Celula(c, igual.Valor));
+                        var igual = linha[coluna];
+                        nl.Add(new db.Celula(coluna, igual.Valor));
                     }
                     this.BlockAttributes.Add(nl);
                 }
