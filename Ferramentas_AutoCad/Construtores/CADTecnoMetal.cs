@@ -832,7 +832,7 @@ namespace DLM.cad
 
         private void InserirTabelaQuantificacao(List<PCQuantificar> pecas)
         {
-            List<PCQuantificar> pcs = Conexoes.Utilz.Selecao.SelecionarObjetos(new List<PCQuantificar> { }, pecas, "Determine quais peças deseja que apareçam na tabela");
+            var pcs = pecas.ListaSelecionarVarios(false, "Determine quais peças deseja que apareçam na tabela");
 
 
             Menus.Quantificar_Menu_Configuracao mm = new Menus.Quantificar_Menu_Configuracao(pcs);
@@ -1458,13 +1458,13 @@ namespace DLM.cad
 
         public Conexoes.Bobina PromptBobina(Conexoes.Chapa espessura = null)
         {
-            List<Conexoes.Bobina> bobinas = new List<Conexoes.Bobina>();
+            var bobinas = new List<Conexoes.Bobina>();
             bobinas.AddRange(Conexoes.DBases.GetBancoRM().GetBobinas());
             if (espessura != null)
             {
                 bobinas = bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte);
             }
-            var sel = Conexoes.Utilz.Selecao.SelecionarObjeto(bobinas, null, "Selecione uma bobina");
+            var sel = bobinas.ListaSelecionar();
             if (sel != null)
             {
                 _Bobina_sel = sel;
@@ -2039,7 +2039,7 @@ namespace DLM.cad
 
             if (peca == null)
             {
-                peca = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetBancoRM().GetRMAs(), null, "Selecione uma peça");
+                peca = DBases.GetBancoRM().GetRMAs().ListaSelecionar("Selecione uma peça");
             }
 
             if (peca != null)
@@ -2132,7 +2132,7 @@ namespace DLM.cad
                         if (perfil == null)
                         {
 
-                            perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
+                            perfil = DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez).ListaSelecionar("Selecione um perfil");
                         }
 
                         if (perfil != null)
@@ -2207,7 +2207,7 @@ namespace DLM.cad
                         {
                             if (perfil == null)
                             {
-                                perfil = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione um perfil");
+                                perfil = DBases.GetdbPerfil().GetPerfisTecnoMetal(DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez).ListaSelecionar("Selecione um perfil");
                             }
 
 

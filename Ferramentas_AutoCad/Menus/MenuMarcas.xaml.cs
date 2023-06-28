@@ -167,14 +167,14 @@ namespace DLM.cad
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
-                    db_perfil_m2 = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez), null, "Selecione");
+                    db_perfil_m2 = DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez).ListaSelecionar();
                     if (db_perfil_m2 != null)
                     {
                         perfil.Content = db_perfil_m2.ToString();
                     }
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    db_unitario = Conexoes.Utilz.Selecao.SelecionarObjeto(DBases.GetBancoRM().GetRMAs(), null, "Selecione");
+                    db_unitario = DBases.GetBancoRM().GetRMAs().ListaSelecionar();
                     if (db_unitario != null)
                     {
                         perfil.Content = db_unitario.ToString();

@@ -97,7 +97,7 @@ namespace DLM.cad.Menus
 
         private void furos_manuais_layer_Click(object sender, RoutedEventArgs e)
         {
-            string valor = Conexoes.Utilz.Selecao.SelecionarObjeto(Core.CADPurlin.GetLayers(), null, "Selecione");
+            string valor = Core.CADPurlin.GetLayers().ListaSelecionar();
             if(valor!=null && valor.Length>0)
             {
                 this.furos_manuais_layer.Content = valor;

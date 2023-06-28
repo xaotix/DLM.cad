@@ -1387,7 +1387,7 @@ namespace DLM.cad
         }
         public void SetTranspasse()
         {
-            var trs = Conexoes.Utilz.Selecao.SelecionarObjeto(new List<string> { "Esquerda", "Direita", "Ambos" }, null, "Selecione");
+            var trs = new List<string> { "Esquerda", "Direita", "Ambos" }.ListaSelecionar();
             if (trs == null)
             {
                 return;
@@ -1422,13 +1422,13 @@ namespace DLM.cad
         }
         public void SetSuporte()
         {
-            var trs = Conexoes.Utilz.Selecao.SelecionarObjeto(new List<string> { "Esquerda", "Direita", "Ambos" }, null, "Selecione");
+            var trs = new List<string> { "Esquerda", "Direita", "Ambos" }.ListaSelecionar();
             if (trs == null)
             {
                 return;
             }
 
-            var tip = Conexoes.Utilz.Selecao.SelecionarObjeto(new List<string> { "Centralizado", "Offset" }, null, "Selecione");
+            var tip = new List<string> { "Centralizado", "Offset" }.ListaSelecionar();
             if (tip == null)
             {
                 return;
@@ -1593,7 +1593,7 @@ namespace DLM.cad
         }
         public void SetCorrenteSuporte()
         {
-            var valor = Conexoes.Utilz.Selecao.SelecionarObjeto(CorrenteFixadores, null, "Selecione");
+            var valor = CorrenteFixadores.ListaSelecionar();
             if (valor == null)
             {
                 return;
