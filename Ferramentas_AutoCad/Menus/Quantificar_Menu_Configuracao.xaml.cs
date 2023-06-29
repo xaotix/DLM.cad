@@ -82,7 +82,7 @@ namespace DLM.cad.Menus
 
             if (cols.Count>0)
             {
-                string col = Conexoes.Utilz.Selecao.SelecionaCombo(cols, null);
+                string col = cols.ListaSelecionar();
                 if(col!=null && col!="")
                 {
                     try
@@ -125,7 +125,7 @@ namespace DLM.cad.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
+                var col = sel.GetAtributos().ListaSelecionar();
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -180,7 +180,7 @@ namespace DLM.cad.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
+                var col = sel.GetAtributos().ListaSelecionar();
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -216,7 +216,7 @@ namespace DLM.cad.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
+                var col = sel.GetAtributos().ListaSelecionar();
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -249,7 +249,7 @@ namespace DLM.cad.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
+                var col = sel.GetAtributos().ListaSelecionar();
                 if (col != null)
                 {
                     lista.ItemsSource = null;
@@ -282,7 +282,7 @@ namespace DLM.cad.Menus
 
             if (sel.GetAtributos().Count > 0)
             {
-                var col = Conexoes.Utilz.Selecao.SelecionaCombo(sel.GetAtributos(), null);
+                var col = sel.GetAtributos().ListaSelecionar();
                 if (col != null)
                 {
                     lista.ItemsSource = null;

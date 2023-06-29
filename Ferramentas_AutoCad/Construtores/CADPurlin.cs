@@ -1153,7 +1153,7 @@ namespace DLM.cad
             int c = 1;
             List<Conexoes.Macros.Tirante> ss = new List<Conexoes.Macros.Tirante>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
-            foreach (var p in tirantes.GroupBy(x => x.Tipo + Conexoes.Utilz.ArredondarMultiplo(x.Comprimento, this.TirantesTolerancia).String(0) + " - " + x.SFT1 + "/" + x.SFT2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
+            foreach (var p in tirantes.GroupBy(x => x.Tipo + x.Comprimento.ArredondarMultiplo(this.TirantesTolerancia).String(0) + " - " + x.SFT1 + "/" + x.SFT2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
             {
                 var pps = p.ToList();
                 var nova = pps[0].Clonar();
@@ -1161,7 +1161,7 @@ namespace DLM.cad
                 var comp = nova.Comprimento;
                 nova.Offset1 = 0;
                 nova.Offset2 = 0;
-                nova.CompUser = Conexoes.Utilz.ArredondarMultiplo(comp, this.TirantesTolerancia);
+                nova.CompUser = comp.ArredondarMultiplo(this.TirantesTolerancia);
                 nova.Sequencia = c.ToString().PadLeft(2,'0');
                
                 foreach (var s in pps.FindAll(x=> x.Objeto is BlockReference).Select(x => x.Objeto as BlockReference))
@@ -1187,11 +1187,11 @@ namespace DLM.cad
                 nova.Qtd = pps.Count();
                 var comp = nova.Comprimento;
 
-                nova.Sequencia = Conexoes.Utilz.getLetra(c); 
+                nova.Sequencia = c.getLetra(); 
 
                 foreach (var s in pps.FindAll(x=>x.Objeto is BlockReference).Select(x => x.Objeto as BlockReference))
                 {
-                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, Conexoes.Utilz.getLetra(c));
+                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.getLetra());
                 }
                 ss.Add(nova);
                 c++;

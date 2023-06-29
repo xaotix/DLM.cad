@@ -88,15 +88,15 @@ namespace DLM.cad
         }
         public static void MudarPolyline()
         {
-            CADBase pp = new CADBase();
-            var s = pp.SelecionarObjetos();
+            var cadbase = new CADBase();
+            var s = cadbase.SelecionarObjetos();
             if (s.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) { return; }
 
-            var polylines = pp.Selecoes.Filter<Polyline>();
+            var polylines = cadbase.Selecoes.Filter<Polyline>();
 
             if (polylines.Count == 0) { return; }
 
-            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(FuncoesCAD.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = FuncoesCAD.GetArquivosMlStyles().GetEstilos().ListaSelecionar();
             if (estilo != null)
             {
                 var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);
@@ -131,7 +131,7 @@ namespace DLM.cad
             var estilos = Multiline.GetMlineStyles(multiline).Select(x => x.Name).OrderBy(x => x).ToList();
 
             if (estilos.Count == 0) { return; }
-            var estilo_subst = Conexoes.Utilz.Selecao.SelecionaCombo(estilos, null);
+            var estilo_subst = estilos.ListaSelecionar();
             if (estilo_subst == null)
             {
                 return;
@@ -144,7 +144,7 @@ namespace DLM.cad
                 return;
             }
 
-            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(FuncoesCAD.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = FuncoesCAD.GetArquivosMlStyles().GetEstilos().ListaSelecionar(); 
             if (estilo != null)
             {
                 var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);

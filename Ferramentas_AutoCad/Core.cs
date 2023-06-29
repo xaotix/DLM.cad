@@ -163,7 +163,7 @@ namespace DLM.cad
         [CommandMethod(nameof(desenharmline))]
         public static void desenharmline()
         {
-            var estilo = Conexoes.Utilz.Selecao.SelecionaCombo(FuncoesCAD.GetArquivosMlStyles().GetEstilos(), null);
+            var estilo = FuncoesCAD.GetArquivosMlStyles().GetEstilos().ListaSelecionar();
             if(estilo!=null)
             {
                 var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);

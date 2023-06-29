@@ -351,7 +351,7 @@ namespace DLM.cad
             {
                 case Tipo_Bloco.Chapa:
 
-                    var sel = Conexoes.Utilz.Selecao.SelecionaCombo(new List<string> { "Sem Dobras", "Com Dobras" }, null);
+                    var sel = new List<string> { "Sem Dobras", "Com Dobras" }.ListaSelecionar();
                     if(sel == "Com Dobras")
                     {
                         this.combo_mercadoria.Content = "PERFIL DOBRADO";
@@ -373,7 +373,7 @@ namespace DLM.cad
                     Core.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_unitario);
                     break;
                 case Tipo_Bloco.Arremate:
-                    var sel2 = Conexoes.Utilz.Selecao.SelecionaCombo(new List<string> { "Corte", "Vista" }, null);
+                    var sel2 = new List<string> { "Corte", "Vista" }.ListaSelecionar();
                     if (sel2 == "Corte")
                     {
                         Core.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, true, this.combo_mercadoria.Content.ToString());

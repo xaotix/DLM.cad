@@ -148,7 +148,7 @@ namespace DLM.cad
                 selecao.AddRange(etapa.PastaCAM_Pedido.GetArquivos("*.DXF"));
                 selecao.AddRange(etapa.PastaCAM_Etapa.GetArquivos("*.DXF"));
             }
-            var arquivos = Conexoes.Utilz.Selecao.SelecionarObjetos(resto, selecao, "Selecione as pranchas.");
+            var arquivos = resto.ListaSelecionarVarios(selecao, "Selecione as pranchas.");
 
 
             return arquivos;

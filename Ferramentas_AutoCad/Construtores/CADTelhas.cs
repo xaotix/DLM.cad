@@ -315,8 +315,8 @@ namespace DLM.cad
                         {
                             FLayer.Criar(LayerPassarela, System.Drawing.Color.White);
 
-                            var pcs = Conexoes.Utilz.ArredondarMultiplo(Math.Abs(comp), this.LarguraTelha);
-                            int qtd = Conexoes.Utilz.Int(pcs / this.LarguraTelha);
+                            var pcs = comp.Abs().ArredondarMultiplo(this.LarguraTelha);
+                            int qtd = (pcs / this.LarguraTelha).Int();
                             Utils.SetUndoMark(true);
                             for (int i = 0; i < qtd; i++)
                             {
@@ -463,14 +463,14 @@ namespace DLM.cad
                                 p2 = p1.Mover(angulo, compf);
                             }
 
-                            var qtd_sflh = Conexoes.Utilz.Int(comp/ this.DistMaxSFLH);
-                            var pcs = Conexoes.Utilz.ArredondarMultiplo(Math.Abs(comp), this.LarguraTelha);
-                            int qtd = Conexoes.Utilz.Int(pcs / this.LarguraTelha);
+                            var qtd_sflh = (comp/ this.DistMaxSFLH).Int();
+                            var pcs = comp.Abs().ArredondarMultiplo(this.LarguraTelha);
+                            int qtd = (pcs / this.LarguraTelha).Int();
                         
 
                             List<double> comps = new List<double>();
                             comps.Add(comp);
-                            var comp_mult = Conexoes.Utilz.ArredondarMultiplo(comp / qtd_sflh, this.LarguraTelha);
+                            var comp_mult = (comp / qtd_sflh).ArredondarMultiplo(this.LarguraTelha);
 
                             if (qtd_sflh>1)
                             {
@@ -484,7 +484,7 @@ namespace DLM.cad
                                         {
                                             sobra = sobra - (this.LarguraTelha / 2);
                                         }
-                                        sobra = Conexoes.Utilz.ArredondarMultiplo(sobra, this.LarguraTelha);
+                                        sobra = sobra.ArredondarMultiplo(this.LarguraTelha);
                                         comps.Add(sobra);
                                     }
                                     else
@@ -613,7 +613,7 @@ namespace DLM.cad
 
             if (qtd_sfli > 0)
             {
-                double espacos = Utilz.ArredondarMultiplo(Utilz.Double(comp / qtd_sfli), this.LarguraTelha);
+                double espacos = (comp / qtd_sfli).Double().ArredondarMultiplo(this.LarguraTelha);
                 var pp0 = p1.Mover(angulo, espacos);
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {

@@ -131,7 +131,7 @@ namespace DLM.cad
                                 nome = Cfg.Init.CAD_BL_Solda_2;
                             }
                             /*agrupa as posições de 1 em 1 para inserir o bloco*/
-                            var pcs = Conexoes.Extensoes.Quebrar(filete.ToList().Select(x => x.Nome_Pos).ToList(), 1).Select(x => string.Join(",", x)).ToList();
+                            var pcs = filete.ToList().Select(x => x.Nome_Pos).ToList().Quebrar(1).Select(x => string.Join(",", x)).ToList();
 
                             foreach (var pc in pcs)
                             {
@@ -488,7 +488,7 @@ namespace DLM.cad
                     Core.Getw().somaProgresso();
                     string perfil = tipo_por_perfil.Key;
                     var igual = perfis_mapeaveis.Find(x => x.Perfil.ToUpper().Replace(" ", "") == perfil.ToUpper().Replace(" ", ""));
-                    var comps = tipo_por_perfil.ToList().GroupBy(x => Conexoes.Utilz.ArredondarMultiplo(x.Comprimento, arredon)).ToList().OrderBy(x => x.Key).ToList();
+                    var comps = tipo_por_perfil.ToList().GroupBy(x => x.Comprimento.ArredondarMultiplo(arredon)).ToList().OrderBy(x => x.Key).ToList();
                     foreach (var comp in comps)
                     {
                         string numero = seq.ToString().PadLeft(2, '0');

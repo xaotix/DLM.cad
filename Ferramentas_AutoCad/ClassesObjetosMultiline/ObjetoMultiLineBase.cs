@@ -365,7 +365,7 @@ namespace DLM.cad
         {
             get
             {
-                return Conexoes.Utilz.getLetra(this.id);
+                return this.id.getLetra();
             }
         }
 

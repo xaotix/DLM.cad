@@ -1579,7 +1579,7 @@ namespace DLM.cad
         }
         public static RMLite SelecionarPurlin(RMLite purlin)
         {
-            List<RMLite> parecidas = new List<RMLite>();
+            var parecidas = new List<RMLite>();
             if (purlin == null)
             {
                 parecidas = GetPURLINS().GetPecas();
@@ -1589,27 +1589,27 @@ namespace DLM.cad
                 parecidas = GetPURLINS().GetPecas().FindAll(x => x.GRUPO == x.GRUPO);
 
             }
-            return Conexoes.Utilz.Selecao.SelecionarObjeto(parecidas);
+            return parecidas.ListaSelecionar();
         }
         public static RMLite SelecionarPurlinSuporte()
         {
-            return Conexoes.Utilz.Selecao.SelecionarObjeto(GetSUPORTES_PURLIN().GetPecas().FindAll(x => x.COMP_VAR));
+            return GetSUPORTES_PURLIN().GetPecas().FindAll(x => x.COMP_VAR).ListaSelecionar();
         }
         public static RMLite SelecionarCorrente()
         {
-            return Conexoes.Utilz.Selecao.SelecionarObjeto(GetCORRENTES().GetPecas().FindAll(x => x.COMP_VAR));
+            return GetCORRENTES().GetPecas().FindAll(x => x.COMP_VAR).ListaSelecionar();
         }
         public static RMLite SelecionarCorrenteSuporte()
         {
-            return Conexoes.Utilz.Selecao.SelecionarObjeto(GetSUPORTES_CORRENTES().GetPecas().FindAll(x => x.COMP_VAR));
+            return GetSUPORTES_CORRENTES().GetPecas().FindAll(x => x.COMP_VAR).ListaSelecionar();
         }
         public static RMLite SelecionarTirante()
         {
-            return Conexoes.Utilz.Selecao.SelecionarObjeto(GetTIRANTES().GetPecas().FindAll(x => x.COMP_VAR));
+            return GetTIRANTES().GetPecas().FindAll(x => x.COMP_VAR).ListaSelecionar();
         }
         public static RMLite SelecionarTiranteSuporte()
         {
-            return Conexoes.Utilz.Selecao.SelecionarObjeto(GetSUPORTES_TIRANTE().GetPecas().FindAll(x => x.COMP_VAR));
+            return GetSUPORTES_TIRANTE().GetPecas().FindAll(x => x.COMP_VAR).ListaSelecionar();
         }
     }
 }
