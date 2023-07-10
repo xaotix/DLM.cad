@@ -7,7 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="/Conexoes;component/EstilosWPF.xaml" />
+				<ResourceDictionary Source="/DLM;component/EstilosWPF.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
     </Application.Resources>

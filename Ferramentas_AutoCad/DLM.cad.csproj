@@ -7,8 +7,8 @@
     <ProjectGuid>{3D98C160-12D7-498D-A838-DFE9DE5233D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ferramentas_DLM</RootNamespace>
-    <AssemblyName>Ferramentas_DLM</AssemblyName>
+    <RootNamespace>DLM.cad</RootNamespace>
+    <AssemblyName>DLM.cad</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
