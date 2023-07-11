@@ -12,9 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.EditorInput;
-using DLM.cad;
 
-namespace Ferramentas_DLM
+namespace DLM.cad
 {
     public class Contorno
     {

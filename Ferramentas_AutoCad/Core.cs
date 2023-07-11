@@ -133,7 +133,7 @@ namespace DLM.cad
         [CommandMethod(nameof(getContorno_polilinhas))]
         public static void getContorno_polilinhas()
         {
-            Ferramentas_DLM.Contorno.GetContornoPolyLines();
+            Contorno.GetContornoPolyLines();
         }
 
         [CommandMethod(nameof(getcontorno))]
