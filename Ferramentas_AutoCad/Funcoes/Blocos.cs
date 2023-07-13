@@ -417,10 +417,10 @@ namespace DLM.cad
                 var ht = new db.Linha();
 
 
-                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
-                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade);
-                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
+                ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
+                ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade);
+                ht.Add(T_DBF1.TRA_PEZ.ToString(), ficha);
+                ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
 
                 Inserir(acDoc, Cfg.Init.CAD_Marca_Composta, p0, escala, 0, ht);
             }
@@ -435,32 +435,32 @@ namespace DLM.cad
             try
             {
                 var ht = new db.Linha();
-                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
-                ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
-                ht.Add(TAB_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(TAB_DBF1.NOM_PRO.ToString(), perfil.Descricao);
-                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
-                ht.Add(TAB_DBF1.LUN_PRO.ToString(), comprimento.ToString("N0").Replace(",", ""));
-                ht.Add(TAB_DBF1.MAT_PRO.ToString(), material);
-                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), tratamento);
+                ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
+                ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
+                ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), perfil.Descricao);
+                ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
+                ht.Add(T_DBF1.LUN_PRO.ToString(), comprimento.ToString("N0").Replace(",", ""));
+                ht.Add(T_DBF1.MAT_PRO.ToString(), material);
+                ht.Add(T_DBF1.TRA_PEZ.ToString(), tratamento);
                 if (peso == 0)
                 {
-                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), (perfil.Peso * comprimento / 1000).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                    ht.Add(T_DBF1.PUN_LIS.ToString(), (perfil.Peso * comprimento / 1000).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                 }
                 else
                 {
-                    ht.Add(TAB_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                    ht.Add(T_DBF1.PUN_LIS.ToString(), peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                 }
 
                 if (superficie == 0)
                 {
-                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), (perfil.Peso * comprimento / 1000 / 1000 / 100).String(Cfg.Init.DECIMAIS_Superficie));
+                    ht.Add(T_DBF1.SUN_LIS.ToString(), (perfil.Peso * comprimento / 1000 / 1000 / 100).String(Cfg.Init.DECIMAIS_Superficie));
                 }
                 else
                 {
-                    ht.Add(TAB_DBF1.SUN_LIS.ToString(), superficie.ToString("N4").Replace(",", ""));
+                    ht.Add(T_DBF1.SUN_LIS.ToString(), superficie.ToString("N4").Replace(",", ""));
                 }
-                ht.Add(TAB_DBF1.ING_PEZ.ToString(), perfil.Altura + "*" + perfil.Largura + "*" + comprimento);
+                ht.Add(T_DBF1.ING_PEZ.ToString(), perfil.Altura + "*" + perfil.Largura + "*" + comprimento);
                 ht.Add(T_DBF2.DIM_PRO.ToString(), perfil.GetDIM_PRO());
 
                 if (posicao != "")
@@ -492,25 +492,25 @@ namespace DLM.cad
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
                 var ht = new db.Linha();
                 //Pairs of tag-value:
-                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), pf.Marca);
-                ht.Add(TAB_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(TAB_DBF1.NOM_PRO.ToString(), pf.Descricao);
-                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), pf.Quantidade.ToString().Replace(",", ""));
-                ht.Add(TAB_DBF1.LUN_PRO.ToString(), pf.Comprimento.ToString("N0").Replace(",", ""));
-                ht.Add(TAB_DBF1.LAR_PRO.ToString(), pf.Largura.ToString("N0").Replace(",", ""));
-                ht.Add(TAB_DBF1.SPE_PRO.ToString(), pf.Espessura.ToString("N2").Replace(",", ""));
-                ht.Add(TAB_DBF1.MAT_PRO.ToString(), pf.Material);
-                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), pf.Ficha);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), pf.Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), pf.Superficie.Round(Cfg.Init.DECIMAIS_Superficie));
-                ht.Add(TAB_DBF1.DES_PEZ.ToString(), pf.Mercadoria);
-                ht.Add(TAB_DBF1.COS_PEZ.ToString(), pf.Dobras);
-                ht.Add(TAB_DBF1.ING_PEZ.ToString(), pf.Volume);
+                ht.Add(T_DBF1.MAR_PEZ.ToString(), pf.Marca);
+                ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.Descricao);
+                ht.Add(T_DBF1.QTA_PEZ.ToString(), pf.Quantidade.ToString().Replace(",", ""));
+                ht.Add(T_DBF1.LUN_PRO.ToString(), pf.Comprimento.ToString("N0").Replace(",", ""));
+                ht.Add(T_DBF1.LAR_PRO.ToString(), pf.Largura.ToString("N0").Replace(",", ""));
+                ht.Add(T_DBF1.SPE_PRO.ToString(), pf.Espessura.ToString("N2").Replace(",", ""));
+                ht.Add(T_DBF1.MAT_PRO.ToString(), pf.Material);
+                ht.Add(T_DBF1.TRA_PEZ.ToString(), pf.Ficha);
+                ht.Add(T_DBF1.PUN_LIS.ToString(), pf.Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(T_DBF1.SUN_LIS.ToString(), pf.Superficie.Round(Cfg.Init.DECIMAIS_Superficie));
+                ht.Add(T_DBF1.DES_PEZ.ToString(), pf.Mercadoria);
+                ht.Add(T_DBF1.COS_PEZ.ToString(), pf.Dobras);
+                ht.Add(T_DBF1.ING_PEZ.ToString(), pf.Volume);
 
 
-                ht.Add(TAB_DBF1.COD_PEZ.ToString(), pf.SAP);
-                ht.Add(TAB_DBF1.NOT_PEZ.ToString(), pf.Cor_1);
-                ht.Add(TAB_DBF1.TIP_PEZ.ToString(), pf.Cor_2);
+                ht.Add(T_DBF1.COD_PEZ.ToString(), pf.SAP);
+                ht.Add(T_DBF1.NOT_PEZ.ToString(), pf.Cor_1);
+                ht.Add(T_DBF1.TIP_PEZ.ToString(), pf.Cor_2);
                 ht.Add(T_DBF2.DIM_PRO.ToString(), 0);
 
 
@@ -586,19 +586,19 @@ namespace DLM.cad
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
                 var ht = new db.Linha();
                 //Pairs of tag-value:
-                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), Marca);
-                ht.Add(TAB_DBF1.POS_PEZ.ToString(), Marca);
-                ht.Add(TAB_DBF1.NOM_PRO.ToString(), Descricao);
-                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), Quantidade.ToString().Replace(",", ""));
-                ht.Add(TAB_DBF1.LUN_PRO.ToString(), Comprimento.ToString("N0").Replace(",", ""));
-                ht.Add(TAB_DBF1.LAR_PRO.ToString(), Largura.ToString("N0").Replace(",", ""));
-                ht.Add(TAB_DBF1.SPE_PRO.ToString(), Espessura.ToString("N2").Replace(",", ""));
-                ht.Add(TAB_DBF1.MAT_PRO.ToString(), Material);
-                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), Ficha);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Superficie.Round(Cfg.Init.DECIMAIS_Superficie));
-                ht.Add(TAB_DBF1.DES_PEZ.ToString(), "CHAPA");
-                ht.Add(TAB_DBF1.ING_PEZ.ToString(), Geometria);
+                ht.Add(T_DBF1.MAR_PEZ.ToString(), Marca);
+                ht.Add(T_DBF1.POS_PEZ.ToString(), Marca);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), Descricao);
+                ht.Add(T_DBF1.QTA_PEZ.ToString(), Quantidade.ToString().Replace(",", ""));
+                ht.Add(T_DBF1.LUN_PRO.ToString(), Comprimento.ToString("N0").Replace(",", ""));
+                ht.Add(T_DBF1.LAR_PRO.ToString(), Largura.ToString("N0").Replace(",", ""));
+                ht.Add(T_DBF1.SPE_PRO.ToString(), Espessura.ToString("N2").Replace(",", ""));
+                ht.Add(T_DBF1.MAT_PRO.ToString(), Material);
+                ht.Add(T_DBF1.TRA_PEZ.ToString(), Ficha);
+                ht.Add(T_DBF1.PUN_LIS.ToString(), Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(T_DBF1.SUN_LIS.ToString(), Superficie.Round(Cfg.Init.DECIMAIS_Superficie));
+                ht.Add(T_DBF1.DES_PEZ.ToString(), "CHAPA");
+                ht.Add(T_DBF1.ING_PEZ.ToString(), Geometria);
 
 
                 Inserir(acDoc, bloco, p0, escala, 0, ht);
@@ -618,19 +618,19 @@ namespace DLM.cad
 
                 double superficie = area * 2 / 1000 / 100;
                 //Pairs of tag-value:
-                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
-                ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
-                ht.Add(TAB_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(TAB_DBF1.NOM_PRO.ToString(), pf.Descricao);
-                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
-                ht.Add(TAB_DBF1.LUN_PRO.ToString(), comp.String(0));
-                ht.Add(TAB_DBF1.LAR_PRO.ToString(), larg.String(0));
-                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), (pf.Peso * area / 1000 / 1000 / 100).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
-                ht.Add(TAB_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.DECIMAIS_Superficie));
-                ht.Add(TAB_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
-                ht.Add(TAB_DBF1.COD_PEZ.ToString(), pf.SAP);
-                ht.Add(TAB_DBF1.MAT_PRO.ToString(), material);
+                ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
+                ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
+                ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.Descricao);
+                ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
+                ht.Add(T_DBF1.LUN_PRO.ToString(), comp.String(0));
+                ht.Add(T_DBF1.LAR_PRO.ToString(), larg.String(0));
+                ht.Add(T_DBF1.TRA_PEZ.ToString(), ficha);
+                ht.Add(T_DBF1.PUN_LIS.ToString(), (pf.Peso * area / 1000 / 1000 / 100).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.DECIMAIS_Superficie));
+                ht.Add(T_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
+                ht.Add(T_DBF1.COD_PEZ.ToString(), pf.SAP);
+                ht.Add(T_DBF1.MAT_PRO.ToString(), material);
 
 
                 if (posicao != "")
@@ -664,17 +664,17 @@ namespace DLM.cad
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
                 var ht = new db.Linha();
                 //Pairs of tag-value:
-                ht.Add(TAB_DBF1.MAR_PEZ.ToString(), marca);
-                ht.Add(TAB_DBF1.DES_PEZ.ToString(), mercadoria);
-                ht.Add(TAB_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(TAB_DBF1.NOM_PRO.ToString(), pf.DESC);
-                ht.Add(TAB_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
-                ht.Add(TAB_DBF1.MAT_PRO.ToString(), pf.NORMA);
-                ht.Add(TAB_DBF1.TRA_PEZ.ToString(), pf.TRATAMENTO);
-                ht.Add(TAB_DBF1.PUN_LIS.ToString(), pf.PESOUNIT.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
+                ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
+                ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.DESC);
+                ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
+                ht.Add(T_DBF1.MAT_PRO.ToString(), pf.NORMA);
+                ht.Add(T_DBF1.TRA_PEZ.ToString(), pf.TRATAMENTO);
+                ht.Add(T_DBF1.PUN_LIS.ToString(), pf.PESOUNIT.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
 
 
-                ht.Add(TAB_DBF1.COD_PEZ.ToString(), pf.SAP);
+                ht.Add(T_DBF1.COD_PEZ.ToString(), pf.SAP);
                 ht.Add(T_DBF2.DIM_PRO.ToString(), 0);
 
 

@@ -571,7 +571,7 @@ namespace DLM.cad
                                 var att = new db.Linha();
                                 //att.Add("LUN_PRO", comp);
                                 att.Add("MARK", codigo);
-                                att.Add(TAB_DBF1.MAR_PEZ.ToString(), codigo);
+                                att.Add(T_DBF1.MAR_PEZ.ToString(), codigo);
                                 Atributos.Set(s.Blocos.Select(x => x.Block).ToList().ToList(), acTrans, att);
                                 Atributos.Set(s.Filhos_Ignorar.SelectMany(x => x.Blocos).Select(x => x.Block).ToList().ToList(), acTrans, att);
                             }
@@ -687,13 +687,13 @@ namespace DLM.cad
                             {
                                 if (opt.Pecas_TecnoMetal)
                                 {
-                                    var blcs = npc.Agrupar(new List<string> { TAB_DBF1.MAR_PEZ.ToString() }, npc.Nome_Bloco);
+                                    var blcs = npc.Agrupar(new List<string> { T_DBF1.MAR_PEZ.ToString() }, npc.Nome_Bloco);
                                     foreach (var bl in blcs)
                                     {
-                                        bl.SetPerfilPorAtributo(TAB_DBF1.NOM_PRO.ToString());
-                                        bl.SetCompPorAtributo(TAB_DBF1.LUN_PRO.ToString());
-                                        bl.SetMaterialPorAtributo(TAB_DBF1.MAT_PRO.ToString());
-                                        bl.SetDescPorAtributo(TAB_DBF1.NOM_PRO.ToString());
+                                        bl.SetPerfilPorAtributo(T_DBF1.NOM_PRO.ToString());
+                                        bl.SetCompPorAtributo(T_DBF1.LUN_PRO.ToString());
+                                        bl.SetMaterialPorAtributo(T_DBF1.MAT_PRO.ToString());
+                                        bl.SetDescPorAtributo(T_DBF1.NOM_PRO.ToString());
                                     }
                                     blocos_montagem_tecnometal.AddRange(blcs);
                                 }
@@ -1258,19 +1258,19 @@ namespace DLM.cad
 
                 try
                 {
-                    atributos[TAB_DBF1.NUM_COM.ToString()].Valor = this.GetPedido().NomePedido;
-                    atributos[TAB_DBF1.DES_COM.ToString()].Valor = this.GetObra().Nome;
-                    atributos[TAB_DBF1.LOT_COM.ToString()].Valor = this.GetSubEtapa().NomeEtapa;
+                    atributos[T_DBF1.NUM_COM.ToString()].Valor = this.GetPedido().NomePedido;
+                    atributos[T_DBF1.DES_COM.ToString()].Valor = this.GetObra().Nome;
+                    atributos[T_DBF1.LOT_COM.ToString()].Valor = this.GetSubEtapa().NomeEtapa;
                 }
                 catch (Exception ex)
                 {
                     DLM.log.Log(ex);
                 }
 
-                atributos[TAB_DBF1.NUM_DIS.ToString()].Valor = nome;
-                atributos[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
-                atributos[TAB_DBF1.FLG_REC.ToString()].Valor = atributos[TAB_DBF1.POS_PEZ.ToString()].Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
-                atributos[TAB_DBF1.DAT_DIS.ToString()].Valor = ultima_edicao;
+                atributos[T_DBF1.NUM_DIS.ToString()].Valor = nome;
+                atributos[T_DBF1.FLG_DWG.ToString()].Valor = nome;
+                atributos[T_DBF1.FLG_REC.ToString()].Valor = atributos[T_DBF1.POS_PEZ.ToString()].Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
+                atributos[T_DBF1.DAT_DIS.ToString()].Valor = ultima_edicao;
                 atributos[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
 
                 return atributos;
@@ -1280,7 +1280,7 @@ namespace DLM.cad
                 DLM.log.Log(ex);
                 BlockAttributes att = new BlockAttributes(bloco, false);
                 att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
-                att[TAB_DBF1.FLG_DWG.ToString()].Valor = nome;
+                att[T_DBF1.FLG_DWG.ToString()].Valor = nome;
                 att[Cfg.Init.CAD_ATT_ERRO].Valor = ex.Message;
                 att[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
 
@@ -1426,10 +1426,10 @@ namespace DLM.cad
                                 var sup = bloco.CalcularSuperficieLinear();
 
                                 var att = new db.Linha();
-                                att.Add(TAB_DBF1.PUN_LIS.ToString(), peso);
-                                att.Add(TAB_DBF1.SUN_LIS.ToString(), sup);
-                                att.Add(TAB_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String()}*{bloco.Largura.String(0)}");
-                                att.Add(TAB_DBF1.SPE_PRO.ToString(), bloco.Espessura);
+                                att.Add(T_DBF1.PUN_LIS.ToString(), peso);
+                                att.Add(T_DBF1.SUN_LIS.ToString(), sup);
+                                att.Add(T_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String()}*{bloco.Largura.String(0)}");
+                                att.Add(T_DBF1.SPE_PRO.ToString(), bloco.Espessura);
 
                                 DLM.cad.Atributos.Set(blk, acTrans, att);
                             }
@@ -2306,7 +2306,7 @@ namespace DLM.cad
                     {
                         foreach (var bloco in marcas)
                         {
-                            Atributos.Set(bloco, acTrans, TAB_DBF1.DES_PEZ.ToString(), mercadoria);
+                            Atributos.Set(bloco, acTrans, T_DBF1.DES_PEZ.ToString(), mercadoria);
                         }
                     }
                     acTrans.Commit();
@@ -2330,7 +2330,7 @@ namespace DLM.cad
                     {
                         foreach (var bloco in marcas)
                         {
-                            Atributos.Set(bloco, acTrans, TAB_DBF1.MAT_PRO.ToString(), sel.Nome);
+                            Atributos.Set(bloco, acTrans, T_DBF1.MAT_PRO.ToString(), sel.Nome);
                         }
                     }
                     acTrans.Commit();
@@ -2353,7 +2353,7 @@ namespace DLM.cad
                     {
                         foreach (var bloco in marcas)
                         {
-                            Atributos.Set(bloco, acTrans, TAB_DBF1.TRA_PEZ.ToString(), mercadoria);
+                            Atributos.Set(bloco, acTrans, T_DBF1.TRA_PEZ.ToString(), mercadoria);
                         }
                     }
                     acTrans.Commit();
