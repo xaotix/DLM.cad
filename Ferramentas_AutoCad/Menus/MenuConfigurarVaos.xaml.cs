@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Conexoes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,11 +52,11 @@ namespace DLM.cad.Menus
             var ss = ((FrameworkElement)sender).DataContext;
             if (ss is ObjetoPurlin)
             {
-                ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
+                var sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
                     bool status = false;
-                    var novovao = Conexoes.Utilz.Prompt(sel.TRE, out status);
+                    var novovao = sel.TRE.Prompt(out status);
 
                     if (status)
                     {
@@ -81,11 +82,11 @@ namespace DLM.cad.Menus
             var ss = ((FrameworkElement)sender).DataContext;
             if (ss is ObjetoPurlin)
             {
-                ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
+                var sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
                     bool status = false;
-                    var novovao = Conexoes.Utilz.Prompt(sel.TRD, out status);
+                    var novovao = sel.TRD.Prompt(out status);
 
                     if (status)
                     {
@@ -230,7 +231,7 @@ namespace DLM.cad.Menus
                 if (sel != null)
                 {
                     bool status = false;
-                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    double purlin = 0.Prompt(out status);
                     if (status)
                     {
                         foreach (var p in sel.GetPurlins())
@@ -248,7 +249,7 @@ namespace DLM.cad.Menus
                 if (sel != null)
                 {
                     bool status = false;
-                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    double purlin = 0.Prompt(out status);
                     if (status)
                     {
                         sel.FBD_Comp = purlin;
@@ -268,7 +269,7 @@ namespace DLM.cad.Menus
                 if (sel != null)
                 {
                     bool status = false;
-                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    double purlin = 0.Prompt(out status);
                     if (status)
                     {
                         foreach (var p in sel.GetPurlins())
@@ -286,7 +287,7 @@ namespace DLM.cad.Menus
                 if (sel != null)
                 {
                     bool status = false;
-                    double purlin = Conexoes.Utilz.Prompt(0, out status);
+                    double purlin = 0.Prompt(out status);
                     if (status)
                     {
                         sel.FBE_Comp = purlin;

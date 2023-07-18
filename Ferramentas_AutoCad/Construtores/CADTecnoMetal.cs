@@ -1591,7 +1591,7 @@ namespace DLM.cad
 
         private static int PromptQtd(out bool status)
         {
-            return Conexoes.Utilz.Prompt(1, out status, 0, "Digite a quantidade").Int();
+            return 1.Prompt(out status, "Digite a quantidade");
         }
 
         public void PromptGeometria(out double comprimento, out double largura, out double area, out double perimetro)
@@ -1641,7 +1641,7 @@ namespace DLM.cad
         }
         public string PromptFicha()
         {
-            return Conexoes.Utilz.Prompt("Digite a ficha de pintura", Cfg.Init.RM_SEM_PINTURA, true, "FICHA", false, 20);
+            return Cfg.Init.RM_SEM_PINTURA.Prompt("Digite a ficha de pintura", "FICHA", 20);
         }
         public string PromptMarca(string prefix = "ARR-")
         {
@@ -1650,7 +1650,7 @@ namespace DLM.cad
             var marcas = this.GetMarcas(ref erros);
             var nnn = marcas.FindAll(x => x.Nome.StartsWith(prefix)).Count + 1;
         retentar:
-            var m = Conexoes.Utilz.Prompt("Digite o nome da Marca", prefix + nnn.ToString().PadLeft(2, '0'), true, "NOME_MARCA", false, 25).ToUpper().Replace(" ", "");
+            var m = prefix + nnn.ToString().PadLeft(2, '0').Prompt("Digite o nome da Marca", "NOME_MARCA", 25).ToUpper().Replace(" ", "");
 
             if (m.Length == 0)
             {
@@ -2048,7 +2048,7 @@ namespace DLM.cad
             denovo:
                 if (quantidade <= 0)
                 {
-                    quantidade = Conexoes.Utilz.Prompt(peca.Multiplo, out status);
+                    quantidade = peca.Multiplo.Prompt(out status);
                     if (!status)
                     {
                         return;
@@ -2124,7 +2124,7 @@ namespace DLM.cad
 
                     if (quantidade == 0)
                     {
-                        quantidade = Conexoes.Utilz.Prompt(1).Int();
+                        quantidade = (1).Prompt();
                     }
 
                     if (quantidade > 0)
@@ -2197,7 +2197,7 @@ namespace DLM.cad
                     {
                         if (quantidade == 0)
                         {
-                            quantidade = Conexoes.Utilz.Prompt(1).Int();
+                            quantidade = (1).Prompt();
                         }
 
 
@@ -2271,7 +2271,7 @@ namespace DLM.cad
             if (nome != null && nome != "")
             {
                 bool status = false;
-                double quantidade = Conexoes.Utilz.Prompt(1, out status);
+                double quantidade = (1.0).Prompt(out status);
                 if (status)
                 {
                     string ficha = this.PromptFicha();

@@ -871,7 +871,7 @@ namespace DLM.cad
                 var nomes = blocos.GroupBy(x => x.Name);
                 foreach (var nome in nomes)
                 {
-                    var novo_nome = Conexoes.Utilz.Prompt($"Digite o novo nome para o bloco \n[{nome.Key}]");
+                    var novo_nome = nome.Key.Prompt($"Digite o novo nome para o bloco \n[{nome.Key}]");
                     if (novo_nome != null && novo_nome.Length > 0)
                     {
                         novo_nome = novo_nome.Replace(" ", "_").ToUpper();

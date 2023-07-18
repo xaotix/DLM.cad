@@ -69,7 +69,7 @@ namespace DLM.cad.Menus
         private void transpasse_Click(object sender, RoutedEventArgs e)
         {
             bool confirmado = false;
-            double valor = Conexoes.Utilz.Prompt(Core.CADPurlin.TranspassePadrao, out confirmado);
+            double valor = Core.CADPurlin.TranspassePadrao.Prompt(out confirmado);
             if(confirmado)
             {
                 Core.CADPurlin.TranspassePadrao = valor;
@@ -80,14 +80,14 @@ namespace DLM.cad.Menus
 
         private void furo_offset_apoio_Click(object sender, RoutedEventArgs e)
         {
-            int valor = Conexoes.Utilz.Prompt(Core.CADPurlin.OffsetApoio).Int();
+            int valor = Core.CADPurlin.OffsetApoio.Prompt();
             Core.CADPurlin.OffsetApoio = valor;
             this.furo_offset_apoio.Content = valor;
         }
 
         private void ficha_Click(object sender, RoutedEventArgs e)
         {
-            string valor = Conexoes.Utilz.Prompt(Core.CADPurlin.FichaDePintura);
+            string valor = Core.CADPurlin.FichaDePintura.Prompt();
             if(valor!=null)
             {
                 Core.CADPurlin.FichaDePintura = valor;

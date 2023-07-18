@@ -68,7 +68,7 @@ namespace DLM.cad.Menus
 
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                string qtd = Conexoes.Utilz.Prompt(sel.Descricao,false, 30);
+                string qtd = sel.Descricao.Prompt("Digite", 30);
                 if (qtd != null && qtd != "")
                 {
                     sel.Nome = qtd;
@@ -113,7 +113,7 @@ namespace DLM.cad.Menus
             if (sel.Tipo== Tipo_Objeto.Texto | sel.GetAtributos().Count==0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
                 bool status = false;
-                var qtd = Conexoes.Utilz.Prompt(sel.Quantidade, out status);
+                var qtd = sel.Quantidade.Prompt(out status);
                 if(status)
                 {
                     sel.Quantidade = qtd;
@@ -161,14 +161,14 @@ namespace DLM.cad.Menus
 
         private void editar_descricao(object sender, RoutedEventArgs e)
         {
-            PCQuantificar sel = ((FrameworkElement)sender).DataContext as PCQuantificar;
+            var sel = ((FrameworkElement)sender).DataContext as PCQuantificar;
             if (sel == null)
             {
                 return;
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Descricao, false, 30);
+                var qtd = sel.Descricao.Prompt("Digite", 30);
                 if (qtd!=null && qtd!="")
                 {
                     sel.Descricao = qtd;
@@ -204,7 +204,7 @@ namespace DLM.cad.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Numero, false, 4);
+                var qtd = sel.Numero.Prompt("Digite",4);
                 if (qtd != null && qtd != "")
                 {
                     sel.Numero = qtd;
@@ -237,7 +237,7 @@ namespace DLM.cad.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Destino, false, 4);
+                var qtd = sel.Destino.Prompt("Digite",4);
                 if (qtd != null && qtd != "")
                 {
                     sel.Destino = qtd;
@@ -270,7 +270,7 @@ namespace DLM.cad.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = Conexoes.Utilz.Prompt(sel.Destino, false, 4);
+                var qtd = sel.Destino.Prompt();
                 if (qtd != null && qtd != "")
                 {
                     sel.Destino = qtd;
@@ -298,8 +298,8 @@ namespace DLM.cad.Menus
         {
            if(selecoes.Count>0)
             {
-                var nova = Conexoes.Utilz.Prompt("Digite",  selecoes[0].Familia);
-                if(nova==null | nova == "") { return; }
+                var nova = selecoes[0].Familia.Prompt();
+                if (nova==null | nova == "") { return; }
                 foreach(var s in selecoes)
                 {
                     s.Familia = nova;
@@ -317,7 +317,7 @@ namespace DLM.cad.Menus
         {
             if (selecoes.Count > 0)
             {
-                var nova = Conexoes.Utilz.Prompt("Digite", selecoes[0].Descricao);
+                var nova = selecoes[0].Descricao.Prompt();
                 if (nova == null | nova == "") { return; }
                 foreach (var s in selecoes)
                 {
@@ -332,7 +332,7 @@ namespace DLM.cad.Menus
         {
             if (selecoes.Count > 0)
             {
-                var nova = Conexoes.Utilz.Double(Conexoes.Utilz.Prompt("Digite", selecoes[0].Quantidade.ToString()));
+                var nova = selecoes[0].Quantidade.Prompt();
                 if (nova<=0) { return; }
                 foreach (var s in selecoes)
                 {
@@ -346,7 +346,7 @@ namespace DLM.cad.Menus
         {
             if (selecoes.Count > 0)
             {
-                var nova = Conexoes.Utilz.Prompt("Digite",  selecoes[0].Numero);
+                var nova = selecoes[0].Numero.Prompt();
                 if (nova == null | nova == "") { return; }
                 foreach (var s in selecoes)
                 {

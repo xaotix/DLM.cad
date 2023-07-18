@@ -316,7 +316,7 @@ namespace DLM.cad
             var sd = sender as System.Windows.Controls.Button;
             var pp = sd.Tag as ObjetoPurlin;
             bool confirmado = false;
-            double ntranspasse = Conexoes.Utilz.Prompt(pp.TRD, out confirmado, 0);
+            double ntranspasse = pp.TRD.Prompt(out confirmado, 0);
             if (confirmado)
             {
                 pp.TRD = ntranspasse;
@@ -333,7 +333,7 @@ namespace DLM.cad
             var sd = sender as System.Windows.Controls.Button;
             var pp = sd.Tag as ObjetoPurlin;
             bool confirmado = false;
-            double ntranspasse = Conexoes.Utilz.Prompt(pp.TRE, out confirmado, 0);
+            double ntranspasse = pp.TRE.Prompt(out confirmado, 0);
             if (confirmado)
             {
                 pp.TRE = ntranspasse;
