@@ -87,7 +87,7 @@ namespace DLM.cad
                     }
                     else
                     {
-                        retorno.Add(new db.Celula(acAttRef.Tag, acAttRef.TextString));
+                        retorno.Add(acAttRef.Tag, acAttRef.TextString);
                     }
                 }
             }

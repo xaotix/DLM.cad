@@ -23,7 +23,7 @@ namespace DLM.cad
             retorno.Celulas.Clear();
             foreach (var celula in this.Celulas)
             {
-                retorno.Add(new db.Celula(celula.Coluna, celula.Valor));
+                retorno.Add(celula.Coluna, celula.Valor);
             }
             return retorno;
         }

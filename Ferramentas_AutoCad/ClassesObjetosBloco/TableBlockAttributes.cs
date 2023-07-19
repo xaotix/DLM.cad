@@ -49,7 +49,7 @@ namespace DLM.cad
                     foreach (var coluna in colunas)
                     {
                         var igual = linha[coluna];
-                        nl.Add(new db.Celula(coluna, igual.Valor));
+                        nl.Add(coluna, igual.Valor);
                     }
                     this.BlockAttributes.Add(nl);
                 }
