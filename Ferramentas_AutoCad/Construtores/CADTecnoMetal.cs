@@ -1479,11 +1479,11 @@ namespace DLM.cad
             chapas.AddRange(DBases.GetChapas());
             if (tipo == Tipo_Chapa.Fina)
             {
-                chapas = chapas.FindAll(x => x.GetChapa_Fina());
+                chapas = chapas.FindAll(x => x.Is_Chapa_Fina());
             }
             else if (tipo == Tipo_Chapa.Grossa)
             {
-                chapas = chapas.FindAll(x => !x.GetChapa_Fina());
+                chapas = chapas.FindAll(x => !x.Is_Chapa_Fina());
             }
 
             var sel = chapas.ListaSelecionar();
@@ -1750,7 +1750,7 @@ namespace DLM.cad
                     {
                         return;
                     }
-                    chapa_fina = espessura.GetChapa_Fina();
+                    chapa_fina = espessura.Is_Chapa_Fina();
                     if (chapa_fina)
                     {
 
@@ -1930,7 +1930,7 @@ namespace DLM.cad
                 }
                 if (espessura != null)
                 {
-                    bool chapa_fina = espessura.GetChapa_Fina();
+                    bool chapa_fina = espessura.Is_Chapa_Fina();
                     if (bobina == null)
                     {
                         bobina = DBases.GetBobinaDummy(Cfg.Init.Material);
