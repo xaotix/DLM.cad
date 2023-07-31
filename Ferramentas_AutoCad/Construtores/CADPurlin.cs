@@ -1244,7 +1244,7 @@ namespace DLM.cad
             //CORRENTES RÍGIDAS
             if (CRE.Length > 0)
             {
-                foreach (var s in CRE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                foreach (var s in CRE.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
                     if (s > 0)
                         p.Correntes_Esquerda.Add(s);
@@ -1252,7 +1252,7 @@ namespace DLM.cad
             }
             if (CRD.Length > 0)
             {
-                foreach (var s in CRD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                foreach (var s in CRD.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
                     if (s > 0)
                         p.Correntes_Direita.Add(s);
@@ -1263,7 +1263,7 @@ namespace DLM.cad
             //FURO MANUAL
             if (FE.Length > 0)
             {
-                foreach (var s in FE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                foreach (var s in FE.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
                     if (s > 0)
                         p.Esquerda.Furos_Manuais.Add(s);
@@ -1271,7 +1271,7 @@ namespace DLM.cad
             }
             if (FD.Length > 0)
             {
-                foreach (var s in FD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                foreach (var s in FD.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
                     if (s > 0)
                         p.Direita.Furos_Manuais.Add(s);
@@ -1285,7 +1285,7 @@ namespace DLM.cad
             //FLANGE BRACES
             if(FBE.Length>0)
             {
-                foreach (var s in FBE.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                foreach (var s in FBE.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
                     if (s > 0)
                         p.Esquerda.Flange_Braces.Add(s);
@@ -1294,7 +1294,7 @@ namespace DLM.cad
 
             if(FBD.Length>0)
             {
-                foreach (var s in FD.Split(';').Select(x => Conexoes.Utilz.Double(x)).OrderBy(x => x).ToList().Distinct().ToList())
+                foreach (var s in FD.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
                     if (s > 0)
                         p.Direita.Flange_Braces.Add(s);

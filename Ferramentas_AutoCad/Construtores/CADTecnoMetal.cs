@@ -439,7 +439,7 @@ namespace DLM.cad
 
                     if (igual != null)
                     {
-                        var ccmp = Conexoes.Utilz.Double(nome.Replace(igual.Perfil.Replace("@", ""), ""));
+                        var ccmp = nome.Replace(igual.Perfil.Replace("@", ""), "").Double();
 
                         if (ccmp > 0)
                         {

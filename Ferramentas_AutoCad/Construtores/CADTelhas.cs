@@ -613,7 +613,7 @@ namespace DLM.cad
 
             if (qtd_sfli > 0)
             {
-                double espacos = (comp / qtd_sfli).Double().ArredondarMultiplo(this.LarguraTelha);
+                double espacos = (comp / qtd_sfli).ArredondarMultiplo(this.LarguraTelha);
                 var pp0 = p1.Mover(angulo, espacos);
                 for (int i = 0; i < qtd_sfli - 1; i++)
                 {
@@ -712,7 +712,7 @@ namespace DLM.cad
 
             if (fixacoes>0)
             {
-                var metade = Utilz.Double(fixacoes / 2, 0);
+                var metade = (fixacoes / 2).Double(0);
                 retorno.Add(GetRMA(this.Codigo_Esticador, metade));
                 retorno.Add(GetRMA(this.Codigo_Manilha, metade));
                 retorno.Add(GetRMA(this.Codigo_Sapatilha, fixacoes));

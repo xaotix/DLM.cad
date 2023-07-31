@@ -215,7 +215,7 @@ namespace DLM.cad
                     {
                         if(st.ESoNumero())
                         {
-                            qtd_pc  = Conexoes.Utilz.Double(st);
+                            qtd_pc  = st.Double();
                             break;
                         }
                         else if(st == "A.L.")

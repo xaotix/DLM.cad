@@ -201,17 +201,17 @@ namespace DLM.cad
 
         private void criar_bloco(object sender, RoutedEventArgs e)
         {
-            double escala = Conexoes.Utilz.Double(txt_escala.Text);
+            double escala = txt_escala.Text.Double();
             if(escala<1)
             {
                 Conexoes.Utilz.Alerta("Valor escala inválido.");
                 return;
             }
-            List<Report> erros = new List<Report>();
+            var erros = new List<Report>();
             var ms = Core.TecnoMetal.GetMarcas(ref erros).ToList();
             var pos = ms.SelectMany(x => x.GetPosicoes()).ToList();
 
-            var qtd_double = Conexoes.Utilz.Double(this.quantidade.Text);
+            var qtd_double = this.quantidade.Text.Double();
             if ((bool)rad_m_composta.IsChecked)
             {
                 if (this.marca_selecionada == null)
