@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Conexoes;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -25,8 +26,8 @@ namespace DLM.cad
                                 new CTV_de_para(
                                 col[0],
                                 col[2],
-                                Conexoes.Utilz.Double(col[1]),
-                                Conexoes.Utilz.Int(col[3]),
+                                col[1].Double(),
+                                col[3].Int(),
                                 col[4]
                                 )
                                 );

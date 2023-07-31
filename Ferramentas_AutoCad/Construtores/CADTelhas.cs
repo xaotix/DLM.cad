@@ -455,7 +455,7 @@ namespace DLM.cad
                         {
                             Utils.SetUndoMark(true);
 
-                            int qtd_telhas = Utilz.Int(comp / this.LarguraTelha);
+                            int qtd_telhas = (comp / this.LarguraTelha).Int();
                             //se é horizontal, alinha com a telha.
                             if (angulo == 0 | angulo == 180)
                             {
@@ -609,7 +609,7 @@ namespace DLM.cad
             AddBlocoTexto(angulo, p2, SFLH, GetEscala() * 5,"");
             Ut.AddLeader(angulo, p2, this.GetEscala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
-            int qtd_sfli = Conexoes.Utilz.Int(comp / this.DistMaxSFLI);
+            int qtd_sfli = (comp / this.DistMaxSFLI).Int();
 
             if (qtd_sfli > 0)
             {

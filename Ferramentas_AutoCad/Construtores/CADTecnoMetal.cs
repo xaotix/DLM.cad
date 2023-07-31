@@ -494,7 +494,7 @@ namespace DLM.cad
                         string numero = seq.ToString().PadLeft(2, '0');
                         string familia = "TIRANTE " + igual.PecaLiberar.Replace("$C$", "");
                         string codigo = igual.PecaLiberar.Replace("$C$", comp.Key.String(0, igual.CaractComp));
-                        var pedacos = Conexoes.Utilz.Quebrar(comp.Key, 6000, 600, 0);
+                        var pedacos = comp.Key.Quebrar(6000, 600, 0);
                         string descricao = string.Join(" ", pedacos.GroupBy(x => x).ToList().Select(x => "(" + x.Key + " " + x.Count().ToString() + "x)"));
 
 

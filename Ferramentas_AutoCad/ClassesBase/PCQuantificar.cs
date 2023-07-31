@@ -54,7 +54,7 @@ namespace DLM.cad
         {
 
             var blocos = this.Blocos;
-            List<PCQuantificar> retorno = new List<PCQuantificar>();
+            var retorno = new List<PCQuantificar>();
 
            if(atributoNome.Count>0)
             {
@@ -109,7 +109,7 @@ namespace DLM.cad
             var s = this.Atributos[tag].Valor;
             if (s != "")
             {
-                this.Comprimento = Conexoes.Utilz.Double(s);
+                this.Comprimento = s.Double();
             }
         }
         public void SetIdPorAtributo(string tag)
@@ -117,7 +117,7 @@ namespace DLM.cad
             var s = this.Atributos[tag].Valor;
             if (s != "")
             {
-                this.id = Conexoes.Utilz.Int(s);
+                this.id = s.Int();
             }
         }
         public void SetPerfilPorAtributo(string tag)
@@ -187,7 +187,7 @@ namespace DLM.cad
 
             if(Tipo== Tipo_Objeto.Texto)
             {
-                List<string> atts = this.Blocos.Select(x => x["VALOR"].Valor).ToList();
+                var atts = this.Blocos.Select(x => x["VALOR"].Valor).ToList();
 
              
 
