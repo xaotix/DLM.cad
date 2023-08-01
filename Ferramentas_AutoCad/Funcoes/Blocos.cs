@@ -609,7 +609,7 @@ namespace DLM.cad
             }
 
         }
-        public static void MarcaElemM2(P3d p0, DLM.cam.Perfil pf, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
+        public static void MarcaElemM2(P3d p0, DLM.cam.Perfil perfil, string marca, double quantidade, double comp, double larg, double area, double perimetro, string ficha, string material, double escala, string posicao = "", string mercadoria = "")
         {
             try
             {
@@ -621,15 +621,15 @@ namespace DLM.cad
                 ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
                 ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
                 ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.Descricao);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), perfil.Descricao);
                 ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.LUN_PRO.ToString(), comp.String(0));
                 ht.Add(T_DBF1.LAR_PRO.ToString(), larg.String(0));
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(T_DBF1.PUN_LIS.ToString(), (pf.Peso * area / 1000 / 1000 / 100).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(T_DBF1.PUN_LIS.ToString(), (perfil.Peso * area / 1000 / 1000 / 100).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                 ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.DECIMAIS_Superficie));
                 ht.Add(T_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
-                ht.Add(T_DBF1.COD_PEZ.ToString(), pf.SAP);
+                ht.Add(T_DBF1.COD_PEZ.ToString(), perfil.SAP);
                 ht.Add(T_DBF1.MAT_PRO.ToString(), material);
 
 
