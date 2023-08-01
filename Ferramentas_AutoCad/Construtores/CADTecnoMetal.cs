@@ -1412,6 +1412,7 @@ namespace DLM.cad
 
                 if (erros.Count == 0 && blocos.Count > 0)
                 {
+                    var c = 0;
                     foreach (var blk in blocos)
                     {
                         var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
@@ -1421,7 +1422,7 @@ namespace DLM.cad
                         {
                             var peso = bloco.CalcularPesoLinear();
                             var sup = bloco.CalcularSuperficieLinear();
-                            if (peso>0)
+                            if (peso > 0)
                             {
                                 var att = new db.Linha();
                                 att.Add(T_DBF1.PUN_LIS.ToString(), peso);
@@ -1430,14 +1431,21 @@ namespace DLM.cad
                                 att.Add(T_DBF1.SPE_PRO.ToString(), bloco.Espessura);
 
                                 DLM.cad.Atributos.Set(blk, acTrans, att);
+                                c++;
                             }
                             else
                             {
                                 erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Crítico));
                             }
                         }
+                       
                     }
                     acTrans.Commit();
+
+                    if (c == 0)
+                    {
+                        erros.Add("Nenhuma posição atualizada.");
+                    }
                 }
             }
             erros.Show();
@@ -1446,7 +1454,56 @@ namespace DLM.cad
 
 
 
+        public List<Report> TrocarPerfilElementoMetroQuadrado(List<BlockReference> blocos, DLM.cam.Perfil novo_Perfil)
+        {
+            var erros = new List<Report>();
 
+            if (novo_Perfil == null) { return new List<Report>().Add("Perfil inválido"); }
+            if (blocos.Count == 0) { return new List<Report>().Add("Nenhum bloco de TecnoMetal encontrado na seleção."); }
+
+            // var pcs = GetMarcas(ref erros, blocos);
+
+            using (var acTrans = acCurDb.acTransST())
+            {
+                int c = 0;
+                foreach (var blk in blocos)
+                {
+                    var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
+                    var bloco = new MarcaTecnoMetal(bkm);
+                    if (bloco.Tipo_Bloco == Tipo_Bloco.Elemento_M2)
+                    {
+                        c++;
+                        var peso = bloco.CalcularPesoLinear(novo_Perfil);
+                        var sup = bloco.CalcularSuperficieLinear();
+                        if (peso > 0)
+                        {
+                            var att = new db.Linha();
+                            att.Add(T_DBF1.NOM_PRO.ToString(), novo_Perfil.Descricao);
+                            att.Add(T_DBF1.PUN_LIS.ToString(), peso);
+                            att.Add(T_DBF1.SUN_LIS.ToString(), sup);
+                            att.Add(T_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String()}*{bloco.Largura.String(0)}");
+                            att.Add(T_DBF1.SPE_PRO.ToString(), bloco.Espessura);
+
+                            DLM.cad.Atributos.Set(blk, acTrans, att);
+                            erros.Add(new Report($"Atualizado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}"));
+                        }
+                        else
+                        {
+                            erros.Add(new Report("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Crítico));
+                        }
+                    }
+                    
+                }
+
+                acTrans.Commit();
+                if (c == 0)
+                {
+                    erros.Add("Nenhuma posição do tipo Elemento m² encontrada.");
+                }
+            }
+            erros.Show();
+            return erros;
+        }
 
 
 

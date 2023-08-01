@@ -478,7 +478,7 @@ namespace DLM.cad
                                 p_pes_uni = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;
                             }
 
-                            var p_pes_tot = (Pos.PesoUnit / 1000) * Pos.Quantidade * (Marca.Tipo_Marca == Tipo_Marca.MarcaSimples?Marca.Quantidade:1);
+                            var p_pes_tot = (Pos.PesoUnit / 1000) * Pos.Quantidade * (Marca.Tipo_Marca == Tipo_Marca.MarcaSimples?1:Marca.Quantidade);
                             if (p_pes_tot < Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON)
                             {
                                 p_pes_tot = Cfg.Init.TEC_DECIMAIS_PESO_MINIMO_TON;

@@ -47,7 +47,7 @@ namespace DLM.cad
         {
             get
             {
-                if(_MenuMarcas==null)
+                if (_MenuMarcas == null)
                 {
                     _MenuMarcas = new MenuMarcas(TecnoMetal);
                 }
@@ -58,7 +58,7 @@ namespace DLM.cad
         {
             get
             {
-                if(_Cotas ==null)
+                if (_Cotas == null)
                 {
                     _Cotas = new CADCotagem();
                 }
@@ -85,14 +85,14 @@ namespace DLM.cad
         {
 
             Assembly asm = Assembly.GetExecutingAssembly();
-            List<string> comandos = Ut.listarcomandos(asm, false).ToList().OrderBy(x=>x).ToList();
+            List<string> comandos = Ut.listarcomandos(asm, false).ToList().OrderBy(x => x).ToList();
 
             editor.WriteMessage("=== Lista de comandos ===\n");
             foreach (var s in comandos)
             {
                 editor.WriteMessage($"---> {s.ToUpper()}\n");
             }
-            
+
         }
 
         [CommandMethod(nameof(LCotas))]
@@ -154,7 +154,7 @@ namespace DLM.cad
             {
                 var pts = Ut.GetPontos(Cotas.Selecoes);
                 var p3ds = pts.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
-                var contorno = p3ds.GetContornoHull(Ut.PedirInteger("Digite a escala",1),Ut.PedirDouble("Digite a concavidade",0.5));
+                var contorno = p3ds.GetContornoHull(Ut.PedirInteger("Digite a escala", 1), Ut.PedirDouble("Digite a concavidade", 0.5));
                 Cotas.AddPolyLine(contorno, 0, 10, System.Drawing.Color.Red);
             }
         }
@@ -164,10 +164,10 @@ namespace DLM.cad
         public static void desenharmline()
         {
             var estilo = FuncoesCAD.GetArquivosMlStyles().GetEstilos().ListaSelecionar();
-            if(estilo!=null)
+            if (estilo != null)
             {
                 var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);
-                if (ml!=null)
+                if (ml != null)
                 {
                     var pts = Ut.PedirPontos3D();
                     if (pts.Count > 0)
@@ -243,8 +243,8 @@ namespace DLM.cad
         }
 
 
-        
-        
+
+
         [CommandMethod(nameof(passarela))]
         public static void passarela()
         {
@@ -365,9 +365,9 @@ namespace DLM.cad
                 monitoramento.SalvarLog();
             }
         }
-        
-        
-        
+
+
+
         [CommandMethod(nameof(setarLTS))]
         public static void setarLTS()
         {
@@ -420,7 +420,8 @@ namespace DLM.cad
         [CommandMethod(nameof(AtualizarPesoChapas))]
         public static void AtualizarPesoChapas()
         {
-            CADTecnoMetal pp = new CADTecnoMetal();
+            var pp = new CADTecnoMetal();
+            var sel = pp.SelecionarObjetos();
 
             List<BlockReference> blks = pp.Selecoes.Filter<BlockReference>();
             if (blks.Count == 0)
@@ -432,7 +433,7 @@ namespace DLM.cad
                 }
 
             }
-            if(blks.Count==0)
+            if (blks.Count == 0)
             {
                 return;
             }
@@ -447,6 +448,47 @@ namespace DLM.cad
             }
         }
 
+        [CommandMethod(nameof(TrocarPerfilElementoMetroQuadrado))]
+        public static void TrocarPerfilElementoMetroQuadrado()
+        {
+            var pp = new CADTecnoMetal();
+            var sel = pp.SelecionarObjetos();
+
+
+            var blks = pp.Selecoes.Filter<BlockReference>();
+            if (blks.Count == 0)
+            {
+                if (Conexoes.Utilz.Pergunta("Nada Selecionado. Selecionar tudo?"))
+                {
+                    pp.SelecionarTudo();
+                    blks = pp.Selecoes.Filter<BlockReference>();
+                }
+
+            }
+            if (blks.Count == 0)
+            {
+                return;
+            }
+            var novo_Perfil = DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo == DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez).ListaSelecionar("Selecione o novo perfil");
+            if (novo_Perfil == null)
+            {
+                return;
+            }
+            if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja trocar o material dos itens selecionados para {novo_Perfil}"))
+            {
+                var err = pp.TrocarPerfilElementoMetroQuadrado(blks, novo_Perfil);
+
+                if (err.FindAll(x => x.Tipo == TipoReport.Crítico).Count == 0)
+                {
+                    if (Conexoes.Utilz.Pergunta("Materiais atualizados! Deseja gerar/atualizar a tabela?"))
+                    {
+                        pp.InserirTabelaAuto();
+                    }
+                }
+            }
+
+        }
+
         [CommandMethod(nameof(tabelatecnometalauto))]
         public static void tabelatecnometalauto()
         {
@@ -457,9 +499,9 @@ namespace DLM.cad
             erros.Show();
         }
 
-        
-        
-        
+
+
+
         [CommandMethod(nameof(selopreenche))]
         public static void selopreenche()
         {
@@ -473,7 +515,7 @@ namespace DLM.cad
             pp.PreencheSelo(true);
         }
 
-        
+
         [CommandMethod(nameof(rodarmacros), CommandFlags.Session | CommandFlags.Modal)]
         public static void rodarmacros()
         {
@@ -527,7 +569,7 @@ namespace DLM.cad
             pp.InserirArremate(pp.GetEscala());
         }
         [CommandMethod(nameof(chapa))]
-        public  static void chapa()
+        public static void chapa()
         {
             CADTecnoMetal pp = new CADTecnoMetal();
             pp.InserirChapa(pp.GetEscala());
@@ -632,7 +674,7 @@ namespace DLM.cad
         {
             List<Report> erros = new List<Report>();
             var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
-            if(pasta.Exists())
+            if (pasta.Exists())
             {
                 var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
                 if (arquivos.Count > 0)
@@ -703,7 +745,7 @@ namespace DLM.cad
                     if (arquivos.Count > 0)
                     {
                         List<Report> erros = new List<Report>();
-                      var w=  Conexoes.Utilz.Wait(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                        var w = Conexoes.Utilz.Wait(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
                         List<string> arquivos_dwg = new List<string>();
                         foreach (var arq in arquivos)
                         {
@@ -715,11 +757,11 @@ namespace DLM.cad
 
                                 using (Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arq.Endereco, false))
                                 {
-                                  
+
                                     doc.Database.SaveAs(nome_fim, DwgVersion.AC1021);
                                     doc.CloseAndDiscard();
                                 }
-                                if(nome_fim.Exists())
+                                if (nome_fim.Exists())
                                 {
                                     using (Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(nome_fim, false))
                                     {
@@ -748,25 +790,25 @@ namespace DLM.cad
         [CommandMethod(nameof(medabil))]
         public static void medabil()
         {
-            
+
             MenuMarcas.Iniciar();
         }
 
         [CommandMethod(nameof(quantificar))]
         public static void quantificar()
         {
-            TecnoMetal.Quantificar(true,false,true,true,false);
+            TecnoMetal.Quantificar(true, false, true, true, false);
         }
 
         [CommandMethod(nameof(marcarmontagem))]
         public static void marcarmontagem()
         {
-         if(_menu_bloco==null)
+            if (_menu_bloco == null)
             {
                 _menu_bloco = new Menus.Menu_Bloco_Peca(TecnoMetal);
                 _menu_bloco.Show();
             }
-         else
+            else
             {
                 _menu_bloco.txt_escala.Text = TecnoMetal.GetEscala().String();
                 _menu_bloco.Visibility = System.Windows.Visibility.Visible;
@@ -780,7 +822,7 @@ namespace DLM.cad
         }
 
         [CommandMethod(nameof(mercadorias21))]
-        public  static void mercadorias21()
+        public static void mercadorias21()
         {
             CADTecnoMetal p = new CADTecnoMetal();
             p.Mercadorias();
@@ -850,7 +892,7 @@ namespace DLM.cad
         [CommandMethod(nameof(gerarPDFEtapacarrega))]
         public static void gerarPDFEtapacarrega()
         {
-            var arquivos = Conexoes.Utilz.Arquivo.Ler(TecnoMetal.Pasta + @"DAT\plotar.txt").Select(x=> new Conexoes.Arquivo(x)).ToList();
+            var arquivos = Conexoes.Utilz.Arquivo.Ler(TecnoMetal.Pasta + @"DAT\plotar.txt").Select(x => new Conexoes.Arquivo(x)).ToList();
             arquivos = arquivos.FindAll(x => x.Exists());
             TecnoMetal.GerarPDF(arquivos);
         }
@@ -865,10 +907,10 @@ namespace DLM.cad
         [CommandMethod(nameof(LimparDesenho), CommandFlags.Session | CommandFlags.Modal)]
         public static void LimparDesenho(Document doc)
         {
-            
-            if(doc == null) { doc = CAD.acDoc; }
-            
-            
+
+            if (doc == null) { doc = CAD.acDoc; }
+
+
 
             doc.Comando(
             "REMOVEAEC",
@@ -880,11 +922,11 @@ namespace DLM.cad
             "-overkill", "all ",
             "_tilemode", "1",/*vai pro model*/
             "-purge", "A", "*", "N",
-            "-overkill", "all", "", "", "d","",
+            "-overkill", "all", "", "", "d", "",
             //"-layer", "set", "0","",
             //"-layer", "off", "mv","",
             "AUDIT", "Y",
-            "_tilemode", "0",""
+            "_tilemode", "0", ""
             );/*vai pro layout*/
         }
 

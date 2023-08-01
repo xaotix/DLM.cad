@@ -168,9 +168,19 @@ namespace DLM.cad
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
                     db_perfil_m2 = DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez).ListaSelecionar();
+
                     if (db_perfil_m2 != null)
                     {
-                        perfil.Content = db_perfil_m2.ToString();
+                        if(db_perfil_m2.SAP.Int()>0 && db_perfil_m2.SAP.Length>6 && db_perfil_m2.Peso>0)
+                        {
+                            perfil.Content = db_perfil_m2.ToString();
+                        }
+                        else
+                        {
+
+                            Conexoes.Utilz.Alerta("O cadastro da chapa é inválido.\nEstá faltando o código de matéria prima ou o peso está zerado.");
+                            db_perfil_m2 = null;
+                        }
                     }
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
@@ -968,6 +978,12 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             Core.TecnoMetal.GerarCamsChapasRetas();
+        }
+
+        private void trocar_material_elemento_m2(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Core.TrocarPerfilElementoMetroQuadrado();
         }
     }
 }
