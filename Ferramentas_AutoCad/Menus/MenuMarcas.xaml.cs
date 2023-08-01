@@ -367,7 +367,7 @@ namespace DLM.cad
                     Core.TecnoMetal.InserirPerfil(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil, this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_M2:
-                    Core.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos,this.bt_material.Content.ToString(),this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil,this.combo_mercadoria.Content.ToString());
+                    Core.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos,this.bt_material.Content.ToString(),this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil_m2,this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
                     Core.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_unitario);

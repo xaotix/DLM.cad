@@ -626,7 +626,7 @@ namespace DLM.cad
                 ht.Add(T_DBF1.LUN_PRO.ToString(), comp.String(0));
                 ht.Add(T_DBF1.LAR_PRO.ToString(), larg.String(0));
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), ficha);
-                ht.Add(T_DBF1.PUN_LIS.ToString(), (perfil.Peso * area / 1000 / 1000 / 100).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
+                ht.Add(T_DBF1.PUN_LIS.ToString(), (perfil.Peso * area / 1000 / 1000).Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
                 ht.Add(T_DBF1.SUN_LIS.ToString(), Math.Round((area * 2 + perimetro * 2) / 1000 / 1000, Cfg.Init.DECIMAIS_Superficie));
                 ht.Add(T_DBF1.ING_PEZ.ToString(), $"{comp}*{larg}");
                 ht.Add(T_DBF1.COD_PEZ.ToString(), perfil.SAP);

@@ -1417,14 +1417,12 @@ namespace DLM.cad
                         var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
                         var bloco = new MarcaTecnoMetal(bkm);
 
-                        if ((bloco.Tipo_Marca != Tipo_Marca.MarcaComposta) && (bloco.Tipo_Bloco == Tipo_Bloco.Arremate | bloco.Tipo_Bloco == Tipo_Bloco.Chapa))
+                        if ((bloco.Tipo_Marca != Tipo_Marca.MarcaComposta) && (bloco.Tipo_Bloco == Tipo_Bloco.Arremate | bloco.Tipo_Bloco == Tipo_Bloco.Chapa | bloco.Tipo_Bloco == Tipo_Bloco.Elemento_M2))
                         {
-                            var bob = bloco.GetBobina();
-                            if (bob != null)
+                            var peso = bloco.CalcularPesoLinear();
+                            var sup = bloco.CalcularSuperficieLinear();
+                            if (peso>0)
                             {
-                                var peso = bloco.CalcularPesoLinear();
-                                var sup = bloco.CalcularSuperficieLinear();
-
                                 var att = new db.Linha();
                                 att.Add(T_DBF1.PUN_LIS.ToString(), peso);
                                 att.Add(T_DBF1.SUN_LIS.ToString(), sup);
