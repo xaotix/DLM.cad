@@ -270,7 +270,7 @@
     <PreBuildEvent>::del /q "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\Support\acad.lsp"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /K /H /Y /S "*.dll" "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\"
+xcopy /K /H /Y /S "*.scr" "C:\Program Files\Autodesk\AutoCAD Mechanical 2012\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
