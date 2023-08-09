@@ -741,11 +741,11 @@ namespace DLM.cad
                         c++;
                     }
                  
-                    var dest = Utilz.getPasta(acDoc.Name) + $@"\{acDoc.Name.getNome()}_boneco.txt";
+                    var arquivo = $"{acDoc.Name.getPasta()}{acDoc.Name.getNome()}_boneco.txt";
                    if(textos.Count>0)
                     {
-                        Conexoes.Utilz.Arquivo.Gravar(dest, textos);
-                        dest.Abrir();
+                        Conexoes.Utilz.Arquivo.Gravar(arquivo, textos);
+                        arquivo.Abrir();
                     }
                    else
                     {
@@ -1036,7 +1036,7 @@ namespace DLM.cad
                 string destino = "";
                 if (exportar)
                 {
-                    destino = Conexoes.Utilz.SalvarArquivo(Cfg.Init.EXT_RM);
+                    destino = Cfg.Init.EXT_RM.SalvarArquivo();
                 }
                 if (destino ==null && exportar)
                 {

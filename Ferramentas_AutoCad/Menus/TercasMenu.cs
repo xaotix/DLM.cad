@@ -29,24 +29,24 @@ namespace DLM.cad
 
             if (correntes_mlstyles.Items.Count==0&& mapeia_correntes.Checked)
             {
-                Conexoes.Utilz.Alerta("Não é possivel mapear as correntes sem ter um estilo de MLinha");
+                "Não é possivel mapear as correntes sem ter um estilo de MLinha".Alerta();
                 return;
             }
 
             if (tirantes_mlstyles.Items.Count== 0 &&  mapeia_tirantes.Checked)
             {
-                Conexoes.Utilz.Alerta("Não é possivel mapear os tirantes sem ter um estilo de MLinha");
+                "Não é possivel mapear os tirantes sem ter um estilo de MLinha".Alerta();
                 return;
             }
 
             if (tercas_mlstyles.Items.Count == 0 && mapeia_tercas.Checked)
             {
-                Conexoes.Utilz.Alerta("Não é possivel mapear os tercas sem ter um estilo de MLinha");
+                "Não é possivel mapear os tercas sem ter um estilo de MLinha".Alerta();
                 return;
             }
             if (furos_manuais_layer.Text == "" && mapeia_furos_manuais.Checked)
             {
-                Conexoes.Utilz.Alerta("Não é possivel mapear os furos manuais sem definir uma layer padrão");
+                "Não é possivel mapear os furos manuais sem definir uma layer padrão".Alerta();
                 return;
             }
 

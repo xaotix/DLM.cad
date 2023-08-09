@@ -1358,7 +1358,7 @@ namespace DLM.cad
             db.Tabela posicoes = new db.Tabela();
             using (var acTrans = acCurdb.acTrans())
             {
-                var nome_arq = arquivo.getNome();
+                var nome = arquivo.getNome();
                 var ultima_edicao = arquivo.getEdicao();
 
                 List<BlockReference> blocos = acCurdb.GetBlockReferences(acTrans);
@@ -1369,12 +1369,12 @@ namespace DLM.cad
 
                 if (errosm.Length > 0 | errosp.Length > 0)
                 {
-                    erros.Add(new Report($"{nome_arq}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", nome_arq, TipoReport.Crítico));
+                    erros.Add(new Report($"{nome}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", nome, TipoReport.Crítico));
                 }
 
                 if (ms.Count == 0)
                 {
-                    erros.Add(new Report($"{nome_arq}", $"Prancha não tem marcas", nome_arq, DLM.vars.TipoReport.Crítico));
+                    erros.Add(new Report($"{nome}", $"Prancha não tem marcas", nome, DLM.vars.TipoReport.Crítico));
                 }
 
                 foreach (var m in ms)

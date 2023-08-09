@@ -571,7 +571,7 @@ namespace DLM.cad
         }
         public void ExportarRMAdeTabela()
         {
-            string destino = Conexoes.Utilz.SalvarArquivo(Cfg.Init.EXT_RM);
+            var destino = Cfg.Init.EXT_RM.SalvarArquivo();
             if(destino==null)
             {
                 return;

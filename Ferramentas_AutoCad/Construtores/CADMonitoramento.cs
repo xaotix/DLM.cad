@@ -52,7 +52,7 @@ namespace DLM.cad
         public void SalvarLog()
         {
 
-            var destino = Conexoes.Utilz.SalvarArquivo();
+            var destino = "log".SalvarArquivo();
             if(destino!=null)
             {
                 Conexoes.Utilz.Arquivo.Gravar(destino, Log);
