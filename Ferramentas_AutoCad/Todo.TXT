@@ -1,4 +1,10 @@
-﻿desenvolver ferramenta para criar object grouping
+﻿====
+ao gerar tabela do tecnometal, verificar se tem 2 peças com o mesmo nome
+
+
+
+
+desenvolver ferramenta para criar object grouping
 
 descobrir pra que servem os campos da DBF que deixo setado em branco, talvez utilizar pra gravar algo.
 
