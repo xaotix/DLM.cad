@@ -115,7 +115,7 @@ namespace DLM.cad
             var s = Ut.SelecionarPurlin(null);
             if (s!=null)
             {
-                this.id_terca = s.id_db;
+                this.id_terca = s.id_codigo;
                 this.terca.Text = s.COD_DB;
             }
         }
@@ -174,7 +174,7 @@ namespace DLM.cad
             var s = Ut.SelecionarCorrente();
             if (s != null)
             {
-                this.id_corrente = s.id_db;
+                this.id_corrente = s.id_codigo;
                 this.corrente.Text = s.COD_DB;
             }
         }
@@ -184,7 +184,7 @@ namespace DLM.cad
             var s = Ut.SelecionarTirante();
             if (s != null)
             {
-                this.id_tirante = s.id_db;
+                this.id_tirante = s.id_codigo;
                 this.tirante.Text = s.COD_DB;
             }
         }

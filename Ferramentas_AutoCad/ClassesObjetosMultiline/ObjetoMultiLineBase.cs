@@ -416,7 +416,7 @@ namespace DLM.cad
             {
                 return;
             }
-            this.id_peca = rm.id_db;
+            this.id_peca = rm.id_codigo;
 
             this._pecaRME = rm;
 

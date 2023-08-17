@@ -1507,7 +1507,7 @@ namespace DLM.cad
 
         public static RMLiteFamilia GetFBs()
         {
-            var fam = DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_FB.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_FB.ToUpper());
 
             if (fam != null)
             {
@@ -1518,7 +1518,7 @@ namespace DLM.cad
 
         public static RMLiteFamilia GetPURLINS()
         {
-            var fam = DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin.ToUpper());
 
             if (fam != null)
             {
@@ -1528,7 +1528,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetTIRANTES()
         {
-            var fam = DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante.ToUpper());
 
             if (fam != null)
             {
@@ -1538,7 +1538,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetCORRENTES()
         {
-            var fam = DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente.ToUpper());
 
             if (fam != null)
             {
@@ -1549,7 +1549,7 @@ namespace DLM.cad
 
         public static RMLiteFamilia GetSUPORTES_CORRENTES()
         {
-            var fam = DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente_Suporte.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente_Suporte.ToUpper());
 
             if (fam != null)
             {
@@ -1559,7 +1559,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetSUPORTES_PURLIN()
         {
-            var fam = DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin_Suporte.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin_Suporte.ToUpper());
 
             if (fam != null)
             {
@@ -1569,7 +1569,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetSUPORTES_TIRANTE()
         {
-            var fam = DBases.GetPecasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante_Suporte.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante_Suporte.ToUpper());
 
             if (fam != null)
             {

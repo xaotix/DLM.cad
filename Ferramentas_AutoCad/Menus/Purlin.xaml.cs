@@ -37,7 +37,7 @@ namespace DLM.cad.Menus
 
             if(s!=null)
             {
-                Core.CADPurlin.SetPurlin(s.id_db);
+                Core.CADPurlin.SetPurlin(s.id_codigo);
                 this.terca.Content = s.COD_DB;
             }
         }
@@ -48,7 +48,7 @@ namespace DLM.cad.Menus
 
             if (s != null)
             {
-                Core.CADPurlin.SetCorrente(s.id_db);
+                Core.CADPurlin.SetCorrente(s.id_codigo);
                 this.corrente.Content = s.COD_DB;
             }
         }
@@ -61,7 +61,7 @@ namespace DLM.cad.Menus
 
             if (s != null)
             {
-                Core.CADPurlin.SetTirante(s.id_db);
+                Core.CADPurlin.SetTirante(s.id_codigo);
                 this.tirante.Content = s.COD_DB;
             }
         }
@@ -179,7 +179,7 @@ namespace DLM.cad.Menus
 
             if (s != null)
             {
-                Core.CADPurlin.SetPurlinSuporte(s.id_db);
+                Core.CADPurlin.SetPurlinSuporte(s.id_codigo);
                 this.terca_suporte.Content = s.COD_DB;
             }
         }
@@ -190,7 +190,7 @@ namespace DLM.cad.Menus
 
             if (s != null)
             {
-                Core.CADPurlin.SetCorrenteSuporte(s.id_db);
+                Core.CADPurlin.SetCorrenteSuporte(s.id_codigo);
                 this.corrente_suporte.Content = s.COD_DB;
             }
         }
@@ -201,7 +201,7 @@ namespace DLM.cad.Menus
 
             if (s != null)
             {
-                Core.CADPurlin.SetTiranteSuporte(s.id_db);
+                Core.CADPurlin.SetTiranteSuporte(s.id_codigo);
                 this.tirante_suporte.Content = s.COD_DB;
             }
         }

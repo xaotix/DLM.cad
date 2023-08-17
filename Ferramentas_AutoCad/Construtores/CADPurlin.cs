@@ -916,7 +916,7 @@ namespace DLM.cad
                 return;
             }
 
-            this.SetTerca(perfil.id_db);
+            this.SetTerca(perfil.id_codigo);
    
 
             double comprimento = Math.Round(Math.Abs(pt1.X - pt2.X));
@@ -1531,7 +1531,7 @@ namespace DLM.cad
                     foreach (var s in this.Getblocos_tercas())
                     {
                         var ht = new db.Linha();
-                        ht.Add("ID_PECA", perfil.id_db);
+                        ht.Add("ID_PECA", perfil.id_codigo);
                         ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.String());
                         ht.Add("SECAO", perfil.SECAO.String(0));
                         ht.Add(Cfg.Init.CAD_ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");

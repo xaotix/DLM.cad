@@ -33,9 +33,9 @@ namespace DLM.cad.Menus
 
         public int sequencial { get; set; } = 1;
 
-        public Conexoes.RMA rma_sel { get; set; }
-        public Conexoes.RME rme_sel { get; set; }
-        public RME rmu_sel { get; set; }
+        public RMA rma_sel { get; set; }
+        public RMLite rme_sel { get; set; }
+        public RMLite rmu_sel { get; set; }
         public Conexoes.RMT rmt_sel { get; set; }
 
         private List<MarcaTecnoMetal> marcas_tecnometal { get; set; } = new List<MarcaTecnoMetal>();
@@ -46,6 +46,7 @@ namespace DLM.cad.Menus
         public CADTecnoMetal TecnoMetal { get; set; }
         public Menu_Bloco_Peca(CADTecnoMetal tec)
         {
+
             this.TecnoMetal = tec;
             InitializeComponent();
             this.DataContext = this;
@@ -136,6 +137,7 @@ namespace DLM.cad.Menus
 
             try
             {
+
                 if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && this.rma_sel != null)
                 {
                     bt_peca_selecionar.Content = this.rma_sel.ToString();
@@ -146,10 +148,10 @@ namespace DLM.cad.Menus
                 {
                     var pc = this.rme_sel.Clonar();
                     bt_peca_selecionar.Content = this.rme_sel.COD_DB;
-                    if (this.rme_sel.VARIAVEL)
+                    if (this.rme_sel.COMP_VAR)
                     {
                         this.txt_comprimento.IsEnabled = true;
-                        pc.COMP = this.txt_comprimento.Text.Double(0);
+                        pc = pc.Clonar(this.txt_comprimento.Text.Double(0));
                     }
                     else
                     {
@@ -163,10 +165,10 @@ namespace DLM.cad.Menus
                     var selec = this.rmu_sel;
                     var pc = selec.Clonar();
                     bt_peca_selecionar.Content = selec.COD_DB;
-                    if (this.rmu_sel.VARIAVEL)
+                    if (this.rmu_sel.COMP_VAR)
                     {
                         this.txt_comprimento.IsEnabled = true;
-                        pc.COMP = this.txt_comprimento.Text.Double(0);
+                        pc = pc.Clonar(this.txt_comprimento.Text.Double(0));
                     }
                     else
                     {
@@ -207,7 +209,7 @@ namespace DLM.cad.Menus
             }
         }
 
-        private void peca_selecionar_Click(object sender, RoutedEventArgs e)
+        private void pecaSelecionarClick(object sender, RoutedEventArgs e)
         {
             if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA)
             {
@@ -219,7 +221,10 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME)
             {
-                var sel = DBases.GetBancoRM().GetRMEs().ListaSelecionar();
+                var familia = DBases.GetFamiliasLite(Cfg.Init.CAD_ATT_RME).ListaSelecionar();
+                if (familia == null) { return; }
+                var sel = familia.GetPecas().ListaSelecionar();
+
                 if (sel != null)
                 {
                     this.rme_sel = sel;
@@ -227,7 +232,10 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU)
             {
-                var sel = DBases.GetBancoRM().GetRMUs().ListaSelecionar();
+                var familia = DBases.GetFamiliasLite(Cfg.Init.CAD_ATT_RMU).ListaSelecionar();
+                if (familia == null) { return; }
+                var sel = familia.GetPecas().ListaSelecionar();
+
                 if (sel != null)
                 {
                     this.rmu_sel = sel;
@@ -356,7 +364,7 @@ namespace DLM.cad.Menus
         private void atualiza_nome(object sender, TextChangedEventArgs e)
         {
             double qtd = this.txt_quantidade.Text.Double();
-            double comprimento = this.txt_comprimento.Double(0);
+            double comprimento = this.txt_comprimento.Text.Double(0);
 
             if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && rma_sel != null)
             {
@@ -365,14 +373,14 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && rme_sel != null)
             {
-                var mm = rme_sel.Clonar((int)qtd, comprimento);
+                var mm = rme_sel.Clonar(comprimento);
                 id = mm.id_codigo;
                 txt_codigo.Text = mm.CODIGOFIM;
 
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU && rmu_sel != null)
             {
-                var mm = rmu_sel.Clonar((int)qtd, comprimento);
+                var mm = rmu_sel.Clonar(comprimento);
                 id = mm.id_codigo;
                 txt_codigo.Text = mm.CODIGOFIM;
             }

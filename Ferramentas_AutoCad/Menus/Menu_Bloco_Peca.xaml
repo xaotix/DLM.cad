@@ -209,7 +209,7 @@
 
                         <Label Grid.Row="0" Grid.Column="0" Content="Tipo de Peça:"/>
                         <ComboBox Grid.Row="0" Grid.Column="1" Name="combo_tipo_de_peca" SelectionChanged="tipo_de_peca_SelectionChanged"/>
-                        <Button Content="[...]" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Name="bt_peca_selecionar" Click="peca_selecionar_Click"/>
+                        <Button Content="[...]" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Name="bt_peca_selecionar" Click="pecaSelecionarClick"/>
 
                         <Label Grid.Row="2" Grid.Column="0" Content="Código:"/>
                         <TextBox Text="" Grid.Row="2" Grid.Column="1" Name="txt_codigo" MaxLength="13"/>
