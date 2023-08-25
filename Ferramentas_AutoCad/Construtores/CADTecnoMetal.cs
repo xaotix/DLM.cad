@@ -1610,7 +1610,7 @@ namespace DLM.cad
 
                                             Blocos.MarcaChapa(p_marca, coords_normalizadas, esp.valor, qtd, marca, material, ficha, this.GetEscala());
                                             var nCAM = new cam.Cam($"{this.PastaCAM}{marca}.{Cfg.Init.EXT_CAM}", face, esp.valor);
-                                            nCAM.Cabecalho.Ficha = ficha;
+                                            nCAM.Cabecalho.Tratamento = ficha;
                                             nCAM.Cabecalho.Material = material;
                                             nCAM.Cabecalho.Quantidade = qtd;
 
@@ -1889,7 +1889,7 @@ namespace DLM.cad
                                     pcam.Formato.LIV1.Dobras.Add(new DLM.cam.Dobra(a, x, pcam, false));
                                 }
 
-                                pcam.Cabecalho.Ficha = chapa_dobrada.Ficha;
+                                pcam.Cabecalho.Tratamento = chapa_dobrada.Ficha;
                                 pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade;
                                 pcam.Cabecalho.Material = chapa_dobrada.Material;
                                 pcam.Cabecalho.Marca = chapa_dobrada.Marca;
@@ -1938,7 +1938,7 @@ namespace DLM.cad
 
                             DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, chapa_dobrada.Comprimento);
 
-                            pcam.Cabecalho.Ficha = chapa_dobrada.Tratamento;
+                            pcam.Cabecalho.Tratamento = chapa_dobrada.Tratamento;
                             pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade.Int();
                             pcam.Cabecalho.Material = chapa_dobrada.Material;
                             pcam.Cabecalho.Marca = chapa_dobrada.Nome;
@@ -2067,7 +2067,7 @@ namespace DLM.cad
 
                                     DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, chapa_dobrada.Comprimento);
 
-                                    pcam.Cabecalho.Ficha = chapa_dobrada.Ficha;
+                                    pcam.Cabecalho.Tratamento = chapa_dobrada.Ficha;
                                     pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade;
                                     pcam.Cabecalho.Material = chapa_dobrada.Material;
                                     pcam.Cabecalho.Marca = chapa_dobrada.Marca;
