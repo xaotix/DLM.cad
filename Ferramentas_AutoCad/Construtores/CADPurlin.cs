@@ -1065,7 +1065,7 @@ namespace DLM.cad
                         if (MapearTirantes)
                         {
                             var tirantes = this.Getblocos_tirantes().Select(x => GetTirante(x));
-                            List<Conexoes.Macros.Tirante> pcs = JuntarTirantesIguais(tirantes, acTrans);
+                            var pcs = JuntarTirantesIguais(tirantes, acTrans);
                             if (tabela)
                             {
                                 p = Tabelas.Tirantes(pcs, new P3d(p.X + (119.81 * GetEscala()), p.Y));
