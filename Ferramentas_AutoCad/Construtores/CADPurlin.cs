@@ -1184,6 +1184,7 @@ namespace DLM.cad
                 
                 var pps = p.ToList();
                 var nova = pps[0].Clonar();
+                nova.RME_Macro = pps[0].RME_Macro;
                 nova.Qtd = pps.Count();
                 var comp = nova.Comprimento;
 
