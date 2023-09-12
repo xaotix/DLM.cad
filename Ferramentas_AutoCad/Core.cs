@@ -478,7 +478,7 @@ namespace DLM.cad
             {
                 var err = pp.TrocarPerfilElementoMetroQuadrado(blks, novo_Perfil);
 
-                if (err.FindAll(x => x.Tipo == TipoReport.Crítico).Count == 0)
+                if (err.FindAll(x => x.Tipo == TipoReport.Critico).Count == 0)
                 {
                     if (Conexoes.Utilz.Pergunta("Materiais atualizados! Deseja gerar/atualizar a tabela?"))
                     {
@@ -541,7 +541,7 @@ namespace DLM.cad
             if (!TecnoMetal.Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
             {
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
-                    $"\nPasta atual: {TecnoMetal.Pasta}", DLM.vars.TipoReport.Crítico));
+                    $"\nPasta atual: {TecnoMetal.Pasta}", DLM.vars.TipoReport.Critico));
 
                 erros.Show();
                 return;

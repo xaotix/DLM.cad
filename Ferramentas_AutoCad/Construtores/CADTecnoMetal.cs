@@ -72,7 +72,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    erros.Add(new Report(m.Key, "Não foi possível montar o perfil. não há mesas / almas suficientes"));
+                    erros.Add(new Report("Não foi possível montar o perfil. não há mesas / almas suficientes", m.Key, TipoReport.Critico));
                 }
             }
 
@@ -96,7 +96,7 @@ namespace DLM.cad
 
                 else if (pp.Familia == DLM.vars.CAM_FAMILIA._Desconhecido)
                 {
-                    erros.Add(new Report($"{pf.Key} {pp.Descricao}", "Perfil não encontrado."));
+                    erros.Add(new Report("Perfil não encontrado.", $"{pf.Key} {pp.Descricao}", TipoReport.Critico));
                 }
             }
 
@@ -1175,7 +1175,7 @@ namespace DLM.cad
 
                     if (errosb.Length > 0)
                     {
-                        erros.Add(new Report("Erro ao tentar ler os blocos", errosb, TipoReport.Crítico));
+                        erros.Add(new Report("Erro ao tentar ler os blocos", errosb, TipoReport.Critico));
                     }
 
                     foreach (var s in selo)
@@ -1369,12 +1369,12 @@ namespace DLM.cad
 
                 if (errosm.Length > 0 | errosp.Length > 0)
                 {
-                    erros.Add(new Report($"{nome}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", nome, TipoReport.Crítico));
+                    erros.Add(new Report($"{nome}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", nome, TipoReport.Critico));
                 }
 
                 if (ms.Count == 0)
                 {
-                    erros.Add(new Report($"{nome}", $"Prancha não tem marcas", nome, DLM.vars.TipoReport.Crítico));
+                    erros.Add(new Report($"{nome}", $"Prancha não tem marcas", nome, DLM.vars.TipoReport.Critico));
                 }
 
                 foreach (var m in ms)
@@ -1435,7 +1435,7 @@ namespace DLM.cad
                             }
                             else
                             {
-                                erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Crítico));
+                                erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Critico));
                             }
                         }
                        
@@ -1489,7 +1489,7 @@ namespace DLM.cad
                         }
                         else
                         {
-                            erros.Add(new Report("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Crítico));
+                            erros.Add(new Report("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Critico));
                         }
                     }
                     
