@@ -61,7 +61,7 @@ namespace DLM.cad.Menus
                 return;
             }
 
-            if(sel.Tipo== Tipo_Objeto.Texto)
+            if (sel.Tipo == Tipo_Objeto.Texto)
             {
                 return;
             }
@@ -80,15 +80,15 @@ namespace DLM.cad.Menus
 
             var cols = sel.GetAtributos();
 
-            if (cols.Count>0)
+            if (cols.Count > 0)
             {
                 string col = cols.ListaSelecionar();
-                if(col!=null && col!="")
+                if (col != null && col != "")
                 {
                     try
                     {
                         this.lista.ItemsSource = null;
-                        var nv = sel.Agrupar(new List<string> { col },sel.Nome_Bloco);
+                        var nv = sel.Agrupar(new List<string> { col }, sel.Nome_Bloco);
                         this.filtro.Remove(sel);
                         this.filtro.AddRange(nv);
                         this.filtro = this.filtro.OrderBy(x => x.Nome).ToList();
@@ -110,11 +110,11 @@ namespace DLM.cad.Menus
             }
 
 
-            if (sel.Tipo== Tipo_Objeto.Texto | sel.GetAtributos().Count==0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
+            if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
                 bool status = false;
                 var qtd = sel.Quantidade.Prompt(out status);
-                if(status)
+                if (status)
                 {
                     sel.Quantidade = qtd;
                     Update();
@@ -130,7 +130,7 @@ namespace DLM.cad.Menus
                 {
                     lista.ItemsSource = null;
                     sel.SetQtdPorAtributo(col);
-                  
+
                     Update();
                 }
             }
@@ -140,7 +140,7 @@ namespace DLM.cad.Menus
         {
             filtro = filtro.GroupBy(x => x.Numero + "|" + x.Nome).Select(x => new PCQuantificar(x.ToList())).ToList().OrderBy(x => x.Nome).ToList();
             this.lista.ItemsSource = null;
-            this.lista.ItemsSource = filtro.OrderBy(x => x.Numero + "|" + x.Nome).ToList(); 
+            this.lista.ItemsSource = filtro.OrderBy(x => x.Numero + "|" + x.Nome).ToList();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -169,7 +169,7 @@ namespace DLM.cad.Menus
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
                 var qtd = sel.Descricao.Prompt("Digite", 30);
-                if (qtd!=null && qtd!="")
+                if (qtd != null && qtd != "")
                 {
                     sel.Descricao = qtd;
                     Update();
@@ -188,7 +188,7 @@ namespace DLM.cad.Menus
 
                     Update();
                 }
-              
+
             }
 
         }
@@ -204,7 +204,7 @@ namespace DLM.cad.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = sel.Numero.Prompt("Digite",4);
+                var qtd = sel.Numero.Prompt("Digite", 4);
                 if (qtd != null && qtd != "")
                 {
                     sel.Numero = qtd;
@@ -237,7 +237,7 @@ namespace DLM.cad.Menus
             }
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                var qtd = sel.Destino.Prompt("Digite",4);
+                var qtd = sel.Destino.Prompt("Digite", 4);
                 if (qtd != null && qtd != "")
                 {
                     sel.Destino = qtd;
@@ -296,11 +296,11 @@ namespace DLM.cad.Menus
 
         private void set_familia(object sender, RoutedEventArgs e)
         {
-           if(selecoes.Count>0)
+            if (selecoes.Count > 0)
             {
                 var nova = selecoes[0].Familia.Prompt();
-                if (nova==null | nova == "") { return; }
-                foreach(var s in selecoes)
+                if (nova == null | nova == "") { return; }
+                foreach (var s in selecoes)
                 {
                     s.Familia = nova;
                 }
@@ -310,7 +310,7 @@ namespace DLM.cad.Menus
         public List<PCQuantificar> selecoes { get; set; } = new List<PCQuantificar>();
         private void lista_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            selecoes = lista.SelectedItems.Cast<object>().ToList().FindAll(x => x is PCQuantificar).Select(x=> x as PCQuantificar).ToList();
+            selecoes = lista.SelectedItems.Cast<object>().ToList().Get<PCQuantificar>();
         }
 
         private void set_descricao(object sender, RoutedEventArgs e)
@@ -333,7 +333,7 @@ namespace DLM.cad.Menus
             if (selecoes.Count > 0)
             {
                 var nova = selecoes[0].Quantidade.Prompt();
-                if (nova<=0) { return; }
+                if (nova <= 0) { return; }
                 foreach (var s in selecoes)
                 {
                     s.Quantidade = nova;
