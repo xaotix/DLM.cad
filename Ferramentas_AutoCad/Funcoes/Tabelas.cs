@@ -26,8 +26,10 @@ namespace DLM.cad
                 return;
             }
 
-            var purlins = dbase.RM_Macros.FindAll(x => x.GetObjeto() is Conexoes.Macros.Purlin).Select(X => X.GetObjeto() as Conexoes.Macros.Purlin).ToList();
-            var tirantes = dbase.RM_Macros.FindAll(x => x.GetObjeto() is Conexoes.Macros.Tirante).Select(X => X.GetObjeto() as Conexoes.Macros.Tirante).ToList();
+            var macros = dbase.RM_Macros.Select(x => x.GetObjeto()).ToList();
+            var purlins = macros.Get<Conexoes.Macros.Purlin>();
+            var tirantes = macros.Get<Conexoes.Macros.Tirante>();
+
 
             Purlins(purlins,p0);
             double larg = Cfg.Init.CAD_TABLE_WIDTH;
