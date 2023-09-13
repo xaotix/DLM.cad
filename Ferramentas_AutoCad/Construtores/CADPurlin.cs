@@ -1157,14 +1157,14 @@ namespace DLM.cad
             {
                 var pps = p.ToList();
                 var nova = pps[0].Clonar();
-                nova.Qtd = pps.Count();
+                nova.Quantidade = pps.Count();
                 var comp = nova.Comprimento;
                 nova.Offset1 = 0;
                 nova.Offset2 = 0;
                 nova.CompUser = comp.ArredondarMultiplo(this.TirantesTolerancia);
                 nova.Sequencia = c.ToString().PadLeft(2,'0');
                
-                foreach (var s in pps.FindAll(x=> x.Objeto is BlockReference).Select(x => x.Objeto as BlockReference))
+                foreach (var s in pps.FindAll(x=> x.Bloco is BlockReference).Select(x => x.Bloco as BlockReference))
                 {
                     Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.ToString().PadLeft(2, '0'));
                 }
@@ -1185,8 +1185,8 @@ namespace DLM.cad
                 var pps = tirante.ToList();
                 var nova = pps[0].Clonar();
                 nova.RME_Macro = pps[0].RME_Macro;
-                nova.Qtd = pps.Count();
-                var comp = nova.Comprimento;
+                nova.Quantidade = pps.Count();
+                var comp = nova.CompCorrente;
 
                 nova.Sequencia = c.getLetra(); 
 
@@ -1338,7 +1338,7 @@ namespace DLM.cad
             p.Offset1 = OFF1;
             p.Offset2 = OFF2;
             p.CompUser = COMP;
-            p.Objeto = bloco;
+            p.Bloco = bloco;
             return p;
         }
         public Conexoes.Macros.Corrente GetCorrente(BlockReference bloco)
@@ -1350,7 +1350,7 @@ namespace DLM.cad
             var COMP =  atributos[Cfg.Init.CAD_ATT_Comprimento].Double();
             var FIX =   atributos["FIX"].Valor;
 
-            Conexoes.Macros.Corrente p = new Conexoes.Macros.Corrente();
+            var p = new Conexoes.Macros.Corrente();
             p.Vao = COMP;
             p.Descontar = DESC;
             p.Bloco = bloco;

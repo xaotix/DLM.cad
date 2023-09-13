@@ -112,7 +112,7 @@ namespace DLM.cad
                     var ht = new db.Linha();
                     ht.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
                     ht.Add(Cfg.Init.CAD_ATT_Peca, p.Marca);
-                    ht.Add(Cfg.Init.CAD_ATT_Quantidade, p.Qtd.ToString().PadLeft(3, '0'));
+                    ht.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
                     ht.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento.String(0,5));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE / 2));
@@ -145,7 +145,7 @@ namespace DLM.cad
                     var hp = new db.Linha();
                     hp.Add(Cfg.Init.CAD_ATT_N, p.Sequencia);
                     hp.Add(Cfg.Init.CAD_ATT_Perfil, p.Marca);
-                    hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Qtd.ToString().PadLeft(3,'0'));
+                    hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3,'0'));
                     hp.Add(Cfg.Init.CAD_ATT_Vao, p.Vao.String(0));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Correntes, p0, escala, 0, hp);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE / 2));
