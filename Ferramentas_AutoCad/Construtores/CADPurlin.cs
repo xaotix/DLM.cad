@@ -1179,10 +1179,10 @@ namespace DLM.cad
             int c = 0;
             List<Conexoes.Macros.Corrente> ss = new List<Conexoes.Macros.Corrente>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
-            foreach (var p in tirantes.GroupBy(x => x.ToString()).OrderByDescending(X=>X.Count()))
+            foreach (var tirante in tirantes.GroupBy(x => x.ToString()).OrderByDescending(X=>X.Count()))
             {
                 
-                var pps = p.ToList();
+                var pps = tirante.ToList();
                 var nova = pps[0].Clonar();
                 nova.RME_Macro = pps[0].RME_Macro;
                 nova.Qtd = pps.Count();
@@ -1190,7 +1190,7 @@ namespace DLM.cad
 
                 nova.Sequencia = c.getLetra(); 
 
-                foreach (var s in pps.FindAll(x=>x.Objeto is BlockReference).Select(x => x.Objeto as BlockReference))
+                foreach (var s in pps.FindAll(x=>x.Bloco is BlockReference).Select(x => x.Bloco as BlockReference))
                 {
                     Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.getLetra());
                 }
@@ -1353,7 +1353,7 @@ namespace DLM.cad
             Conexoes.Macros.Corrente p = new Conexoes.Macros.Corrente();
             p.Vao = COMP;
             p.Descontar = DESC;
-            p.Objeto = bloco;
+            p.Bloco = bloco;
             p.SetFixacao(FIX);
             var diagonal = Ut.GetCORRENTES().Get(TIP);
             if(diagonal!=null)
