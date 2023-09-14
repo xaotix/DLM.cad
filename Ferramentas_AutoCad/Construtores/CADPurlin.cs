@@ -1153,14 +1153,14 @@ namespace DLM.cad
             int c = 1;
             List<Conexoes.Macros.Tirante> ss = new List<Conexoes.Macros.Tirante>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
-            foreach (var p in tirantes.GroupBy(x => x.Tipo + x.Comprimento.ArredondarMultiplo(this.TirantesTolerancia).String(0) + " - " + x.SFT1 + "/" + x.SFT2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
+            foreach (var tirante in tirantes.GroupBy(x => x.Tipo + x.Comprimento.ArredondarMultiplo(this.TirantesTolerancia).String(0) + " - " + x.Fixacao_1 + "/" + x.Fixacao_2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
             {
-                var pps = p.ToList();
+                var pps = tirante.ToList();
                 var nova = pps[0].Clonar();
                 nova.Quantidade = pps.Count();
                 var comp = nova.Comprimento;
-                nova.Offset1 = 0;
-                nova.Offset2 = 0;
+                nova.Offset_1 = 0;
+                nova.Offset_2 = 0;
                 nova.CompUser = comp.ArredondarMultiplo(this.TirantesTolerancia);
                 nova.Sequencia = c.ToString().PadLeft(2,'0');
                
@@ -1332,11 +1332,11 @@ namespace DLM.cad
             var COMP = linha[Cfg.Init.CAD_ATT_Comprimento].Double();
 
             var p = new Conexoes.Macros.Tirante();
-            p.SFT1 = SFTA;
-            p.SFT2 = SFTB;
+            p.Fixacao_1 = SFTA;
+            p.Fixacao_2 = SFTB;
             p.Tipo = TIP;
-            p.Offset1 = OFF1;
-            p.Offset2 = OFF2;
+            p.Offset_1 = OFF1;
+            p.Offset_2 = OFF2;
             p.CompUser = COMP;
             p.Bloco = bloco;
             return p;
