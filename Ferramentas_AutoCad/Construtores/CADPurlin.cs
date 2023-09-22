@@ -1058,7 +1058,7 @@ namespace DLM.cad
                             var PS = Ut.PedirPonto("Selecione a origem", out cancelado);
                             if (!cancelado)
                             {
-                                p = Tabelas.Purlins(ss, PS);
+                                p = Tabelas.InserirTabela(ss, PS);
                             }
                         }
 
@@ -1068,7 +1068,7 @@ namespace DLM.cad
                             var pcs = JuntarTirantesIguais(tirantes, acTrans);
                             if (tabela)
                             {
-                                p = Tabelas.Tirantes(pcs, new P3d(p.X + (119.81 * GetEscala()), p.Y));
+                                p = Tabelas.InserirTabela(pcs, new P3d(p.X + (119.81 * GetEscala()), p.Y));
                             }
                             mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
                         }
@@ -1078,10 +1078,10 @@ namespace DLM.cad
                         if (MapearCorrentes)
                         {
                             var correntes = this.Getblocos_correntes().Select(x => GetCorrente(x));
-                            List<Conexoes.Macros.Corrente> pcs = JuntarCorrentesIguais(correntes, acTrans);
+                            List<DLM.macros.Corrente> pcs = JuntarCorrentesIguais(correntes, acTrans);
                             if (tabela)
                             {
-                                p = Tabelas.Correntes(pcs, new P3d(p.X + (86.77 * GetEscala()), p.Y));
+                                p = Tabelas.InserirTabela(pcs, new P3d(p.X + (86.77 * GetEscala()), p.Y));
                             }
                             mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
                         }
@@ -1137,7 +1137,7 @@ namespace DLM.cad
                 var pps = p.ToList();
                 var nova = pps[0].Clonar();
                 nova.Quantidade = pps.Count();
-                nova.Sequencia = c;
+                nova.Sequencia = c.ToString();
                 foreach (var s in pps.Select(x=>x.Objeto as BlockReference))
                 {
                     Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.ToString().PadLeft(3, '0'));
@@ -1148,10 +1148,10 @@ namespace DLM.cad
 
             return ss;
         }
-        private List<Conexoes.Macros.Tirante> JuntarTirantesIguais(IEnumerable<Conexoes.Macros.Tirante> tirantes, OpenCloseTransaction acTrans)
+        private List<DLM.macros.Tirante> JuntarTirantesIguais(IEnumerable<DLM.macros.Tirante> tirantes, OpenCloseTransaction acTrans)
         {
             int c = 1;
-            List<Conexoes.Macros.Tirante> ss = new List<Conexoes.Macros.Tirante>();
+            List<DLM.macros.Tirante> ss = new List<DLM.macros.Tirante>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
             foreach (var tirante in tirantes.GroupBy(x => x.Tipo + x.Comprimento.ArredondarMultiplo(this.TirantesTolerancia).String(0) + " - " + x.Fixacao_1 + "/" + x.Fixacao_2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
             {
@@ -1174,10 +1174,10 @@ namespace DLM.cad
 
             return ss;
         }
-        private List<Conexoes.Macros.Corrente> JuntarCorrentesIguais(IEnumerable<Conexoes.Macros.Corrente> tirantes, OpenCloseTransaction acTrans)
+        private List<DLM.macros.Corrente> JuntarCorrentesIguais(IEnumerable<DLM.macros.Corrente> tirantes, OpenCloseTransaction acTrans)
         {
             int c = 0;
-            List<Conexoes.Macros.Corrente> ss = new List<Conexoes.Macros.Corrente>();
+            List<DLM.macros.Corrente> ss = new List<DLM.macros.Corrente>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
             foreach (var tirante in tirantes.GroupBy(x => x.ToString()).OrderByDescending(X=>X.Count()))
             {
@@ -1321,7 +1321,7 @@ namespace DLM.cad
             p.Direita.Comprimento = TRD;
             return p;
         }
-        public Conexoes.Macros.Tirante GetTirante(BlockReference bloco)
+        public DLM.macros.Tirante GetTirante(BlockReference bloco)
         {
             var linha = bloco.GetAttributes();
             var SFTA = linha["SFTA"].Valor;
@@ -1331,7 +1331,7 @@ namespace DLM.cad
             var OFF2 = linha["OFF2"].Double();
             var COMP = linha[Cfg.Init.CAD_ATT_Comprimento].Double();
 
-            var p = new Conexoes.Macros.Tirante();
+            var p = new DLM.macros.Tirante();
             p.Fixacao_1 = SFTA;
             p.Fixacao_2 = SFTB;
             p.Tipo = TIP;
@@ -1341,7 +1341,7 @@ namespace DLM.cad
             p.Bloco = bloco;
             return p;
         }
-        public Conexoes.Macros.Corrente GetCorrente(BlockReference bloco)
+        public DLM.macros.Corrente GetCorrente(BlockReference bloco)
         {
             var atributos = bloco.GetAttributes();
 
@@ -1350,7 +1350,7 @@ namespace DLM.cad
             var COMP =  atributos[Cfg.Init.CAD_ATT_Comprimento].Double();
             var FIX =   atributos["FIX"].Valor;
 
-            var p = new Conexoes.Macros.Corrente();
+            var p = new DLM.macros.Corrente();
             p.Vao = COMP;
             p.Descontar = DESC;
             p.Bloco = bloco;

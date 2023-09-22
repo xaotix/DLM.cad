@@ -989,7 +989,7 @@ namespace DLM.cad
 
             if (!cancelado)
             {
-                List<Report> erros = new List<Report>();
+                var erros = new List<Report>();
                 var pcs = GetMarcas(ref erros);
                 if (pcs.Count > 0)
                 {

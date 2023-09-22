@@ -579,7 +579,7 @@ namespace DLM.cad
             using (var acTrans = acCurDb.acTrans())
             {
 
-                DBRM_Offline pp = new DBRM_Offline();
+                var pp = new DBRM_Offline();
                 SelecionarObjetos();
                 pp.RMA.AddRange(this.GetRMAsBlocos());
                 if (pp.RMA.Count > 0)
