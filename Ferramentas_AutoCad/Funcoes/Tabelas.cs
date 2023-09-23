@@ -44,19 +44,19 @@ namespace DLM.cad
             {
                 opcoes.Add("Contraventos");
             }
-            if (dbase.TabelaRMA.Count > 0)
+            if (dbase.GetRMAFim().Count > 0)
             {
                 opcoes.Add("RMAs");
             }
-            if (dbase.TabelaRME.Count > 0)
+            if (dbase.GetRMEFim().Count > 0)
             {
                 opcoes.Add("RMEs");
             }
-            if (dbase.TabelaRMU.Count > 0)
+            if (dbase.GetRMUFim().Count > 0)
             {
                 opcoes.Add("RMUs");
             }
-            if (dbase.TabelaRMT.Count > 0)
+            if (dbase.GetRMTFim().Count > 0)
             {
                 opcoes.Add("RMTs");
             }
@@ -84,19 +84,19 @@ namespace DLM.cad
             }
             if (selecao.Find(x => x == "RMAs") != null)
             {
-                items.AddRange(dbase.TabelaRMA);
+                items.AddRange(dbase.GetRMAFim());
             }
             if (selecao.Find(x => x == "RMEs") != null)
             {
-                items.AddRange(dbase.TabelaRME);
+                items.AddRange(dbase.GetRMEFim());
             }
             if (selecao.Find(x => x == "RMUs") != null)
             {
-                items.AddRange(dbase.TabelaRMU);
+                items.AddRange(dbase.GetRMUFim());
             }
             if (selecao.Find(x => x == "RMTs") != null)
             {
-                items.AddRange(dbase.TabelaRMT);
+                items.AddRange(dbase.GetRMTFim());
             }
 
             if (items.Count > 0)
@@ -431,7 +431,7 @@ namespace DLM.cad
                     x0 = p0.X;
                     y0 = p0.Y;
                     var ht = new db.Linha();
-                    ht.Add("TITULO", "LISTA DE PEÇAS");
+                    ht.Add("TITULO", "LISTA DE RME");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
                     int seq = 1;
@@ -472,7 +472,7 @@ namespace DLM.cad
                     x0 = p0.X;
                     y0 = p0.Y;
                     var ht = new db.Linha();
-                    ht.Add("TITULO", "LISTA DE TELHAS");
+                    ht.Add("TITULO", "LISTA DE RMT");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
                     int seq = 1;
@@ -513,7 +513,7 @@ namespace DLM.cad
                     x0 = p0.X;
                     y0 = p0.Y;
                     var ht = new db.Linha();
-                    ht.Add("TITULO", "LISTA DE ALMOX");
+                    ht.Add("TITULO", "LISTA DE RMA");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Almox_Titulo, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
                     int seq = 1;
