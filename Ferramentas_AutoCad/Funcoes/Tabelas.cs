@@ -16,29 +16,125 @@ namespace DLM.cad
 {
     public class Tabelas
     {
-        public static void DBRM(Conexoes.DBRM_Offline dbase)
+        public static void InserirTabela(DBRM_User dbase)
         {
+
+
+            var macros = dbase.TabelaMacros.Select(x => x.GetObjeto()).ToList();
+
+            var purlins = macros.Get<Conexoes.Macros.Purlin>();
+            var tirantes = macros.Get<DLM.macros.Tirante>();
+            var correntes = macros.Get<DLM.macros.Corrente>();
+            var contraventos = macros.Get<DLM.macros.CTV2>();
+
+            var opcoes = new List<string>();
+            if(purlins.Count>0)
+            {
+                opcoes.Add("Purlins");
+            }
+            if (tirantes.Count > 0)
+            {
+                opcoes.Add("Tirantes");
+            }
+            if (correntes.Count > 0)
+            {
+                opcoes.Add("Correntes");
+            }
+            if (contraventos.Count > 0)
+            {
+                opcoes.Add("Contraventos");
+            }
+            if (dbase.TabelaRMA.Count > 0)
+            {
+                opcoes.Add("RMAs");
+            }
+            if (dbase.TabelaRME.Count > 0)
+            {
+                opcoes.Add("RMEs");
+            }
+            if (dbase.TabelaRMU.Count > 0)
+            {
+                opcoes.Add("RMUs");
+            }
+            if (dbase.TabelaRMT.Count > 0)
+            {
+                opcoes.Add("RMTs");
+            }
+
+            var selecao = opcoes.ListaSelecionarVarios(false, "Selecione quais peças deseja inserir");
+
+            List<object> items = new List<object>();
+
+            if(selecao.Find(x=>x == "Purlins") !=null)
+            {
+                items.AddRange(purlins);
+            }
+
+            if (selecao.Find(x => x == "Tirantes") != null)
+            {
+                items.AddRange(tirantes);
+            }
+            if (selecao.Find(x => x == "Correntes") != null)
+            {
+                items.AddRange(correntes);
+            }
+            if (selecao.Find(x => x == "Contraventos") != null)
+            {
+                items.AddRange(contraventos);
+            }
+            if (selecao.Find(x => x == "RMAs") != null)
+            {
+                items.AddRange(dbase.TabelaRMA);
+            }
+            if (selecao.Find(x => x == "RMEs") != null)
+            {
+                items.AddRange(dbase.TabelaRME);
+            }
+            if (selecao.Find(x => x == "RMUs") != null)
+            {
+                items.AddRange(dbase.TabelaRMU);
+            }
+            if (selecao.Find(x => x == "RMTs") != null)
+            {
+                items.AddRange(dbase.TabelaRMT);
+            }
+
+            if(items.Count>0)
+            {
+                InserirTabela(items);
+            }
+        }
+
+        public static void InserirTabela(List<object> objetos)
+        {
+            var rmas = objetos.Get<RMA>();
+            var rmes = objetos.GetRMEs();
+            var rmus = objetos.GetRMUs();
+            var rmts = objetos.Get<RMT>();
+            var purlins = objetos.Get<Conexoes.Macros.Purlin>();
+            var tirantes = objetos.Get<DLM.macros.Tirante>();
+            var correntes = objetos.Get<DLM.macros.Corrente>();
+            var contraventos = objetos.Get<DLM.macros.CTV2>();
+
+
             bool cancelado = false;
-            P3d p0 = Ut.PedirPonto("Selecione a origem para a tabela de peças.", out cancelado);
+            var p0 = Ut.PedirPonto("Selecione a origem para a tabela de peças.", out cancelado);
 
             if (cancelado)
             {
                 return;
             }
-
-            var macros = dbase.RM_Macros.Select(x => x.GetObjeto()).ToList();
-            var purlins = macros.Get<Conexoes.Macros.Purlin>();
-            var tirantes = macros.Get<DLM.macros.Tirante>();
-            var correntes = macros.Get<DLM.macros.Corrente>();
-            var ctvs = macros.Get<DLM.macros.CTV2>();
-
-
-            InserirTabela(purlins, p0);
             double larg = Cfg.Init.CAD_TABLE_WIDTH;
 
-            if (ctvs.Count > 0)
+            if (purlins.Count>0)
             {
-                InserirTabela(ctvs, p0, larg);
+                InserirTabela(purlins, p0);
+            }
+
+
+            if (contraventos.Count > 0)
+            {
+                InserirTabela(contraventos, p0, larg);
                 larg += Cfg.Init.CAD_TABLE_WIDTH;
             }
 
@@ -54,20 +150,121 @@ namespace DLM.cad
                 larg += Cfg.Init.CAD_TABLE_WIDTH;
             }
 
-            if (dbase.RME.Count > 0)
+            if (rmes.Count > 0)
             {
-                RMES(dbase.RME, p0, larg);
+                InserirTabela(rmes, p0, larg);
                 larg += Cfg.Init.CAD_TABLE_WIDTH;
             }
-            if (dbase.RMU.Count > 0)
+            if (rmus.Count > 0)
             {
-                RMES(dbase.RMU.Select(x => x as Conexoes.RME).ToList(), p0, larg);
+                InserirTabela(rmus, p0, larg);
                 larg += Cfg.Init.CAD_TABLE_WIDTH;
             }
 
+            if (rmas.Count > 0)
+            {
+                InserirTabela(rmas, p0, larg);
+            }
+
+            if (rmts.Count > 0)
+            {
+                InserirTabela(rmts, p0, larg);
+            }
+
+        }
+        public static void InserirTabela(Conexoes.DBRM_Offline dbase)
+        {
+            bool cancelado = false;
+            var p0 = Ut.PedirPonto("Selecione a origem para a tabela de peças.", out cancelado);
+
+            if (cancelado)
+            {
+                return;
+            }
+
+            var macros = dbase.RM_Macros.Select(x => x.GetObjeto()).ToList();
+
+            var purlins = macros.Get<Conexoes.Macros.Purlin>();
+            var tirantes = macros.Get<DLM.macros.Tirante>();
+            var correntes = macros.Get<DLM.macros.Corrente>();
+            var contraventos = macros.Get<DLM.macros.CTV2>();
+
+
+            var opcoes = new List<string>();
+            if (purlins.Count > 0)
+            {
+                opcoes.Add("Purlins");
+            }
+            if (tirantes.Count > 0)
+            {
+                opcoes.Add("Tirantes");
+            }
+            if (correntes.Count > 0)
+            {
+                opcoes.Add("Correntes");
+            }
+            if (contraventos.Count > 0)
+            {
+                opcoes.Add("Contraventos");
+            }
             if (dbase.RMA.Count > 0)
             {
-                RMAS(dbase.RMA.Select(x => x as Conexoes.RMA).ToList(), p0, larg);
+                opcoes.Add("RMAs");
+            }
+            if (dbase.RME.Count > 0)
+            {
+                opcoes.Add("RMEs");
+            }
+            if (dbase.RMU.Count > 0)
+            {
+                opcoes.Add("RMUs");
+            }
+            if (dbase.RMT.Count > 0)
+            {
+                opcoes.Add("RMTs");
+            }
+
+            var selecao = opcoes.ListaSelecionarVarios(false, "Selecione quais peças deseja inserir");
+
+            List<object> items = new List<object>();
+
+            if (selecao.Find(x => x == "Purlins") != null)
+            {
+                items.AddRange(purlins);
+            }
+
+            if (selecao.Find(x => x == "Tirantes") != null)
+            {
+                items.AddRange(tirantes);
+            }
+            if (selecao.Find(x => x == "Correntes") != null)
+            {
+                items.AddRange(correntes);
+            }
+            if (selecao.Find(x => x == "Contraventos") != null)
+            {
+                items.AddRange(contraventos);
+            }
+            if (selecao.Find(x => x == "RMAs") != null)
+            {
+                items.AddRange(dbase.RMA);
+            }
+            if (selecao.Find(x => x == "RMEs") != null)
+            {
+                items.AddRange(dbase.RME);
+            }
+            if (selecao.Find(x => x == "RMUs") != null)
+            {
+                items.AddRange(dbase.RMU);
+            }
+            if (selecao.Find(x => x == "RMTs") != null)
+            {
+                items.AddRange(dbase.RMT);
+            }
+
+            if (items.Count > 0)
+            {
+                InserirTabela(items);
             }
 
         }
@@ -213,7 +410,7 @@ namespace DLM.cad
         }
 
 
-        public static P3d RMES(List<Conexoes.RME> RMES, P3d p0, double mover_direita = 0)
+        public static P3d InserirTabela(List<Conexoes.RME> RMES, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
@@ -254,7 +451,48 @@ namespace DLM.cad
             return new P3d(x0, y0);
 
         }
-        public static P3d RMAS(List<Conexoes.RMA> RMAS, P3d p0, double mover_direita = 0)
+        public static P3d InserirTabela(List<Conexoes.RMT> rms, P3d p0, double mover_direita = 0)
+        {
+            double x0 = 0;
+            double y0 = 0;
+            if (rms.Count > 0)
+            {
+                double escala = acCurDb.Dimscale;
+                bool cancelado = false;
+
+                if (mover_direita != 0)
+                {
+                    p0 = new P3d(p0.X + (mover_direita * escala), p0.Y);
+                }
+
+                if (!cancelado)
+                {
+                    x0 = p0.X;
+                    y0 = p0.Y;
+                    var ht = new db.Linha();
+                    ht.Add("TITULO", "LISTA DE TELHAS");
+                    Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
+                    p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
+                    int seq = 1;
+                    foreach (var p in rms)
+                    {
+                        var hp = new db.Linha();
+                        hp.Add(Cfg.Init.CAD_ATT_N, seq.ToString().PadLeft(2, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_Perfil, p.NomeFim);
+                        hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.COMP.String(0, 5));
+                        hp.Add(Cfg.Init.CAD_ATT_Espessura, p.Bobina.Espessura.String(2, 5));
+                        hp.Add(Cfg.Init.CAD_ATT_Destino, "RMT");
+                        Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas, p0, escala, 0, hp);
+                        p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE / 2));
+                        seq++;
+                    }
+                }
+            }
+            return new P3d(x0, y0);
+
+        }
+        public static P3d InserirTabela(List<Conexoes.RMA> RMAS, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;

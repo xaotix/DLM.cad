@@ -584,7 +584,7 @@ namespace DLM.cad
                 pp.RMA.AddRange(this.GetRMAsBlocos());
                 if (pp.RMA.Count > 0)
                 {
-                    Tabelas.DBRM(pp);
+                    Tabelas.InserirTabela(pp);
                 }
 
                 pp.Salvar(destino);

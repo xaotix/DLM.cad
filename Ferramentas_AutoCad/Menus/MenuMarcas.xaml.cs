@@ -759,7 +759,7 @@ namespace DLM.cad
         private void importa_rm(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.importarm();
+            Core.importarmoffline();
         }
 
         private void listar_quantidades(object sender, RoutedEventArgs e)

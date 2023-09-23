@@ -389,24 +389,41 @@ namespace DLM.cad
             CADTelhas pp = new CADTelhas();
             pp.ExportarRMAdeTabela();
         }
-        [CommandMethod(nameof(importarm))]
-        public static void importarm()
+        [CommandMethod(nameof(importarmoffline))]
+        public static void importarmoffline()
         {
             string arquivo = Conexoes.Utilz.Abrir_String(Cfg.Init.EXT_RM, "Selecione");
             if (File.Exists(arquivo))
             {
-                Conexoes.DBRM_Offline pp = new Conexoes.DBRM_Offline();
+                var pp = new Conexoes.DBRM_Offline();
                 var s = pp.Ler(arquivo);
-                Tabelas.DBRM(s);
+                Tabelas.InserirTabela(s);
             }
 
         }
 
 
+        [CommandMethod(nameof(importarm))]
+        public static void importarm()
+        {
+            var pp = new CADTecnoMetal();
+            var etapa = pp.GetSubEtapa();
+
+
+            if(etapa!=null)
+            {
+                var dbrm = new DBRM_User(etapa.GetObra().id_plm_tercas, etapa.GetPedido().id_plm_tercas, etapa.id_plm_tercas, etapa.PEP, Acessos_Criterio.ENG);
+                Tabelas.InserirTabela(dbrm);
+            }
+
+        }
+
+
+
         [CommandMethod(nameof(tabelatecnometal))]
         public static void tabelatecnometal()
         {
-            CADTecnoMetal pp = new CADTecnoMetal();
+            var pp = new CADTecnoMetal();
             pp.InserirTabela();
         }
 
