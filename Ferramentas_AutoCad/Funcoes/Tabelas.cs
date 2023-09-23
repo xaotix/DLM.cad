@@ -431,7 +431,7 @@ namespace DLM.cad
                     x0 = p0.X;
                     y0 = p0.Y;
                     var ht = new db.Linha();
-                    ht.Add("TITULO", "LISTA DE RME");
+                    ht.Add("TITULO", "LISTA DE PEÇAS");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tercas_Titulo, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
                     int seq = 1;
