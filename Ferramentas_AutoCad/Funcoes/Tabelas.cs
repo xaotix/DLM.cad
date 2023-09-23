@@ -28,7 +28,7 @@ namespace DLM.cad
             var contraventos = macros.Get<DLM.macros.CTV2>();
 
             var opcoes = new List<string>();
-            if(purlins.Count>0)
+            if (purlins.Count > 0)
             {
                 opcoes.Add("Purlins");
             }
@@ -65,7 +65,7 @@ namespace DLM.cad
 
             List<object> items = new List<object>();
 
-            if(selecao.Find(x=>x == "Purlins") !=null)
+            if (selecao.Find(x => x == "Purlins") != null)
             {
                 items.AddRange(purlins);
             }
@@ -99,7 +99,7 @@ namespace DLM.cad
                 items.AddRange(dbase.TabelaRMT);
             }
 
-            if(items.Count>0)
+            if (items.Count > 0)
             {
                 InserirTabela(items);
             }
@@ -126,7 +126,7 @@ namespace DLM.cad
             }
             double larg = Cfg.Init.CAD_TABLE_WIDTH;
 
-            if (purlins.Count>0)
+            if (purlins.Count > 0)
             {
                 InserirTabela(purlins, p0);
             }
@@ -160,16 +160,19 @@ namespace DLM.cad
                 InserirTabela(rmus, p0, larg);
                 larg += Cfg.Init.CAD_TABLE_WIDTH;
             }
+            if (rmts.Count > 0)
+            {
+                InserirTabela(rmts, p0, larg);
+                larg += Cfg.Init.CAD_TABLE_WIDTH;
+            }
 
             if (rmas.Count > 0)
             {
                 InserirTabela(rmas, p0, larg);
+                larg += Cfg.Init.CAD_TABLE_WIDTH;
             }
 
-            if (rmts.Count > 0)
-            {
-                InserirTabela(rmts, p0, larg);
-            }
+
 
         }
         public static void InserirTabela(Conexoes.DBRM_Offline dbase)
@@ -300,11 +303,11 @@ namespace DLM.cad
             return new P3d(x0, y0);
 
         }
-        public static P3d InserirTabela(List<DLM.macros.CTV2> trs, P3d p0, double mover_direita = 0)
+        public static P3d InserirTabela(List<DLM.macros.CTV2> contravento, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
-            if (trs.Count > 0)
+            if (contravento.Count > 0)
             {
                 double escala = acCurDb.Dimscale;
 
@@ -321,34 +324,33 @@ namespace DLM.cad
                 p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
                 var offsetY = (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE / 2);
 
-                foreach (var obj in trs)
+                foreach (var obj in contravento)
                 {
+                    obj.Calcular();
                     var ht = new db.Linha();
                     ht.Add("ORDEM", obj.Sequencia.ToString().PadLeft(2, '0'));
                     ht.Add(Cfg.Init.CAD_ATT_Peca, obj.Marca);
                     ht.Add(Cfg.Init.CAD_ATT_Quantidade, obj.Quantidade.ToString().PadLeft(3, '0'));
                     ht.Add(Cfg.Init.CAD_ATT_Comprimento, obj.Comprimento.String(0, 5));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes, p0, escala, 0, ht);
-                    p0 = new P3d(p0.X, p0.Y - offsetY);
+                    p0 = p0.MoverY(-offsetY);
                     foreach (var pc in obj.Pecas)
                     {
                         var ht2 = new db.Linha();
-                        ht2.Add("ORDEM", "");
                         ht2.Add(Cfg.Init.CAD_ATT_Peca, pc.Nome);
                         ht2.Add(Cfg.Init.CAD_ATT_Quantidade, pc.Quantidade.ToString().PadLeft(3, '0'));
-                        ht2.Add(Cfg.Init.CAD_ATT_Comprimento, pc.Comprimento.String(0, 5));
-                        Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes, p0, escala, 0, ht);
-                        p0 = new P3d(p0.X, p0.Y - offsetY);
+                        Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes_SUB, p0, escala, 0, ht2);
+                        p0 = p0.MoverY(-offsetY);
                     }
                 }
             }
             return new P3d(x0, y0);
         }
-        public static P3d InserirTabela(List<DLM.macros.Tirante> trs, P3d p0, double mover_direita = 0)
+        public static P3d InserirTabela(List<DLM.macros.Tirante> tirante, P3d p0, double mover_direita = 0)
         {
             double x0 = 0;
             double y0 = 0;
-            if (trs.Count > 0)
+            if (tirante.Count > 0)
             {
                 double escala = acCurDb.Dimscale;
 
@@ -363,7 +365,7 @@ namespace DLM.cad
                 htt.Add("TITULO", "LISTA DE TIRANTES");
                 Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes_Titulo, p0, escala, 0, htt);
                 p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
-                foreach (var p in trs)
+                foreach (var p in tirante)
                 {
                     var ht = new db.Linha();
                     ht.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
@@ -511,7 +513,7 @@ namespace DLM.cad
                     x0 = p0.X;
                     y0 = p0.Y;
                     var ht = new db.Linha();
-                    ht.Add("TITULO", "LISTA DE PEÇAS");
+                    ht.Add("TITULO", "LISTA DE ALMOX");
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Almox_Titulo, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
                     int seq = 1;
@@ -619,95 +621,7 @@ namespace DLM.cad
             return new P3d(x0, y0);
 
         }
-        //public static P3d TecnoMetal(List<DLM.db.Linha> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)
-        //{
-        //    double x0 = 0;
-        //    double y0 = 0;
-        //    if (pecas_tecnometal.Count > 0)
-        //    {
-        //        //preguiça de ajustar os blocos da tabela, mantive um fator de escala
-        //        double fator_escala = 1.25 * escala;
-        //        bool cancelado = false;
 
-        //        if (mover_direita != 0)
-        //        {
-        //            p0 = new P3d(p0.X + (mover_direita), p0.Y);
-        //        }
-
-        //        if (!cancelado)
-        //        {
-        //            x0 = p0.X;
-        //            y0 = p0.Y;
-        //            var htt = new db.Linha();
-
-        //            var pecas = pecas_tecnometal.GroupBy(x => x.Get(TAB_DBF1.MAR_PEZ.ToString()).Valor).Select(X => X.ToList());
-        //            double total_superficie = 0;
-        //            double total_peso = 0;
-        //            foreach (var pc in pecas)
-        //            {
-        //                var marca = pc.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor == "");
-        //                var posics = pc.FindAll(x => x.Get(TAB_DBF1.POS_PEZ.ToString()).Valor != "");
-        //                int qtd = marca[0].Get(TAB_DBF1.QTA_PEZ.ToString()).Int();
-        //                double peso_unit = posics.Sum(x => x.Get(TAB_DBF1.PUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
-        //                double sup_unit = posics.Sum(x => x.Get(TAB_DBF1.SUN_LIS.ToString()).Double(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) * x.Get(TAB_DBF1.QTA_PEZ.ToString()).Int());
-        //                marca[0][TAB_DBF1.PUN_LIS.ToString()].Set(peso_unit);
-        //                marca[0][TAB_DBF1.SUN_LIS.ToString()].Set(sup_unit);
-        //                total_superficie += (sup_unit * qtd);
-        //                total_peso += (peso_unit * qtd);
-        //            }
-
-        //            total_peso = (total_peso/1000);
-
-
-        //            htt.Add("PESO_TOTAL", total_peso.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS) + " ton");
-        //            htt.Add("SUPERFICIE_TOTAL",total_superficie.ToString("N1").Replace(",", "") + " m²");
-        //            Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Titulo, p0, fator_escala, 0, htt);
-        //            p0 = new P3d(p0.X, p0.Y - (fator_escala * 20.4));
-        //            int seq = 1;
-        //            foreach(var Marca in pecas)
-        //            {
-
-
-        //                foreach (var Pos in Marca)
-        //                {
-        //                    string descricao = Pos.Get(TAB_DBF1.DES_PEZ.ToString()).Valor;
-        //                    if(Pos.Get(TAB_DBF1.POS_PEZ.ToString()).Valor != "")
-        //                    {
-        //                        descricao = Pos.Get(TAB_DBF1.NOM_PRO.ToString()).Valor;
-        //                        if (descricao == "")
-        //                        {
-        //                            descricao =
-        //                                "Ch. " + Pos.Get(TAB_DBF1.SPE_PRO.ToString()).Double().String(2) +
-        //                                " x " + Pos.Get(TAB_DBF1.LAR_PRO.ToString()).Double().String(1) +
-        //                                " x " + Pos.Get(TAB_DBF1.LUN_PRO.ToString()).Double().String(1);
-        //                        }
-        //                    }
-
-        //                    var tipo = Pos.Get(TAB_DBF1.FLG_REC.ToString()).ToString();
-
-        //                    var ht = new db.Linha();
-        //                    ht.Add(Cfg.Init.CAD_ATT_Marca, tipo == Cfg.Init.CAD_ATT_REC_MARCA?Pos.Get(TAB_DBF1.MAR_PEZ.ToString()): Pos.Get(TAB_DBF1.POS_PEZ.ToString()));
-        //                    ht.Add(Cfg.Init.CAD_ATT_Quantidade, Pos.Get(TAB_DBF1.QTA_PEZ.ToString()));
-        //                    ht.Add(Cfg.Init.CAD_ATT_Descricao, descricao );
-        //                    ht.Add(Cfg.Init.CAD_ATT_Material, Pos.Get(TAB_DBF1.MAT_PRO.ToString()));
-        //                    ht.Add(Cfg.Init.CAD_ATT_Cod_SAP, Pos.Get(TAB_DBF1.COD_PEZ.ToString()));
-        //                    ht.Add(Cfg.Init.CAD_ATT_Peso_Unit, (Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000).String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
-        //                    ht.Add(Cfg.Init.CAD_ATT_Peso_Tot, (Pos.Get(TAB_DBF1.PUN_LIS.ToString()).Double() /1000 * Pos.Get(TAB_DBF1.QTA_PEZ.ToString()).Int()).String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
-        //                    ht.Add(Cfg.Init.CAD_ATT_Ficha_Pintura, Pos.Get(TAB_DBF1.TRA_PEZ.ToString()));
-
-        //                    Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal, p0, fator_escala, 0, ht);
-        //                    p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
-        //                    seq++;
-        //                }
-        //                Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_TecnoMetal_Vazia, p0, fator_escala, 0, new db.Linha());
-        //                p0 = new P3d(p0.X, p0.Y - (fator_escala * 4.25));
-        //            }
-
-        //        }
-        //    }
-        //    return new P3d(x0, y0);
-
-        //}
 
 
         public static P3d TecnoMetal(List<MarcaTecnoMetal> pecas_tecnometal, P3d p0, double mover_direita = 0, double escala = 1)

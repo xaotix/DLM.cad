@@ -413,6 +413,7 @@ namespace DLM.cad
             if(etapa!=null)
             {
                 var dbrm = new DBRM_User(etapa.GetObra().id_plm_tercas, etapa.GetPedido().id_plm_tercas, etapa.id_plm_tercas, etapa.PEP, Acessos_Criterio.ENG);
+                dbrm.Update(RM_Tipo.Tudo);
                 Tabelas.InserirTabela(dbrm);
             }
 
