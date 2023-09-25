@@ -134,7 +134,7 @@ namespace DLM.cad
         [Browsable(false)]
         public int id_purlin_suporte { get; set; } = 881;
         [Browsable(false)]
-        public int id_corrente { get; set; } = 27;
+        public int id_corrente { get; set; } = 2532;
         [Browsable(false)]
         public int id_corrente_suporte { get; set; } = 1386;
         [Browsable(false)]

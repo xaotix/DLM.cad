@@ -80,7 +80,7 @@
                                     <Button Name="terca_suporte" Grid.Row="3" Grid.Column="2" Content="PC5" Click="terca_suporte_Click" />
 
                                     <Label Grid.Row="4" Content="Corrente Padrão:"/>
-                                    <Button Content="DLDA$C$" x:Name="corrente" Grid.Row="4" Grid.Column="1" Click="corrente_Click" />
+                                    <Button Content="DLDW$C$" x:Name="corrente" Grid.Row="4" Grid.Column="1" Click="corrente_Click" />
                                     <Button Content="F156" x:Name="corrente_suporte" Grid.Row="4" Grid.Column="2" Click="corrente_suporte_Click" />
 
                                     <Label Grid.Row="5" Content="Tirante Padrão:"/>

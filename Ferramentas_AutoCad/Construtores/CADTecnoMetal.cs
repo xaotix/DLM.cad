@@ -2103,14 +2103,14 @@ namespace DLM.cad
             denovo:
                 if (quantidade <= 0)
                 {
-                    quantidade = peca.Multiplo.Prompt(out status);
+                    quantidade = peca.MULTIPLO.Prompt(out status);
                     if (!status)
                     {
                         return;
                     }
                     if (quantidade <= 0 | !peca.MultiploOk(quantidade))
                     {
-                        if (Conexoes.Utilz.Pergunta($"Valor setado [{quantidade} é inválido. Precisa ser maior que zero e múltiplo de {peca.Multiplo}\nTentar novamente?"))
+                        if (Conexoes.Utilz.Pergunta($"Valor setado [{quantidade} é inválido. Precisa ser maior que zero e múltiplo de {peca.MULTIPLO}\nTentar novamente?"))
                         {
                             goto denovo;
                         }
