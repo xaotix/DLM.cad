@@ -1517,7 +1517,7 @@ namespace DLM.cad
             bobinas.AddRange(Conexoes.DBases.GetBancoRM().GetBobinas());
             if (espessura != null)
             {
-                bobinas = bobinas.FindAll(x => x.Espessura == espessura.valor && x.Corte == espessura.bobina_corte);
+                bobinas = bobinas.FindAll(x => x.Espessura == espessura.Espessura && x.Corte == espessura.Bobina_Corte);
             }
             var sel = bobinas.ListaSelecionar();
             if (sel != null)
@@ -1608,8 +1608,8 @@ namespace DLM.cad
                                             var face = coords_normalizadas.GetFace();
                                             var sub = this.GetSubEtapa();
 
-                                            Blocos.MarcaChapa(p_marca, coords_normalizadas, esp.valor, qtd, marca, material, ficha, this.GetEscala());
-                                            var nCAM = new cam.Cam($"{this.PastaCAM}{marca}.{Cfg.Init.EXT_CAM}", face, esp.valor);
+                                            Blocos.MarcaChapa(p_marca, coords_normalizadas, esp.Espessura, qtd, marca, material, ficha, this.GetEscala());
+                                            var nCAM = new cam.Cam($"{this.PastaCAM}{marca}.{Cfg.Init.EXT_CAM}", face, esp.Espessura);
                                             nCAM.Cabecalho.Tratamento = ficha;
                                             nCAM.Cabecalho.Material = material;
                                             nCAM.Cabecalho.Quantidade = qtd;
@@ -1813,7 +1813,7 @@ namespace DLM.cad
                     }
                     else
                     {
-                        bobina.Espessura = espessura.valor;
+                        bobina.Espessura = espessura.Espessura;
                         bobina.Material = Cfg.Init.Material;
 
                     }
@@ -2006,7 +2006,7 @@ namespace DLM.cad
                                     material = sel.Nome;
                                 }
                             }
-                            bobina.Espessura = espessura.valor;
+                            bobina.Espessura = espessura.Espessura;
                             bobina.Material = material;
                             if (ficha == null)
                             {

@@ -154,7 +154,7 @@ namespace DLM.cad
                     if (db_chapa != null)
                     {
                         perfil.Content = db_chapa.ToString();
-                        db_bobina.Espessura = db_chapa.valor;
+                        db_bobina.Espessura = db_chapa.Espessura;
                         db_bobina.Material = this.bt_material.Content.ToString();
                     }
                     break;
