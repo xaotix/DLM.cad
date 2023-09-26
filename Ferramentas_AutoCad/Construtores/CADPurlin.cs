@@ -1153,7 +1153,7 @@ namespace DLM.cad
             int c = 1;
             List<DLM.macros.Tirante> ss = new List<DLM.macros.Tirante>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
-            foreach (var tirante in tirantes.GroupBy(x => x.Tipo + x.Comprimento.ArredondarMultiplo(this.TirantesTolerancia).String(0) + " - " + x.Fixacao_1 + "/" + x.Fixacao_2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
+            foreach (var tirante in tirantes.GroupBy(x => x.NomePadronizado + x.Comprimento.ArredondarMultiplo(this.TirantesTolerancia).String(0) + " - " + x.Fixacao_1 + "/" + x.Fixacao_2 + "/" + x.Tratamento).OrderByDescending(X => X.Count()))
             {
                 var pps = tirante.ToList();
                 var nova = pps[0].Clonar();
@@ -1334,7 +1334,7 @@ namespace DLM.cad
             var p = new DLM.macros.Tirante();
             p.Fixacao_1 = SFTA;
             p.Fixacao_2 = SFTB;
-            p.Tipo = TIP;
+            p.NomePadronizado = TIP;
             p.Offset_1 = OFF1;
             p.Offset_2 = OFF2;
             p.CompUser = COMP;
