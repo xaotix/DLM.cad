@@ -1780,7 +1780,7 @@ namespace DLM.cad
                 }
 
 
-                List<LineSegment3d> segmentos = new List<LineSegment3d>();
+                var segmentos = new List<LineSegment3d>();
                 var angulos = Angulo.GetAngulos(pl, out segmentos);
 
                 foreach (var s in angulos)
@@ -1815,7 +1815,6 @@ namespace DLM.cad
                     {
                         bobina.Espessura = espessura.Espessura;
                         bobina.Material = Cfg.Init.Material;
-
                     }
                 }
 

@@ -30,7 +30,7 @@ namespace DLM.cad
 
         public void Iniciar()
         {
-            if(this.IsLoaded)
+            if (this.IsLoaded)
             {
                 this.Update();
                 this.Visibility = Visibility.Visible;
@@ -71,7 +71,7 @@ namespace DLM.cad
         {
             get
             {
-                if(this.seleciona_marca_composta.SelectedItem is MarcaTecnoMetal)
+                if (this.seleciona_marca_composta.SelectedItem is MarcaTecnoMetal)
                 {
                     return this.seleciona_marca_composta.SelectedItem as MarcaTecnoMetal;
                 }
@@ -101,7 +101,7 @@ namespace DLM.cad
 
                 this.Escala = Core.TecnoMetal.GetEscala();
 
-                combo_tipo_marca.ItemsSource = Conexoes.Utilz.GetLista_Enumeradores<Tipo_Bloco>().ToList().FindAll(x=> x!= Tipo_Bloco._ && x!= Tipo_Bloco.DUMMY);
+                combo_tipo_marca.ItemsSource = Conexoes.Utilz.GetLista_Enumeradores<Tipo_Bloco>().ToList().FindAll(x => x != Tipo_Bloco._ && x != Tipo_Bloco.DUMMY);
 
                 combo_tipo_marca.SelectedIndex = 0;
 
@@ -150,9 +150,9 @@ namespace DLM.cad
 
                 case Tipo_Bloco.Chapa:
                     db_chapa = Core.TecnoMetal.PromptChapa(Tipo_Chapa.Grossa);
-                    db_bobina = DBases.GetBobinaDummy(Cfg.Init.Material).Clonar();
                     if (db_chapa != null)
                     {
+                        db_bobina = DBases.GetBobinaDummy(Cfg.Init.Material, db_chapa.Espessura).Clonar();
                         perfil.Content = db_chapa.ToString();
                         db_bobina.Espessura = db_chapa.Espessura;
                         db_bobina.Material = this.bt_material.Content.ToString();
@@ -167,11 +167,11 @@ namespace DLM.cad
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     this.Visibility = Visibility.Collapsed;
-                    db_perfil_m2 = DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo== DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez).ListaSelecionar();
+                    db_perfil_m2 = DBases.GetdbPerfil().GetPerfisTecnoMetal().FindAll(x => x.Tipo == DLM.vars.CAM_PERFIL_TIPO.Chapa_Xadrez).ListaSelecionar();
 
                     if (db_perfil_m2 != null)
                     {
-                        if(db_perfil_m2.SAP.Int()>0 && db_perfil_m2.SAP.Length>6 && db_perfil_m2.Peso>0)
+                        if (db_perfil_m2.SAP.Int() > 0 && db_perfil_m2.SAP.Length > 6 && db_perfil_m2.Peso > 0)
                         {
                             perfil.Content = db_perfil_m2.ToString();
                         }
@@ -192,11 +192,11 @@ namespace DLM.cad
                     break;
                 case Tipo_Bloco.Arremate:
                     db_chapa = Core.TecnoMetal.PromptChapa(Tipo_Chapa.Fina);
-                    if(db_chapa != null)
+                    if (db_chapa != null)
                     {
                         db_bobina = Core.TecnoMetal.PromptBobina(db_chapa);
                     }
-                    
+
                     if (db_bobina != null)
                     {
                         perfil.Content = db_bobina.ToString();
@@ -212,7 +212,7 @@ namespace DLM.cad
         private void criar_bloco(object sender, RoutedEventArgs e)
         {
             double escala = txt_escala.Text.Double();
-            if(escala<1)
+            if (escala < 1)
             {
                 Conexoes.Utilz.Alerta("Valor escala inválido.");
                 return;
@@ -232,39 +232,39 @@ namespace DLM.cad
             }
             else
             {
-                if(combo_mercadoria.Content.ToString() == "")
+                if (combo_mercadoria.Content.ToString() == "")
                 {
                     Conexoes.Utilz.Alerta($"Selecione uma mercadoria.");
                     return;
                 }
             }
 
-            if(qtd_double <= 0)
+            if (qtd_double <= 0)
             {
                 Conexoes.Utilz.Alerta($"{qtd_double} quantidade inválida.");
                 return;
             }
 
 
-            if(NomeFim.Replace(" ","").Replace("_","").Length==0)
+            if (NomeFim.Replace(" ", "").Replace("_", "").Length == 0)
             {
                 Conexoes.Utilz.Alerta($"Nome inválido.");
                 return;
             }
 
-           if(tipo!= Tipo_Bloco.Elemento_Unitario && NomeFim.Contains("_"))
+            if (tipo != Tipo_Bloco.Elemento_Unitario && NomeFim.Contains("_"))
             {
                 Conexoes.Utilz.Alerta($"Nome inválido.");
                 return;
             }
 
-           if(this.Posicoes.FindAll(x=>x.Nome.ToUpper() == NomeFim.ToUpper()).Count>0)
+            if (this.Posicoes.FindAll(x => x.Nome.ToUpper() == NomeFim.ToUpper()).Count > 0)
             {
                 Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} Já existe uma posição com o mesmo nome.");
                 return;
             }
 
-           if(tipo == Tipo_Bloco.Elemento_Unitario && !NomeFim.EndsWith("_A"))
+            if (tipo == Tipo_Bloco.Elemento_Unitario && !NomeFim.EndsWith("_A"))
             {
                 Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} para elemento unitário deve sempre terminar com '_A'");
                 return;
@@ -289,9 +289,9 @@ namespace DLM.cad
                 }
             }
 
-            if(tipo!= Tipo_Bloco.Elemento_Unitario)
+            if (tipo != Tipo_Bloco.Elemento_Unitario)
             {
-                if(!qtd_double.E_Multiplo(1))
+                if (!qtd_double.E_Multiplo(1))
                 {
                     Conexoes.Utilz.Alerta($"Quantidade inválida: {qtd_double}. Quantidades com números quebrados somente para elemento unitário.");
                     return;
@@ -347,7 +347,7 @@ namespace DLM.cad
             string nomeMarca = "";
             string nomePos = "";
 
-            if((bool)rad_m_simples.IsChecked)
+            if ((bool)rad_m_simples.IsChecked)
             {
                 nomeMarca = this.NomeFim;
             }
@@ -362,22 +362,22 @@ namespace DLM.cad
                 case Tipo_Bloco.Chapa:
 
                     var sel = new List<string> { "Sem Dobras", "Com Dobras" }.ListaSelecionar();
-                    if(sel == "Com Dobras")
+                    if (sel == "Com Dobras")
                     {
                         this.combo_mercadoria.Content = "PERFIL DOBRADO";
-                        Core.TecnoMetal.InserirArremate(escala,nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, false, this.combo_mercadoria.Content.ToString());
+                        Core.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, false, this.combo_mercadoria.Content.ToString());
                     }
-                    else if(sel == "Sem Dobras")
+                    else if (sel == "Sem Dobras")
                     {
                         Core.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_chapa, this.combo_mercadoria.Content.ToString());
                     }
-                  
+
                     break;
                 case Tipo_Bloco.Perfil:
                     Core.TecnoMetal.InserirPerfil(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil, this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_M2:
-                    Core.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos,this.bt_material.Content.ToString(),this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil_m2,this.combo_mercadoria.Content.ToString());
+                    Core.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil_m2, this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
                     Core.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_unitario);
@@ -397,7 +397,7 @@ namespace DLM.cad
                     break;
             }
 
-            if(this.Sufix_Count ==1)
+            if (this.Sufix_Count == 1)
             {
                 FLayer.Desligar(Cfg.Init.GetLayersMarcasDesligar());
             }
@@ -417,14 +417,14 @@ namespace DLM.cad
         {
 
             this.Visibility = Visibility.Collapsed;
-            
+
             var nova = Core.TecnoMetal.InserirMarcaComposta(Core.TecnoMetal.GetEscala());
             if (nova != null)
             {
                 this.Update();
                 this.seleciona_marca_composta.SelectedItem = nova;
                 this.bt_tratamento.Content = nova.Tratamento;
-                
+
             }
             this.Visibility = Visibility.Visible;
 
@@ -441,7 +441,7 @@ namespace DLM.cad
 
             this.seleciona_marca_composta.ItemsSource = null;
             this.seleciona_marca_composta.ItemsSource = Marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta);
-            if((bool)rad_m_simples.IsChecked)
+            if ((bool)rad_m_simples.IsChecked)
             {
                 this.Sufix_Count = Marcas.Count + 1;
             }
@@ -452,7 +452,7 @@ namespace DLM.cad
             if (this.seleciona_marca_composta.Items.Count > 0 && (bool)rad_m_composta.IsChecked)
             {
                 this.seleciona_marca_composta.Visibility = Visibility.Visible;
-                if(this.seleciona_marca_composta.SelectedIndex<0)
+                if (this.seleciona_marca_composta.SelectedIndex < 0)
                 {
                     this.seleciona_marca_composta.SelectedIndex = 0;
                 }
@@ -462,7 +462,7 @@ namespace DLM.cad
                 this.seleciona_marca_composta.Visibility = Visibility.Collapsed;
             }
 
-            if((bool)rad_m_simples.IsChecked)
+            if ((bool)rad_m_simples.IsChecked)
             {
                 nova_marca.Visibility = Visibility.Collapsed;
 
@@ -473,7 +473,7 @@ namespace DLM.cad
             }
 
 
-           
+
             perfil.Content = "...";
 
             this.bt_criar.IsEnabled = true;
@@ -551,7 +551,7 @@ namespace DLM.cad
             }
         }
 
- 
+
 
         private void desliga_layer(object sender, RoutedEventArgs e)
         {
@@ -920,7 +920,7 @@ namespace DLM.cad
         private void atualiza_peso_arremate(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-           Core.AtualizarPesoChapas();
+            Core.AtualizarPesoChapas();
         }
 
         private void criar_cam_polyline(object sender, RoutedEventArgs e)
@@ -950,7 +950,7 @@ namespace DLM.cad
         private void set_material(object sender, RoutedEventArgs e)
         {
             var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
-            if(sel!=null)
+            if (sel != null)
             {
                 bt_material.Content = sel.Nome;
             }
@@ -959,7 +959,7 @@ namespace DLM.cad
         private void set_mercadoria(object sender, RoutedEventArgs e)
         {
             var sel = DBases.GetBancoRM().GetMercadorias().ListaSelecionar();
-            if(sel!=null)
+            if (sel != null)
             {
                 combo_mercadoria.Content = sel;
             }
@@ -968,7 +968,7 @@ namespace DLM.cad
         private void set_ficha(object sender, RoutedEventArgs e)
         {
             var sel = DBases.GetBancoRM().Get_Pinturas().ListaSelecionar();
-            if(sel!=null)
+            if (sel != null)
             {
                 bt_tratamento.Content = sel;
             }

@@ -157,8 +157,8 @@ namespace DLM.cad
             this.Espessura = bobina.Espessura;
             this.Material = bobina.Material;
             this.Comprimento = comprimento;
-            this.Cor_1 = bobina.cor1str;
-            this.Cor_2 = bobina.cor2str;
+            this.Cor_1 = bobina.Cor1Str;
+            this.Cor_2 = bobina.Cor2Str;
             this.SAP = bobina.SAP;
             this.Dobras = dobras.Count;
             this.Peso_Especifico = bobina.Peso_Especifico;
@@ -172,8 +172,8 @@ namespace DLM.cad
             this.Comprimento = comprimento;
             this.Espessura = bobina.Espessura;
             this.Material = bobina.Material;
-            this.Cor_1 = bobina.cor2str;
-            this.Cor_2 = bobina.cor2str;
+            this.Cor_1 = bobina.Cor2Str;
+            this.Cor_2 = bobina.Cor2Str;
             this.SAP = bobina.SAP;
             this.Peso_Especifico = bobina.Peso_Especifico;
            
