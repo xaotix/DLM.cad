@@ -33,6 +33,7 @@ namespace DLM.cad
         private static CADCotagem _Cotas { get; set; }
         private static CADTecnoMetal _TecnMetal { get; set; }
         private static Menus.Menu_Bloco_Peca _menu_bloco { get; set; }
+        private static CADPurlin _cadPurlin { get; set; }
         public static CADMonitoramento monitoramento { get; set; }
 
         public static Conexoes.ControleWait Getw()
@@ -78,7 +79,17 @@ namespace DLM.cad
             }
         }
 
-        public static CADPurlin CADPurlin { get; private set; }
+        public static CADPurlin CADPurlin
+        {
+            get
+            {
+                if (_cadPurlin == null)
+                {
+                    _cadPurlin = new CADPurlin();
+                }
+                return _cadPurlin;
+            }
+        }
 
         [CommandMethod(nameof(listarcomandos))]
         public static void listarcomandos()
@@ -199,15 +210,12 @@ namespace DLM.cad
         [CommandMethod(nameof(purlin))]
         public static void purlin()
         {
-            CADPurlin = new CADPurlin();
-
             CADPurlin.Purlin();
         }
 
         [CommandMethod(nameof(renomeiablocos))]
         public static void renomeiablocos()
         {
-            CADPurlin = new CADPurlin();
             CADPurlin.RenomeiaBlocos();
         }
 
@@ -216,14 +224,12 @@ namespace DLM.cad
         [CommandMethod(nameof(ApagarBlocosPurlin))]
         public static void ApagarBlocosPurlin()
         {
-            CADPurlin = new CADPurlin();
             CADPurlin.ApagarBlocosPurlin();
 
         }
         [CommandMethod(nameof(apagarpurlins))]
         public static void apagarpurlins()
         {
-            CADPurlin = new CADPurlin();
             CADPurlin.ApagarPurlins();
 
         }
@@ -231,15 +237,12 @@ namespace DLM.cad
         [CommandMethod(nameof(boneco))]
         public static void boneco()
         {
-            CADPurlin = new CADPurlin();
             CADPurlin.GetBoneco_Purlin();
         }
         [CommandMethod(nameof(mudaperfiltercas))]
         public static void mudaperfiltercas()
         {
-            CADPurlin = new CADPurlin();
             CADPurlin.SetPurlin();
-
         }
 
 

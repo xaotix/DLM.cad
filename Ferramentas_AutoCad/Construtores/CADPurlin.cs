@@ -1560,8 +1560,7 @@ namespace DLM.cad
 
                     foreach (var s in this.Getblocos_correntes())
                     {
-                        Atributos.Set(s, acTrans, "TIP", perfil.CODIGOFIM.ToString());
-
+                        Atributos.Set(s, acTrans, "TIP", perfil.COD_DB.ToString());
                     }
                     acTrans.Commit();
                     editor.Regen();
