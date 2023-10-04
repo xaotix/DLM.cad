@@ -285,17 +285,7 @@ namespace DLM.cad
             return retorno;
         }
 
-        public void ApagarBlocosPurlin()
-        {
-            var sel = SelecionarObjetos();
-            if (sel.Status == PromptStatus.OK)
-            {
 
-                acDoc.Apagar(GetBlocosSecundariasIndicacao().Select(x=> x as Entity).ToList());
-             
-
-            }
-        }
 
         public void Purlin()
         {
@@ -367,29 +357,14 @@ namespace DLM.cad
 
         public void InserirBlocos(GradeEixos grade)
         {
-            List<BlockReference> blocos_excluir = new List<BlockReference>();
+            var blocos_excluir = LimparBlocos();
+
             var verticais = grade.GetVaosVerticais();
-            if (MapearTercas)
-            {
-                blocos_excluir.AddRange(this.Getblocos_tercas());
-            }
-            if (MapearTirantes)
-            {
-                blocos_excluir.AddRange(this.Getblocos_tirantes());
-            }
-
-            if (MapearCorrentes)
-            {
-                blocos_excluir.AddRange(this.Getblocos_correntes());
-            }
-
-            acDoc.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
-
             var fb = this.GetFlangeBracePadrao();
             for (int i = 0; i < verticais.Count; i++)
             {
                 var vao = verticais[i];
-         
+
 
                 if (MapearTercas)
                 {
@@ -446,15 +421,26 @@ namespace DLM.cad
             AddBarra();
         }
 
-        public void ApagarPurlins()
+        public List<BlockReference> LimparBlocos()
         {
-            var sel = SelecionarObjetos();
-            if (sel.Status == PromptStatus.OK)
+            var blocos_excluir = new List<BlockReference>();
+            if (MapearTercas)
             {
-                acDoc.Apagar(GetBlocosSecundariasIndicacao().Select(x => x as Entity).ToList());
-                acDoc.Apagar(GetMLinesSecundarias().Select(x => x.Mline as Entity).ToList());
+                blocos_excluir.AddRange(this.Getblocos_tercas());
             }
+            if (MapearTirantes)
+            {
+                blocos_excluir.AddRange(this.Getblocos_tirantes());
+            }
+            if (MapearCorrentes)
+            {
+                blocos_excluir.AddRange(this.Getblocos_correntes());
+            }
+            acDoc.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
+            return blocos_excluir;
         }
+
+
 
 
 
@@ -563,9 +549,9 @@ namespace DLM.cad
 
 
                 var estilos = new List<MlineStyle>();
-                foreach (var style in this.TercasMLStyles)
+                foreach (var s in this.TercasMLStyles)
                 {
-                    var st = Multiline.GetMlStyle(style);
+                    var st = Multiline.GetMlStyle(s);
                    
                     if(st!=null)
                         estilos.Add(st);

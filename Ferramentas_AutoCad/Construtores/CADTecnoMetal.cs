@@ -1354,8 +1354,8 @@ namespace DLM.cad
         }
         private db.Tabela GetBlocosMarcas(Database acCurdb, ref List<Report> erros, string arquivo)
         {
-            db.Tabela marcas = new db.Tabela();
-            db.Tabela posicoes = new db.Tabela();
+            var mars = new db.Tabela();
+            var poss = new db.Tabela();
             using (var acTrans = acCurdb.acTrans())
             {
                 var nome = arquivo.getNome();
@@ -1379,17 +1379,17 @@ namespace DLM.cad
 
                 foreach (var m in ms)
                 {
-                    marcas.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
+                    mars.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
                 }
 
                 foreach (var m in pos)
                 {
-                    posicoes.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
+                    poss.Add(GetBlocoTecnoMetal(m, arquivo, false, acCurdb));
                 }
 
             }
 
-            var retorno = new List<db.Tabela> { marcas, posicoes }.Unir();
+            var retorno = new List<db.Tabela> { mars, poss }.Unir();
 
 
 
@@ -1746,8 +1746,12 @@ namespace DLM.cad
 
 
 
-        public void InserirArremate(double escala, string marca = "", string posicao = "", int quantidade = 1, string ficha = null, Conexoes.Bobina bobina = null, bool chapa_fina = true, string mercadoria = null)
+        public void InserirArremate(double escala = 0, string marca = "", string posicao = "", int quantidade = 1, string ficha = null, Conexoes.Bobina bobina = null, bool chapa_fina = true, string mercadoria = null)
         {
+            if (escala == 0)
+            {
+                escala = this.GetEscala();
+            }
             this.SetEscala(escala);
             if (marca == "")
             {
@@ -1958,8 +1962,13 @@ namespace DLM.cad
         }
 
 
-        public void InserirChapa(double escala, string marca = "", string posicao = "", string material = null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null, Conexoes.Bobina bobina = null)
+        public void InserirChapa(double escala = 0, string marca = "", string posicao = "", string material = null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null, Conexoes.Bobina bobina = null)
         {
+            if(escala==0)
+            {
+                escala = this.GetEscala();
+            }
+
             this.SetEscala(escala);
             if (marca == "")
             {
@@ -2082,8 +2091,12 @@ namespace DLM.cad
                 }
             }
         }
-        public void InserirElementoUnitario(double escala, string marca = "", string posicao = "", double quantidade = 0, string mercadoria = null, Conexoes.RMA peca = null)
+        public void InserirElementoUnitario(double escala = 0, string marca = "", string posicao = "", double quantidade = 0, string mercadoria = null, Conexoes.RMA peca = null)
         {
+            if (escala == 0)
+            {
+                escala = this.GetEscala();
+            }
             this.SetEscala(escala);
             if (marca == "")
             {
@@ -2141,8 +2154,12 @@ namespace DLM.cad
                 Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, escala, posicao, mercadoria);
             }
         }
-        public void InserirElementoM2(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
+        public void InserirElementoM2(double escala = 0, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
         {
+            if (escala == 0)
+            {
+                escala = this.GetEscala();
+            }
             this.SetEscala(escala);
             if (marca == "")
             {

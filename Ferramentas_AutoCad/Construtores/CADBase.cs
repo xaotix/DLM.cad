@@ -85,8 +85,7 @@ namespace DLM.cad
             {
                 if (mensagem)
                 {
-                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de etapas (.{Cfg.Init.EXT_Etapa})" +
-                   $"\nPasta atual: {this.Pasta}");
+                    $"Não é possível rodar esse comando fora de pastas de etapas (.{Cfg.Init.EXT_Etapa})\nPasta atual: {this.Pasta}".Alerta();
                 }
 
                 return false;

@@ -424,7 +424,7 @@
                             <Button Content="Mudar perfil (em testes)"  Click="purlin_muda_perfil"/>-->
                             <Separator/>
                             <Button Content="Apagar Blocos" Click="apagar_blocos"/>
-                            <Button Content="Apagar Tudo de Purlin" Click="apagar_tudo"/>
+                           
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Exportar / Importar RM">

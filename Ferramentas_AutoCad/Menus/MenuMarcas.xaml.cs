@@ -582,14 +582,14 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             List<Report> erros = new List<Report>();
-            Core.gerardbf();
+            Core.GerarDBF();
         }
 
         private void gerar_dbf_3d(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             List<Report> erros = new List<Report>();
-            Core.gerardbf3d();
+            Core.GerarDBF3d();
         }
 
         private void mercadorias(object sender, RoutedEventArgs e)
@@ -616,7 +616,7 @@ namespace DLM.cad
         private void quantificar(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.quantificar();
+            Core.Quantificar();
         }
 
         private void purlin(object sender, RoutedEventArgs e)
@@ -676,25 +676,25 @@ namespace DLM.cad
         private void preenche_selo(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.selopreenche();
+            Core.SeloPreenche();
         }
 
         private void limpa_selo(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.selolimpar();
+            Core.SeloLimpar();
         }
 
         private void criar_marcas_cam(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.criarmarcasdecam();
+            Core.CriarMarcasdeCAM();
         }
 
         private void rodar_macro(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.rodarmacros();
+            Core.RodarMacros();
         }
 
         private void gerar_dxf_cams(object sender, RoutedEventArgs e)
@@ -706,7 +706,7 @@ namespace DLM.cad
         private void marcar_montagem(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.marcarmontagem();
+            Core.MarcarMontagem();
         }
 
         private void rad_m_simples_Checked(object sender, RoutedEventArgs e)
@@ -717,7 +717,7 @@ namespace DLM.cad
         private void gerar_pdf(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.gerarPDFEtapa();
+            Core.GerarPDFEtapa();
         }
 
         private void composicao(object sender, RoutedEventArgs e)
@@ -729,19 +729,19 @@ namespace DLM.cad
         private void preenche_selo_tabela(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.preencheSelo();
+            Core.PreencheSelo();
         }
 
         private void limpar_selo_tabela(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.tabela_limpa();
+            Core.TabelaLimpar();
         }
 
         private void purlin_muda_perfil(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.mudaperfiltercas();
+            Core.purlinMudarPerfil();
         }
 
         private void abre_pasta(object sender, RoutedEventArgs e)
@@ -753,13 +753,13 @@ namespace DLM.cad
         private void exporta_rma(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.exportarma();
+            Core.ExportaRMA();
         }
 
         private void importa_rm(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.importarmoffline();
+            Core.ImportaRMOffline();
         }
 
         private void listar_quantidades(object sender, RoutedEventArgs e)
@@ -771,19 +771,19 @@ namespace DLM.cad
         private void bloqueia_mviews(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.bloqueiamviews();
+            Core.Bloqueiamviews();
         }
 
         private void desloqueia_mviews(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.desbloqueiamviews();
+            Core.Desbloqueiamviews();
         }
 
         private void cria_layers_padrao(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.criarlayersPadrao();
+            Core.CriarlayersPadrao();
         }
 
         private void abre_versionamento(object sender, RoutedEventArgs e)
@@ -794,7 +794,7 @@ namespace DLM.cad
         private void rodar_macros(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.rodarmacros();
+            Core.RodarMacros();
         }
 
         private void editar_transpasse(object sender, RoutedEventArgs e)
@@ -871,15 +871,10 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.GetCADPurlin().ApagarBlocosPurlin();
+            Core.purlinApagarBlocos();
         }
 
-        private void apagar_tudo(object sender, RoutedEventArgs e)
-        {
-            this.Visibility = Visibility.Collapsed;
-            this.Close();
-            Core.GetCADPurlin().ApagarBlocosPurlin();
-        }
+
 
         private void desnha_multiline(object sender, RoutedEventArgs e)
         {
@@ -926,7 +921,7 @@ namespace DLM.cad
         private void criar_cam_polyline(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.cam_de_polilinha();
+            Core.CAMPolyLine();
         }
         private void seleciona_tudo(object sender, RoutedEventArgs e)
         {

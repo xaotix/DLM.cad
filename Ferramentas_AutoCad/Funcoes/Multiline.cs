@@ -41,7 +41,7 @@ namespace DLM.cad
         }
         public static List<MlineStyle> GetMlineStyles(this List<Mline> mlss)
         {
-            List<MlineStyle> retorno = new List<MlineStyle>();
+            var retorno = new List<MlineStyle>();
             Multiline.GetMLStyles();
             if (Multiline._mlstyles != null)
             {
