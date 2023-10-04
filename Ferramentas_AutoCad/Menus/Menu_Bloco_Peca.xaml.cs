@@ -389,7 +389,7 @@ namespace DLM.cad.Menus
                 var mm = new Conexoes.RMT(rmt_sel, DBases.GetBobinaDummy(Cfg.Init.Material_RMT, 0.65));
                 mm.Quantidade = (int)qtd;
                 id = mm.id_telha;
-                txt_codigo.Text = mm.NomeFim;
+                txt_codigo.Text = mm.CODIGOFIM;
             }
         }
     }

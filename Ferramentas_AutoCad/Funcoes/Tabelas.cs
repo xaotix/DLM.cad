@@ -480,7 +480,7 @@ namespace DLM.cad
                     {
                         var hp = new db.Linha();
                         hp.Add(Cfg.Init.CAD_ATT_N, seq.ToString().PadLeft(2, '0'));
-                        hp.Add(Cfg.Init.CAD_ATT_Perfil, p.NomeFim);
+                        hp.Add(Cfg.Init.CAD_ATT_Perfil, p.CODIGOFIM);
                         hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
                         hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.COMP.String(0, 5));
                         hp.Add(Cfg.Init.CAD_ATT_Espessura, p.Bobina.Espessura.String(2, 5));
