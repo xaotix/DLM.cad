@@ -612,7 +612,7 @@ namespace DLM.cad
         [CommandMethod(nameof(InserirUnitario))]
         public static void InserirUnitario()
         {
-            GetTecnoMetal().InserirElementoUnitario());
+            GetTecnoMetal().InserirElementoUnitario();
         }
         [CommandMethod(nameof(InserirElem2))]
         public static void InserirElem2()
