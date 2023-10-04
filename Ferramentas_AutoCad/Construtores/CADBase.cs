@@ -101,14 +101,10 @@ namespace DLM.cad
 
             this.SelecionarTudo();
             var objetos = this.Selecoes;
-            //Conexoes.Utilz.Alerta(objetos.Count().ToString());
-
-
-            
 
             using (var acTrans = acCurDb.acTrans())
             {
-                List<Entity> lista = this.Selecoes;
+                var lista = this.Selecoes;
                 foreach (var obj in lista)
                 {
                     obj.AjustarLayer(acTrans);
