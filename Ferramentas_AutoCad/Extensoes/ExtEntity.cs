@@ -106,7 +106,6 @@ namespace DLM.cad
                         }
                         else
                         {
-
                         }
                     }
                     else if (linetype.Name.ToUpper().Contains("HIDDEN"))
@@ -121,19 +120,13 @@ namespace DLM.cad
                     }
                     else
                     {
-
                     }
                 }
-
                 item.Color = bylayer;
-
             }
             catch (Exception ex)
             {
-
             }
-
-
         }
         public static LayerTableRecord GetLayer(this Entity entity, OpenCloseTransaction acTrans, OpenMode openMode = OpenMode.ForRead)
         {
