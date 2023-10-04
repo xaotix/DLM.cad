@@ -420,6 +420,31 @@ namespace DLM.cad
                 acTrans.Commit();
             }
         }
+
+        public void AddXline(P3d origem, double angulo = 90)
+        {
+          
+            var p2 = origem.Mover(angulo, 10);
+            using (var acTrans = acCurDb.acTransST())
+            {
+                LinetypeTable acLineTypTbl;
+                acLineTypTbl = acTrans.GetObject(acCurDb.LinetypeTableId, OpenMode.ForRead) as LinetypeTable;
+                // Open the Block table for read
+                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                // Open the Block table record Model space for write
+                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                using (var nXLine = new Xline())
+                {
+                    nXLine.BasePoint = origem.GetPoint3dCad();
+                    nXLine.SecondPoint = p2.GetPoint3dCad();
+                    // Add the new object to the block table record and the transaction
+                    acBlkTblRec.AppendEntity(nXLine);
+                    acTrans.AddNewlyCreatedDBObject(nXLine, true);
+                }
+                acTrans.Commit();
+            }
+        }
+
         #endregion
 
 
@@ -776,12 +801,14 @@ namespace DLM.cad
                     return SelecionarObjetos(CAD_TYPE.LINE);
                 case Tipo_Selecao.PolyLine_Linhas:
                     return SelecionarObjetos(CAD_TYPE.LINE, CAD_TYPE.POLYLINE, CAD_TYPE.LWPOLYLINE);
+                case Tipo_Selecao.MultiLines:
+                    return SelecionarObjetos(CAD_TYPE.MLINE);
                 default:
                 case Tipo_Selecao.Tudo:
                     return SelecionarObjetos(Conexoes.Utilz.GetLista_Enumeradores<CAD_TYPE>().ToArray());
             }
         }
-  
+
         public void SelecionarTudo()
         {
             this.Selecoes.Clear();

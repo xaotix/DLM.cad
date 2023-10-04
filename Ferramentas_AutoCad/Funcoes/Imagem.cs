@@ -36,28 +36,18 @@ namespace DLM.cad
                     acTmpDb.CloseInput(true);
                     return s;
                 }
-
-                        //doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Open(arquivo, false);
-         
-            
             }
             catch (Exception ex)
             {
                 Conexoes.Utilz.Alerta(ex);
-
                 return null;
             }
-
-            
-         
         }
         public static void GenerateBlockPreviews()
         {
             PromptFileNameResult res =CAD.editor.GetFileNameForOpen("Select file for which to generate previews" );
             if (res.Status != PromptStatus.OK)
                 return;
-
-
 
             Document acDoc = null;
             try
@@ -66,7 +56,7 @@ namespace DLM.cad
             }
             catch
             {
-                editor.WriteMessage("\nUnable to read drawing.");
+                Ut.AddMensagem("\nUnable to read drawing.");
                 return;
             }
 

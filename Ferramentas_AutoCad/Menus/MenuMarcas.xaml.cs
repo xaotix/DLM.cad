@@ -99,7 +99,7 @@ namespace DLM.cad
 
 
 
-                this.Escala = Core.TecnoMetal.GetEscala();
+                this.Escala = Core.GetTecnoMetal().GetEscala();
 
                 combo_tipo_marca.ItemsSource = Conexoes.Utilz.GetLista_Enumeradores<Tipo_Bloco>().ToList().FindAll(x => x != Tipo_Bloco._ && x != Tipo_Bloco.DUMMY);
 
@@ -136,7 +136,7 @@ namespace DLM.cad
         public void GetMarcas()
         {
             List<Report> erros = new List<Report>();
-            Marcas = Core.TecnoMetal.GetMarcas(ref erros).ToList();
+            Marcas = Core.GetTecnoMetal().GetMarcas(ref erros).ToList();
             Posicoes = Marcas.SelectMany(x => x.GetPosicoes()).ToList();
         }
 
@@ -149,7 +149,7 @@ namespace DLM.cad
             {
 
                 case Tipo_Bloco.Chapa:
-                    db_chapa = Core.TecnoMetal.PromptChapa(Tipo_Chapa.Grossa);
+                    db_chapa = Core.GetTecnoMetal().PromptChapa(Tipo_Chapa.Grossa);
                     if (db_chapa != null)
                     {
                         db_bobina = DBases.GetBobinaDummy(Cfg.Init.Material, db_chapa.Espessura).Clonar();
@@ -191,10 +191,10 @@ namespace DLM.cad
                     }
                     break;
                 case Tipo_Bloco.Arremate:
-                    db_chapa = Core.TecnoMetal.PromptChapa(Tipo_Chapa.Fina);
+                    db_chapa = Core.GetTecnoMetal().PromptChapa(Tipo_Chapa.Fina);
                     if (db_chapa != null)
                     {
-                        db_bobina = Core.TecnoMetal.PromptBobina(db_chapa);
+                        db_bobina = Core.GetTecnoMetal().PromptBobina(db_chapa);
                     }
 
                     if (db_bobina != null)
@@ -218,7 +218,7 @@ namespace DLM.cad
                 return;
             }
             var erros = new List<Report>();
-            var ms = Core.TecnoMetal.GetMarcas(ref erros).ToList();
+            var ms = Core.GetTecnoMetal().GetMarcas(ref erros).ToList();
             var pos = ms.SelectMany(x => x.GetPosicoes()).ToList();
 
             var qtd_double = this.quantidade.Text.Double();
@@ -365,32 +365,32 @@ namespace DLM.cad
                     if (sel == "Com Dobras")
                     {
                         this.combo_mercadoria.Content = "PERFIL DOBRADO";
-                        Core.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, false, this.combo_mercadoria.Content.ToString());
+                        Core.GetTecnoMetal().InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, false, this.combo_mercadoria.Content.ToString());
                     }
                     else if (sel == "Sem Dobras")
                     {
-                        Core.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_chapa, this.combo_mercadoria.Content.ToString());
+                        Core.GetTecnoMetal().InserirChapa(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_chapa, this.combo_mercadoria.Content.ToString());
                     }
 
                     break;
                 case Tipo_Bloco.Perfil:
-                    Core.TecnoMetal.InserirPerfil(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil, this.combo_mercadoria.Content.ToString());
+                    Core.GetTecnoMetal().InserirPerfil(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil, this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_M2:
-                    Core.TecnoMetal.InserirElementoM2(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil_m2, this.combo_mercadoria.Content.ToString());
+                    Core.GetTecnoMetal().InserirElementoM2(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), this.bt_tratamento.Content.ToString(), (int)qtd_double, MenuMarcas.db_perfil_m2, this.combo_mercadoria.Content.ToString());
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
-                    Core.TecnoMetal.InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_unitario);
+                    Core.GetTecnoMetal().InserirElementoUnitario(escala, nomeMarca, nomePos, qtd_double, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_unitario);
                     break;
                 case Tipo_Bloco.Arremate:
                     var sel2 = new List<string> { "Corte", "Vista" }.ListaSelecionar();
                     if (sel2 == "Corte")
                     {
-                        Core.TecnoMetal.InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, true, this.combo_mercadoria.Content.ToString());
+                        Core.GetTecnoMetal().InserirArremate(escala, nomeMarca, nomePos, (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_bobina, true, this.combo_mercadoria.Content.ToString());
                     }
                     else if (sel2 == "Vista")
                     {
-                        Core.TecnoMetal.InserirChapa(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_chapa, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_bobina);
+                        Core.GetTecnoMetal().InserirChapa(escala, nomeMarca, nomePos, this.bt_material.Content.ToString(), (int)qtd_double, this.bt_tratamento.Content.ToString(), MenuMarcas.db_chapa, this.combo_mercadoria.Content.ToString(), MenuMarcas.db_bobina);
                     }
                     break;
                 case Tipo_Bloco._:
@@ -418,7 +418,7 @@ namespace DLM.cad
 
             this.Visibility = Visibility.Collapsed;
 
-            var nova = Core.TecnoMetal.InserirMarcaComposta(Core.TecnoMetal.GetEscala());
+            var nova = Core.GetTecnoMetal().InserirMarcaComposta(Core.GetTecnoMetal().GetEscala());
             if (nova != null)
             {
                 this.Update();
@@ -569,13 +569,13 @@ namespace DLM.cad
         private void insere_tabela(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.TecnoMetal.InserirTabela();
+            Core.GetTecnoMetal().InserirTabela();
         }
 
         private void insere_tabela_auto(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.TecnoMetal.InserirTabelaAuto();
+            Core.GetTecnoMetal().InserirTabelaAuto();
         }
 
         private void gerar_dbf(object sender, RoutedEventArgs e)
@@ -723,7 +723,7 @@ namespace DLM.cad
         private void composicao(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.TecnoMetal.InserirSoldaComposicao();
+            Core.GetTecnoMetal().InserirSoldaComposicao();
         }
 
         private void preenche_selo_tabela(object sender, RoutedEventArgs e)
@@ -801,84 +801,84 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetTranspasse();
+            Core.GetCADPurlin().SetTranspasse();
         }
 
         private void editar_ficha(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetFicha();
+            Core.GetCADPurlin().SetFicha();
         }
 
         private void editar_trocar_perfil(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetPurlin();
+            Core.GetCADPurlin().SetPurlin();
         }
 
         private void editar_furacao_suporte(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetSuporte();
+            Core.GetCADPurlin().SetSuporte();
         }
 
         private void editar_ver_croqui(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetSuporte();
+            Core.GetCADPurlin().SetSuporte();
         }
 
         private void editar_criar_manual(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.PurlinManual();
+            Core.GetCADPurlin().PurlinManual();
         }
 
         private void editar_edicao_completa(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.EdicaoCompleta();
+            Core.GetCADPurlin().EdicaoCompleta();
         }
 
         private void editar_corrente(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetCorrente();
+            Core.GetCADPurlin().SetCorrente();
         }
 
         private void editar_corrente_descontar(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetCorrenteDescontar();
+            Core.GetCADPurlin().SetCorrenteDescontar();
         }
 
         private void editar_corrente_fixador(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.SetCorrenteSuporte();
+            Core.GetCADPurlin().SetCorrenteSuporte();
         }
 
         private void apagar_blocos(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.ApagarBlocosPurlin();
+            Core.GetCADPurlin().ApagarBlocosPurlin();
         }
 
         private void apagar_tudo(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.ApagarBlocosPurlin();
+            Core.GetCADPurlin().ApagarBlocosPurlin();
         }
 
         private void desnha_multiline(object sender, RoutedEventArgs e)
@@ -906,14 +906,14 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.Exportar(Conexoes.Utilz.Pergunta("Gerar Tabela?"), Conexoes.Utilz.Pergunta("Exportar arquivo .RM?"));
+            Core.GetCADPurlin().Exportar(Conexoes.Utilz.Pergunta("Gerar Tabela?"), Conexoes.Utilz.Pergunta("Exportar arquivo .RM?"));
         }
 
         private void gerar_croquis(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.CADPurlin.GerarCroquis();
+            Core.GetCADPurlin().GerarCroquis();
 
         }
 
@@ -977,7 +977,7 @@ namespace DLM.cad
         private void gerar_cams_chapas(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.TecnoMetal.GerarCamsChapasRetas();
+            Core.GetTecnoMetal().GerarCamsChapasRetas();
         }
 
         private void trocar_material_elemento_m2(object sender, RoutedEventArgs e)

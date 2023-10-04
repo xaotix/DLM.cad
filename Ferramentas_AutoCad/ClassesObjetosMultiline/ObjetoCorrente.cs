@@ -40,9 +40,9 @@ namespace DLM.cad
 
 
             this.VaoObra = vao;
-            this.Descontar = Core.CADPurlin.CorrenteDescontar;
-            this.id_peca = Core.CADPurlin.id_corrente;
-            this.Suporte = Core.CADPurlin.CorrenteSuporte;
+            this.Descontar = Core.GetCADPurlin().CorrenteDescontar;
+            this.id_peca = Core.GetCADPurlin().id_corrente;
+            this.Suporte = Core.GetCADPurlin().CorrenteSuporte;
 
             this.PurlinEmCima = purlin_cima;
             this.PurlinEmBaixo = purlin_baixo;
@@ -68,7 +68,7 @@ namespace DLM.cad
                 this.Origem_Esquerda = new P3d(centro.X, PurlinEmBaixo.Y);
             }
 
-            this.SetPeca(Core.CADPurlin.GetCorrentePadrao());
+            this.SetPeca(Core.GetCADPurlin().GetCorrentePadrao());
 
 
         }

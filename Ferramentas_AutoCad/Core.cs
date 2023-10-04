@@ -34,6 +34,8 @@ namespace DLM.cad
         private static CADTecnoMetal _TecnMetal { get; set; }
         private static Menus.Menu_Bloco_Peca _menu_bloco { get; set; }
         private static CADPurlin _cadPurlin { get; set; }
+
+
         public static CADMonitoramento monitoramento { get; set; }
 
         public static Conexoes.ControleWait Getw()
@@ -44,50 +46,65 @@ namespace DLM.cad
             }
             return _w;
         }
-        public static MenuMarcas MenuMarcas
+
+        public static MenuMarcas GetMenuMarcas()
         {
-            get
+            if (_MenuMarcas == null)
             {
-                if (_MenuMarcas == null)
-                {
-                    _MenuMarcas = new MenuMarcas(TecnoMetal);
-                }
-                return _MenuMarcas;
+                _MenuMarcas = new MenuMarcas(GetTecnoMetal());
             }
+            return _MenuMarcas;
         }
-        public static CADCotagem Cotas
+
+        public static CADCotagem GetCotas()
         {
-            get
+            if (_Cotas == null)
             {
-                if (_Cotas == null)
-                {
-                    _Cotas = new CADCotagem();
-                }
-                return _Cotas;
+                _Cotas = new CADCotagem();
+            }
+            return _Cotas;
+        }
+
+        public static CADTecnoMetal GetTecnoMetal()
+        {
+            if (_TecnMetal == null)
+            {
+                _TecnMetal = new CADTecnoMetal();
+            }
+            return _TecnMetal;
+        }
+
+        public static CADPurlin GetCADPurlin()
+        {
+            if (_cadPurlin == null)
+            {
+                _cadPurlin = new CADPurlin();
+            }
+            return _cadPurlin;
+        }
+
+
+        [CommandMethod(nameof(DesenharXLines))]
+        public static void DesenharXLines()
+        {
+            GetCADPurlin().SelecionarObjetos(Tipo_Selecao.MultiLines);
+            var verticais = GetCADPurlin().GetMultilines().GetVerticais().GetOrigens();
+          
+            foreach(var vert in verticais)
+            {
+                GetCADPurlin().AddXline(vert);
             }
         }
 
-        public static CADTecnoMetal TecnoMetal
+        [CommandMethod(nameof(GetMLStyles))]
+        public static void GetMLStyles()
         {
-            get
-            {
-                if (_TecnMetal == null)
-                {
-                    _TecnMetal = new CADTecnoMetal();
-                }
-                return _TecnMetal;
-            }
-        }
+            GetCADPurlin().SelecionarObjetos(Tipo_Selecao.MultiLines);
 
-        public static CADPurlin CADPurlin
-        {
-            get
+            var mls = GetCADPurlin().GetMultilines().GetMlineStyles().Select(x => x.Name).Distinct().ToList();
+           foreach(var ml in mls)
             {
-                if (_cadPurlin == null)
-                {
-                    _cadPurlin = new CADPurlin();
-                }
-                return _cadPurlin;
+                Ut.AddMensagem($"\n{ml}");
             }
         }
 
@@ -98,10 +115,10 @@ namespace DLM.cad
             Assembly asm = Assembly.GetExecutingAssembly();
             List<string> comandos = Ut.listarcomandos(asm, false).ToList().OrderBy(x => x).ToList();
 
-            editor.WriteMessage("=== Lista de comandos ===\n");
+            Ut.AddMensagem("=== Lista de comandos ===\n");
             foreach (var s in comandos)
             {
-                editor.WriteMessage($"---> {s.ToUpper()}\n");
+                Ut.AddMensagem($"---> {s.ToUpper()}\n");
             }
 
         }
@@ -115,21 +132,21 @@ namespace DLM.cad
         [CommandMethod(nameof(Cotar))]
         public static void Cotar()
         {
-            Cotas.Cotar();
+            GetCotas().Cotar();
 
         }
         [CommandMethod(nameof(cconfigurar))]
         public static void cconfigurar()
         {
 
-            Cotas.Configurar();
+            GetCotas().Configurar();
         }
         [CommandMethod(nameof(contornar))]
         public static void contornar()
         {
 
 
-            Cotas.Contornar();
+            GetCotas().Contornar();
 
 
         }
@@ -137,8 +154,8 @@ namespace DLM.cad
         public static void cco()
         {
 
-            Cotas.ConfigurarContorno();
-            Cotas.Contornar();
+            GetCotas().ConfigurarContorno();
+            GetCotas().Contornar();
         }
 
         [CommandMethod(nameof(getContorno_polilinhas))]
@@ -150,23 +167,23 @@ namespace DLM.cad
         [CommandMethod(nameof(getcontorno))]
         public static void getcontorno()
         {
-            Cotas.Contornar();
+            GetCotas().Contornar();
         }
         [CommandMethod(nameof(getcontorno_convexo))]
         public static void getcontorno_convexo()
         {
-            Cotas.ContornarConvexo();
+            GetCotas().ContornarConvexo();
         }
         [CommandMethod(nameof(getcontorno_linhas))]
         public static void getcontorno_linhas()
         {
-            var sel = Cotas.SelecionarObjetos(CAD_TYPE.LINE, CAD_TYPE.LWPOLYLINE, CAD_TYPE.POLYLINE);
-            if (sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && Cotas.Selecoes.Count > 0)
+            var sel = GetCotas().SelecionarObjetos(CAD_TYPE.LINE, CAD_TYPE.LWPOLYLINE, CAD_TYPE.POLYLINE);
+            if (sel.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK && GetCotas().Selecoes.Count > 0)
             {
-                var pts = Ut.GetPontos(Cotas.Selecoes);
+                var pts = Ut.GetPontos(GetCotas().Selecoes);
                 var p3ds = pts.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
                 var contorno = p3ds.GetContornoHull(Ut.PedirInteger("Digite a escala", 1), Ut.PedirDouble("Digite a concavidade", 0.5));
-                Cotas.AddPolyLine(contorno, 0, 10, System.Drawing.Color.Red);
+                GetCotas().AddPolyLine(contorno, 0, 10, System.Drawing.Color.Red);
             }
         }
 
@@ -210,13 +227,13 @@ namespace DLM.cad
         [CommandMethod(nameof(purlin))]
         public static void purlin()
         {
-            CADPurlin.Purlin();
+            GetCADPurlin().Purlin();
         }
 
         [CommandMethod(nameof(renomeiablocos))]
         public static void renomeiablocos()
         {
-            CADPurlin.RenomeiaBlocos();
+            GetCADPurlin().RenomeiaBlocos();
         }
 
 
@@ -224,25 +241,25 @@ namespace DLM.cad
         [CommandMethod(nameof(ApagarBlocosPurlin))]
         public static void ApagarBlocosPurlin()
         {
-            CADPurlin.ApagarBlocosPurlin();
+            GetCADPurlin().ApagarBlocosPurlin();
 
         }
         [CommandMethod(nameof(apagarpurlins))]
         public static void apagarpurlins()
         {
-            CADPurlin.ApagarPurlins();
+            GetCADPurlin().ApagarPurlins();
 
         }
 
         [CommandMethod(nameof(boneco))]
         public static void boneco()
         {
-            CADPurlin.GetBoneco_Purlin();
+            GetCADPurlin().GetBoneco_Purlin();
         }
         [CommandMethod(nameof(mudaperfiltercas))]
         public static void mudaperfiltercas()
         {
-            CADPurlin.SetPurlin();
+            GetCADPurlin().SetPurlin();
         }
 
 
@@ -382,7 +399,7 @@ namespace DLM.cad
         [CommandMethod(nameof(abrepasta))]
         public static void abrepasta()
         {
-            Cotas.AbrePasta();
+            GetCotas().AbrePasta();
         }
 
 
@@ -559,17 +576,17 @@ namespace DLM.cad
 
             List<Report> erros = new List<Report>();
 
-            if (!TecnoMetal.Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
+            if (!GetTecnoMetal().Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
             {
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
-                    $"\nPasta atual: {TecnoMetal.Pasta}", DLM.vars.TipoReport.Critico));
+                    $"\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico));
 
                 erros.Show();
                 return;
             }
 
-            var lista_pecas = TecnoMetal.GetPecasPranchas(ref erros);
-            var etapa = TecnoMetal.GetSubEtapa();
+            var lista_pecas = GetTecnoMetal().GetPecasPranchas(ref erros);
+            var etapa = GetTecnoMetal().GetSubEtapa();
 
             Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
         }
@@ -578,7 +595,7 @@ namespace DLM.cad
         [CommandMethod(nameof(cam_de_polilinha))]
         public static void cam_de_polilinha()
         {
-            TecnoMetal.CAM_de_Polilinha();
+            GetTecnoMetal().CAM_de_Polilinha();
         }
 
 
@@ -626,7 +643,7 @@ namespace DLM.cad
         {
 
             var cams = Conexoes.Utilz.Abrir_Strings(Cfg.Init.EXT_CAM);
-            var offset = Cotas.GetEscala() * 70;
+            var offset = GetCotas().GetEscala() * 70;
             if (cams.Count > 0)
             {
                 bool cancelado = false;
@@ -641,7 +658,7 @@ namespace DLM.cad
                     {
 
                         var cam = new DLM.cam.ReadCAM(s);
-                        Blocos.CamToMarcaSimples(cam, p0, Cotas.GetEscala());
+                        Blocos.CamToMarcaSimples(cam, p0, GetCotas().GetEscala());
 
                         p0 = new P3d(p0.X + offset, p0.Y);
 
@@ -661,20 +678,20 @@ namespace DLM.cad
         [CommandMethod(nameof(bloqueiamviews))]
         public static void bloqueiamviews()
         {
-            Cotas.SetViewport(true);
+            GetCotas().SetViewport(true);
         }
 
         [CommandMethod(nameof(desbloqueiamviews))]
         public static void desbloqueiamviews()
         {
-            Cotas.SetViewport(false);
+            GetCotas().SetViewport(false);
         }
 
         [CommandMethod(nameof(ajustarLayers))]
         public static void ajustarLayers()
         {
-            Cotas.AjustarLayers();
-            Cotas.AddMensagem("Finalizado!");
+            GetCotas().AjustarLayers();
+            GetCotas().AddMensagem("Finalizado!");
         }
 
 
@@ -687,7 +704,7 @@ namespace DLM.cad
         [CommandMethod(nameof(marcar))]
         public static void marcar()
         {
-            MenuMarcas.Iniciar();
+            GetMenuMarcas().Iniciar();
         }
 
         [CommandMethod(nameof(converterDXF))]
@@ -812,13 +829,13 @@ namespace DLM.cad
         public static void medabil()
         {
 
-            MenuMarcas.Iniciar();
+            GetMenuMarcas().Iniciar();
         }
 
         [CommandMethod(nameof(quantificar))]
         public static void quantificar()
         {
-            TecnoMetal.Quantificar(true, false, true, true, false);
+            GetTecnoMetal().Quantificar(true, false, true, true, false);
         }
 
         [CommandMethod(nameof(marcarmontagem))]
@@ -826,12 +843,12 @@ namespace DLM.cad
         {
             if (_menu_bloco == null)
             {
-                _menu_bloco = new Menus.Menu_Bloco_Peca(TecnoMetal);
+                _menu_bloco = new Menus.Menu_Bloco_Peca(GetTecnoMetal());
                 _menu_bloco.Show();
             }
             else
             {
-                _menu_bloco.txt_escala.Text = TecnoMetal.GetEscala().String();
+                _menu_bloco.txt_escala.Text = GetTecnoMetal().GetEscala().String();
                 _menu_bloco.Visibility = System.Windows.Visibility.Visible;
             }
         }
@@ -864,13 +881,13 @@ namespace DLM.cad
         [CommandMethod(nameof(criarlayersPadrao))]
         public static void criarlayersPadrao()
         {
-            Cotas.CriarLayersPadrao();
+            GetCotas().CriarLayersPadrao();
         }
 
         [CommandMethod(nameof(gerardxf))]
         public static void gerardxf()
         {
-            TecnoMetal.GerarDXFs();
+            GetTecnoMetal().GerarDXFs();
         }
 
         [CommandMethod(nameof(testeinterseccao))]
@@ -885,8 +902,8 @@ namespace DLM.cad
             acDoc.IrLayout();
             acDoc.SetLts(10);
             Ut.ZoomExtend();
-            TecnoMetal.InserirTabelaAuto();
-            TecnoMetal.PreencheSelo();
+            GetTecnoMetal().InserirTabelaAuto();
+            GetTecnoMetal().PreencheSelo();
 
         }
         /*Esse cara força o CAD rodar sincrono, CommandFlags.Session*/
@@ -897,8 +914,8 @@ namespace DLM.cad
             acDoc.SetLts(10);
             Ut.ZoomExtend();
             List<Report> erros = new List<Report>();
-            TecnoMetal.ApagarTabelaAuto();
-            TecnoMetal.PreencheSelo(true);
+            GetTecnoMetal().ApagarTabelaAuto();
+            GetTecnoMetal().PreencheSelo(true);
 
             erros.Show();
         }
@@ -907,21 +924,21 @@ namespace DLM.cad
         [CommandMethod(nameof(gerarPDFEtapa))]
         public static void gerarPDFEtapa()
         {
-            TecnoMetal.GerarPDF();
+            GetTecnoMetal().GerarPDF();
         }
 
         [CommandMethod(nameof(gerarPDFEtapacarrega))]
         public static void gerarPDFEtapacarrega()
         {
-            var arquivos = Conexoes.Utilz.Arquivo.Ler(TecnoMetal.Pasta + @"DAT\plotar.txt").Select(x => new Conexoes.Arquivo(x)).ToList();
+            var arquivos = Conexoes.Utilz.Arquivo.Ler(GetTecnoMetal().Pasta + @"DAT\plotar.txt").Select(x => new Conexoes.Arquivo(x)).ToList();
             arquivos = arquivos.FindAll(x => x.Exists());
-            TecnoMetal.GerarPDF(arquivos);
+            GetTecnoMetal().GerarPDF(arquivos);
         }
 
         [CommandMethod(nameof(composicao))]
         public static void composicao()
         {
-            TecnoMetal.InserirSoldaComposicao();
+            GetTecnoMetal().InserirSoldaComposicao();
         }
 
 
@@ -970,7 +987,7 @@ namespace DLM.cad
 
                 foreach (var group in blocks.OrderBy(x => x.Key))
                 {
-                    editor.WriteMessage($"\n{group.Key}: {group.Count()}");
+                    Ut.AddMensagem($"\n{group.Key}: {group.Count()}");
                 }
                 acTrans.Commit();
             }

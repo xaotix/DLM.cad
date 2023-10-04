@@ -12,14 +12,14 @@
         public ObjetoTirante(CADMline multiline,  VaoObra vao)
         {
             this.Grade = vao.Grade;
-            this.id_peca = Core.CADPurlin.id_tirante;
+            this.id_peca = Core.GetCADPurlin().id_tirante;
             this.Multiline = multiline;
             this.VaoObra = vao;
 
-            this.Offset = Core.CADPurlin.TirantesOffSet;
+            this.Offset = Core.GetCADPurlin().TirantesOffSet;
 
-            this.Suporte = Core.CADPurlin.TirantesSuporte;
-            this.SetPeca(Core.CADPurlin.GetTirantePadrao());
+            this.Suporte = Core.GetCADPurlin().TirantesSuporte;
+            this.SetPeca(Core.GetCADPurlin().GetTirantePadrao());
 
             this.Origem_Direita = this.Multiline.Inicio;
             this.Origem_Esquerda = this.Multiline.Fim;

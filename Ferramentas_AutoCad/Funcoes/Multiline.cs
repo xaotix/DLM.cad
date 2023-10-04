@@ -39,7 +39,7 @@ namespace DLM.cad
             }
             return null;
         }
-        public static List<MlineStyle> GetMlineStyles(List<Mline> mlss)
+        public static List<MlineStyle> GetMlineStyles(this List<Mline> mlss)
         {
             List<MlineStyle> retorno = new List<MlineStyle>();
             Multiline.GetMLStyles();
@@ -128,7 +128,7 @@ namespace DLM.cad
 
             if (multiline.Count == 0) { return; }
 
-            var estilos = Multiline.GetMlineStyles(multiline).Select(x => x.Name).OrderBy(x => x).ToList();
+            var estilos = multiline.GetMlineStyles().Select(x => x.Name).OrderBy(x => x).ToList();
 
             if (estilos.Count == 0) { return; }
             var estilo_subst = estilos.ListaSelecionar();
@@ -285,7 +285,7 @@ namespace DLM.cad
             return retorno;
         }
 
-        public static List<Mline> GetVerticais(List<Mline> LS, double comp_min = 100)
+        public static List<Mline> GetVerticais(this List<Mline> LS, double comp_min = 100)
         {
             List<Mline> retorno = new List<Mline>();
             foreach (var s in LS)
@@ -309,7 +309,7 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static List<Mline> GetHorizontais(List<Mline> LS, double comp_min = 100)
+        public static List<Mline> GetHorizontais(this List<Mline> LS, double comp_min = 100)
         {
             List<Mline> retorno = new List<Mline>();
             foreach (var s in LS)
@@ -333,7 +333,7 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static void GetOrigens(Mline s, out P3d p1, out P3d p2, out double largura)
+        public static void GetOrigens(this Mline s, out P3d p1, out P3d p2, out double largura)
         {
             List<P3d> lista = Ut.GetPontos(s).Select(x => x.P3d()).ToList();
 
@@ -348,7 +348,7 @@ namespace DLM.cad
             p2 = new P3d();
 
             largura = 0;
-            var isvertical = GetVerticais(new List<Mline> { s }).Count > 0;
+            var isvertical = new List<Mline> { s }.GetVerticais().Count > 0;
 
             if (isvertical)
             {
@@ -381,5 +381,29 @@ namespace DLM.cad
             }
         }
 
+        public static List<P3d> GetOrigens(this List<Mline> mlines)
+        {
+            var retorno = new List<P3d>();
+
+            foreach(var mline in mlines)
+            {
+                P3d p1 = null;
+                P3d p2 = null;
+                double largura = 0;
+                mline.GetOrigens(out p1, out p2, out largura);
+
+                if(p1!=null)
+                {
+                    retorno.Add(p1);
+                }
+                if(p2!=null)
+                {
+                    retorno.Add(p2);
+                }
+            }
+            retorno = retorno.GroupBy(x => x.ToString()).Select(x=>x.First()).ToList();
+
+            return retorno;
+        }
     }
 }

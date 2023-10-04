@@ -108,7 +108,7 @@ namespace DLM.cad.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    var purlin = Ut.SelecionarPurlin(Core.CADPurlin.GetPurlinPadrao());
+                    var purlin = Ut.SelecionarPurlin(Core.GetCADPurlin().GetPurlinPadrao());
                     if (purlin != null)
                     {
                         foreach(var p in sel.GetPurlins())
@@ -146,7 +146,7 @@ namespace DLM.cad.Menus
         {
             this.confirmado = true;
             this.Close();
-            Core.CADPurlin.InserirBlocos(this.grade);
+            Core.GetCADPurlin().InserirBlocos(this.grade);
         }
 
         private void set_corrente(object sender, RoutedEventArgs e)

@@ -42,7 +42,7 @@ namespace DLM.cad
 
                 if(value>0)
                 {
-                    var pc = Core.CADPurlin.GetFlangeBracePadrao();
+                    var pc = Core.GetCADPurlin().GetFlangeBracePadrao();
                     if(pc!=null)
                     {
                         Conexoes.RMLite cc = pc.Get(value);
@@ -75,7 +75,7 @@ namespace DLM.cad
 
                 if (value > 0)
                 {
-                    var pc = Core.CADPurlin.GetFlangeBracePadrao();
+                    var pc = Core.GetCADPurlin().GetFlangeBracePadrao();
                     if (pc != null)
                     {
                         Conexoes.RMLite cc = pc.Get(value);
@@ -189,7 +189,7 @@ namespace DLM.cad
             this.Multiline = multiline;
 
             this.VaoObra = vao;
-            this.SetPeca(Core.CADPurlin.GetPurlinPadrao());
+            this.SetPeca(Core.GetCADPurlin().GetPurlinPadrao());
 
 
             var p1 = this.Multiline.GetInterSeccao(this.VaoObra.Esquerda.GetLinhaEixo(vao.Grade));
@@ -220,7 +220,7 @@ namespace DLM.cad
             this.Grade = grade;
 
             
-            this.SetPeca(Core.CADPurlin.GetPurlinPadrao());
+            this.SetPeca(Core.GetCADPurlin().GetPurlinPadrao());
 
 
 

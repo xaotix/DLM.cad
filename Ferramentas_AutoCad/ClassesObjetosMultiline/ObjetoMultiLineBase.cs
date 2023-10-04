@@ -240,7 +240,7 @@ namespace DLM.cad
 
             P1 = new P3d((P1.X - this.Grade.P0.X) * this.Grade.Escala, (P1.Y - this.Grade.P0.Y) * this.Grade.Escala);
             P2 = new P3d((P2.X - this.Grade.P0.X) * this.Grade.Escala, (P2.Y - this.Grade.P0.Y) * this.Grade.Escala);
-            _linha = P1.Linha(P2, this.GetCor().Clone(), Core.CADPurlin.Canvas_Espessura_Multiline);
+            _linha = P1.Linha(P2, this.GetCor().Clone(), Core.GetCADPurlin().Canvas_Espessura_Multiline);
             _linha.MouseMove += Evento_Sobre;
             _linha.MouseLeave += Evento_Sair;
             _linha.MouseRightButtonUp += Botao_Direito;
@@ -255,7 +255,7 @@ namespace DLM.cad
                 angulo = 90;
             }
 
-            _botao = (this.Nome + $"\n#{this.Espessura.ToString("N2")}").Botao(pt, this.GetCor().Clone(), Core.CADPurlin.Canvas_Tam_Texto, angulo, 1, System.Windows.Media.Brushes.Black);
+            _botao = (this.Nome + $"\n#{this.Espessura.ToString("N2")}").Botao(pt, this.GetCor().Clone(), Core.GetCADPurlin().Canvas_Tam_Texto, angulo, 1, System.Windows.Media.Brushes.Black);
 
             _botao.MouseRightButtonUp += Botao_Direito;
             _botao.MouseMove += Evento_Sobre;
@@ -336,7 +336,7 @@ namespace DLM.cad
             var pcs = this.GetCanvas();
             foreach (var pc in pcs)
             {
-                Core.CADPurlin.GetGrade().Canvas.Children.Add(pc);
+                Core.GetCADPurlin().GetGrade().Canvas.Children.Add(pc);
             }
         }
 
@@ -344,7 +344,7 @@ namespace DLM.cad
         {
             _linha.SetCor(this.GetCor(), System.Windows.Media.Brushes.Black);
             _botao.Visibility = Visibility.Collapsed;
-            _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline;
+            _linha.StrokeThickness = Core.GetCADPurlin().Canvas_Espessura_Multiline;
             _botao.SetCor(this.GetCor(), System.Windows.Media.Brushes.Black);
             _linha.TrazerPraFrente();
             _botao.TrazerPraFrente();
@@ -355,7 +355,7 @@ namespace DLM.cad
             var p = sender as UIElement;
 
             _botao.Visibility = Visibility.Visible;
-            _linha.StrokeThickness = Core.CADPurlin.Canvas_Espessura_Multiline * 4;
+            _linha.StrokeThickness = Core.GetCADPurlin().Canvas_Espessura_Multiline * 4;
             _linha.TrazerPraFrente();
             _botao.TrazerPraFrente();
 

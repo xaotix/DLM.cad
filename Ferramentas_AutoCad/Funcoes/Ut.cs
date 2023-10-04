@@ -551,7 +551,7 @@ namespace DLM.cad
             largura = 0;
             if (s is Mline)
             {
-                Multiline.GetOrigens(s as Mline, out p1, out p2, out largura);
+                (s as Mline).GetOrigens(out p1, out p2, out largura);
                 comprimento = p1.Distancia(p2);
             }
             else if (s is Line)
@@ -581,7 +581,7 @@ namespace DLM.cad
 
 
 
-        public static List<Line> LinhasHorizontais(List<Line> LS, double comp_min = 100)
+        public static List<Line> LinhasHorizontais(this List<Line> LS, double comp_min = 100)
         {
             List<Line> retorno = new List<Line>();
             foreach (var s in LS)
@@ -600,7 +600,7 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static List<Xline> XLinesHorizontais(List<Xline> LS, double comp_min = 0)
+        public static List<Xline> XLinesHorizontais(this List<Xline> LS, double comp_min = 0)
         {
             List<Xline> retorno = new List<Xline>();
             foreach (var s in LS)
@@ -618,7 +618,7 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static List<Polyline> PolylinesVerticais(List<Polyline> LS, double comp_min = 100)
+        public static List<Polyline> PolylinesVerticais(this List<Polyline> LS, double comp_min = 100)
         {
             List<Polyline> retorno = new List<Polyline>();
             foreach (var s in LS)
@@ -722,9 +722,9 @@ namespace DLM.cad
 
 
 
-                            AddMensagem("\nLine: origem: " + p1);
-                            AddMensagem("\nLine: Intersecção: " + pt);
-                            AddMensagem("\nLine: Distância: " + dist);
+                            AddMensagem($"\nLine: origem: {p1}");
+                            AddMensagem($"\nLine: Intersecção: {pt}");
+                            AddMensagem($"\nLine: Distância: {dist}");
 
                             //AddMensagem("\nXline distância: " + dist1);
                             //AddMensagem("\nXline distância: " + dist2);
@@ -771,8 +771,8 @@ namespace DLM.cad
 
                 }
             }
-            AddMensagem("\nXline Menor distância: " + distancia);
-            AddMensagem("\nXline tolerância: " + tolerancia);
+            AddMensagem($"\nXline Menor distância: {distancia}");
+            AddMensagem($"\nXline tolerância: {tolerancia}");
             if (distancia < 0)
             {
                 retorno = null;
@@ -853,9 +853,9 @@ namespace DLM.cad
                 P3d p1;
                 P3d p2;
                 double largura = 0;
-                Multiline.GetOrigens(p, out p1, out p2, out largura);
+                p.GetOrigens(out p1, out p2, out largura);
                 retorno.Add(p1);
-                retorno.Add(p1);
+                retorno.Add(p2);
             }
 
             return retorno;
@@ -1067,11 +1067,11 @@ namespace DLM.cad
         }
 
 
-        public static Point3d GetP3d(Point2d pt)
+        public static Point3d GetP3d(this Point2d pt)
         {
             return new Point3d(pt.X, pt.Y, 0);
         }
-        public static Point2d Mover(Point2d origem, double angulo, double distancia)
+        public static Point2d Mover(this Point2d origem, double angulo, double distancia)
         {
             double angleRadians = (Math.PI * (angulo) / 180.0);
             return new Point2d(((double)origem.X + (Math.Cos(angleRadians) * distancia)), ((double)origem.Y + (Math.Sin(angleRadians) * distancia)));
@@ -1507,7 +1507,7 @@ namespace DLM.cad
 
         public static RMLiteFamilia GetFBs()
         {
-            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_FB.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.GetCADPurlin().RM_Familia_FB.ToUpper());
 
             if (fam != null)
             {
@@ -1518,7 +1518,7 @@ namespace DLM.cad
 
         public static RMLiteFamilia GetPURLINS()
         {
-            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.GetCADPurlin().RM_Familia_Purlin.ToUpper());
 
             if (fam != null)
             {
@@ -1528,7 +1528,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetTIRANTES()
         {
-            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.GetCADPurlin().RM_Familia_Tirante.ToUpper());
 
             if (fam != null)
             {
@@ -1538,7 +1538,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetCORRENTES()
         {
-            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.GetCADPurlin().RM_Familia_Corrente.ToUpper());
 
             if (fam != null)
             {
@@ -1549,7 +1549,7 @@ namespace DLM.cad
 
         public static RMLiteFamilia GetSUPORTES_CORRENTES()
         {
-            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Corrente_Suporte.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.GetCADPurlin().RM_Familia_Corrente_Suporte.ToUpper());
 
             if (fam != null)
             {
@@ -1559,7 +1559,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetSUPORTES_PURLIN()
         {
-            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Purlin_Suporte.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.GetCADPurlin().RM_Familia_Purlin_Suporte.ToUpper());
 
             if (fam != null)
             {
@@ -1569,7 +1569,7 @@ namespace DLM.cad
         }
         public static RMLiteFamilia GetSUPORTES_TIRANTE()
         {
-            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.CADPurlin.RM_Familia_Tirante_Suporte.ToUpper());
+            var fam = DBases.GetFamiliasLite().Find(x => x.FAMILIA.ToUpper() == Core.GetCADPurlin().RM_Familia_Tirante_Suporte.ToUpper());
 
             if (fam != null)
             {

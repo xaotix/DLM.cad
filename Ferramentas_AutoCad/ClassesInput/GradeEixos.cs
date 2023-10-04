@@ -39,7 +39,7 @@ namespace DLM.cad
             {
 
                 _purlins_sem_vao = new List<ObjetoPurlin>();
-                foreach (var s in Core.CADPurlin.GetMLPurlins().FindAll(x => !x.Mapeado && x.Comprimento >= Core.CADPurlin.PurlinCompMin))
+                foreach (var s in Core.GetCADPurlin().GetMLPurlins().FindAll(x => !x.Mapeado && x.Comprimento >= Core.GetCADPurlin().PurlinCompMin))
                 {
                     var vao = _vaos_verticais.Find(x => x.Esquerda.MinX >= s.Centro.X && x.Direita.MaxX <= s.Centro.X);
 
@@ -154,26 +154,26 @@ namespace DLM.cad
             Escala = 1;
 
 
-            double raio = Core.CADPurlin.Canvas_Tam_Texto * 2;
-            double esc_y = Core.CADPurlin.Canvas_Altura / (GetAltura() + (2 * raio));
+            double raio = Core.GetCADPurlin().Canvas_Tam_Texto * 2;
+            double esc_y = Core.GetCADPurlin().Canvas_Altura / (GetAltura() + (2 * raio));
 
-            double esc_x = Core.CADPurlin.Canvas_Largura / GetComprimento();
+            double esc_x = Core.GetCADPurlin().Canvas_Largura / GetComprimento();
 
             Escala = esc_x > esc_y ? esc_x : esc_y;
             //escala = esc_x;
 
-            double espessura = Core.CADPurlin.Canvas_Esp_Linha;
+            double espessura = Core.GetCADPurlin().Canvas_Esp_Linha;
 
-            var tam_txt_cotas = Core.CADPurlin.Canvas_Txt_Cotas * Core.CADPurlin.Canvas_Tam_Texto;
+            var tam_txt_cotas = Core.GetCADPurlin().Canvas_Txt_Cotas * Core.GetCADPurlin().Canvas_Tam_Texto;
 
-            P0 = new Point(GetXmin() - Core.CADPurlin.Canvas_Offset, GetYmin() - Core.CADPurlin.Canvas_Offset);
+            P0 = new Point(GetXmin() - Core.GetCADPurlin().Canvas_Offset, GetYmin() - Core.GetCADPurlin().Canvas_Offset);
 
             List<UIElement> objetos = new List<UIElement>();
 
             // Start a transaction
             using (Transaction acTrans = CAD.acCurDb.acTrans())
             {
-                var objs = Core.CADPurlin.GetObjetosNaoMapeados();
+                var objs = Core.GetCADPurlin().GetObjetosNaoMapeados();
                 foreach (var p in objs)
                 {
                     objetos.AddRange(Ut.GetCanvas(p, P0, Escala, acTrans, 0.5));
@@ -208,7 +208,7 @@ namespace DLM.cad
                     var c = centro_circulo.Circulo(raio, espessura, System.Windows.Media.Brushes.Red);
                     retorno.Add(c);
 
-                    var ptexto = eixo.Nome.Label(centro_circulo, System.Windows.Media.Brushes.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
+                    var ptexto = eixo.Nome.Label(centro_circulo, System.Windows.Media.Brushes.Cyan, Core.GetCADPurlin().Canvas_Tam_Texto);
                     retorno.Add(ptexto);
                 }
 
@@ -235,7 +235,7 @@ namespace DLM.cad
                             var pp = pps[i];
                             if (pp.DistBaixo > 0)
                             {
-                                var pt = new System.Windows.Point((this.GetXmin() - P0.X - Core.CADPurlin.Canvas_Offset) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
+                                var pt = new System.Windows.Point((this.GetXmin() - P0.X - Core.GetCADPurlin().Canvas_Offset) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
                                 var cota = pp.DistBaixo.String(0).Botao(pt, System.Windows.Media.Brushes.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
@@ -267,7 +267,7 @@ namespace DLM.cad
             }
 
 
-            var niveis = Core.CADPurlin.GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
+            var niveis = Core.GetCADPurlin().GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
 
             /*insere o nível*/
             if (niveis.Count > 0)
@@ -293,15 +293,15 @@ namespace DLM.cad
             }
 
 
-            Canvas.Width = Math.Round(this.GetComprimento() * Escala) + (Core.CADPurlin.Canvas_Offset * 2 * Escala);
-            Canvas.Height = Math.Round(this.GetAltura() * Escala) + (Core.CADPurlin.Canvas_Offset * 2 * Escala);
+            Canvas.Width = Math.Round(this.GetComprimento() * Escala) + (Core.GetCADPurlin().Canvas_Offset * 2 * Escala);
+            Canvas.Height = Math.Round(this.GetAltura() * Escala) + (Core.GetCADPurlin().Canvas_Offset * 2 * Escala);
 
             return retorno;
         }
 
         public double GetNivel()
         {
-            var niveis = Core.CADPurlin.GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
+            var niveis = Core.GetCADPurlin().GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
             if (niveis.Count > 0)
             {
                 var nivel = niveis.Last().GetCoordenada().P3d().GetPoint3D();

@@ -317,20 +317,20 @@ namespace DLM.cad
                     }
 
                     Menus.Purlin pp = new Menus.Purlin();
-                    pp.eixos_mapeados.ItemsSource = Core.CADPurlin.GetGrade().GetEixosVerticais();
-                    pp.vaos_mapeados.ItemsSource = Core.CADPurlin.GetGrade().GetVaosVerticais();
+                    pp.eixos_mapeados.ItemsSource = Core.GetCADPurlin().GetGrade().GetEixosVerticais();
+                    pp.vaos_mapeados.ItemsSource = Core.GetCADPurlin().GetGrade().GetVaosVerticais();
 
 
                     Ut.GetPURLINS();
                     Ut.GetTIRANTES();
                     Ut.GetCORRENTES();
 
-                    pp.correntes_mlstyles.ItemsSource = Core.CADPurlin.CorrenteMLStyles;
-                    pp.tirantes_mlstyles.ItemsSource = Core.CADPurlin.TirantesMLStyles;
-                    pp.tercas_mlstyles.ItemsSource = Core.CADPurlin.TercasMLStyles;
-                    pp.correntes_multilines.ItemsSource = Core.CADPurlin.GetMLCorrentes();
-                    pp.tirantes_multilines.ItemsSource = Core.CADPurlin.GetMLTirantes();
-                    pp.tercas_multilines.ItemsSource = Core.CADPurlin.GetMLPurlins();
+                    pp.correntes_mlstyles.ItemsSource = Core.GetCADPurlin().CorrenteMLStyles;
+                    pp.tirantes_mlstyles.ItemsSource = Core.GetCADPurlin().TirantesMLStyles;
+                    pp.tercas_mlstyles.ItemsSource = Core.GetCADPurlin().TercasMLStyles;
+                    pp.correntes_multilines.ItemsSource = Core.GetCADPurlin().GetMLCorrentes();
+                    pp.tirantes_multilines.ItemsSource = Core.GetCADPurlin().GetMLTirantes();
+                    pp.tercas_multilines.ItemsSource = Core.GetCADPurlin().GetMLPurlins();
 
 
 
@@ -499,10 +499,10 @@ namespace DLM.cad
             if (_correntes == null | reset)
             {
                 _correntes = new List<CADMline>();
-                var lista = Multiline.GetVerticais(this.GetMultilines(), this.CorrenteCompMin);
+                var lista = this.GetMultilines().GetVerticais(this.CorrenteCompMin);
 
 
-                List<MlineStyle> estilos = new List<MlineStyle>();
+                var estilos = new List<MlineStyle>();
                 foreach (var s in this.CorrenteMLStyles)
                 {
                     var st = Multiline.GetMlStyle(s);
@@ -558,14 +558,14 @@ namespace DLM.cad
             if(_purlins==null | update)
             {
                 _purlins = new List<CADMline>();
-                var lista = Multiline.GetHorizontais(this.GetMultilines(), this.PurlinCompMin);
+                var lista = this.GetMultilines().GetHorizontais(this.PurlinCompMin);
           
 
 
-                List<MlineStyle> estilos = new List<MlineStyle>();
-                foreach (var s in this.TercasMLStyles)
+                var estilos = new List<MlineStyle>();
+                foreach (var style in this.TercasMLStyles)
                 {
-                    var st = Multiline.GetMlStyle(s);
+                    var st = Multiline.GetMlStyle(style);
                    
                     if(st!=null)
                         estilos.Add(st);
@@ -578,12 +578,8 @@ namespace DLM.cad
                         _purlins.Add(new CADMline(l, Tipo_Multiline.Purlin));
                     }
                 }
-
             }
-
-            
             return _purlins;
-
         }
 
         private GradeEixos _grade { get; set; }
@@ -693,24 +689,26 @@ namespace DLM.cad
                     {
                         AddMensagem($"\nLinha: {s.StartPoint.ToString()} Comprimento: {s.Comprimento} Angulo: {s.Angulo}");
                     }
-                    var linhas_horizon = GetLinhas_Horizontais();
+                    var _horizon = GetLinhas_Horizontais();
 
-                    var verticais = GetLinhas_Verticais();
+                    var _verts = GetLinhas_Verticais();
 
-                    AddMensagem($"\nLinhas verticais: {verticais.Count}");
-                    AddMensagem($"\nLinhas horizontais: {linhas_horizon.Count}");
+                    
 
-                    List<string> ret = new List<string>();
-                    List<string> textos = new List<string>();
+                    AddMensagem($"\nLinhas verticais: {_verts.Count}");
+                    AddMensagem($"\nLinhas horizontais: {_horizon.Count}");
+
+                    var ret = new List<string>();
+                    var textos = new List<string>();
 
                     int c = 1;
-                    foreach (var lhs in linhas_horizon)
+                    foreach (var lhs in _horizon)
                     {
 
 
 
-                        var verts = verticais.FindAll(x =>x.MinX>lhs.MinX+1 && x.MaxX<lhs.MaxX-1);
-                        List<CADLine> passa = new List<CADLine>();
+                        var verts = _verts.FindAll(x =>x.MinX>lhs.MinX+1 && x.MaxX<lhs.MaxX-1);
+                        var passa = new List<CADLine>();
 
                         foreach (var v in verts)
                         {
@@ -725,7 +723,7 @@ namespace DLM.cad
                         AddMensagem($"Linhas verticais que passam: {passa.Count}");
 
                         double comprimento = Math.Round(Math.Abs(lhs.StartPoint.X - lhs.EndPoint.X));
-                        List<double> furos = passa.Select(x => x.StartPoint.X - lhs.MinX).ToList().OrderBy(x=>x).ToList();
+                        var furos = passa.Select(x => x.StartPoint.X - lhs.MinX).ToList().OrderBy(x=>x).ToList();
                         furos = furos.Distinct().ToList();
                         textos.Add($"@Linha {c}");
                         textos.Add($"Comprimento: {comprimento}");
@@ -737,7 +735,7 @@ namespace DLM.cad
                         textos.Add("$Fim");
 
 
-                        Ut.AddLeader(-45, lhs.StartPoint,this.GetEscala(), "Linha:" + c, 15 * .8);
+                        Ut.AddLeader(-45, lhs.StartPoint,this.GetEscala(), $"Linha:{c}", 15 * .8);
                         c++;
                     }
                  
@@ -1580,11 +1578,9 @@ namespace DLM.cad
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
-
                     foreach (var bloco in this.Getblocos_correntes())
                     {
                         Atributos.Set(bloco, acTrans, Cfg.Init.CAD_ATT_Descricao, valor.ToString());
-
                     }
                     acTrans.Commit();
                     editor.Regen();

@@ -24,7 +24,7 @@ namespace DLM.cad
 
             /*Cotas*/
             var pt = new System.Windows.Point((this.CentroX - p0.X) * escala, (this.Ymax - p0.Y) * escala);
-            cota = this.Vao.String(0).Botao(pt, System.Windows.Media.Brushes.Cyan, Core.CADPurlin.Canvas_Tam_Texto);
+            cota = this.Vao.String(0).Botao(pt, System.Windows.Media.Brushes.Cyan, Core.GetCADPurlin().Canvas_Tam_Texto);
             cota.MouseEnter += Grade.evento_Botao_Sobre;
             cota.MouseLeave += Grade.evento_Botao_Sai;
             cota.ToolTip = this;
@@ -79,19 +79,19 @@ namespace DLM.cad
 
             this._purlins.Clear();
 
-            if (Vao >= Core.CADPurlin.VaoMinimo && Vao <= Core.CADPurlin.VaoMaximo)
+            if (Vao >= Core.GetCADPurlin().VaoMinimo && Vao <= Core.GetCADPurlin().VaoMaximo)
             {
 
-                var purlins = Ut.MlinesPassando(Esquerda.Origem, Direita.Origem, Core.CADPurlin.GetMLPurlins());
-                var correntes = Ut.MlinesPassando(Esquerda.Origem, Direita.Origem, Core.CADPurlin.GetMLCorrentes(), true);
+                var purlins = Ut.MlinesPassando(Esquerda.Origem, Direita.Origem, Core.GetCADPurlin().GetMLPurlins());
+                var correntes = Ut.MlinesPassando(Esquerda.Origem, Direita.Origem, Core.GetCADPurlin().GetMLCorrentes(), true);
 
 
 
                 foreach (var purlin in purlins)
                 {
 
-                    double TRE = Core.CADPurlin.TranspassePadrao;
-                    double TRD = Core.CADPurlin.TranspassePadrao;
+                    double TRE = Core.GetCADPurlin().TranspassePadrao;
+                    double TRD = Core.GetCADPurlin().TranspassePadrao;
                     var p_esq = purlin.Inicio;
                     var p_dir = purlin.Fim;
 
@@ -103,13 +103,13 @@ namespace DLM.cad
                         TRD = Math.Round(p_dir.X - Direita.MinX);
                     }
 
-                    if (p_dir.X < Direita.MinX + Core.CADPurlin.PurlinToleranciaXMapeamento)
+                    if (p_dir.X < Direita.MinX + Core.GetCADPurlin().PurlinToleranciaXMapeamento)
                     {
                         //se a linha da purlin for menor que a soma do transpasse 
                         TRD = Math.Round(p_dir.X - Direita.MinX);
                     }
 
-                    if (p_esq.X > Esquerda.MinX - Core.CADPurlin.PurlinToleranciaXMapeamento)
+                    if (p_esq.X > Esquerda.MinX - Core.GetCADPurlin().PurlinToleranciaXMapeamento)
                     {
                         //se a linha da purlin for menor que a soma do transpasse
                         TRE = Math.Round(Esquerda.MinX - p_esq.X);
@@ -164,9 +164,9 @@ namespace DLM.cad
                     cre = cre.Distinct().ToList().OrderBy(x => x).ToList();
 
                     List<double> furos_m_esq = new List<double>();
-                    if (Core.CADPurlin.MapeiaFurosManuais)
+                    if (Core.GetCADPurlin().MapeiaFurosManuais)
                     {
-                        var lista = Ut.LinhasPassando(Esquerda.Origem, Direita.Origem, Core.CADPurlin.LinhasFuros(), true, true, true);
+                        var lista = Ut.LinhasPassando(Esquerda.Origem, Direita.Origem, Core.GetCADPurlin().LinhasFuros(), true, true, true);
                         foreach (var ls in lista)
                         {
                             P3d crp0 = new P3d();
@@ -190,10 +190,10 @@ namespace DLM.cad
 
 
                     var comp = Vao + TRE + TRD;
-                    if (comp >= Core.CADPurlin.PurlinCompMin && comp <= Core.CADPurlin.PurlinCompMaximo)
+                    if (comp >= Core.GetCADPurlin().PurlinCompMin && comp <= Core.GetCADPurlin().PurlinCompMaximo)
                     {
                         //se a multiline é maior que o vão, se verifica se o comprimento em questão é maior que o balanço máximo.
-                        if (comp > Core.CADPurlin.PurlinBalancoMax)
+                        if (comp > Core.GetCADPurlin().PurlinBalancoMax)
                         {
 
                             ObjetoPurlin pp = new ObjetoPurlin(purlin, this);
@@ -216,7 +216,7 @@ namespace DLM.cad
 
             }
 
-            Core.CADPurlin.AddBarra();
+            Core.GetCADPurlin().AddBarra();
 
             return c;
         }
@@ -251,7 +251,7 @@ namespace DLM.cad
                 int c = 1;
                 _tirantes = new List<ObjetoTirante>();
 
-                var tirantes = Ut.MlinesPassando(Esquerda.Origem, Direita.Origem, Core.CADPurlin.GetMLTirantes(), true, Core.CADPurlin.TirantesToleranciaXMapeamento);
+                var tirantes = Ut.MlinesPassando(Esquerda.Origem, Direita.Origem, Core.GetCADPurlin().GetMLTirantes(), true, Core.GetCADPurlin().TirantesToleranciaXMapeamento);
 
                 foreach (var ml in tirantes)
                 {
@@ -279,7 +279,7 @@ namespace DLM.cad
                 _correntes = new List<ObjetoCorrente>();
                 var pe = Esquerda.Origem;
                 var pd = Direita.Origem;
-                var correntes = Ut.MlinesPassando(pe, pd, Core.CADPurlin.GetMLCorrentes(), true);
+                var correntes = Ut.MlinesPassando(pe, pd, Core.GetCADPurlin().GetMLCorrentes(), true);
                 var purlins = this.GetPurlins();
                 foreach (var corrente in correntes)
                 {
@@ -297,7 +297,7 @@ namespace DLM.cad
                             centro = new P3d(corrente.Minx, centro.Y);
 
                             /*verifica se a corrente tem um comp min ok e se está dentro de 2 purlin*/
-                            if (comp >= Core.CADPurlin.CorrenteCompMin && centro.X >= pur1.X1 && centro.X <= pur1.X2 && centro.X > pur2.X1 && centro.X <= pur2.X2)
+                            if (comp >= Core.GetCADPurlin().CorrenteCompMin && centro.X >= pur1.X1 && centro.X <= pur1.X2 && centro.X > pur2.X1 && centro.X <= pur2.X2)
                             {
 
                                 ObjetoCorrente pp = new ObjetoCorrente(corrente, centro,this, pur1, pur2);

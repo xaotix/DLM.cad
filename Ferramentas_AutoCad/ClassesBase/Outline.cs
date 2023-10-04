@@ -163,13 +163,13 @@ namespace DLM.cad
                 }
                 else
                 {
-                    ed.WriteMessage("\n*Cancelado*");
+                    Ut.AddMensagem("\n*Cancelado*");
                 }
             }
             catch (System.Exception ex)
             {
-                ed.WriteMessage("\nCommand falhado:\n{0}", ex.Message);
-                ed.WriteMessage("\n*Cancelado*");
+                Ut.AddMensagem($"\nCommand falhado:\n{ex.Message}");
+                Ut.AddMensagem($"\n*Cancelado*");
             }
         }
 
