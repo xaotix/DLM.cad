@@ -26,7 +26,11 @@ namespace DLM.cad
                 }
 
 
-                if (layer.Name.ToUpper() == "DEFPOINT" | layer.Name.ToUpper() == "DEFPOINTS" | layer.Name.ToUpper() == "MV")
+                if (
+                    layer.Name.ToUpper() == "DEFPOINT" | 
+                    layer.Name.ToUpper() == "DEFPOINTS" | 
+                    layer.Name.ToUpper() == "MV"
+                    )
                 {
                     return;
                 }
@@ -58,14 +62,20 @@ namespace DLM.cad
                     {
                         color = layer.Color;
                     }
-                    if (linetype.Name.ToUpper() == "BYLAYER" | linetype.Name.ToUpper() == "BYBLOCK")
+                    if (
+                        linetype.Name.ToUpper() == "BYLAYER" | 
+                        linetype.Name.ToUpper() == "BYBLOCK"
+                        )
                     {
                         linetype = layer.GetLineType(acTrans);
                     }
 
                     var lname = linetype.Name.ToUpper();
 
-                    if (lname.Contains("CONTINUOUS") | lname.Contains("HIDDEN") | lname.Contains("DASHED"))
+                    if (
+                        lname.Contains("CONTINUOUS") | 
+                        lname.Contains("HIDDEN") | 
+                        lname.Contains("DASHED"))
                     {
                         var nlname = (lname.Contains("HIDDEN") | lname.Contains("DASHED")) ? "PROJECAO" : "CONTORNO";
                         if (color.Is(System.Drawing.Color.Yellow))
