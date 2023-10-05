@@ -136,7 +136,7 @@ namespace DLM.cad
     {
         public override string ToString()
         {
-            return "[" + Tipo.ToString().PadRight(10,' ') + "] [" + this.id.ToString().PadLeft(3, '0') + "] " + GetCid();
+            return "[" + Tipo.ToString().PadRight(10,' ') + "] [" + this.id.String(3) + "] " + GetCid();
         }
         public Tipo_Coordenada Tipo { get; set; } = Tipo_Coordenada.Sem;
         public P3dCAD(Point3d pt, int id, Tipo_Coordenada tipo)

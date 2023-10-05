@@ -289,9 +289,9 @@ namespace DLM.cad
                 foreach (var obj in purlins)
                 {
                     var hp = new db.Linha();
-                    hp.Add(Cfg.Init.CAD_ATT_N, obj.Sequencia.ToString().PadLeft(2, '0'));
+                    hp.Add(Cfg.Init.CAD_ATT_N, obj.Sequencia.String(2));
                     hp.Add(Cfg.Init.CAD_ATT_Perfil, obj.Nome);
-                    hp.Add(Cfg.Init.CAD_ATT_Quantidade, obj.Quantidade.ToString().PadLeft(3, '0'));
+                    hp.Add(Cfg.Init.CAD_ATT_Quantidade, obj.Quantidade.String(3));
                     hp.Add(Cfg.Init.CAD_ATT_Comprimento, obj.Comprimento.String(0, 5));
                     hp.Add(Cfg.Init.CAD_ATT_Espessura, obj.Espessura.String(2, 5));
                     hp.Add(Cfg.Init.CAD_ATT_Destino, Cfg.Init.CAD_ATT_RME);
@@ -328,9 +328,9 @@ namespace DLM.cad
                 {
                     obj.Calcular();
                     var ht = new db.Linha();
-                    ht.Add("ORDEM", obj.Sequencia.ToString().PadLeft(2, '0'));
+                    ht.Add("ORDEM", obj.Sequencia.String(2));
                     ht.Add(Cfg.Init.CAD_ATT_Peca, obj.Marca);
-                    ht.Add(Cfg.Init.CAD_ATT_Quantidade, obj.Quantidade.ToString().PadLeft(3, '0'));
+                    ht.Add(Cfg.Init.CAD_ATT_Quantidade, obj.Quantidade.String(3));
                     ht.Add(Cfg.Init.CAD_ATT_Comprimento, obj.Comprimento.String(0, 5));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes, p0, escala, 0, ht);
                     p0 = p0.MoverY(-offsetY);
@@ -338,7 +338,7 @@ namespace DLM.cad
                     {
                         var ht2 = new db.Linha();
                         ht2.Add(Cfg.Init.CAD_ATT_Peca, pc.Nome);
-                        ht2.Add(Cfg.Init.CAD_ATT_Quantidade, pc.Quantidade.ToString().PadLeft(3, '0'));
+                        ht2.Add(Cfg.Init.CAD_ATT_Quantidade, pc.Quantidade.String(3));
                         Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes_SUB, p0, escala, 0, ht2);
                         p0 = p0.MoverY(-offsetY);
                     }
@@ -368,9 +368,9 @@ namespace DLM.cad
                 foreach (var p in tirante)
                 {
                     var ht = new db.Linha();
-                    ht.Add("ORDEM", p.Sequencia.ToString().PadLeft(2, '0'));
+                    ht.Add("ORDEM", p.Sequencia.String(2));
                     ht.Add(Cfg.Init.CAD_ATT_Peca, p.Marca);
-                    ht.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
+                    ht.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.String(3));
                     ht.Add(Cfg.Init.CAD_ATT_Comprimento, p.Comprimento.String(0, 5));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Tirantes, p0, escala, 0, ht);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE / 2));
@@ -402,7 +402,7 @@ namespace DLM.cad
                     var hp = new db.Linha();
                     hp.Add(Cfg.Init.CAD_ATT_N, p.Sequencia);
                     hp.Add(Cfg.Init.CAD_ATT_Perfil, p.Marca);
-                    hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
+                    hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.String(3));
                     hp.Add(Cfg.Init.CAD_ATT_Vao, p.Vao.String(0));
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Correntes, p0, escala, 0, hp);
                     p0 = new P3d(p0.X, p0.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE / 2));
@@ -438,9 +438,9 @@ namespace DLM.cad
                     foreach (var p in RMES)
                     {
                         var hp = new db.Linha();
-                        hp.Add(Cfg.Init.CAD_ATT_N, seq.ToString().PadLeft(2, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_N, seq.String(2));
                         hp.Add(Cfg.Init.CAD_ATT_Perfil, p.CODIGOFIM);
-                        hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.String(3));
                         hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.COMP.String(0, 5));
                         hp.Add(Cfg.Init.CAD_ATT_Espessura, p.ESP.String(2, 5));
                         hp.Add(Cfg.Init.CAD_ATT_Destino, Cfg.Init.EXT_RM);
@@ -479,9 +479,9 @@ namespace DLM.cad
                     foreach (var p in rms)
                     {
                         var hp = new db.Linha();
-                        hp.Add(Cfg.Init.CAD_ATT_N, seq.ToString().PadLeft(2, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_N, seq.String(2));
                         hp.Add(Cfg.Init.CAD_ATT_Perfil, p.CODIGOFIM);
-                        hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.ToString().PadLeft(3, '0'));
+                        hp.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade.String(3));
                         hp.Add(Cfg.Init.CAD_ATT_Comprimento, p.COMP.String(0, 5));
                         hp.Add(Cfg.Init.CAD_ATT_Espessura, p.Bobina.Espessura.String(2, 5));
                         hp.Add(Cfg.Init.CAD_ATT_Destino, "RMT");

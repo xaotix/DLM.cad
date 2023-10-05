@@ -478,7 +478,7 @@ namespace DLM.cad
 
             this.bt_criar.IsEnabled = true;
 
-            this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0');
+            this.sufix.Text = (Sufix_Count).String(2);
             this.bt_tratamento.Visibility = Visibility.Visible;
             this.bt_material.Visibility = Visibility.Visible;
 
@@ -535,7 +535,7 @@ namespace DLM.cad
                     bt_material.Content = "A325";
                     this.bt_material.Visibility = Visibility.Collapsed;
                     this.bt_tratamento.Content = Cfg.Init.RM_SEM_PINTURA;
-                    this.sufix.Text = (Sufix_Count).ToString().PadLeft(2, '0') + "_A";
+                    this.sufix.Text = (Sufix_Count).String(2) + "_A";
                     break;
                 case Tipo_Bloco.Arremate:
                     if (db_bobina != null)

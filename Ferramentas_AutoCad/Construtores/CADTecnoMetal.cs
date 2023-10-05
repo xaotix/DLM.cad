@@ -491,7 +491,7 @@ namespace DLM.cad
                     var comps = tipo_por_perfil.ToList().GroupBy(x => x.Comprimento.ArredondarMultiplo(arredon)).ToList().OrderBy(x => x.Key).ToList();
                     foreach (var comp in comps)
                     {
-                        string numero = seq.ToString().PadLeft(2, '0');
+                        string numero = seq.String(2);
                         string familia = "TIRANTE " + igual.PecaLiberar.Replace("$C$", "");
                         string codigo = igual.PecaLiberar.Replace("$C$", comp.Key.String(0, igual.CaractComp));
                         var pedacos = comp.Key.Quebrar(6000, 600, 0);
@@ -599,7 +599,7 @@ namespace DLM.cad
                 Core.Getw().SetProgresso(1, tot, $"Inserindo {tot} blocos de outras peças");
                 foreach (var pc in outros)
                 {
-                    pc.Numero = seq.ToString().PadLeft(2, '0');
+                    pc.Numero = seq.String(2);
                     seq++;
                     foreach (var s in pc.Blocos)
                     {
@@ -1705,7 +1705,7 @@ namespace DLM.cad
             var marcas = this.GetMarcas(ref erros);
             var nnn = marcas.FindAll(x => x.Nome.StartsWith(prefix)).Count + 1;
         retentar:
-            var m = prefix + nnn.ToString().PadLeft(2, '0').Prompt("Digite o nome da Marca", "NOME_MARCA", 25).ToUpper().Replace(" ", "");
+            var m = prefix + nnn.String(2).Prompt("Digite o nome da Marca", "NOME_MARCA", 25).ToUpper().Replace(" ", "");
 
             if (m.Length == 0)
             {

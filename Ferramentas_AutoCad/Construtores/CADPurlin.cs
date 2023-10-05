@@ -747,7 +747,7 @@ namespace DLM.cad
         {
             var ht = new db.Linha();
 
-            ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia.ToString().PadLeft(3,'0'));
+            ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia.String(3));
             ht.Add("CRD", string.Join(";", p.Correntes_Direita));
             ht.Add("CRE", string.Join(";",p.Correntes_Esquerda));
             ht.Add("AD", this.OffsetApoio);
@@ -1124,7 +1124,7 @@ namespace DLM.cad
                 nova.Sequencia = c.ToString();
                 foreach (var s in pps.Select(x=>x.Objeto as BlockReference))
                 {
-                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.ToString().PadLeft(3, '0'));
+                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.String(3));
                 }
                 ss.Add(nova);
                 c++;
@@ -1146,11 +1146,11 @@ namespace DLM.cad
                 nova.Offset_1 = 0;
                 nova.Offset_2 = 0;
                 nova.CompUser = comp.ArredondarMultiplo(this.TirantesTolerancia);
-                nova.Sequencia = c.ToString().PadLeft(2,'0');
+                nova.Sequencia = c.String(2);
                
                 foreach (var s in pps.FindAll(x=> x.Bloco is BlockReference).Select(x => x.Bloco as BlockReference))
                 {
-                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.ToString().PadLeft(2, '0'));
+                    Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.String(2));
                 }
                 ss.Add(nova);
                 c++;
