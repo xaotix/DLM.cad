@@ -255,7 +255,7 @@ namespace DLM.cad
                 angulo = 90;
             }
 
-            _botao = (this.Nome + $"\n#{this.Espessura.ToString("N2")}").Botao(pt, this.GetCor().Clone(), Core.GetCADPurlin().Canvas_Tam_Texto, angulo, 1, System.Windows.Media.Brushes.Black);
+            _botao = (this.Nome + $"\n#{this.Espessura.String(2)}").Botao(pt, this.GetCor().Clone(), Core.GetCADPurlin().Canvas_Tam_Texto, angulo, 1, System.Windows.Media.Brushes.Black);
 
             _botao.MouseRightButtonUp += Botao_Direito;
             _botao.MouseMove += Evento_Sobre;

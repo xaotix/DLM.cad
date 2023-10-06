@@ -498,7 +498,7 @@ namespace DLM.cad
                 ht.Add(T_DBF1.QTA_PEZ.ToString(), pf.Quantidade.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.LUN_PRO.ToString(), pf.Comprimento.ToString("N0").Replace(",", ""));
                 ht.Add(T_DBF1.LAR_PRO.ToString(), pf.Largura.ToString("N0").Replace(",", ""));
-                ht.Add(T_DBF1.SPE_PRO.ToString(), pf.Espessura.ToString("N2").Replace(",", ""));
+                ht.Add(T_DBF1.SPE_PRO.ToString(), pf.Espessura.String(2).Replace(",", ""));
                 ht.Add(T_DBF1.MAT_PRO.ToString(), pf.Material);
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), pf.Ficha);
                 ht.Add(T_DBF1.PUN_LIS.ToString(), pf.Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));
@@ -578,10 +578,10 @@ namespace DLM.cad
                 var Area = pts.Area();
                 var Perimetro = pts.Perimetro();
                 var Comprimento = pts.Comprimento();
-                var Descricao = $"Ch #{Espessura.ToString("N2")}x{Largura.ToString("N0")}x{Comprimento.ToString("N0")}";
+                var Descricao = $"Ch #{Espessura.String(2)}x{Largura.ToString("N0")}x{Comprimento.ToString("N0")}";
                 var Peso_Unitario = pts.Peso(Espessura);
                 var Superficie = (Area * 2) + (Perimetro * Espessura);
-                var Geometria = $"{Comprimento.ToString("N0").Replace(",", "")}*{Espessura.ToString("N2").Replace(",", "")}*{Largura.ToString("N0").Replace(",", "")}";
+                var Geometria = $"{Comprimento.ToString("N0").Replace(",", "")}*{Espessura.String(2).Replace(",", "")}*{Largura.ToString("N0").Replace(",", "")}";
 
                 var bloco = Cfg.Init.CAD_Marca_Chapa;
                 var ht = new db.Linha();
@@ -592,7 +592,7 @@ namespace DLM.cad
                 ht.Add(T_DBF1.QTA_PEZ.ToString(), Quantidade.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.LUN_PRO.ToString(), Comprimento.ToString("N0").Replace(",", ""));
                 ht.Add(T_DBF1.LAR_PRO.ToString(), Largura.ToString("N0").Replace(",", ""));
-                ht.Add(T_DBF1.SPE_PRO.ToString(), Espessura.ToString("N2").Replace(",", ""));
+                ht.Add(T_DBF1.SPE_PRO.ToString(), Espessura.String(2).Replace(",", ""));
                 ht.Add(T_DBF1.MAT_PRO.ToString(), Material);
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), Ficha);
                 ht.Add(T_DBF1.PUN_LIS.ToString(), Peso_Unitario.Round(Cfg.Init.TEC_DECIMAIS_PESO_MARCAS));

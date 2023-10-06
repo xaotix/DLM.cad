@@ -106,7 +106,7 @@ namespace DLM.cad
                 {
                     return _Volume;
                 }
-                return $"{this.Comprimento.ToString("N0").Replace(",", "")}*{this.Espessura.ToString("N2").Replace(",", "")}*{this.Largura.ToString("N0").Replace(",", "")}";
+                return $"{this.Comprimento.ToString("N0").Replace(",", "")}*{this.Espessura.String(2).Replace(",", "")}*{this.Largura.ToString("N0").Replace(",", "")}";
             }
         }
         [Display(Order = 5, Name = "Descontar Dobras", GroupName = "Geometria")]
@@ -178,7 +178,7 @@ namespace DLM.cad
             this.Peso_Especifico = bobina.Peso_Especifico;
            
             this.Comprimento = comprimento;
-            this.Descricao = $"Ch #{this.Espessura.ToString("N2")}x{this.Largura.ToString("N0")}x{this.Comprimento.ToString("N0")}";
+            this.Descricao = $"Ch #{this.Espessura.String(2)}x{this.Largura.ToString("N0")}x{this.Comprimento.ToString("N0")}";
         }
         public ConfiguracaoChapa_Dobrada(DLM.cam.ReadCAM CAM)
         {

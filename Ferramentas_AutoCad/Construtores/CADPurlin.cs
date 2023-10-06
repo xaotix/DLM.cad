@@ -747,7 +747,7 @@ namespace DLM.cad
         {
             var ht = new db.Linha();
 
-            ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia.String(3));
+            ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia);
             ht.Add("CRD", string.Join(";", p.Correntes_Direita));
             ht.Add("CRE", string.Join(";",p.Correntes_Esquerda));
             ht.Add("AD", this.OffsetApoio);
@@ -1517,7 +1517,7 @@ namespace DLM.cad
                     {
                         var ht = new db.Linha();
                         ht.Add("ID_PECA", perfil.id_codigo);
-                        ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.String());
+                        ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.String(2));
                         ht.Add("SECAO", perfil.SECAO.String(0));
                         ht.Add(Cfg.Init.CAD_ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");
 
