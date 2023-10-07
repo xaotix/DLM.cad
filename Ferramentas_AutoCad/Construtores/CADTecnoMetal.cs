@@ -1427,7 +1427,7 @@ namespace DLM.cad
                                 var att = new db.Linha();
                                 att.Add(T_DBF1.PUN_LIS.ToString(), peso);
                                 att.Add(T_DBF1.SUN_LIS.ToString(), sup);
-                                att.Add(T_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String()}*{bloco.Largura.String(0)}");
+                                att.Add(T_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String(2)}*{bloco.Largura.String(0)}");
                                 att.Add(T_DBF1.SPE_PRO.ToString(), bloco.Espessura);
 
                                 DLM.cad.Atributos.Set(blk, acTrans, att);
@@ -1481,7 +1481,7 @@ namespace DLM.cad
                             att.Add(T_DBF1.NOM_PRO.ToString(), novo_Perfil.Descricao);
                             att.Add(T_DBF1.PUN_LIS.ToString(), peso);
                             att.Add(T_DBF1.SUN_LIS.ToString(), sup);
-                            att.Add(T_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String()}*{bloco.Largura.String(0)}");
+                            att.Add(T_DBF1.ING_PEZ.ToString(), $"{bloco.Comprimento.String(0)}*{bloco.Espessura.String(2)}*{bloco.Largura.String(0)}");
                             att.Add(T_DBF1.SPE_PRO.ToString(), bloco.Espessura);
 
                             DLM.cad.Atributos.Set(blk, acTrans, att);
