@@ -521,7 +521,7 @@ namespace DLM.cad
                     {
                         var htt = new db.Linha();
                         htt.Add(Cfg.Init.CAD_ATT_Quantidade, p.Quantidade);
-                        htt.Add(Cfg.Init.CAD_ATT_Descricao, p.DESC);
+                        htt.Add(Cfg.Init.CAD_ATT_Descricao, p.DESCRICAO);
                         htt.Add("UNID", p.UNIDADE);
                         htt.Add(Cfg.Init.CAD_ATT_Cod_SAP, p.SAP);
 

@@ -731,7 +731,7 @@ namespace DLM.cad
             if (pc == null)
             {
                 pc = new RMA();
-                pc.DESC = codigo != "" ? "Código Não encontrado." : "Código em branco";
+                pc.DESCRICAO = codigo != "" ? "Código Não encontrado." : "Código em branco";
                 pc.SAP = codigo;
             }
             if (pc != null)
@@ -743,11 +743,11 @@ namespace DLM.cad
             else
             {
                 pc = new RMA();
-                pc.DESC = codigo != "" ? "Código Não encontrado." : "Código em branco";
+                pc.DESCRICAO = codigo != "" ? "Código Não encontrado." : "Código em branco";
                 pc.SAP = codigo;
                 pc.Quantidade = qtd;
             }
-            AddMensagem("\n" + codigo + " - " + pc.DESC + " Qtd>" + qtd);
+            AddMensagem("\n" + codigo + " - " + pc.DESCRICAO + " Qtd>" + qtd);
             return pc;
         }
         public CADTelhas()

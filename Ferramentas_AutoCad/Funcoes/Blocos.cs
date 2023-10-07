@@ -667,7 +667,7 @@ namespace DLM.cad
                 ht.Add(T_DBF1.MAR_PEZ.ToString(), marca);
                 ht.Add(T_DBF1.DES_PEZ.ToString(), mercadoria);
                 ht.Add(T_DBF1.POS_PEZ.ToString(), posicao);
-                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.DESC);
+                ht.Add(T_DBF1.NOM_PRO.ToString(), pf.DESCRICAO);
                 ht.Add(T_DBF1.QTA_PEZ.ToString(), quantidade.ToString().Replace(",", ""));
                 ht.Add(T_DBF1.MAT_PRO.ToString(), pf.NORMA);
                 ht.Add(T_DBF1.TRA_PEZ.ToString(), pf.TRATAMENTO);
