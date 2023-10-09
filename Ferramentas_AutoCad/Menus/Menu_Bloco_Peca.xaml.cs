@@ -182,7 +182,7 @@ namespace DLM.cad.Menus
                     bt_peca_selecionar.Content = this.rmt_sel.ToString();
                     var pc = new Conexoes.RMT(this.rmt_sel, DBases.GetBobinaDummyPP());
                     this.rmt_sel.COMP = this.txt_comprimento.Text.Double(0);
-                    this.txt_descricao.Text = rmt_sel.Desc;
+                    this.txt_descricao.Text = rmt_sel.DESCRICAO;
                 }
                 else if (tipo_selecionado == Cfg.Init.CAD_ATT_TECNOMETAL)
                 {
@@ -388,7 +388,7 @@ namespace DLM.cad.Menus
             {
                 var mm = new Conexoes.RMT(rmt_sel, DBases.GetBobinaDummy(Cfg.Init.Material_RMT, 0.65));
                 mm.Quantidade = (int)qtd;
-                id = mm.id_telha;
+                id = mm.id_db;
                 txt_codigo.Text = mm.CODIGOFIM;
             }
         }

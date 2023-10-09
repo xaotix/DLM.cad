@@ -1517,7 +1517,7 @@ namespace DLM.cad
             bobinas.AddRange(Conexoes.DBases.GetBancoRM().GetBobinas());
             if (espessura != null)
             {
-                bobinas = bobinas.FindAll(x => x.Espessura == espessura.Espessura && x.Corte == espessura.Bobina_Corte);
+                bobinas = bobinas.FindAll(x => x.Espessura == espessura.Espessura && x.Corte == espessura.Corte);
             }
             var sel = bobinas.ListaSelecionar();
             if (sel != null)
@@ -1531,7 +1531,7 @@ namespace DLM.cad
         {
 
             List<Conexoes.Chapa> chapas = new List<Conexoes.Chapa>();
-            chapas.AddRange(DBases.GetChapas());
+            chapas.AddRange(DBases.GetEspessuras());
             if (tipo == Tipo_Chapa.Fina)
             {
                 chapas = chapas.FindAll(x => x.Is_Chapa_Fina());
@@ -1818,7 +1818,7 @@ namespace DLM.cad
                     else
                     {
                         bobina.Espessura = espessura.Espessura;
-                        bobina.Material = Cfg.Init.Material;
+                        bobina.Material = Cfg.Init.Material_Estrutura;
                     }
                 }
 
@@ -1996,7 +1996,7 @@ namespace DLM.cad
                     bool chapa_fina = espessura.Is_Chapa_Fina();
                     if (bobina == null)
                     {
-                        bobina = DBases.GetBobinaDummy(Cfg.Init.Material);
+                        bobina = DBases.GetBobinaDummy(Cfg.Init.Material_Estrutura);
 
                         if (chapa_fina)
                         {

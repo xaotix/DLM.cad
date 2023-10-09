@@ -67,7 +67,7 @@ namespace DLM.cad
                     }
                     if (pf.Descricao != "")
                     {
-                        Blocos.MarcaPerfil(p0, marca, comprimento, pf,1, Cfg.Init.Material, Cfg.Init.RM_SEM_PINTURA);
+                        Blocos.MarcaPerfil(p0, marca, comprimento, pf,1, Cfg.Init.Material_Estrutura, Cfg.Init.RM_SEM_PINTURA);
 
                         if (c == 5)
                         {

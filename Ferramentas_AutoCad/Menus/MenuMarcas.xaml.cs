@@ -109,7 +109,7 @@ namespace DLM.cad
                 {
                     this.combo_mercadoria.Content = DBases.GetBancoRM().GetMercadorias().First();
                 }
-                this.bt_material.Content = Cfg.Init.Material;
+                this.bt_material.Content = Cfg.Init.Material_Estrutura;
                 this.bt_tratamento.Content = Cfg.Init.RM_SEM_PINTURA;
 
                 this.DataContext = this;
@@ -152,7 +152,7 @@ namespace DLM.cad
                     db_chapa = Core.GetTecnoMetal().PromptChapa(Tipo_Chapa.Grossa);
                     if (db_chapa != null)
                     {
-                        db_bobina = DBases.GetBobinaDummy(Cfg.Init.Material, db_chapa.Espessura).Clonar();
+                        db_bobina = DBases.GetBobinaDummy(Cfg.Init.Material_Estrutura, db_chapa.Espessura).Clonar();
                         perfil.Content = db_chapa.ToString();
                         db_bobina.Espessura = db_chapa.Espessura;
                         db_bobina.Material = this.bt_material.Content.ToString();
@@ -500,7 +500,7 @@ namespace DLM.cad
                         perfil.Content = db_chapa.ToString();
                     }
                     combo_mercadoria.Content = "CHAPA";
-                    bt_material.Content = Cfg.Init.Material;
+                    bt_material.Content = Cfg.Init.Material_Estrutura;
                     this.bt_tratamento.Visibility = Visibility.Visible;
                     break;
                 case Tipo_Bloco.Perfil:
@@ -508,7 +508,7 @@ namespace DLM.cad
                     {
                         perfil.Content = db_perfil.ToString();
                     }
-                    bt_material.Content = Cfg.Init.Material;
+                    bt_material.Content = Cfg.Init.Material_Estrutura;
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     if (db_perfil_m2 != null)

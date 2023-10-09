@@ -161,7 +161,7 @@ namespace DLM.cad
             this.Cor_2 = bobina.Cor2Str;
             this.SAP = bobina.SAP;
             this.Dobras = dobras.Count;
-            this.Peso_Especifico = bobina.Peso_Especifico;
+            this.Peso_Especifico = bobina.Coeficiente_Aco;
             this._Area = area;
             this.Descricao = Descricao;
             
@@ -175,7 +175,7 @@ namespace DLM.cad
             this.Cor_1 = bobina.Cor2Str;
             this.Cor_2 = bobina.Cor2Str;
             this.SAP = bobina.SAP;
-            this.Peso_Especifico = bobina.Peso_Especifico;
+            this.Peso_Especifico = bobina.Coeficiente_Aco;
            
             this.Comprimento = comprimento;
             this.Descricao = $"Ch #{this.Espessura.String(2)}x{this.Largura.ToString("N0")}x{this.Comprimento.ToString("N0")}";
