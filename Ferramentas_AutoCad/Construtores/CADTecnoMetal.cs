@@ -24,9 +24,9 @@ namespace DLM.cad
         private Conexoes.PedidoTecnoMetal _pedido { get; set; }
 
         private string _Mercadoria_sel { get; set; }
-        private Conexoes.Chapa _Chapa_sel { get; set; }
+        private Conexoes.Bobina _Chapa_sel { get; set; }
         private Conexoes.Bobina _Bobina_sel { get; set; }
-        private List<Conexoes.Chapa> _Chapas { get; set; }
+        private List<Conexoes.Bobina> _Chapas { get; set; }
         private List<string> _Materiais { get; set; }
 
 
@@ -1511,7 +1511,7 @@ namespace DLM.cad
 
 
 
-        public Conexoes.Bobina PromptBobina(Conexoes.Chapa espessura = null)
+        public Conexoes.Bobina PromptBobina(Conexoes.Bobina espessura = null)
         {
             var bobinas = new List<Conexoes.Bobina>();
             bobinas.AddRange(Conexoes.DBases.GetBancoRM().GetBobinas());
@@ -1527,18 +1527,18 @@ namespace DLM.cad
 
             return sel;
         }
-        public Conexoes.Chapa PromptChapa(Tipo_Chapa tipo)
+        public Conexoes.Bobina PromptChapa(Tipo_Chapa tipo)
         {
 
-            List<Conexoes.Chapa> chapas = new List<Conexoes.Chapa>();
-            chapas.AddRange(DBases.GetEspessuras());
+            var chapas = new List<Conexoes.Bobina>();
+            chapas.AddRange(DBases.GetBobinasDummy());
             if (tipo == Tipo_Chapa.Fina)
             {
-                chapas = chapas.FindAll(x => x.Is_Chapa_Fina());
+                chapas = chapas.FindAll(x => x.Chapa_Fina);
             }
             else if (tipo == Tipo_Chapa.Grossa)
             {
-                chapas = chapas.FindAll(x => !x.Is_Chapa_Fina());
+                chapas = chapas.FindAll(x => !x.Chapa_Fina);
             }
 
             var sel = chapas.ListaSelecionar();
@@ -1583,7 +1583,7 @@ namespace DLM.cad
                     if (marca != null)
                     {
                         string material = null;
-                        var selm = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                        var selm = DBases.GetMateriais().ListaSelecionar();
                         if (selm != null)
                         {
                             material = selm.Nome;
@@ -1809,7 +1809,7 @@ namespace DLM.cad
                     {
                         return;
                     }
-                    chapa_fina = espessura.Is_Chapa_Fina();
+                    chapa_fina = espessura.Chapa_Fina;
                     if (chapa_fina)
                     {
 
@@ -1962,7 +1962,7 @@ namespace DLM.cad
         }
 
 
-        public void InserirChapa(double escala = 0, string marca = "", string posicao = "", string material = null, int quantidade = 0, string ficha = null, Conexoes.Chapa espessura = null, string mercadoria = null, Conexoes.Bobina bobina = null)
+        public void InserirChapa(double escala = 0, string marca = "", string posicao = "", string material = null, int quantidade = 0, string ficha = null, Conexoes.Bobina espessura = null, string mercadoria = null, Conexoes.Bobina bobina = null)
         {
             if(escala==0)
             {
@@ -1993,7 +1993,7 @@ namespace DLM.cad
                 }
                 if (espessura != null)
                 {
-                    bool chapa_fina = espessura.Is_Chapa_Fina();
+                    bool chapa_fina = espessura.Chapa_Fina;
                     if (bobina == null)
                     {
                         bobina = DBases.GetBobinaDummy(Cfg.Init.Material_Estrutura);
@@ -2008,7 +2008,7 @@ namespace DLM.cad
                         {
                             if (material == null)
                             {
-                                var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                                var sel = DBases.GetMateriais().ListaSelecionar();
                                 if (sel != null)
                                 {
                                     material = sel.Nome;
@@ -2183,7 +2183,7 @@ namespace DLM.cad
             {
                 if (material == null)
                 {
-                    var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                    var sel = DBases.GetMateriais().ListaSelecionar();
                     if (sel != null)
                     {
                         material = sel.Nome;
@@ -2258,7 +2258,7 @@ namespace DLM.cad
                 {
                     if (material == null)
                     {
-                        var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                        var sel = DBases.GetMateriais().ListaSelecionar();
                         if (sel != null)
                         {
                             material = sel.Nome;
@@ -2396,7 +2396,7 @@ namespace DLM.cad
 
                 if (marcas.Count > 0)
                 {
-                    var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+                    var sel = DBases.GetMateriais().ListaSelecionar();
                     if (sel != null)
                     {
                         foreach (var bloco in marcas)
