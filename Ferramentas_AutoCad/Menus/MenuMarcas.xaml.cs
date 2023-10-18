@@ -78,7 +78,7 @@ namespace DLM.cad
                 return null;
             }
         }
-        public static Conexoes.Chapa db_chapa { get; set; }
+        public static Conexoes.Bobina db_chapa { get; set; }
         public static Conexoes.RMA db_unitario { get; set; }
         public static Conexoes.Bobina db_bobina { get; set; }
         public static DLM.cam.Perfil db_perfil { get; set; }
@@ -944,7 +944,7 @@ namespace DLM.cad
 
         private void set_material(object sender, RoutedEventArgs e)
         {
-            var sel = DBases.GetBancoRM().GetMateriais().ListaSelecionar();
+            var sel = DBases.GetMateriais().ListaSelecionar();
             if (sel != null)
             {
                 bt_material.Content = sel.Nome;

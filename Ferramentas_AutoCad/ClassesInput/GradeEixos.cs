@@ -256,7 +256,7 @@ namespace DLM.cad
                             if (pp.DistBaixo > 0)
                             {
                                 var pt = new System.Windows.Point((this.GetXMax() - P0.X) * Escala, (pp.CentroBloco.Y - P0.Y - (pp.DistBaixo / 2)) * Escala);
-                                var cota = pp.DistBaixo.String().Botao(pt, System.Windows.Media.Brushes.Cyan, tam_txt_cotas, 90);
+                                var cota = pp.DistBaixo.String(0).Botao(pt, System.Windows.Media.Brushes.Cyan, tam_txt_cotas, 90);
                                 cota.MouseEnter += evento_Botao_Sobre;
                                 cota.MouseLeave += evento_Botao_Sai;
                                 retorno.Add(cota);

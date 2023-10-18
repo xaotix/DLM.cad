@@ -7,8 +7,6 @@ using CadDb = Autodesk.AutoCAD.DatabaseServices;
 using CadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 using Autodesk.AutoCAD.BoundaryRepresentation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.EditorInput;

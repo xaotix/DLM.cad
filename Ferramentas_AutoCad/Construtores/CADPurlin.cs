@@ -1316,8 +1316,8 @@ namespace DLM.cad
             var COMP = linha[Cfg.Init.CAD_ATT_Comprimento].Double();
 
             var p = new DLM.macros.Tirante();
-            p.Fixacao_1 = SFTA;
-            p.Fixacao_2 = SFTB;
+            //p.Fixacao_1 = SFTA;
+            //p.Fixacao_2 = SFTB;
             p.NomePadronizado = TIP;
             p.Offset_1 = OFF1;
             p.Offset_2 = OFF2;
