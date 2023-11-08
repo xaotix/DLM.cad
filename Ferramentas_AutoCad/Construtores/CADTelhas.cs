@@ -465,6 +465,11 @@ namespace DLM.cad
                                 }
 
                                 var qtd_sflh = (comp / this.DistMaxSFLH).Int();
+                                if(comp> DistMaxSFLH && qtd_sflh == 1)
+                                {
+                                    qtd_sflh = 2;
+                                }
+
                                 var pcs = comp.Abs().ArredondarMultiplo(this.LarguraTelha);
                                 int qtd = (pcs / this.LarguraTelha).Int();
 
