@@ -618,7 +618,7 @@ namespace DLM.cad
             AddBlocoTexto(angulo, p2, SFLH, GetEscala() * 5,"");
             Ut.AddLeader(angulo, p2, this.GetEscala(), "MANILHA\n ESTICADOR", this.MultiplicadorEscala * .8);
 
-            int qtd_sfli = (comp / this.DistMaxSFLI).Int();
+            int qtd_sfli = Math.Ceiling(comp / this.DistMaxSFLI).Int();
 
             if (qtd_sfli > 0)
             {
