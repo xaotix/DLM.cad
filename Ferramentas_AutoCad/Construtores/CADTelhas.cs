@@ -31,11 +31,13 @@ namespace DLM.cad
         public string Codigo_Cabo { get; set; } = "1001305";
         public string Codigo_Passarela { get; set; } = "1004277";
         public string Codigo_Esticador { get; set; } = "1001304";
-        public string Codigo_Manilha { get; set; } = "1001303";
+        public string Codigo_Manilha { get; set; } = "10013401";
+        //public string Codigo_Manilha { get; set; } = "1001303";
 
         public string Codigo_Sapatilha { get; set; } = "1001306";
 
-        public string Codigo_Clip_Pesado { get; set; } = "1001307";
+        public string Codigo_Clip_Pesado { get; set; } = "310002242775";
+        //public string Codigo_Clip_Pesado { get; set; } = "1001307";
 
         public double QtdFita_Por_Emenda { get; set; } = 100;
         public double Fita_Rendimento { get; set; } = 10000;
