@@ -78,10 +78,8 @@ namespace DLM.cad
                 LayerTable acLyrTbl;
                 using (var acTrans = acDoc.acTransST())
                 {
-                   
                     acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
-
-                    LayerTableRecord acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
+                    var acLyrTblRec = acTrans.GetObject(acLyrTbl[layer], OpenMode.ForWrite) as LayerTableRecord;
 
                     // Turn the layer off
                     try
@@ -99,7 +97,6 @@ namespace DLM.cad
                 }
                 using (var acTrans = acDoc.acTransST())
                 {
-
                     acLyrTbl = acTrans.GetObject(acCurDb.LayerTableId, OpenMode.ForRead) as LayerTable;
                     acCurDb.Clayer = acLyrTbl[layer];
                     acTrans.Commit();

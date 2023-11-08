@@ -16,7 +16,7 @@ namespace DLM.cad
         {
             return lista.Select(x => new Autodesk.AutoCAD.Geometry.Point3d(x.X, x.Y, x.Z)).ToList();
         }
-       
+
         public static List<P3dCAD> ArredondarJuntar(this List<P3dCAD> origem, int decimais_X = 0, int decimais_Y = 0)
         {
             try
@@ -64,27 +64,19 @@ namespace DLM.cad
         }
         public static double Area(List<P3dCAD> p3DCADs)
         {
-            return p3DCADs.Select(x => (P3d)x).ToList().Area();
+            return p3DCADs.Select(x => x.Origem).ToList().Area();
         }
         public static List<P3dCAD> P3dCAD(this List<P3d> lista)
         {
-            return lista.Select(x => new P3dCAD(x.X,x.Y,x.Z)).ToList();
+            return lista.Select(x => new P3dCAD(x.X, x.Y, x.Z)).ToList();
         }
         public static List<P3d> P3d(this List<P3dCAD> lista)
         {
             return lista.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
         }
-        public static Point2d Centro(this Point2d p1, Point2d p2)
-        {
-            return new Point2d((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
-        }
-        public static Point3d Centro(this Point3d p1, Point3d p2)
-        {
-            return new P3dCAD(p1).Centro(p2).GetPoint3dCad();
-        }
         public static P3d P3d(this Point3d p)
         {
-            return new P3d(p.X, p.Y,p.Z);
+            return new P3d(p.X, p.Y, p.Z);
         }
         public static P3dCAD P3dCAD(this Point3d p)
         {
@@ -101,7 +93,7 @@ namespace DLM.cad
 
         public static List<P3d> P3d(this List<Point3d> p)
         {
-            return p.Select(x=> new P3d(x.X, x.Y, x.Z)).ToList();
+            return p.Select(x => new P3d(x.X, x.Y, x.Z)).ToList();
         }
 
 
@@ -113,99 +105,205 @@ namespace DLM.cad
         {
             return new Point2d(p3d.X, p3d.Y);
         }
-        public static double DistanciaX(this P3d p3d,Point3d p2)
+        public static double DistanciaX(this P3d p3d, Point3d p2)
         {
-            return p3d.DistanciaX(new P3dCAD(p2));
+            return p3d.DistanciaX(new P3dCAD(p2).Origem);
         }
 
         public static double Distancia(this P3d p1, Point3d p3d)
         {
-            return p1.Distancia(new P3dCAD(p3d));
+            return p1.Distancia(new P3dCAD(p3d).Origem);
         }
         public static double GetAngulo(this P3d p1, Point3d p3d)
         {
-            return p1.GetAngulo(new P3dCAD(p3d));
+            return p1.GetAngulo(new P3dCAD(p3d).Origem);
         }
         public static double DistanciaY(this P3d p1, Point3d v)
         {
-            return p1.DistanciaY(new P3dCAD(v));
+            return p1.DistanciaY(new P3dCAD(v).Origem);
         }
     }
 
-    public class P3dCAD:P3d
+    public class P3dCAD
     {
         public override string ToString()
         {
-            return "[" + Tipo.ToString().PadRight(10,' ') + "] [" + this.id.String(3) + "] " + GetCid();
+            return "[" + Tipo.ToString().PadRight(10, ' ') + "] [" + this.Origem.id.String(3) + "] " + this.Origem.GetCid();
         }
+
+        public double Y
+        {
+            get
+            {
+                return Origem.Y;
+            }
+        }
+        public double X
+        {
+            get
+            {
+                return Origem.X;
+            }
+        }
+        public double Z
+        {
+            get
+            {
+                return Origem.Z;
+            }
+        }
+
+        public P3d Origem { get; set; } = new P3d();
+
         public Tipo_Coordenada Tipo { get; set; } = Tipo_Coordenada.Sem;
+
         public P3dCAD(Point3d pt, int id, Tipo_Coordenada tipo)
         {
-            this.X = pt.X;
-            this.Y = pt.Y;
-            this.Z = pt.Z;
-            this.id = id;
+            this.Origem.X = pt.X;
+            this.Origem.Y = pt.Y;
+            this.Origem.Z = pt.Z;
+            this.Origem.id = id;
             this.Tipo = tipo;
         }
         public P3dCAD(P3d pt, int id, Tipo_Coordenada tipo)
         {
-            this.X = pt.X;
-            this.Y = pt.Y;
-            this.Z = pt.Z;
-            this.id = id;
+            this.Origem.X = pt.X;
+            this.Origem.Y = pt.Y;
+            this.Origem.Z = pt.Z;
+            this.Origem.id = id;
             this.Tipo = tipo;
         }
         public P3dCAD(Point3d pt)
         {
-
-            this.X = pt.X;
-            this.Y = pt.Y;
-            this.Z = pt.Z;
+            this.Origem.X = pt.X;
+            this.Origem.Y = pt.Y;
+            this.Origem.Z = pt.Z;
             this.Tipo = Tipo_Coordenada.Ponto;
         }
         public P3dCAD(double X, double Y, double Z)
         {
 
-            this.X = X;
-            this.Y = Y;
-            this.Z = Z;
+            this.Origem.X = X;
+            this.Origem.Y = Y;
+            this.Origem.Z = Z;
             this.Tipo = Tipo_Coordenada.Ponto;
         }
         public P3dCAD(P3dCAD pt, int arredondar = 1)
         {
-            this.X = Math.Round(pt.X, arredondar);
-            this.Y = Math.Round(pt.Y, arredondar);
-            this.Z = Math.Round(pt.Z, arredondar);
+            this.Origem.X = Math.Round(pt.X, arredondar);
+            this.Origem.Y = Math.Round(pt.Y, arredondar);
+            this.Origem.Z = Math.Round(pt.Z, arredondar);
 
             this.Tipo = pt.Tipo;
         }
 
-        public P3dCAD Centro(Point3d pt)
+        public P3dCAD Round(int decimais)
         {
-            var centro = new P3d(this).Centro(new P3d(pt.X,pt.Y,pt.Z));
-            return new P3dCAD(centro);
+            return new P3dCAD(this.Origem.Round(decimais), this.Origem.id, this.Tipo);
         }
 
-        public P3d P3d()
+        public List<P3d> PegarIguaisX()
         {
-            return new P3d(this);
+            return Origem.PegarIguaisX();
+            //if (_IguaisX == null)
+            //{
+            //    _IguaisX = new List<P3dCAD>();
+            //    var proxima = this.Proximo;
+            //    var atual = this;
+            //    if (this.Proximo != null)
+            //    {
+            //        while (proxima != null && _IguaisX.Count < 10)
+            //        {
+            //            if (proxima.Getdist_proximaX() == this.Getdist_proximaX() && this.Getdist_proximaX() > 0)
+            //            {
+            //                if (_IguaisX
+            //                    .Find(x => x.Origem.id == proxima.Origem.id) == null
+            //                    && proxima.Origem.id == atual.Origem.id + 1
+            //                    && proxima.X > atual.X
+            //                    && proxima.Origem.GetCid() != this.Origem.GetCid()
+            //                    && proxima.Origem.GetCid() != atual.Origem.GetCid())
+            //                {
+            //                    _IguaisX.Add(proxima);
+            //                    atual = proxima;
+            //                    proxima = proxima.Proximo;
+            //                }
+            //                else
+            //                {
+            //                    proxima = null;
+            //                }
+            //            }
+            //            else
+            //            {
+            //                proxima = null;
+            //            }
+            //        }
+            //    }
+            //    _IguaisX = _IguaisX.FindAll(x => x != null);
+            //}
+
+
+            //return _IguaisX;
+        }
+        public List<P3d> PegarIguaisY()
+        {
+            return Origem.PegarIguaisY();
+            //if (_IguaisY == null)
+            //{
+            //    _IguaisY = new List<P3dCAD>();
+
+            //    var proxima = this.Proximo;
+            //    var atual = this;
+            //    if (this.Proximo != null)
+            //    {
+            //        while (proxima != null && _IguaisY.Count < 10)
+            //        {
+            //            if (proxima.GetDist_proximaY() == this.GetDist_proximaY() && this.GetDist_proximaY() > 0)
+            //            {
+            //                if (_IguaisY
+            //                    .Find(x => x.Origem.id == proxima.Origem.id) == null
+            //                    && proxima.Y > atual.Y
+            //                    && proxima.Origem.id == atual.Origem.id + 1
+            //                    && proxima.Origem.GetCid() != this.Origem.GetCid()
+            //                    && proxima.Origem.GetCid() != atual.Origem.GetCid())
+            //                {
+            //                    _IguaisY.Add(proxima);
+            //                    atual = proxima;
+            //                    proxima = proxima.Proximo;
+            //                }
+            //                else
+            //                {
+            //                    proxima = null;
+            //                }
+
+            //            }
+            //            else
+            //            {
+            //                proxima = null;
+            //            }
+            //        }
+            //    }
+            //    _IguaisY = _IguaisY.FindAll(x => x != null);
+
+            //}
+
+
+            //return _IguaisY;
+        }
+
+        public double Distancia(P3d ponto)
+        {
+            return this.Origem.Distancia(ponto);
         }
 
         public P3dCAD(P3d p3D)
         {
-            this.X = p3D.X;
-            this.Y = p3D.Y;
-            this.Z = p3D.Z;
+            this.Origem.X = p3D.X;
+            this.Origem.Y = p3D.Y;
+            this.Origem.Z = p3D.Z;
         }
         public P3dCAD()
         {
 
-        }
-        public P3dCAD(Point2d pt)
-        {
-            this.X = pt.X;
-            this.Y = pt.Y;
-            this.Z = 0;
         }
     }
 }

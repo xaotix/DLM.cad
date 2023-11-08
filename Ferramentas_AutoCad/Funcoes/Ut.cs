@@ -230,10 +230,7 @@ namespace DLM.cad
 
 
 
-        public static Point3d Mover(Point3d p, double angulo, double distancia)
-        {
-            return new P3dCAD(p).Mover(angulo, distancia).GetPoint3dCad();
-        }
+
 
 
         public static string[] listarcomandos(Assembly asm, bool markedOnly)
@@ -701,14 +698,14 @@ namespace DLM.cad
                     var ang = Angulo.Get(p);
                     var p2 = p1.Mover(ang + 90, 10000);
 
-                    var a1 = new P3dCAD(p.BasePoint);
-                    var a2 = new P3dCAD(p.BasePoint).Mover(ang, 10000);
+                    //var a1 = new P3dCAD(p.BasePoint);
+                    //var a2 = new P3dCAD(p.BasePoint).Mover(ang, 10000);
 
 
 
 
 
-                    using (Line ll = new Line(p1.GetPoint3dCad(), p2.GetPoint3dCad()))
+                    using (var ll = new Line(p1.GetPoint3dCad(), p2.GetPoint3dCad()))
                     {
                         Point3dCollection pts3D = new Point3dCollection();
                         //Get the intersection Points between line 1 and line 2
@@ -790,8 +787,8 @@ namespace DLM.cad
             var coords = GetCoordenadas(objeto);
             if (coords.Count > 0)
             {
-                var min = new P3dCAD(new Point3d(coords.Min(x => x.X), coords.Min(x => x.Y), 0));
-                var max = new P3dCAD(new Point3d(coords.Max(x => x.X), coords.Max(x => x.Y), 0));
+                var min = new P3d(coords.Min(x => x.X), coords.Min(x => x.Y), 0);
+                var max = new P3d(coords.Max(x => x.X), coords.Max(x => x.Y), 0);
                 foreach (var p in xlines)
                 {
                     double angulo = Angulo.Get(p);
@@ -799,13 +796,13 @@ namespace DLM.cad
                     double dist1 = 0, dist2 = 0;
                     if (norm == 0 | norm == 180)
                     {
-                        dist1 = new P3dCAD(min).DistanciaX(p.BasePoint);
-                        dist2 = new P3dCAD(max).DistanciaX(p.BasePoint);
+                        dist1 = min.DistanciaX(p.BasePoint);
+                        dist2 = max.DistanciaX(p.BasePoint);
                     }
 
 
-                    var pmin = new P3dCAD(min).Mover(angulo, dist1);
-                    var pmax = new P3dCAD(min).Mover(angulo, dist2);
+                    var pmin = min.Mover(angulo, dist1);
+                    var pmax = min.Mover(angulo, dist2);
                     double ds1 = min.Distancia(pmin);
                     double ds2 = max.Distancia(pmax);
 
@@ -949,8 +946,8 @@ namespace DLM.cad
                                 var pt2 = pts[i].TransformBy(s.BlockTransform);
                                 if (Math.Abs(pt1.DistanceTo(pt2)) >= comp_min)
                                 {
-                                    var p1 = new P3dCAD(pt1).P3d();
-                                    var p2 = new P3dCAD(pt2).P3d();
+                                    var p1 = new P3dCAD(pt1).Origem;
+                                    var p2 = new P3dCAD(pt2).Origem;
                                     p1 = new P3d((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
                                     p2 = new P3d((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
 
@@ -975,8 +972,8 @@ namespace DLM.cad
 
                         if (Math.Abs(pt1.DistanceTo(pt2)) >= comp_min)
                         {
-                            var p1 = new P3dCAD(pt1).P3d();
-                            var p2 = new P3dCAD(pt2).P3d();
+                            var p1 = new P3dCAD(pt1).Origem;
+                            var p2 = new P3dCAD(pt2).Origem;
                             p1 = new P3d((p1.X - p0.X) * escala, (p1.Y - p0.Y) * escala);
                             p2 = new P3d((p2.X - p0.X) * escala, (p2.Y - p0.Y) * escala);
                             cor.Opacity = opacidade;
@@ -1111,7 +1108,7 @@ namespace DLM.cad
         {
             cancelado = false;
             PromptPointResult pPtRes;
-            PromptPointOptions pPtOpts = new PromptPointOptions("");
+            var pPtOpts = new PromptPointOptions("");
 
             pPtOpts.Message = "\n" + pergunta;
             if (tem_origem)
@@ -1128,9 +1125,7 @@ namespace DLM.cad
                 cancelado = true;
                 return new P3d();
             }
-
             return ptStart;
-
         }
         //public static P3d PedirPonto2D(string pergunta, P3d origem, out bool cancelado, bool tem_origem = true)
         //{

@@ -102,7 +102,7 @@ namespace DLM.cad
                 var ml = FuncoesCAD.GetArquivosMlStyles().GetEstilo(estilo);
                 if (ml != null)
                 {
-                    List<Entity> apagar = new List<Entity>();
+                    var apagar = new List<Entity>();
                     foreach (var p in polylines)
                     {
                         FLayer.Set(p.Layer);

@@ -172,12 +172,12 @@ namespace DLM.cad
                     var pos = new P3d(o.Position.X, xl.BasePoint.Y);
                     Blocos.Mover(o, pos);
 
-                    var polis = Ut.GetPolylinesProximas(cabos, p0, 100);
+                    var polis = Ut.GetPolylinesProximas(cabos, p0.Origem, 100);
                       
                     foreach(var p in polis)
                     {
-                        var d1 = p.StartPoint.P3d().Distancia(p0);
-                        var d2 = p.EndPoint.P3d().Distancia(p0);
+                        var d1 = p.StartPoint.P3d().Distancia(p0.Origem);
+                        var d2 = p.EndPoint.P3d().Distancia(p0.Origem);
                         P3d pp1 = p.StartPoint.P3d();
                         P3d pp2 = p.EndPoint.P3d();
 
@@ -202,12 +202,12 @@ namespace DLM.cad
                         AddPolyLine(new List<P3d> { pp1, pp2 }, this.EspessuraCabo, this.EspessuraCabo, System.Drawing.Color.Red);
                     }
 
-                    var ccotas = Ut.GetCotasProximas(Getcotaslinhadevida().FindAll(x=>x is RotatedDimension).Select(x=> x as RotatedDimension).ToList(), p0, 100);
+                    var ccotas = Ut.GetCotasProximas(Getcotaslinhadevida().FindAll(x=>x is RotatedDimension).Select(x=> x as RotatedDimension).ToList(), p0.Origem, 100);
 
                     foreach (var p in ccotas)
                     {
-                        var d1 = new P3dCAD(p.XLine1Point).Distancia(p0);
-                        var d2 = new P3dCAD(p.XLine2Point).Distancia(p0);
+                        var d1 = new P3dCAD(p.XLine1Point).Distancia(p0.Origem);
+                        var d2 = new P3dCAD(p.XLine2Point).Distancia(p0.Origem);
                         var ptt = new Point3d(pos.X, pos.Y, 0);
                         if (d1 < d2)
                         {
@@ -220,13 +220,13 @@ namespace DLM.cad
                     }
 
 
-                    var angulo = p0.GetAngulo(pos);
+                    var angulo = p0.Origem.GetAngulo(pos);
                     var dist = p0.Distancia(pos);
                     var blocos_texto = Ut.GetBlocosProximos(textos, pos, GetEscala() * 20);
                     foreach(var p in blocos_texto)
                     {
                         var p_texto = new P3dCAD(p.Position);
-                        var pxx = p_texto.Mover(angulo, dist);
+                        var pxx = p_texto.Origem.Mover(angulo, dist);
                         Blocos.Mover(p,pxx);
                     }
                 }
@@ -239,335 +239,337 @@ namespace DLM.cad
         }
         public void InserirPassarela(bool selecionar = false)
         {
-
-            using (var acTrans = acCurDb.acTransST())
+            using (var docLock = acDoc.LockDocument())
             {
-
-                //var selecao = SelecionarObjetos(acTrans);
-
-            
-                double vert = 660;
-                double angulo = 0;
-                double comp = 0;
-
-                double mov = this.LarguraTelha;
-
-                //var sentido_telha = PerguntaString("Qual o Sentido da Telha?", new List<string> { "Vertical", "Horizontal" });
-                //if(sentido_telha == "Horizontal")
-                //{
-
-                //}
-                //if(sentido_telha!="Vertical" && sentido_telha!="Horizontal")
-                //{
-                //    return;
-                //}
-                bool cancelado = false;
-
-                P3d p1 = new P3d();
-                if (selecionar)
+                using (var acTrans = acCurDb.acTransST())
                 {
-                    SelecionarObjetos();
-                    if (this.Getpassarelas().Count>0)
+
+                    //var selecao = SelecionarObjetos(acTrans);
+
+
+                    double vert = 660;
+                    double angulo = 0;
+                    double comp = 0;
+
+                    double mov = this.LarguraTelha;
+
+                    //var sentido_telha = PerguntaString("Qual o Sentido da Telha?", new List<string> { "Vertical", "Horizontal" });
+                    //if(sentido_telha == "Horizontal")
+                    //{
+
+                    //}
+                    //if(sentido_telha!="Vertical" && sentido_telha!="Horizontal")
+                    //{
+                    //    return;
+                    //}
+                    bool cancelado = false;
+
+                    var p1 = new P3d();
+                    if (selecionar)
                     {
-                        var p = this.Getpassarelas()[0];
-                        p1 = p.Position.P3d();
-                        p.Erase(true);
+                        SelecionarObjetos();
+                        if (this.Getpassarelas().Count > 0)
+                        {
+                            var p = this.Getpassarelas()[0];
+                            p1 = p.Position.P3d();
+                            p.Erase(true);
+                        }
+                        else
+                        {
+                            AddMensagem("\nNenhuma Passarela selecionada.");
+                            return;
+                        }
                     }
                     else
                     {
-                        AddMensagem("\nNenhuma Passarela selecionada.");
-                        return;
+                        p1 = Ut.PedirPonto("Selecione o ponto inicial", out cancelado);
                     }
-                }
-                else
-                {
-                    p1 = Ut.PedirPonto("Selecione o ponto inicial", out cancelado);
-                }
 
-                int sequencia = 0;
-                if(!cancelado)
-                {
-                denovo:
-                    Point3d p0 = new Point3d(p1.X, p1.Y, p1.Z);
-                    Ut.SetOrtho(true);
-                    var p2 = Ut.PedirPonto("Selecione o ponto final",p1, out cancelado);
-                    if(!cancelado)
+                    int sequencia = 0;
+                    if (!cancelado)
                     {
+                    denovo:
+                        var p0 = new Point3d(p1.X, p1.Y, p1.Z);
 
-                        if (sequencia ==0 && !selecionar)
+                        Ut.SetOrtho(true);
+                        var p2 = Ut.PedirPonto("Selecione o ponto final", p1, out cancelado);
+                        if (!cancelado)
                         {
-                            p1 = p1.Mover(angulo, this.LarguraTelha/2);
+
+                            if (sequencia == 0 && !selecionar)
+                            {
+                                p1 = p1.Mover(angulo, this.LarguraTelha / 2);
+                                angulo = p1.GetAngulo(p2);
+                                var tmpang = Angulo.Normalizar(angulo);
+                                if (tmpang == 90 | tmpang == 270)
+                                {
+                                    p1 = p1.Mover(tmpang, vert / 2);
+                                }
+                            }
                             angulo = p1.GetAngulo(p2);
-                            var tmpang = Angulo.Normalizar(angulo);
-                            if (tmpang == 90 | tmpang == 270)
+
+                            comp = p1.Distancia(p2);
+
+                            Ajustar(ref angulo, ref comp, p1, ref p2);
+
+
+                            if (Math.Abs(comp) > this.LarguraTelha)
                             {
-                                p1 = p1.Mover(tmpang, vert / 2);
+                                FLayer.Criar(LayerPassarela, System.Drawing.Color.White);
+
+                                var pcs = comp.Abs().ArredondarMultiplo(this.LarguraTelha);
+                                int qtd = (pcs / this.LarguraTelha).Int();
+                                Utils.SetUndoMark(true);
+                                for (int i = 0; i < qtd; i++)
+                                {
+                                    var tt = new db.Linha();
+                                    tt.Add(Cfg.Init.CAD_ATT_Cod_SAP, this.Codigo_Passarela);
+                                    Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_PASSARELA, p1, 1, 0, tt);
+                                    if (angulo == 90 | angulo == 270)
+                                    {
+                                        mov = vert;
+                                    }
+                                    else
+                                    {
+                                        mov = this.LarguraTelha;
+                                    }
+
+                                    var p3 = p1.Mover(angulo, mov);
+
+
+                                    p1 = p3;
+
+                                }
+                                if (AdicionarCotas)
+                                {
+                                    FLayer.Criar(LayerPassarelaCotas, System.Drawing.Color.White);
+                                    var d1 = new P3dCAD(p0).Origem;
+                                    if (sequencia > 0)
+                                    {
+                                        d1 = d1.Mover(angulo, -mov / 2);
+                                    }
+                                    else if (selecionar)
+                                    {
+                                        d1 = d1.Mover(angulo, mov / 2);
+                                        qtd = qtd - 1;
+                                    }
+
+                                    var d2 = p1.Mover(angulo, -mov / 2);
+                                    var ce = d1.Centro(d2);
+                                    var dist = Math.Round(d1.Distancia(d2));
+                                    if (angulo == 90 | angulo == 270)
+                                    {
+                                        AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+                                    }
+                                    else
+                                    {
+                                        AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+
+                                    }
+                                }
+                                sequencia++;
+                                Utils.SetUndoMark(false);
+
+
                             }
+
+                            goto denovo;
                         }
-                        angulo = p1.GetAngulo(p2);
-
-                        comp = p1.Distancia(p2);
-
-                        Ajustar(ref angulo, ref comp, p1, ref p2);
-                        
-
-                        if (Math.Abs(comp) > this.LarguraTelha)
-                        {
-                            FLayer.Criar(LayerPassarela, System.Drawing.Color.White);
-
-                            var pcs = comp.Abs().ArredondarMultiplo(this.LarguraTelha);
-                            int qtd = (pcs / this.LarguraTelha).Int();
-                            Utils.SetUndoMark(true);
-                            for (int i = 0; i < qtd; i++)
-                            {
-                                var tt = new db.Linha();
-                                tt.Add(Cfg.Init.CAD_ATT_Cod_SAP, this.Codigo_Passarela);
-                                Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_PASSARELA, p1, 1, 0, tt);
-                                if(angulo==90 | angulo == 270)
-                                {
-                                    mov = vert;
-                                }
-                                else
-                                {
-                                    mov = this.LarguraTelha;
-                                }
-
-                               var p3 = p1.Mover(angulo, mov);
 
 
-                                p1 = p3;
-                                
-                            }
-                            if (AdicionarCotas)
-                            {
-                                FLayer.Criar(LayerPassarelaCotas, System.Drawing.Color.White);
-                                var d1 = new P3dCAD(p0);
-                                if(sequencia>0)
-                                {
-                                    d1 = (P3dCAD)d1.Mover(angulo, -mov / 2);
-                                }
-                                else if(selecionar)
-                                {
-                                    d1 = (P3dCAD)d1.Mover(angulo, mov / 2);
-                                    qtd = qtd - 1;
-                                }
-
-                                var d2 = p1.Mover(angulo, -mov/2);
-                                var ce = d1.Centro(d2);
-                                var dist = Math.Round(d1.Distancia(d2));
-                                if (angulo == 90 | angulo == 270)
-                                {
-                                    AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
-                                }
-                                else
-                                {
-                                    AddCotaHorizontal(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
-
-                                }
-                            }
-                            sequencia++;
-                            Utils.SetUndoMark(false);
-
-                            
-                        }
-                        
-                        goto denovo;
                     }
-                    
-
+                    acTrans.Commit();
+                    editor.Regen();
                 }
-                acTrans.Commit();
-                editor.Regen();
             }
+     
         }
 
 
         public void InserirLinhaDeVida(bool selecionar = false)
         {
 
-            using (var acTrans = acCurDb.acTransST())
+            var layer_atual = FLayer.GetAtual();
+            FLayer.Criar(LayerLinhaDeVida, System.Drawing.Color.Red);
+            FLayer.Criar(LayerLinhaDeVidaCotas, System.Drawing.Color.White);
+            FLayer.Set(LayerLinhaDeVida);
+
+            using (var docLock = acDoc.LockDocument())
             {
-                var layer_atual = FLayer.GetAtual();
-
-                FLayer.Criar(LayerLinhaDeVida, System.Drawing.Color.Red);
-
-                //var selecao = SelecionarObjetos(acTrans);
-
-   
-
-                double angulo = 0;
-                double comp = 0;
-
-                double mov = this.LarguraTelha;
-
-
-                bool cancelado = false;
-
-                P3d p1 = new P3d();
-                if (selecionar)
+                using (var acTrans = acCurDb.acTransST())
                 {
-                    SelecionarObjetos();
-                    if (this.Getsflhs().Count > 0)
+                    double angulo = 0;
+                    double comp = 0;
+                    double mov = this.LarguraTelha;
+                    bool cancelado = false;
+
+                    var p1 = new P3d();
+                    if (selecionar)
                     {
-                        var p = this.Getsflhs()[0];
-                        p1 = p.Position.P3d();
-                        p.Erase(true);
+                        SelecionarObjetos();
+                        if (this.Getsflhs().Count > 0)
+                        {
+                            var p = this.Getsflhs()[0];
+                            p1 = p.Position.P3d();
+                            p.Erase(true);
+                        }
+                        else
+                        {
+                            AddMensagem("\nNenhum SFL-H selecionado.");
+                            return;
+                        }
                     }
                     else
                     {
-                        AddMensagem("\nNenhum SFL-H selecionado.");
-                        return;
+                        p1 = Ut.PedirPonto("Selecione o ponto inicial", out cancelado);
                     }
-                }
-                else
-                {
-                    p1 = Ut.PedirPonto("Selecione o ponto inicial", out cancelado);
-                }
 
-                int sequencia = 0;
-                if (!cancelado)
-                {
-                denovo:
-                    Ut.SetOrtho(true);
-                    var p2 = Ut.PedirPonto("Selecione o ponto final", p1, out cancelado);
+                    int sequencia = 0;
                     if (!cancelado)
                     {
-                        FLayer.Set(LayerLinhaDeVida);
-
-                        List<P3d> cotas = new List<P3d>();
-                        if (sequencia == 0 && !selecionar)
+                    denovo:
+                        Ut.SetOrtho(true);
+                        var p2 = Ut.PedirPonto("Selecione o ponto final", p1, out cancelado);
+                        if (!cancelado)
                         {
-                            p1 = p1.Mover(angulo, this.LarguraTelha / 2);
                             
-                        }
-                        cotas.Add(p1);
-                        comp = p1.Distancia(p2);
-                        angulo = p1.GetAngulo(p2);
-                        AddMensagem("\nÂngulo: " + angulo);
 
-                   
-
-                        Ajustar(ref angulo, ref comp, p1, ref p2);
-                        AddMensagem("\nÂngulo ajustado: " + angulo);
-
-
-                        if (Math.Abs(comp) > this.LarguraTelha)
-                        {
-                            Utils.SetUndoMark(true);
-
-                            int qtd_telhas = (comp / this.LarguraTelha).Int();
-                            //se é horizontal, alinha com a telha.
-                            if (angulo == 0 | angulo == 180)
+                            var cotas = new List<P3d>();
+                            if (sequencia == 0 && !selecionar)
                             {
-                                var compf = (this.LarguraTelha * qtd_telhas) - (this.LarguraTelha);
-                                p2 = p1.Mover(angulo, compf);
+                                p1 = p1.Mover(angulo, this.LarguraTelha / 2);
                             }
+                            cotas.Add(p1);
+                            comp = p1.Distancia(p2);
+                            angulo = p1.GetAngulo(p2);
+                            AddMensagem("\nÂngulo: " + angulo);
 
-                            var qtd_sflh = (comp/ this.DistMaxSFLH).Int();
-                            var pcs = comp.Abs().ArredondarMultiplo(this.LarguraTelha);
-                            int qtd = (pcs / this.LarguraTelha).Int();
-                        
 
-                            List<double> comps = new List<double>();
-                            comps.Add(comp);
-                            var comp_mult = (comp / qtd_sflh).ArredondarMultiplo(this.LarguraTelha);
 
-                            if (qtd_sflh>1)
+                            Ajustar(ref angulo, ref comp, p1, ref p2);
+                            AddMensagem("\nÂngulo ajustado: " + angulo);
+
+
+                            if (Math.Abs(comp) > this.LarguraTelha)
                             {
-                                comps.Clear();
-                                for (int i = 0; i < qtd_sflh; i++)
+                                Utils.SetUndoMark(true);
+
+                                int qtd_telhas = (comp / this.LarguraTelha).Int();
+                                //se é horizontal, alinha com a telha.
+                                if (angulo == 0 | angulo == 180)
                                 {
-                                    if(i==qtd_sflh-1)
+                                    var compf = (this.LarguraTelha * qtd_telhas) - (this.LarguraTelha);
+                                    p2 = p1.Mover(angulo, compf);
+                                }
+
+                                var qtd_sflh = (comp / this.DistMaxSFLH).Int();
+                                var pcs = comp.Abs().ArredondarMultiplo(this.LarguraTelha);
+                                int qtd = (pcs / this.LarguraTelha).Int();
+
+
+                                var comps = new List<double>();
+                                comps.Add(comp);
+                                var comp_mult = (comp / qtd_sflh).ArredondarMultiplo(this.LarguraTelha);
+
+                                if (qtd_sflh > 1)
+                                {
+                                    comps.Clear();
+                                    for (int i = 0; i < qtd_sflh; i++)
                                     {
-                                        var sobra = comp - comps.Sum();
-                                        if(angulo == 0 | angulo == 180)
+                                        if (i == qtd_sflh - 1)
                                         {
-                                            sobra = sobra - (this.LarguraTelha / 2);
+                                            var sobra = comp - comps.Sum();
+                                            if (angulo == 0 | angulo == 180)
+                                            {
+                                                sobra = sobra - (this.LarguraTelha / 2);
+                                            }
+                                            sobra = sobra.ArredondarMultiplo(this.LarguraTelha);
+                                            comps.Add(sobra);
                                         }
-                                        sobra = sobra.ArredondarMultiplo(this.LarguraTelha);
-                                        comps.Add(sobra);
-                                    }
-                                    else
-                                    {
-                                        comps.Add(comp_mult);
+                                        else
+                                        {
+                                            comps.Add(comp_mult);
+                                        }
                                     }
                                 }
-                            }
-                            //Alerta("\n Coordenadas:" + comps.Count + "\n" + string.Join("\n", comps));
+                                //Alerta("\n Coordenadas:" + comps.Count + "\n" + string.Join("\n", comps));
 
-                            if(comps.Count==1)
-                            {
-                            AddVaoSFLH(angulo, comp, p1, sequencia, p2, ref cotas);
-                                //adiciona o cabo
-                                AddPolyLine(new List<P3d> { new P3d(p1), new P3d(p2) }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
-                            }
-                            else if(comps.Count>1)
-                            {
-                                P3d pxa = new P3d(p1.X, p1.Y, p1.Z);
-                                foreach (var item in comps)
+                                if (comps.Count == 1)
                                 {
-                                    var pxb = pxa.Mover(angulo, item);
-                                    AddVaoSFLH(angulo,item, pxa, sequencia, pxb, ref cotas);
-                                    sequencia++;
-                                    cotas.Add(pxb);
+                                    AddVaoSFLH(angulo, comp, p1, sequencia, p2, ref cotas);
                                     //adiciona o cabo
-                                    AddPolyLine(new List<P3d> { pxa, pxb }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
-                                    pxa = pxb;
+                                    AddPolyLine(new List<P3d> { new P3d(p1), new P3d(p2) }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
                                 }
-                            }
-
-
-                            sequencia++;
-                            if (comps.Count == 1)
-                            {
-                                cotas.Add(p2);
-                            }
-
-                            if (AdicionarCotas)
-                            {
-                                FLayer.Criar(LayerLinhaDeVidaCotas, System.Drawing.Color.White);
-                                for (int i = 0; i < cotas.Count - 1; i++)
+                                else if (comps.Count > 1)
                                 {
-                                    if (angulo == 0 | angulo == 180)
+                                    P3d pxa = new P3d(p1.X, p1.Y, p1.Z);
+                                    foreach (var item in comps)
                                     {
-                                        AddCotaHorizontal(cotas[i], cotas[i + 1], "", cotas[i].Centro(cotas[i + 1]).Mover(angulo - 90, GetEscala() * 10), false, 0, false, false);
-                                    }
-                                    else
-                                    {
-                                        AddCotaVertical(cotas[i], cotas[i + 1], "", cotas[i].Centro(cotas[i + 1]).Mover(angulo - 90, GetEscala() * 10), false, 0, false, false);
-
+                                        var pxb = pxa.Mover(angulo, item);
+                                        AddVaoSFLH(angulo, item, pxa, sequencia, pxb, ref cotas);
+                                        sequencia++;
+                                        cotas.Add(pxb);
+                                        //adiciona o cabo
+                                        AddPolyLine(new List<P3d> { pxa, pxb }, EspessuraCabo, EspessuraCabo, System.Drawing.Color.Red);
+                                        pxa = pxb;
                                     }
                                 }
-                                if (cotas.Count > 1)
+
+
+                                sequencia++;
+                                if (comps.Count == 1)
                                 {
-                                    if (angulo == 0 | angulo == 180)
-                                    {
-                                        AddCotaHorizontal(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last(), "", cotas.OrderBy(x => x.X).First().Centro(cotas.OrderBy(x => x.X).Last()).Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
-                                    }
-                                    else
-                                    {
-                                        AddCotaVertical(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last(), "", cotas.OrderBy(x => x.Y).First().Centro(cotas.OrderBy(x => x.Y).Last()).Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+                                    cotas.Add(p2);
+                                }
 
+                                if (AdicionarCotas)
+                                {
+                                    
+                                    for (int i = 0; i < cotas.Count - 1; i++)
+                                    {
+                                        if (angulo == 0 | angulo == 180)
+                                        {
+                                            AddCotaHorizontal(cotas[i], cotas[i + 1], "", cotas[i].Centro(cotas[i + 1]).Mover(angulo - 90, GetEscala() * 10), false, 0, false, false);
+                                        }
+                                        else
+                                        {
+                                            AddCotaVertical(cotas[i], cotas[i + 1], "", cotas[i].Centro(cotas[i + 1]).Mover(angulo - 90, GetEscala() * 10), false, 0, false, false);
+
+                                        }
+                                    }
+                                    if (cotas.Count > 1)
+                                    {
+                                        if (angulo == 0 | angulo == 180)
+                                        {
+                                            AddCotaHorizontal(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last(), "", cotas.OrderBy(x => x.X).First().Centro(cotas.OrderBy(x => x.X).Last()).Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+                                        }
+                                        else
+                                        {
+                                            AddCotaVertical(cotas.OrderBy(x => x.Y).First(), cotas.OrderBy(x => x.Y).Last(), "", cotas.OrderBy(x => x.Y).First().Centro(cotas.OrderBy(x => x.Y).Last()).Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
+
+                                        }
                                     }
                                 }
+
+                                p1 = p2;
+                                Utils.SetUndoMark(false);
+
                             }
 
-                            p1 = p2;
-                            Utils.SetUndoMark(false);
-
+                            goto denovo;
+                        }
+                        else
+                        {
+                         
                         }
 
-                        goto denovo;
                     }
-                    else
-                    {
-                        FLayer.Set(layer_atual);
-                    }
-
+                    acTrans.Commit();
+                    editor.Regen();
                 }
-                acTrans.Commit();
-                editor.Regen();
             }
+
+            FLayer.Set(layer_atual);
         }
         public void ExportarRMAdeTabela()
         {

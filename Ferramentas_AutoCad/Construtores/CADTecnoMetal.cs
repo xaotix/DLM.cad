@@ -517,7 +517,7 @@ namespace DLM.cad
                                 if (bl_ja_adicionados.Find(x => x.Block.Id == bloco.Block.Id) == null)
                                 {
                                     var bl_a_adicionar = blocos_atuais.FindAll(x => bl_ja_adicionados.Find(y => y.Block.Id == x.Block.Id) == null).ToList();
-                                    var iguais = bl_a_adicionar.FindAll(x => x.GetCoordenada().Distancia(bloco.GetCoordenada()) <= escala * 5);
+                                    var iguais = bl_a_adicionar.FindAll(x => x.GetCoordenada().Distancia(bloco.GetCoordenada().Origem) <= escala * 5);
                                     bloco.Filhos = iguais.FindAll(x => x.Block.Id != bloco.Block.Id);
                                     bl_agrupados.Add(bloco);
                                 }
