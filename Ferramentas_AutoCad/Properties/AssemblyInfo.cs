@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DLM.cad")]
-[assembly: AssemblyCopyright("Copyright ©  2023.09 - Daniel Lins Maciel")]
+[assembly: AssemblyCopyright("Copyright ©  2023.11 - Daniel Lins Maciel")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
