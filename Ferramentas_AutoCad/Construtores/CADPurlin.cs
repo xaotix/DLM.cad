@@ -671,7 +671,7 @@ namespace DLM.cad
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
-                    foreach(var s in GetLinhas())
+                    foreach(var s in GetCADLines())
                     {
                         AddMensagem($"\nLinha: {s.StartPoint.ToString()} Comprimento: {s.Comprimento} Angulo: {s.Angulo}");
                     }

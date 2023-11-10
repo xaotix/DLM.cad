@@ -85,17 +85,7 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod(nameof(DesenharXLines))]
-        public static void DesenharXLines()
-        {
-            GetCADPurlin().SelecionarObjetos(Tipo_Selecao.MultiLines);
-            var verticais = GetCADPurlin().GetMultilines().GetVerticais().GetOrigens();
 
-            foreach (var vert in verticais)
-            {
-                GetCADPurlin().AddXline(vert);
-            }
-        }
 
         [CommandMethod(nameof(GetMLStylesNames))]
         public static void GetMLStylesNames()
@@ -223,22 +213,7 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod(nameof(purlinApagarBlocos))]
-        public static void purlinApagarBlocos()
-        {
-            var sel = GetCADPurlin().SelecionarObjetos(Tipo_Selecao.Blocos);
-            if (sel.Status == PromptStatus.OK)
-            {
-                GetCADPurlin().LimparBlocos();
-            }
-        }
 
-
-        [CommandMethod(nameof(purlin))]
-        public static void purlin()
-        {
-            GetCADPurlin().Purlin();
-        }
 
         [CommandMethod(nameof(renomeiablocos))]
         public static void renomeiablocos()
@@ -256,11 +231,7 @@ namespace DLM.cad
         {
             GetCADPurlin().GetBoneco_Purlin();
         }
-        [CommandMethod(nameof(purlinMudarPerfil))]
-        public static void purlinMudarPerfil()
-        {
-            GetCADPurlin().SetPurlin();
-        }
+
 
 
 
@@ -977,6 +948,98 @@ namespace DLM.cad
                 }
                 acTrans.Commit();
             }
+        }
+
+
+
+        [CommandMethod(nameof(xpurlinMudarPerfil))]
+        public static void xpurlinMudarPerfil()
+        {
+            GetCADPurlin().SetPurlin();
+        }
+
+        [CommandMethod(nameof(xpurlinApagarBlocos))]
+        public static void xpurlinApagarBlocos()
+        {
+            var sel = GetCADPurlin().SelecionarObjetos(Tipo_Selecao.Blocos);
+            if (sel.Status == PromptStatus.OK)
+            {
+                GetCADPurlin().LimparBlocos();
+            }
+        }
+
+
+        [CommandMethod(nameof(xpurlinvista))]
+        public static void xpurlinvista()
+        {
+            GetCADPurlin().Purlin();
+        }
+
+        public static DrawPurlin PurlinOpt { get; set; } = new DrawPurlin();
+        [CommandMethod(nameof(purlinXLines))]
+        public static void purlinXLines()
+        {
+            var eixos = new List<P3d>();
+            var origens = GetCADPurlin().GetOrigensVerticaisVistaPurlin(out eixos);
+
+            
+
+            if(eixos.Count>0)
+            {
+                bool cancelado = true;
+                var pt = Ut.PedirPonto("Selecione a origem do boneco.",out cancelado);
+                if(!cancelado)
+                {
+
+
+                    PurlinOpt.Y = pt.Y;
+                    PurlinOpt.X1 = eixos.Min(x => x.X);
+                    PurlinOpt.X2 = eixos.Max(x => x.X);
+
+                 
+                    if(!PurlinOpt.Propriedades())
+                    { return; }
+
+                    var p1 = new P3d(PurlinOpt.X01, PurlinOpt.Y);
+                    var p2 = new P3d(PurlinOpt.X02, PurlinOpt.Y);
+                    GetCADPurlin().AddLinha(p1, p2, "CONTINUOUS", System.Drawing.Color.Yellow);
+
+
+
+                    var pl1 = new P3d(PurlinOpt.X1, PurlinOpt.Y);
+                    var pl2 = new P3d(PurlinOpt.X2, PurlinOpt.Y);
+                    GetCADPurlin().AddLinha(pl1.MoverY(150), pl1.MoverY(-150), "CONTINUOUS", System.Drawing.Color.Blue);
+                    GetCADPurlin().AddLinha(pl2.MoverY(150), pl2.MoverY(150), "CONTINUOUS", System.Drawing.Color.Blue);
+
+                    foreach(var p in origens)
+                    {
+                        GetCADPurlin().AddLinha(p.MoverY(100), p.MoverY(-100), "CONTINUOUS", System.Drawing.Color.Yellow);
+                    }
+
+
+                    if (Ut.PedirString("Desenhar Xlines?",new List<string> { "Sim","Não"}) == "Sim")
+                    {
+                        for (int i = 0; i < origens.Count; i++)
+                        {
+                            if (i == 0)
+                            {
+                                GetCADPurlin().AddXline(origens[i]);
+                            }
+                            else if (origens[i].Distancia(origens[i - 1]) > 20)
+                            {
+                                GetCADPurlin().AddXline(origens[i]);
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            
         }
     }
 }

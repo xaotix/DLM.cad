@@ -89,16 +89,16 @@ namespace DLM.cad
         public P3d EndPoint { get; private set; }
         public double Comprimento { get; private set; }
         public Line Line { get; private set; } 
-        public CADLine(Line L)
+        public CADLine(Line linha)
         {
-            this.Line = L;
+            this.Line = linha;
             this.Comprimento = Math.Round(this.Line.Length);
-            this.StartPoint = L.StartPoint.P3d();
-            this.EndPoint  = L.EndPoint.P3d();
-            this.Layer = L.Layer;
-            this.Linetype = L.Linetype;
-            this.Angulo = L.Angle.RadianosParaGraus();
-            this.ObjectId = L.ObjectId;
+            this.StartPoint = linha.StartPoint.P3d();
+            this.EndPoint  = linha.EndPoint.P3d();
+            this.Layer = linha.Layer;
+            this.Linetype = linha.Linetype;
+            this.Angulo = linha.Angle.RadianosParaGraus();
+            this.ObjectId = linha.ObjectId;
         }
     }
 }

@@ -28,11 +28,11 @@ namespace DLM.cad
         #region CAD
         public List<CADLine> Getlinhas_perfil()
         {
-            return GetLinhas().FindAll(x => x.Layer == LayerLinhas && x.Comprimento >= D_Min_X);
+            return GetCADLines().FindAll(x => x.Layer == LayerLinhas && x.Comprimento >= D_Min_X);
         }
         public List<CADLine> Getlinhas_projecao()
         {
-            return GetLinhas().FindAll(x => x.Layer == LayerProjecao && x.Comprimento >= D_Min_X && x.Comprimento >= Tam_Minimo_Projecao);
+            return GetCADLines().FindAll(x => x.Layer == LayerProjecao && x.Comprimento >= D_Min_X && x.Comprimento >= Tam_Minimo_Projecao);
         }
         public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
@@ -1016,7 +1016,7 @@ namespace DLM.cad
             AddMensagem("\nAltura: " + Altura);
             AddMensagem("\nLargura: " + Largura);
             AddBarra();
-            AddMensagem("\nLinhas:" + GetLinhas().Count);
+            AddMensagem("\nLinhas:" + GetCADLines().Count);
             AddMensagem("\nLinhas de perfil:" + Getlinhas_perfil().Count);
             AddMensagem("\nProjeções:" + Getlinhas_projecao().Count);
             AddBarra();
@@ -1494,7 +1494,7 @@ namespace DLM.cad
             //limpa as cotas atuais
             acDoc.Apagar(Selecoes.GetDimmensions().FindAll(x => !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
 
-            if (GetLinhas().Count == 0 | selecao.Status != PromptStatus.OK)
+            if (GetCADLines().Count == 0 | selecao.Status != PromptStatus.OK)
             {
                 AddMensagem("\nNenhuma linha encontrada na seleção.\nÉ necessário selecionar uma peça de TecnoMetal.\nExploda a seleção antes de tentar cotar.");
                 return "";

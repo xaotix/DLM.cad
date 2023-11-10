@@ -111,6 +111,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClassesBase\DrawPurlin.cs" />
     <Compile Include="ClassesBase\PolyInfo.cs" />
     <Compile Include="ClassesObjetosBloco\BlockAttributes.cs" />
     <Compile Include="ClassesObjetosBloco\BlocoPecaTecnoMetal.cs" />

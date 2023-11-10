@@ -598,12 +598,12 @@ namespace DLM.cad
         #region mapeamento de objetos a serem usados
         public List<CADLine> GetLinhas_Eixos()
         {
-            return GetLinhas().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
+            return GetCADLines().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
         }
         #endregion
 
         #region listas de itens selecionados
-        public List<CADLine> GetLinhas()
+        public List<CADLine> GetCADLines()
         {
             if (_Linhas == null)
             {
@@ -614,11 +614,11 @@ namespace DLM.cad
         }
         public List<CADLine> GetLinhas_Verticais()
         {
-            return GetLinhas().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.StartPoint.X).ToList();
+            return GetCADLines().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.StartPoint.X).ToList();
         }
         public List<CADLine> GetLinhas_Horizontais()
         {
-            return GetLinhas().FindAll(x => x.Sentido == Sentido.Horizontal).OrderBy(x => x.StartPoint.X).ToList();
+            return GetCADLines().FindAll(x => x.Sentido == Sentido.Horizontal).OrderBy(x => x.StartPoint.X).ToList();
         }
 
 
@@ -675,7 +675,7 @@ namespace DLM.cad
 
         public List<Mline> GetMultilines()
         {
-            List<Mline> lista = new List<Mline>();
+            var lista = new List<Mline>();
             lista.AddRange(Selecoes.Filter<Mline>());
 
             if (BuscarEmBlocos)
@@ -685,7 +685,18 @@ namespace DLM.cad
 
             return lista;
         }
+        public List<Line> GetLines()
+        {
+            var lista = new List<Line>();
+            lista.AddRange(Selecoes.Filter<Line>());
 
+            if (BuscarEmBlocos)
+            {
+                lista.AddRange(this.GetEntitiesdeBlocos().Filter<Line>());
+            }
+
+            return lista;
+        }
 
 
         public List<BlockAttributes> GetBlocos_Eixos(bool update = false)
@@ -802,6 +813,36 @@ namespace DLM.cad
                 case Tipo_Selecao.Tudo:
                     return SelecionarObjetos(Conexoes.Utilz.GetLista_Enumeradores<CAD_TYPE>().ToArray());
             }
+        }
+
+        public List<P3d> GetOrigensVerticaisVistaPurlin(out List<P3d> eixos)
+        {
+            var tmin = 20.0;
+            eixos = new List<P3d>();
+            var origens = new List<P3d>();
+            this.SelecionarObjetos(CAD_TYPE.MLINE, CAD_TYPE.LINE);
+            var verticais = this.GetMultilines().GetVerticais();
+            var lines_vrt = this.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical);
+
+            eixos.AddRange(lines_vrt.Select(x => x.StartPoint));
+            eixos.AddRange(lines_vrt.Select(x => x.EndPoint));
+            eixos = eixos.Round(0).GroupBy(x => x.X).Select(x => x.First()).ToList();
+          
+
+            if (eixos.Count>0)
+            {
+                var minY = eixos.Min(x => x.Y);
+                eixos = eixos.Select(x => new P3d(x.X, minY)).ToList();
+                var minX = eixos.Min(x => x.X);
+                var maxX = eixos.Max(x => x.X);
+
+                origens.AddRange(verticais.GetOrigens());
+                origens = origens.Round(0).OrderBy(x => x.X).ToList().GroupBy(x => x.X).Select(x => x.First()).ToList();
+                origens = origens.Select(x => new P3d(x.X, origens.Min(y => y.Y))).ToList().FindAll(x=>x.X>minX+ tmin && x.X<maxX- tmin).ToList();
+            }
+
+
+            return origens;
         }
 
         public void SelecionarTudo()

@@ -285,12 +285,12 @@ namespace DLM.cad
             return retorno;
         }
 
-        public static List<Mline> GetVerticais(this List<Mline> LS, double comp_min = 100)
+        public static List<Mline> GetVerticais(this List<Mline> mls, double comp_min = 100)
         {
-            List<Mline> retorno = new List<Mline>();
-            foreach (var s in LS)
+           var retorno = new List<Mline>();
+            foreach (var s in mls)
             {
-                List<Point3d> lista = Ut.GetPontos(s);
+                var lista = Ut.GetPontos(s);
                 if (lista.Count > 1)
                 {
                     var angulo = Math.Round(Math.Abs(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y)).GetAngulo(new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y)))), 2);
@@ -333,14 +333,14 @@ namespace DLM.cad
             }
             return retorno;
         }
-        public static void GetOrigens(this Mline s, out P3d p1, out P3d p2, out double largura)
+        public static void GetOrigens(this Mline mline, out P3d p1, out P3d p2, out double largura)
         {
-            List<P3d> lista = Ut.GetPontos(s).Select(x => x.P3d()).ToList();
+            var lista = Ut.GetPontos(mline).Select(x => x.P3d()).ToList();
 
             /*tem q ver como ele trata quando a purlin tem mais de 2 vertices*/
             var pts = new List<P3d>();
-            pts.Add(s.Bounds.Value.MinPoint.P3d());
-            pts.Add(s.Bounds.Value.MaxPoint.P3d());
+            pts.Add(mline.Bounds.Value.MinPoint.P3d());
+            pts.Add(mline.Bounds.Value.MaxPoint.P3d());
 
 
 
@@ -348,7 +348,7 @@ namespace DLM.cad
             p2 = new P3d();
 
             largura = 0;
-            var isvertical = new List<Mline> { s }.GetVerticais().Count > 0;
+            var isvertical = new List<Mline> { mline }.GetVerticais().Count > 0;
 
             if (isvertical)
             {
@@ -362,8 +362,8 @@ namespace DLM.cad
             if (lista.Count > 1)
             {
                 var ys = new List<P3d>();
-                ys.Add(s.Bounds.Value.MaxPoint.P3d());
-                ys.Add(s.Bounds.Value.MinPoint.P3d());
+                ys.Add(mline.Bounds.Value.MaxPoint.P3d());
+                ys.Add(mline.Bounds.Value.MinPoint.P3d());
                 p1 = lista.OrderBy(x => x.X).First();
                 p2 = lista.OrderBy(x => x.X).Last();
 

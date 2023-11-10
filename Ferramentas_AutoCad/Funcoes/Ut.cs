@@ -1178,6 +1178,7 @@ namespace DLM.cad
             opcoes.AllowNone = false;
             opcoes.AllowZero = false;
             opcoes.UseDashedLine = true;
+           
 
             resultado = editor.GetDistance(opcoes);
 
@@ -1190,6 +1191,33 @@ namespace DLM.cad
             }
 
             return retorno;
+
+        }
+
+        public static double PedirDistancia(string pergunta, double distancia = 0)
+        {
+            PromptDoubleResult resultado;
+            PromptDistanceOptions opcoes = new PromptDistanceOptions("");
+
+            opcoes.Message = "\n" + pergunta;
+            opcoes.AllowArbitraryInput = true;
+            opcoes.AllowNegative = false;
+            opcoes.AllowNone = false;
+            opcoes.AllowZero = false;
+            opcoes.UseDashedLine = true;
+            opcoes.DefaultValue = distancia;
+
+            resultado = editor.GetDistance(opcoes);
+
+
+            if (resultado.Status == PromptStatus.Cancel)
+            {
+                return 0;
+            }
+            else
+            {
+                return resultado.Value;
+            }
 
         }
 
@@ -1343,10 +1371,9 @@ namespace DLM.cad
 
         public static List<Point3d> GetPontos(object obj, Transaction tr = null)
         {
-            List<Point3d> ptss = new List<Point3d>();
+            var ptss = new List<Point3d>();
             if (tr == null)
             {
-                // Start a transaction
                 using (var acTrans = acCurDb.acTrans())
                 {
                     ptss.AddRange(GetPontosAgrupados(obj, acTrans).SelectMany(x => x));
@@ -1433,13 +1460,13 @@ namespace DLM.cad
             }
             else if (obj is BlockReference && acTrans != null)
             {
-                var s = obj as BlockReference;
-                BlockTableRecord acBlkTblRec = (BlockTableRecord)acTrans.GetObject(s.BlockTableRecord, OpenMode.ForRead);
+                var tt = obj as BlockReference;
+                var acBlkTblRec = (BlockTableRecord)acTrans.GetObject(tt.BlockTableRecord, OpenMode.ForRead);
 
                 foreach (ObjectId id in acBlkTblRec)
                 {
                     var obj1 = acTrans.GetObject(id, OpenMode.ForRead);
-                    pts2.AddRange(Ut.GetPontosAgrupados(obj1, acTrans).Select(x => x.Select(y => y.TransformBy(s.BlockTransform)).ToList()).ToList());
+                    pts2.AddRange(Ut.GetPontosAgrupados(obj1, acTrans).Select(x => x.Select(y => y.TransformBy(tt.BlockTransform)).ToList()).ToList());
                 }
             }
             pts2.Add(pts);

@@ -622,7 +622,7 @@ namespace DLM.cad
         private void purlin(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.purlin();
+            Core.xpurlinvista();
         }
 
         private void cotar(object sender, RoutedEventArgs e)
@@ -741,7 +741,7 @@ namespace DLM.cad
         private void purlin_muda_perfil(object sender, RoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
-            Core.purlinMudarPerfil();
+            Core.xpurlinMudarPerfil();
         }
 
         private void abre_pasta(object sender, RoutedEventArgs e)
@@ -871,7 +871,7 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.purlinApagarBlocos();
+            Core.xpurlinApagarBlocos();
         }
 
 
