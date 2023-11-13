@@ -118,14 +118,14 @@ namespace DLM.cad
             }
         }
 
-    
+
 
         public void CriarLayersPadrao()
         {
             string nome = "LAYERS_PADRAO";
 
             Blocos.Inserir(acDoc, nome, new P3d(), 0.001, 0, new db.Linha());
-           acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x => x as Entity).ToList());
+            acDoc.Apagar(Blocos.GetBlocosPrancha(nome).Select(x => x as Entity).ToList());
         }
         public List<Conexoes.Arquivo> SelecionarDWGs(bool dxfs_tecnometal = false)
         {
@@ -377,7 +377,7 @@ namespace DLM.cad
 
             }
         }
-        public void AddLinha(P3d inicio, P3d fim, string tipo, System.Drawing.Color cor)
+        public void AddLinha(P3d inicio, P3d fim, string tipo = null, System.Drawing.Color? cor = null)
         {
 
 
@@ -394,17 +394,24 @@ namespace DLM.cad
                 BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                 // Create a line that starts at 5,5 and ends at 12,3
-                using (Line acLine = new Line(inicio.GetPoint3dCad(), fim.GetPoint3dCad()))
+                using (var acLine = new Line(inicio.GetPoint3dCad(), fim.GetPoint3dCad()))
                 {
-                    if (acLineTypTbl.Has(tipo) == false)
+                    if (tipo != null)
                     {
-                        // Load the Center Linetype
-                        acCurDb.LoadLineTypeFile(tipo, "acad.lin");
+                        if (acLineTypTbl.Has(tipo) == false)
+                        {
+                            // Load the Center Linetype
+                            acCurDb.LoadLineTypeFile(tipo, "acad.lin");
+                        }
+                        if (acLineTypTbl.Has(tipo))
+                        {
+                            acLine.Linetype = tipo;
+                        }
                     }
-                    if (acLineTypTbl.Has(tipo))
+
+                    if (cor != null)
                     {
-                        acLine.Linetype = tipo;
-                        acLine.Color = Autodesk.AutoCAD.Colors.Color.FromColor(cor);
+                        acLine.Color = Autodesk.AutoCAD.Colors.Color.FromColor(cor.Value);
                     }
                     // Add the new object to the block table record and the transaction
                     acBlkTblRec.AppendEntity(acLine);
@@ -416,25 +423,46 @@ namespace DLM.cad
             }
         }
 
-        public void AddXline(P3d origem, double angulo = 90)
+
+        public void AddXline(P3d origem, string tipo = null, System.Drawing.Color? cor = null, double angulo = 90)
         {
-          
+
             var p2 = origem.Mover(angulo, 10);
             using (var acTrans = acCurDb.acTransST())
             {
-                LinetypeTable acLineTypTbl;
-                acLineTypTbl = acTrans.GetObject(acCurDb.LinetypeTableId, OpenMode.ForRead) as LinetypeTable;
+                var acLineTypTbl = acTrans.GetObject(acCurDb.LinetypeTableId, OpenMode.ForRead) as LinetypeTable;
                 // Open the Block table for read
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                var acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                var acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
                 using (var nXLine = new Xline())
                 {
                     nXLine.BasePoint = origem.GetPoint3dCad();
                     nXLine.SecondPoint = p2.GetPoint3dCad();
+
+                    if (tipo != null)
+                    {
+                        if (acLineTypTbl.Has(tipo) == false)
+                        {
+                            // Load the Center Linetype
+                            acCurDb.LoadLineTypeFile(tipo, "acad.lin");
+                        }
+                        if (acLineTypTbl.Has(tipo))
+                        {
+                            nXLine.Linetype = tipo;
+                        }
+                    }
+
+                    if (cor != null)
+                    {
+                        nXLine.Color = Autodesk.AutoCAD.Colors.Color.FromColor(cor.Value);
+                    }
                     // Add the new object to the block table record and the transaction
                     acBlkTblRec.AppendEntity(nXLine);
                     acTrans.AddNewlyCreatedDBObject(nXLine, true);
+
+
+
                 }
                 acTrans.Commit();
             }
@@ -444,6 +472,42 @@ namespace DLM.cad
 
 
         #region Cotas
+        public void AddMtext(P3d origem, string texto, double angulo = 0, double tam = 0, System.Drawing.Color? cor = null)
+        {
+            // Starts a new transaction with the Transaction Manager
+            using (var acTrans = acCurDb.acTransST())
+            {
+                // Open the Block table record for read
+                var acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                // Open the Block table record Model space for write
+                var acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                /* Creates a new MText object and assigns it a location,
+                text value and text style */
+                var objText = new MText();
+                objText.SetDatabaseDefaults();
+                objText.Location = origem.GetPoint3dCad();
+
+                objText.Contents = texto;
+                objText.Rotation = angulo.GrausParaRadianos();
+                objText.TextStyleId = acCurDb.Textstyle;
+
+                if(cor!=null)
+                {
+                    objText.Color = Autodesk.AutoCAD.Colors.Color.FromColor(cor.Value);
+                }
+
+                if (tam > 0)
+                {
+                    objText.TextHeight = tam;
+                }
+
+                acBlkTblRec.AppendEntity(objText);
+                acTrans.AddNewlyCreatedDBObject(objText, true);
+                
+
+                acTrans.Commit();
+            }
+        }
         public RotatedDimension AddCotaVertical(P3d inicio, P3d fim, string texto, P3d posicao, bool dimtix = false, double tam = 0, bool juntar_cotas = false, bool ultima_cota = false)
         {
             RotatedDimension acRotDim;
@@ -501,17 +565,17 @@ namespace DLM.cad
 
             return acRotDim;
         }
-        public RotatedDimension AddCotaHorizontal(P3d inicio, P3d fim, string texto, P3d posicao, bool dimtix, double tam, bool juntar_cotas, bool ultima_cota)
+        public RotatedDimension AddCotaHorizontal(P3d inicio, P3d fim, string texto, P3d posicao, bool dimtix = false, double tam = 0, bool juntar_cotas = false, bool ultima_cota = false)
         {
             RotatedDimension acRotDim;
             // Start a transaction
             using (var acTrans = acCurDb.acTransST())
             {
                 // Open the Block table for read
-                BlockTable acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                var acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
 
                 // Open the Block table record Model space for write
-                BlockTableRecord acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                var acBlkTblRec = acTrans.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
 
                 using (acRotDim = new RotatedDimension())
@@ -815,35 +879,7 @@ namespace DLM.cad
             }
         }
 
-        public List<P3d> GetOrigensVerticaisVistaPurlin(out List<P3d> eixos)
-        {
-            var tmin = 20.0;
-            eixos = new List<P3d>();
-            var origens = new List<P3d>();
-            this.SelecionarObjetos(CAD_TYPE.MLINE, CAD_TYPE.LINE);
-            var verticais = this.GetMultilines().GetVerticais();
-            var lines_vrt = this.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical);
 
-            eixos.AddRange(lines_vrt.Select(x => x.StartPoint));
-            eixos.AddRange(lines_vrt.Select(x => x.EndPoint));
-            eixos = eixos.Round(0).GroupBy(x => x.X).Select(x => x.First()).ToList();
-          
-
-            if (eixos.Count>0)
-            {
-                var minY = eixos.Min(x => x.Y);
-                eixos = eixos.Select(x => new P3d(x.X, minY)).ToList();
-                var minX = eixos.Min(x => x.X);
-                var maxX = eixos.Max(x => x.X);
-
-                origens.AddRange(verticais.GetOrigens());
-                origens = origens.Round(0).OrderBy(x => x.X).ToList().GroupBy(x => x.X).Select(x => x.First()).ToList();
-                origens = origens.Select(x => new P3d(x.X, origens.Min(y => y.Y))).ToList().FindAll(x=>x.X>minX+ tmin && x.X<maxX- tmin).ToList();
-            }
-
-
-            return origens;
-        }
 
         public void SelecionarTudo()
         {

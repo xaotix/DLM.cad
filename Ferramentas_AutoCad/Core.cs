@@ -32,6 +32,7 @@ namespace DLM.cad
         private static MenuMarcas _MenuMarcas { get; set; }
         private static CADCotagem _Cotas { get; set; }
         private static CADPurlin _cadPurlin { get; set; }
+        private static CADBase _cadBase { get; set; }
         private static CADTecnoMetal _TecnMetal { get; set; }
 
         private static Menus.Menu_Bloco_Peca _menu_bloco { get; set; }
@@ -83,7 +84,14 @@ namespace DLM.cad
             }
             return _cadPurlin;
         }
-
+        public static CADBase GetCADBase()
+        {
+            if (_cadBase == null)
+            {
+                _cadBase = new CADBase();
+            }
+            return _cadBase;
+        }
 
 
 
@@ -979,67 +987,126 @@ namespace DLM.cad
         [CommandMethod(nameof(purlinXLines))]
         public static void purlinXLines()
         {
-            var eixos = new List<P3d>();
-            var origens = GetCADPurlin().GetOrigensVerticaisVistaPurlin(out eixos);
+            if (!PurlinOpt.Propriedades())
+            { return; }
 
+            var orig_verts = new List<P3d>();
+            var cad = GetCADBase();
+
+
+
+            var tmin = 20.0;
+            cad.SelecionarObjetos(CAD_TYPE.MLINE, CAD_TYPE.LINE);
+
+            var mlines = cad.GetMultilines();
+
+            var correntes = mlines.GetVerticais().Select(x=> new CADMline(x, Tipo_Multiline.Desconhecido)).ToList();
+            var eixos = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical);
+            var purlins = mlines.GetHorizontais().Select(x => new CADMline(x, Tipo_Multiline.Desconhecido));
+
+
+
+            if (eixos.Count > 0)
+            {
+                var minY = eixos.Min(x => x.StartPoint.Y);
+                var minX = eixos.Min(x => x.StartPoint.X);
+                var maxX = eixos.Max(x => x.StartPoint.X);
+            }
+
+
+
+            var dim1 = 15.0;
+            var dim2 = 250.0;
+            var of1 = 100.0;
+            var of2 = 1000.0;
             
 
-            if(eixos.Count>0)
+            if(eixos.Count>1)
             {
                 bool cancelado = true;
                 var pt = Ut.PedirPonto("Selecione a origem do boneco.",out cancelado);
                 if(!cancelado)
                 {
-
-
-                    PurlinOpt.Y = pt.Y;
-                    PurlinOpt.X1 = eixos.Min(x => x.X);
-                    PurlinOpt.X2 = eixos.Max(x => x.X);
-
-                 
-                    if(!PurlinOpt.Propriedades())
-                    { return; }
-
-                    var p1 = new P3d(PurlinOpt.X01, PurlinOpt.Y);
-                    var p2 = new P3d(PurlinOpt.X02, PurlinOpt.Y);
-                    GetCADPurlin().AddLinha(p1, p2, "CONTINUOUS", System.Drawing.Color.Yellow);
-
-
-
-                    var pl1 = new P3d(PurlinOpt.X1, PurlinOpt.Y);
-                    var pl2 = new P3d(PurlinOpt.X2, PurlinOpt.Y);
-                    GetCADPurlin().AddLinha(pl1.MoverY(150), pl1.MoverY(-150), "CONTINUOUS", System.Drawing.Color.Blue);
-                    GetCADPurlin().AddLinha(pl2.MoverY(150), pl2.MoverY(150), "CONTINUOUS", System.Drawing.Color.Blue);
-
-                    foreach(var p in origens)
+                    if (PurlinOpt.InserirXlines)
                     {
-                        GetCADPurlin().AddLinha(p.MoverY(100), p.MoverY(-100), "CONTINUOUS", System.Drawing.Color.Yellow);
+                        for (int i = 0; i < orig_verts.Count; i++)
+                        {
+                            cad.AddXline(orig_verts[i], "HIDDEN", System.Drawing.Color.Yellow);
+                        }
+                        for (int i = 0; i < eixos.Count; i++)
+                        {
+                            cad.AddXline(eixos[i].StartPoint, "DASHDOT", System.Drawing.Color.Red);
+                        }
                     }
 
 
-                    if (Ut.PedirString("Desenhar Xlines?",new List<string> { "Sim","Não"}) == "Sim")
-                    {
-                        for (int i = 0; i < origens.Count; i++)
-                        {
-                            if (i == 0)
-                            {
-                                GetCADPurlin().AddXline(origens[i]);
-                            }
-                            else if (origens[i].Distancia(origens[i - 1]) > 20)
-                            {
-                                GetCADPurlin().AddXline(origens[i]);
-                            }
-                            else
-                            {
 
-                            }
+                    for (int i = 1; i < eixos.Count; i++)
+                    {
+                        if(i.E_Par())
+                        {
+                            PurlinOpt.Y = pt.Y - of2;
                         }
+                        else
+                        {
+                            PurlinOpt.Y = pt.Y;
+                        }
+                        PurlinOpt.X1 = eixos[i-1].StartPoint.X;
+                        PurlinOpt.X2 = eixos[i].StartPoint.X;
+
+                        var origens_p = orig_verts.FindAll(x => x.X >= PurlinOpt.X1 && x.X <= PurlinOpt.X2);
+
+
+
+
+                        var npurlin = new Conexoes.Macros.Purlin();
+                        npurlin.Vao = PurlinOpt.Vao;
+                        npurlin.Esquerda.Comprimento = PurlinOpt.TR1;
+                        npurlin.Direita.Comprimento = PurlinOpt.TR2;
+                        npurlin.Rebater_Furos = PurlinOpt.RebaterFuros;
+                        npurlin.Tipo_Corrente = Tipo_Corrente_Purlin.Manual;
+                        foreach(var p in PurlinOpt.TR1FBS)
+                        {
+                            npurlin.Esquerda.Flange_Braces.Add(p);
+                        }
+
+                        foreach (var p in PurlinOpt.TR2FBS)
+                        {
+                            npurlin.Direita.Flange_Braces.Add(p);
+                        }
+
+                        foreach (var p in origens_p)
+                        {
+                            npurlin.Esquerda.Furos_Manuais.Add(p.X - PurlinOpt.X1);
+                        }
+
+                        npurlin.Calcular();
+
+                        var p0 = new P3d(PurlinOpt.X01, PurlinOpt.Y);
+                        cad.AddLinha(p0, p0.MoverX(npurlin.Comprimento), "CONTINUOUS", System.Drawing.Color.Yellow);
+
+                        var frs = npurlin.GetFurosVista(false);
+
+
+                        foreach (var p in frs)
+                        {
+                            var cor = npurlin.GetCor(p.Posicao).GetCor().Color.GetColor();
+                           
+                            var p1 = new P3d(p.X + PurlinOpt.X01, PurlinOpt.Y);
+                            cad.AddLinha(p1.MoverY(of1), p1.MoverY(-of1), "CONTINUOUS", cor);
+
+                            cad.AddMtext(p1.MoverY(-of1), p.Posicao.ToString(), 90, dim1);
+
+                            cad.AddCotaOrdinate(p0, p1, p1.MoverY(dim2),dim1);
+                        }
+                        cad.AddCotaHorizontal(p0, p0.MoverX(PurlinOpt.Comprimento),"",p0.MoverY(-dim2).MoverX(PurlinOpt.Comprimento/2),false,dim1);
                     }
                 }
             }
-
-
-            
+            else
+            {
+                cad.AddMensagem("É necessário pelo menos 2 linhas verticais de eixo.");
+            }
         }
     }
 }

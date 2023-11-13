@@ -10,12 +10,7 @@ namespace DLM.cad
 {
     public class DrawPurlin :Notificar
     {
-        [Browsable(false)]
-        public double Y { get; set; } = 0;
-        [Browsable(false)]
-        public double X1 { get; set; } = 0;
-        [Browsable(false)]
-        public double X2 { get; set; } = 0;
+
         public double TR1 { get; set; } = 337;
         public double TR2 { get; set; } = 337;
 
@@ -24,13 +19,36 @@ namespace DLM.cad
         public bool RebaterFuros { get; set; } = false;
         public bool InserirXlines { get; set; } = false;
 
+        [DisplayName("FB. Esquerda")]
+        public List<double> TR1FBS { get; set; } = new List<double>();
+        [DisplayName("FB. Direta")]
+        public List<double> TR2FBS { get; set; } = new List<double>();
+
+
+        [Browsable(false)]
+        public double Y { get; set; } = 0;
+        [Browsable(false)]
+        public double X1 { get; set; } = 0;
+        [Browsable(false)]
+        public double X2 { get; set; } = 0;
+
         [Browsable(false)]
         public double X01 => X1 - TR1;
+        [Browsable(false)]
         public double X02 => X2 + TR2;
-        public double Comprimento => (X2 - X1).Round(0).Abs();
+        [Browsable(false)]
+        public double Comprimento => (X02 - X01).Round(0).Abs();
+        [Browsable(false)]
+        public double Vao => (X2 - X1).Round(0).Abs();
         public DrawPurlin()
         {
+            this.TR1FBS.Add(305);
+            this.TR1FBS.Add(610);
+            this.TR1FBS.Add(915);
 
+            this.TR2FBS.Add(305);
+            this.TR2FBS.Add(610);
+            this.TR2FBS.Add(915);
         }
     }
 }
