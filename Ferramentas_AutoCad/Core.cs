@@ -998,10 +998,9 @@ namespace DLM.cad
             cad.SelecionarObjetos(CAD_TYPE.MLINE, CAD_TYPE.LINE);
 
             var mlines = cad.GetMultilines();
-
-            var correntes = mlines.GetVerticais().Select(x=> new CADMline(x, Tipo_Multiline.Desconhecido)).ToList();
-            var eixos = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical);
-            var purlins = mlines.GetHorizontais().Select(x => new CADMline(x, Tipo_Multiline.Desconhecido));
+            var g_correntes = mlines.GetVerticais().Select(x=> new CADMline(x, Tipo_Multiline.Desconhecido)).ToList();
+            var g_eixos = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical);
+            var g_purlins = mlines.GetHorizontais().Select(x => new CADMline(x, Tipo_Multiline.Desconhecido)).ToList();
 
 
             var dim1 = 15.0;
@@ -1010,7 +1009,7 @@ namespace DLM.cad
             var of2 = 1000.0;
             
 
-            if(eixos.Count>1)
+            if(g_eixos.Count>1)
             {
                 bool cancelado = true;
                 var pt = Ut.PedirPonto("Selecione a origem do boneco.",out cancelado);
@@ -1018,21 +1017,27 @@ namespace DLM.cad
                 {
                     if (PurlinOpt.InserirXlines)
                     {
-                        for (int i = 0; i < correntes.Count; i++)
+                        for (int i = 0; i < g_correntes.Count; i++)
                         {
-                            cad.AddXline(new P3d(correntes[i].MinX), "HIDDEN", System.Drawing.Color.Yellow);
+                            cad.AddXline(new P3d(g_correntes[i].MinX), "HIDDEN", System.Drawing.Color.Yellow);
                         }
-                        for (int i = 0; i < eixos.Count; i++)
+                        for (int i = 0; i < g_eixos.Count; i++)
                         {
-                            cad.AddXline(eixos[i].StartPoint, "DASHDOT", System.Drawing.Color.Red);
+                            cad.AddXline(g_eixos[i].StartPoint, "DASHDOT", System.Drawing.Color.Red);
                         }
                     }
 
 
 
-                    for (int i = 1; i < eixos.Count; i++)
+                    for (int i = 1; i < g_eixos.Count; i++)
                     {
-                        if(i.E_Par())
+                        /*pega todas as correntes passando dentro dos eixos - como é vertical, nao precisa verificar as 2 coord.*/
+                        var correntes = g_correntes.FindAll(x => x.MinX >= PurlinOpt.X1 && x.MinX <= PurlinOpt.X2);
+                        /*pega todas as purlins passando pelos eixos*/
+                        var purlins = g_purlins.FindAll(x => x.MinX >= PurlinOpt.X1 && x.MaxX >= PurlinOpt.X2);
+
+
+                        if (i.E_Par())
                         {
                             PurlinOpt.Y = pt.Y - of2;
                         }
@@ -1040,10 +1045,9 @@ namespace DLM.cad
                         {
                             PurlinOpt.Y = pt.Y;
                         }
-                        PurlinOpt.X1 = eixos[i-1].StartPoint.X;
-                        PurlinOpt.X2 = eixos[i].StartPoint.X;
+                        PurlinOpt.X1 = g_eixos[i-1].StartPoint.X;
+                        PurlinOpt.X2 = g_eixos[i].StartPoint.X;
 
-                        var origens_p = orig_verts.FindAll(x => x.X >= PurlinOpt.X1 && x.X <= PurlinOpt.X2);
                         
 
 
@@ -1064,9 +1068,9 @@ namespace DLM.cad
                             npurlin.Direita.Flange_Braces.Add(p);
                         }
 
-                        foreach (var p in origens_p)
+                        foreach (var p in correntes)
                         {
-                            npurlin.Esquerda.Furos_Manuais.Add(p.X - PurlinOpt.X1);
+                            npurlin.Esquerda.Furos_Manuais.Add(p.MinX- PurlinOpt.X1);
                         }
 
                         npurlin.Calcular();
