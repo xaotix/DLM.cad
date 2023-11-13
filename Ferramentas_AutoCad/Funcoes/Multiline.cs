@@ -295,7 +295,7 @@ namespace DLM.cad
                 {
                     var angulo = Math.Round(Math.Abs(new DLM.desenho.P3d(lista.Min(x => x.X), lista.Min(x => x.Y)).GetAngulo(new DLM.desenho.P3d(lista.Max(x => x.X), lista.Max(x => x.Y)))), 2);
                     var comp = Math.Abs(new P3d(lista.Max(x => x.X), lista.Max(x => x.Y)).Distancia(new P3d(lista.Min(x => x.X), lista.Min(x => x.Y))));
-                    if (angulo >= 180)
+                    while (angulo >= 180)
                     {
                         angulo = angulo - 180;
                     }

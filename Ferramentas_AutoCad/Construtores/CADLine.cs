@@ -64,23 +64,7 @@ namespace DLM.cad
         }
 
 
-        public Sentido Sentido
-        {
-            get
-            {
-                var ang = Math.Round(Math.Abs(this.Angulo));
-                if (ang == 0 | ang ==180 | ang == 360)
-                {
-                    return Sentido.Horizontal;
-                }
-                else if(ang == 90 | ang == 270)
-                {
-                    return Sentido.Vertical;
-                }
-                return Sentido.Inclinado;
-            }
-        }
-
+        public Sentido Sentido { get; private set; } = Sentido.Inclinado;
 
         public double Angulo { get; private set; }
         public ObjectId ObjectId { get; private set; }
@@ -89,7 +73,7 @@ namespace DLM.cad
         public P3d StartPoint { get; private set; }
         public P3d EndPoint { get; private set; }
         public double Comprimento { get; private set; }
-        public Line Line { get; private set; } 
+        public Line Line { get; private set; }
         public CADLine(Line linha)
         {
             this.Line = linha;
@@ -100,6 +84,20 @@ namespace DLM.cad
             this.Linetype = linha.Linetype;
             this.Angulo = linha.Angle.RadianosParaGraus();
             this.ObjectId = linha.ObjectId;
+
+            var ang = this.Angulo.Normalizar(360);
+            if (ang == 0 | ang == 180 | ang == 360)
+            {
+                this.Sentido = Sentido.Horizontal;
+            }
+            else if (ang == 90 | ang == 270)
+            {
+                this.Sentido = Sentido.Vertical;
+            }
+            else
+            {
+                this.Sentido = Sentido.Inclinado;
+            }
         }
     }
 }

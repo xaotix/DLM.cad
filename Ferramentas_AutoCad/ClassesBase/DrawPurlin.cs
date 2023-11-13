@@ -40,6 +40,8 @@ namespace DLM.cad
         public double Comprimento => (X02 - X01).Round(0).Abs();
         [Browsable(false)]
         public double Vao => (X2 - X1).Round(0).Abs();
+
+        public List<MlClass> MultiLines { get; set; } = new List<MlClass>();
         public DrawPurlin()
         {
             this.TR1FBS.Add(305);

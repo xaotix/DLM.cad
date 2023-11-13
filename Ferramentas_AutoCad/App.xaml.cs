@@ -18,24 +18,7 @@ namespace DLM.cad
         {
 
         }
-        private void seleciona_tudo(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = null;
-            if (sender is TextBox)
-            {
-                textBox = ((TextBox)sender);
 
-            }
-
-
-            if (textBox != null)
-            {
-                textBox.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    textBox.SelectAll();
-                }));
-            }
-        }
     }
 
 }
