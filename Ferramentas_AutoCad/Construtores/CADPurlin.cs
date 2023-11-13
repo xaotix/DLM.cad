@@ -504,7 +504,7 @@ namespace DLM.cad
                 }
             }
             
-            return _correntes.OrderBy(x => x.Minx).ToList(); 
+            return _correntes.OrderBy(x => x.MinX).ToList(); 
         }
 
         private List<CADMline> _tirantes { get; set; } = null;

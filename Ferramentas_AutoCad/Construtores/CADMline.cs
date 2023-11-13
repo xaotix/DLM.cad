@@ -61,35 +61,11 @@ namespace DLM.cad
             return ps;
         }
 
-        public double Maxx
-        {
-            get
-            {
-                return Inicio.X > Fim.X ? Inicio.X : Fim.X;
-            }
-        }
-        public double Maxy
-        {
-            get
-            {
-                return Inicio.Y > Fim.Y ? Inicio.Y : Fim.Y;
-            }
-        }
-        public double Miny
-        {
-            get
-            {
-                return Inicio.Y < Fim.Y ? Inicio.Y : Fim.Y;
-            }
-        }
-        public double Minx
-        {
-            get
-            {
-                return Inicio.X < Fim.X ? Inicio.X : Fim.X;
-            }
-        }
-        public double Angulo { get; set; } = 0;
+        public double MaxX { get; private set; } = 0;
+        public double MaxY { get; private set; } = 0;
+        public double MinY { get; private set; } = 0;
+        public double MinX { get; private set; } = 0;
+        public double Angulo { get; private set; } = 0;
         public List<Point3d> Pontos { get; set; } = new List<Point3d>();
         public CADMline()
         {
@@ -110,6 +86,12 @@ namespace DLM.cad
             this.Largura = Math.Round(largura);
 
             this.Pontos = Ut.GetPontos(this.Mline);
+
+            this.MinX = Inicio.X < Fim.X ? Inicio.X : Fim.X; 
+            this.MinY = Inicio.Y < Fim.Y ? Inicio.Y : Fim.Y;
+
+            this.MaxY = Inicio.Y > Fim.Y ? Inicio.Y : Fim.Y;
+            this.MaxX = Inicio.X > Fim.X ? Inicio.X : Fim.X;
         }
     }
 }

@@ -990,7 +990,6 @@ namespace DLM.cad
             if (!PurlinOpt.Propriedades())
             { return; }
 
-            var orig_verts = new List<P3d>();
             var cad = GetCADBase();
 
 
@@ -1003,16 +1002,6 @@ namespace DLM.cad
             var correntes = mlines.GetVerticais().Select(x=> new CADMline(x, Tipo_Multiline.Desconhecido)).ToList();
             var eixos = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical);
             var purlins = mlines.GetHorizontais().Select(x => new CADMline(x, Tipo_Multiline.Desconhecido));
-
-
-
-            if (eixos.Count > 0)
-            {
-                var minY = eixos.Min(x => x.StartPoint.Y);
-                var minX = eixos.Min(x => x.StartPoint.X);
-                var maxX = eixos.Max(x => x.StartPoint.X);
-            }
-
 
 
             var dim1 = 15.0;
@@ -1029,9 +1018,9 @@ namespace DLM.cad
                 {
                     if (PurlinOpt.InserirXlines)
                     {
-                        for (int i = 0; i < orig_verts.Count; i++)
+                        for (int i = 0; i < correntes.Count; i++)
                         {
-                            cad.AddXline(orig_verts[i], "HIDDEN", System.Drawing.Color.Yellow);
+                            cad.AddXline(new P3d(correntes[i].MinX), "HIDDEN", System.Drawing.Color.Yellow);
                         }
                         for (int i = 0; i < eixos.Count; i++)
                         {
@@ -1055,7 +1044,7 @@ namespace DLM.cad
                         PurlinOpt.X2 = eixos[i].StartPoint.X;
 
                         var origens_p = orig_verts.FindAll(x => x.X >= PurlinOpt.X1 && x.X <= PurlinOpt.X2);
-
+                        
 
 
 

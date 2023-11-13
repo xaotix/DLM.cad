@@ -294,7 +294,7 @@ namespace DLM.cad
                             var pur2 = purlins[i];
                             double comp = Math.Abs(Math.Round(pur2.Multiline.Centro.Y - pur1.Multiline.Centro.Y));
                             var centro = pur1.Multiline.Centro.Centro(pur2.Multiline.Centro);
-                            centro = new P3d(corrente.Minx, centro.Y);
+                            centro = new P3d(corrente.MinX, centro.Y);
 
                             /*verifica se a corrente tem um comp min ok e se está dentro de 2 purlin*/
                             if (comp >= Core.GetCADPurlin().CorrenteCompMin && centro.X >= pur1.X1 && centro.X <= pur1.X2 && centro.X > pur2.X1 && centro.X <= pur2.X2)
