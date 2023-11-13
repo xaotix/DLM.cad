@@ -998,9 +998,25 @@ namespace DLM.cad
             cad.SelecionarObjetos(CAD_TYPE.MLINE, CAD_TYPE.LINE);
 
             var mlines = cad.GetMultilines();
-            var g_correntes = mlines.GetVerticais().Select(x=> new CADMline(x, Tipo_Multiline.Desconhecido)).ToList();
-            var g_eixos = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical);
-            var g_purlins = mlines.GetHorizontais().Select(x => new CADMline(x, Tipo_Multiline.Desconhecido)).ToList();
+            var g_correntes = mlines.GetVerticais().Select(x=> new CADMline(x, Tipo_Multiline.Desconhecido)).ToList().OrderBy(x=>x.MinX).ToList();
+            var g_eixos_g = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x=>x.MinX).ToList();
+            var g_purlins = mlines.GetHorizontais().Select(x => new CADMline(x, Tipo_Multiline.Desconhecido)).ToList().OrderBy(x=>x.MinY).ToList();
+
+            var g_eixos = new List<CADLine>();
+            for (int i = 0; i < g_eixos_g.Count; i++)
+            {
+                if(i == 0)
+                {
+                    g_eixos.Add(g_eixos_g[i]);
+                }
+                else
+                {
+                    if(g_eixos_g[i].Min.Distancia(g_eixos.Last().Min)>=tmin)
+                    {
+                        g_eixos.Add(g_eixos_g[i]);
+                    }
+                }
+            }
 
 
             var dim1 = 15.0;
@@ -1031,10 +1047,13 @@ namespace DLM.cad
 
                     for (int i = 1; i < g_eixos.Count; i++)
                     {
+                        PurlinOpt.X1 = g_eixos[i - 1].MinX;
+                        PurlinOpt.X2 = g_eixos[i].MinX;
+
                         /*pega todas as correntes passando dentro dos eixos - como é vertical, nao precisa verificar as 2 coord.*/
                         var correntes = g_correntes.FindAll(x => x.MinX >= PurlinOpt.X1 && x.MinX <= PurlinOpt.X2);
                         /*pega todas as purlins passando pelos eixos*/
-                        var purlins = g_purlins.FindAll(x => x.MinX >= PurlinOpt.X1 && x.MaxX >= PurlinOpt.X2);
+                        var purlins = g_purlins.FindAll(x => x.MinX <= PurlinOpt.X1 && x.MaxX >= PurlinOpt.X2);
 
 
                         if (i.E_Par())
