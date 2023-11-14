@@ -100,7 +100,7 @@ namespace DLM.cad
         {
             GetCADPurlin().SelecionarObjetos(Tipo_Selecao.MultiLines);
 
-            var mls = GetCADPurlin().GetMultilines().GetMlineStyles().Select(x => x.Name).Distinct().ToList();
+            var mls = GetCADPurlin().GetMls().GetMlineStyles().Select(x => x.Name).Distinct().ToList();
             foreach (var ml in mls)
             {
                 Ut.AddMensagem($"\n{ml}");
@@ -966,8 +966,8 @@ namespace DLM.cad
             GetCADPurlin().SetPurlin();
         }
 
-        [CommandMethod(nameof(xpurlinApagarBlocos))]
-        public static void xpurlinApagarBlocos()
+        [CommandMethod(nameof(xpurlinLimpar))]
+        public static void xpurlinLimpar()
         {
             var sel = GetCADPurlin().SelecionarObjetos(Tipo_Selecao.Blocos);
             if (sel.Status == PromptStatus.OK)
@@ -977,13 +977,13 @@ namespace DLM.cad
         }
 
 
-        [CommandMethod(nameof(xpurlinvista))]
-        public static void xpurlinvista()
+        [CommandMethod(nameof(xpurlin))]
+        public static void xpurlin()
         {
             GetCADPurlin().Purlin();
         }
 
-        public static DrawPurlin PurlinOpt { get; set; } = new DrawPurlin();
+        public static DrawPurlinCFG PurlinOpt { get; set; } = new DrawPurlinCFG();
         [CommandMethod(nameof(purlinXLines))]
         public static void purlinXLines()
         {
@@ -996,24 +996,18 @@ namespace DLM.cad
             var tmin = 20.0;
             cad.SelecionarObjetos(CAD_TYPE.MLINE, CAD_TYPE.LINE);
 
-            var mlines = cad.GetMultilines().Select(x => new CADMline(x, Tipo_Multiline.Desconsiderar)).ToList();
+            var cmlines = cad.GetMultiLines();
 
-            if (mlines.Count == 0)
-            {
-                cad.AddMensagem("Nenhuma multiline encontrada na seleção");
-                return;
-            }
 
-            var mlinesstyles = mlines.GroupBy(x => x.GetStyle().Name).Select(x => new MlClass(x.Key, x.ToList()));
             PurlinOpt.MultiLines = new List<MlClass>();
-            PurlinOpt.MultiLines.AddRange(mlinesstyles);
+            PurlinOpt.MultiLines.AddRange(cmlines);
             if (!PurlinOpt.Propriedades())
             { return; }
 
         denovo:
 
             PurlinOpt.MultiLines.Propriedades();
-            var mls_sem_definicao = PurlinOpt.MultiLines.FindAll(x => x.Tipo == Tipo_Multiline.Desconhecido);
+            var mls_sem_definicao = PurlinOpt.MultiLines.FindAll(x => x.Tipo == Tipo_Multiline.Definir);
 
             if (mls_sem_definicao.Count > 0)
             {
@@ -1028,15 +1022,14 @@ namespace DLM.cad
             }
 
 
-            var g_eixos_g = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.MinX).ToList();
+            var g_eixos_g = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.Min.X).ToList();
 
-            var g_correntes = mlines.FindAll(x => x.Sentido == Sentido.Horizontal).ToList();
-            var g_purlins = mlines.FindAll(x => x.Sentido == Sentido.Horizontal).ToList();
-            var g_tirantes = mlines.FindAll(x => x.Sentido == Sentido.Inclinado).ToList();
+            var g_correntes = cmlines.FindAll(x=>x.Tipo == Tipo_Multiline.Corrente).SelectMany(x=>x.Mlines).ToList();
+            var g_purlins = cmlines.FindAll(x => x.Tipo == Tipo_Multiline.Purlin).SelectMany(x => x.Mlines).ToList();
+            var g_tirantes = cmlines.FindAll(x => x.Tipo == Tipo_Multiline.Tirante).SelectMany(x => x.Mlines).ToList();
+            var g_vigas = cmlines.FindAll(x => x.Tipo == Tipo_Multiline.Viga_Apoio).SelectMany(x => x.Mlines).ToList();
 
-            var mls = new List<CADMline>();
-            mls.AddRange(g_correntes);
-            mls.AddRange(g_purlins);
+
 
 
 
@@ -1077,7 +1070,7 @@ namespace DLM.cad
                         }
                         for (int i = 0; i < g_eixos.Count; i++)
                         {
-                            cad.AddXline(g_eixos[i].StartPoint, "DASHDOT", System.Drawing.Color.Red);
+                            cad.AddXline(g_eixos[i].P1, "DASHDOT", System.Drawing.Color.Red);
                         }
                     }
 
@@ -1085,43 +1078,56 @@ namespace DLM.cad
 
                     for (int i = 1; i < g_eixos.Count; i++)
                     {
-                        PurlinOpt.X1 = g_eixos[i - 1].MinX;
-                        PurlinOpt.X2 = g_eixos[i].MinX;
+                        var X1 = g_eixos[i - 1].Min.X;
+                        var X2 = g_eixos[i].Min.X;
+                        var TR1 = PurlinOpt.TR1;
+                        var TR2 = PurlinOpt.TR2;
+                        var X01 = X1 - TR1;
+                        var X02 = X2 + TR2;
 
-                        /*pega todas as correntes passando dentro dos eixos - como é vertical, nao precisa verificar as 2 coord.*/
-                        var correntes = g_correntes.FindAll(x => x.MinX >= PurlinOpt.X1 && x.MinX <= PurlinOpt.X2);
-                        /*pega todas as purlins passando pelos eixos*/
-                        var purlins = g_purlins.FindAll(x =>
-                        x.MinX <= PurlinOpt.X1 && x.MaxX >= PurlinOpt.X2
-                        |
-                        /*se está na direita e passa somente num eixo*/
-                        (x.MaxX >= PurlinOpt.X2 && x.MinX < PurlinOpt.X2)
-                        |
-                        /*se está na esquerda e passa somente num eixo*/
-                        (x.MinX <= PurlinOpt.X1 && x.MaxX > PurlinOpt.X1)
-                        );
-
+                        var Vao = (X2 - X1).Round(0);
+                        var Comprimento = Vao + TR1 + TR2;
+                        var Y = 0.0;
 
 
                         if (i.E_Par())
                         {
-                            PurlinOpt.Y = pt.Y - of2;
+                            Y = pt.Y - of2;
                         }
                         else
                         {
-                            PurlinOpt.Y = pt.Y;
+                            Y = pt.Y;
                         }
-                        PurlinOpt.X1 = g_eixos[i - 1].StartPoint.X;
-                        PurlinOpt.X2 = g_eixos[i].StartPoint.X;
+
+
+
+
+                        /*pega todas as correntes passando dentro dos eixos - como é vertical, nao precisa verificar as 2 coord.*/
+                        var correntes = g_correntes.FindAll(x => x.MinX >= X1 && x.MinX <= X2);
+                        /*pega todas as purlins passando pelos eixos*/
+                        var purlins = g_purlins.FindAll(x =>
+                        x.MinX <= X1 && x.MaxX >= X2
+                        |
+                        /*se está na direita e passa somente num eixo*/
+                        (x.MaxX >= X2 && x.MinX < X2)
+                        |
+                        /*se está na esquerda e passa somente num eixo*/
+                        (x.MinX <= X1 && x.MaxX > X1)
+                        );
+
+                        var tirantes = g_tirantes.FindAll(x => x.MinX >= X1 && x.MaxX <= X2).ToList();
+
+
+               
 
 
 
 
 
                         var npurlin = new Conexoes.Macros.Purlin();
-                        npurlin.Vao = PurlinOpt.Vao;
-                        npurlin.Esquerda.Comprimento = PurlinOpt.TR1;
-                        npurlin.Direita.Comprimento = PurlinOpt.TR2;
+                        npurlin.Vao = X2 - X1;
+                        npurlin.Esquerda.Comprimento = TR1;
+                        npurlin.Direita.Comprimento = TR2;
                         npurlin.Rebater_Furos = PurlinOpt.RebaterFuros;
                         npurlin.Tipo_Corrente = Tipo_Corrente_Purlin.Manual;
                         foreach (var p in PurlinOpt.TR1FBS)
@@ -1136,12 +1142,12 @@ namespace DLM.cad
 
                         foreach (var p in correntes)
                         {
-                            npurlin.Esquerda.Furos_Manuais.Add(p.MinX - PurlinOpt.X1);
+                            npurlin.Esquerda.Furos_Manuais.Add(p.MinX - X1);
                         }
 
                         npurlin.Calcular();
 
-                        var p0 = new P3d(PurlinOpt.X01, PurlinOpt.Y);
+                        var p0 = new P3d(X01, Y);
                         cad.AddLinha(p0, p0.MoverX(npurlin.Comprimento), "CONTINUOUS", System.Drawing.Color.Yellow);
 
                         var frs = npurlin.GetFurosVista(false);
@@ -1151,14 +1157,14 @@ namespace DLM.cad
                         {
                             var cor = npurlin.GetCor(p.Posicao).GetCor().Color.GetColor();
 
-                            var p1 = new P3d(p.X + PurlinOpt.X01, PurlinOpt.Y);
+                            var p1 = new P3d(p.X +X01, Y);
                             cad.AddLinha(p1.MoverY(of1), p1.MoverY(-of1), "CONTINUOUS", cor);
 
                             cad.AddMtext(p1.MoverY(-of1), p.Posicao.ToString(), 90, dim1);
 
                             cad.AddCotaOrdinate(p0, p1, p1.MoverY(dim2), dim1);
                         }
-                        cad.AddCotaHorizontal(p0, p0.MoverX(PurlinOpt.Comprimento), "", p0.MoverY(-dim2).MoverX(PurlinOpt.Comprimento / 2), false, dim1);
+                        cad.AddCotaHorizontal(p0, p0.MoverX(Comprimento), "", p0.MoverY(-dim2).MoverX(Comprimento / 2), false, dim1);
                     }
                 }
             }

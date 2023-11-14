@@ -55,9 +55,7 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
+ 
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -96,21 +94,14 @@
                                 <Button Content="0" Name="furos_manuais_layer" Grid.Row="6" Grid.Column="1" Click="furos_manuais_layer_Click" IsEnabled="{Binding ElementName=mapeia_furos, Path=IsChecked,TargetNullValue=false}"  Grid.ColumnSpan="2"/>
 
                                 <CheckBox Grid.Row="7" Content="Correntes" Name="mapeia_correntes" IsChecked="True"/>
-                                <ListView x:Name="correntes_mlstyles" Grid.Row="7" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_correntes, Path=IsChecked,TargetNullValue=false}"/>
-                                <ListView x:Name="correntes_multilines" Grid.Row="7" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_correntes, Path=IsChecked,TargetNullValue=false}"/>
-
-                                <CheckBox Grid.Row="8" Content="Tirantes" Name="mapeia_tirantes" IsChecked="True"/>
-                                <ListView x:Name="tirantes_mlstyles" Grid.Row="8" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_tirantes, Path=IsChecked,TargetNullValue=false}"/>
-                                <ListView x:Name="tirantes_multilines" Grid.Row="8" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_tirantes, Path=IsChecked,TargetNullValue=false}"/>
-
-                                    <CheckBox Grid.Row="9" Content="Purlins" Name="mapeia_tercas" IsChecked="True"/>
-                                <ListView x:Name="tercas_mlstyles" Grid.Row="9" Grid.Column="1" Height="75" IsEnabled="{Binding ElementName=mapeia_tercas, Path=IsChecked,TargetNullValue=false}"/>
-                                <ListView x:Name="tercas_multilines" Grid.Row="9" Grid.Column="2" Height="75" IsEnabled="{Binding ElementName=mapeia_tercas, Path=IsChecked,TargetNullValue=false}"/>
                                     <Label  Grid.Row="10">
                                         <TextBlock>Eixos/Vãos <LineBreak/> encontrados:</TextBlock>
                                     </Label>
                                     <ListView Height="75" x:Name="eixos_mapeados" Grid.Row="10" Grid.Column="1"/>
                                     <ListView Height="75" x:Name="vaos_mapeados" Grid.Row="10" Grid.Column="2"/>
+
+                                    <Label Content="Multilines:" Grid.Row="9"/>
+                                    <DataGrid Name="Lista" Height="150" Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="2"  CanUserAddRows="False" CanUserDeleteRows="False"/>
                                 </Grid>
                         </ScrollViewer>
                     </GroupBox>

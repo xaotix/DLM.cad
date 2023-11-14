@@ -124,7 +124,7 @@ namespace DLM.cad
             var s = pp.SelecionarObjetos();
             if (s.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) { return; }
 
-            var multiline = pp.GetMultilines();
+            var multiline = pp.GetMls();
 
             if (multiline.Count == 0) { return; }
 

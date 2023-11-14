@@ -29,7 +29,7 @@ namespace DLM.cad
                 {
                     return 0;
                 }
-                return Linha.StartPoint.X < Linha.EndPoint.X ? Linha.StartPoint.X : Linha.EndPoint.X;
+                return Linha.P1.X < Linha.P2.X ? Linha.P1.X : Linha.P2.X;
             }
         }
         public double MaxX
@@ -40,7 +40,7 @@ namespace DLM.cad
                 {
                     return 0;
                 }
-                return Linha.StartPoint.X > Linha.EndPoint.X ? Linha.StartPoint.X : Linha.EndPoint.X;
+                return Linha.P1.X > Linha.P2.X ? Linha.P1.X : Linha.P2.X;
             }
         }
         public double MinY
@@ -51,7 +51,7 @@ namespace DLM.cad
                 {
                     return 0;
                 }
-                return Linha.StartPoint.Y < Linha.EndPoint.Y ? Linha.StartPoint.Y : Linha.EndPoint.Y;
+                return Linha.P1.Y < Linha.P2.Y ? Linha.P1.Y : Linha.P2.Y;
             }
         }
         public double MaxY
@@ -62,7 +62,7 @@ namespace DLM.cad
                 {
                     return 0;
                 }
-                return Linha.StartPoint.Y>Linha.EndPoint.Y?Linha.StartPoint.Y:Linha.EndPoint.Y;
+                return Linha.P1.Y>Linha.P2.Y?Linha.P1.Y:Linha.P2.Y;
             }
         }
         public double Z

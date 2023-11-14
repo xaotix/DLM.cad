@@ -25,7 +25,7 @@ namespace DLM.cad
         private List<CADLine> _Linhas { get; set; }
         private List<string> _Layers { get; set; }
         private List<Furo> _Furos { get; set; }
-        private List<BlockAttributes> _Blocos_Eixo { get; set; }
+        private List<BlockAttributes> _Atributos_Eixos { get; set; }
         private List<PolyInfo> _Polies { get; set; }
 
         public void ApagarCotas()
@@ -678,11 +678,11 @@ namespace DLM.cad
         }
         public List<CADLine> GetLinhas_Verticais()
         {
-            return GetCADLines().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.StartPoint.X).ToList();
+            return GetCADLines().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.P1.X).ToList();
         }
         public List<CADLine> GetLinhas_Horizontais()
         {
-            return GetCADLines().FindAll(x => x.Sentido == Sentido.Horizontal).OrderBy(x => x.StartPoint.X).ToList();
+            return GetCADLines().FindAll(x => x.Sentido == Sentido.Horizontal).OrderBy(x => x.P1.X).ToList();
         }
 
 
@@ -737,7 +737,35 @@ namespace DLM.cad
             return _Furos;
         }
 
-        public List<Mline> GetMultilines()
+        private List<MlClass> _multiLines { get; set; }
+        public List<MlClass> GetMultiLines()
+        {
+            if(_multiLines==null)
+            {
+                _multiLines = new List<MlClass>();
+
+                var mlines = this.GetMls().Select(x => new CADMline(x, Tipo_Multiline.Ignorar)).ToList();
+
+                if (mlines.Count == 0)
+                {
+                    this.AddMensagem("Nenhuma multiline encontrada na seleção");
+                    return new List<MlClass>();
+                }
+
+                _multiLines.AddRange(mlines.GroupBy(x => x.GetStyle().Name).Select(x => new MlClass(x.Key, x.ToList())).ToList());
+                foreach (var ml in _multiLines)
+                {
+                    var ig = MlClass.GetSetup().Find(x => x.Nome == ml.Nome);
+                    if (ig != null)
+                    {
+                        ml.Tipo = ig.Tipo;
+                    }
+                }
+            }
+
+            return _multiLines;
+        }
+        public List<Mline> GetMls()
         {
             var lista = new List<Mline>();
             lista.AddRange(Selecoes.Filter<Mline>());
@@ -763,17 +791,19 @@ namespace DLM.cad
         }
 
 
-        public List<BlockAttributes> GetBlocos_Eixos(bool update = false)
+        public List<BlockAttributes> GetAtributosEixos(bool update = false)
         {
             /*pega blocos dinâmicos*/
-            if (_Blocos_Eixo == null | update)
+            if (_Atributos_Eixos == null | update)
             {
-                _Blocos_Eixo = Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains(this.BlocoEixos)).Select(x => x.GetAttributes()).ToList();
+                var blks = Selecoes.Filter<BlockReference>();
+                var lbksnms = blks.GroupBy(x => Blocos.GetNome(x).ToUpper()).ToList();
+                _Atributos_Eixos = lbksnms.FindAll(x=> x.Key.Contains(this.BlocoEixos)).SelectMany(x => x.ToList()).Select(x=>x.GetAttributes()).ToList();
             }
 
-            return _Blocos_Eixo;
+            return _Atributos_Eixos;
         }
-        public List<BlockAttributes> GetBlocos_Nivel()
+        public List<BlockAttributes> GetAtributosNivel()
         {
             /*pega blocos dinâmicos*/
             return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x => x.GetAttributes()).ToList();
@@ -844,13 +874,6 @@ namespace DLM.cad
 
         public PromptSelectionResult SelecionarObjetos(Tipo_Selecao tipo = Tipo_Selecao.Tudo)
         {
-            PromptSelectionOptions pp = new PromptSelectionOptions();
-            pp.RejectObjectsOnLockedLayers = true;
-            pp.RejectPaperspaceViewport = true;
-            pp.RejectObjectsFromNonCurrentSpace = true;
-            pp.AllowDuplicates = false;
-
-
             var lista_filtro = new List<TypedValue>();
 
             switch (tipo)
@@ -915,7 +938,7 @@ namespace DLM.cad
             /*Reseta a Seleção Atual*/
             _Polies = null;
             _Furos = null;
-            _Blocos_Eixo = null;
+            _Atributos_Eixos = null;
             _Entities_Blocos = null;
             _Layers = null;
             _Linhas = null;

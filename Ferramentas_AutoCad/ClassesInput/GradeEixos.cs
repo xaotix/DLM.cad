@@ -267,7 +267,7 @@ namespace DLM.cad
             }
 
 
-            var niveis = Core.GetCADPurlin().GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
+            var niveis = Core.GetCADPurlin().GetAtributosNivel().OrderBy(x => x.GetCoordenada().Y).ToList();
 
             /*insere o nível*/
             if (niveis.Count > 0)
@@ -301,7 +301,7 @@ namespace DLM.cad
 
         public double GetNivel()
         {
-            var niveis = Core.GetCADPurlin().GetBlocos_Nivel().OrderBy(x => x.GetCoordenada().Y).ToList();
+            var niveis = Core.GetCADPurlin().GetAtributosNivel().OrderBy(x => x.GetCoordenada().Y).ToList();
             if (niveis.Count > 0)
             {
                 var nivel = niveis.Last().GetCoordenada().Origem.GetPoint3D();

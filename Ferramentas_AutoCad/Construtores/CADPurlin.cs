@@ -158,31 +158,16 @@ namespace DLM.cad
         [Category("Purlin")]
         [DisplayName("Fixador")]
         public List<string> PurlinSuportes { get; set; } = new List<string> { "PG1", "PC3","PC5","PC9", "PG3"};
-        [Category("Tirantes")]
-        [DisplayName("MLStyle")]
-        public List<string> TirantesMLStyles { get; set; } = new List<string> { "10MM" };
-        [Category("Correntes")]
-        [DisplayName("MLStyle")]
-        public List<string> CorrenteMLStyles { get; set; } = new List<string> {"L32X32X3MM","DIAG50X3","CR", "CR2", "L51X51X3MM"};
 
 
 
 
-        [Category("Purlin")]
-        [DisplayName("MLStyle")]
-        public List<string> TercasMLStyles { get; set; } = new List<string> { "Z360", "Z185", "Z292", "Z216", "ZZ360","TERCA", "TERCA1", "TERCA_SUP","Z64", "Z89" };
-        [Category("Tirantes")]
-        [DisplayName("Mapear")]
-        public bool MapearTirantes { get; set; } = true;
-        [Category("Correntes")]
-        [DisplayName("Mapear")]
-        public bool MapearCorrentes { get; set; } = true;
+
+
         [Category("Peças Montagem")]
         [DisplayName("Mapear")]
         public bool Mapear_Pecas_Montagem { get; set; } = true;
-        [Category("Purlin")]
-        [DisplayName("Mapear")]
-        public bool MapearTercas { get; set; } = true;
+
         private Conexoes.RMLite _fb_padrao { get; set; }
         private Conexoes.RMLite _purlin_padrao { get; set; }
         private Conexoes.RMLite _purlin_padrao_suporte { get; set; }
@@ -306,7 +291,7 @@ namespace DLM.cad
                         return;
                     }
 
-                    Menus.Purlin pp = new Menus.Purlin();
+                    var pp = new Menus.Purlin();
                     pp.eixos_mapeados.ItemsSource = Core.GetCADPurlin().GetGrade().GetEixosVerticais();
                     pp.vaos_mapeados.ItemsSource = Core.GetCADPurlin().GetGrade().GetVaosVerticais();
 
@@ -315,12 +300,7 @@ namespace DLM.cad
                     Ut.GetTIRANTES();
                     Ut.GetCORRENTES();
 
-                    pp.correntes_mlstyles.ItemsSource = Core.GetCADPurlin().CorrenteMLStyles;
-                    pp.tirantes_mlstyles.ItemsSource = Core.GetCADPurlin().TirantesMLStyles;
-                    pp.tercas_mlstyles.ItemsSource = Core.GetCADPurlin().TercasMLStyles;
-                    pp.correntes_multilines.ItemsSource = Core.GetCADPurlin().GetMLCorrentes();
-                    pp.tirantes_multilines.ItemsSource = Core.GetCADPurlin().GetMLTirantes();
-                    pp.tercas_multilines.ItemsSource = Core.GetCADPurlin().GetMLPurlins();
+                    pp.Lista.ItemsSource = Core.GetCADPurlin().GetMultiLines();
 
 
 
@@ -366,42 +346,32 @@ namespace DLM.cad
                 var vao = verticais[i];
 
 
-                if (MapearTercas)
+                foreach (var p in vao.GetPurlins())
                 {
-                    foreach (var p in vao.GetPurlins())
+                    if (p.Comprimento > this.PurlinBalancoMax)
                     {
-                        if (p.Comprimento > this.PurlinBalancoMax)
+                        AddBlocoPurlin(p.Letra, p.id_peca, p.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
+
+                        if (p.FBD_Comp > 0 && fb != null)
                         {
-                            AddBlocoPurlin(p.Letra, p.id_peca, p.Vao, p.TRE, p.TRD, p.CentroBloco, p.FurosCorrentes, p.FurosManuais);
+                            Blocos.IndicacaoPeca(Cfg.Init.CAD_Bloco_PECA_INDICACAO_ESQ, p.FBD, p.FBD_Comp, this.id_flange_brace, p.Origem_Direita, this.DescFB, this.GetEscala());
+                        }
 
-                            if (p.FBD_Comp > 0 && fb != null)
-                            {
-                                Blocos.IndicacaoPeca(Cfg.Init.CAD_Bloco_PECA_INDICACAO_ESQ, p.FBD, p.FBD_Comp, this.id_flange_brace, p.Origem_Direita, this.DescFB, this.GetEscala());
-                            }
-
-                            if (p.FBE_Comp > 0 && fb != null)
-                            {
-                                Blocos.IndicacaoPeca(Cfg.Init.CAD_Bloco_PECA_INDICACAO_DIR, p.FBE, p.FBE_Comp, this.id_flange_brace, p.Origem_Esquerda, this.DescFB, this.GetEscala());
-                            }
+                        if (p.FBE_Comp > 0 && fb != null)
+                        {
+                            Blocos.IndicacaoPeca(Cfg.Init.CAD_Bloco_PECA_INDICACAO_DIR, p.FBE, p.FBE_Comp, this.id_flange_brace, p.Origem_Esquerda, this.DescFB, this.GetEscala());
                         }
                     }
-
                 }
 
-                if (MapearCorrentes)
+                foreach (var p in vao.GetCorrentes())
                 {
-                    foreach (var p in vao.GetCorrentes())
-                    {
-                        AddBlocoCorrente(p.Letra, p.CentroBloco, p.EntrePurlin, p.Descontar, p.GetPeca().COD_DB, p.Suporte);
-                    }
+                    AddBlocoCorrente(p.Letra, p.CentroBloco, p.EntrePurlin, p.Descontar, p.GetPeca().COD_DB, p.Suporte);
                 }
 
-                if (MapearTirantes)
+                foreach (var p in vao.GetTirantes())
                 {
-                    foreach (var p in vao.GetTirantes())
-                    {
-                        AddBlocoTirante(p.Letra, p.CentroBloco, Math.Round(p.Multiline.Comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
-                    }
+                    AddBlocoTirante(p.Letra, p.CentroBloco, Math.Round(p.Multiline.Comprimento), p.Offset, p.Offset, p.GetPeca().COD_DB, p.Suporte, p.Suporte);
                 }
             }
 
@@ -412,7 +382,7 @@ namespace DLM.cad
 
             AddBarra();
             AddMensagem("\n" + blocos_excluir.Count.ToString() + " blocos encontrados excluídos");
-            AddMensagem("\n" + this.GetMultilines().Count.ToString() + " Multilines encontradas");
+            AddMensagem("\n" + this.GetMls().Count.ToString() + " Multilines encontradas");
             AddMensagem("\n" + this.LinhasFuros().Count.ToString() + " Linhas de furos manuais");
             AddBarra();
             AddMensagem("\n" + this.GetMLTirantes().Count + " Tirantes");
@@ -424,18 +394,11 @@ namespace DLM.cad
         public List<BlockReference> LimparBlocos()
         {
             var blocos_excluir = new List<BlockReference>();
-            if (MapearTercas)
-            {
-                blocos_excluir.AddRange(this.Getblocos_tercas());
-            }
-            if (MapearTirantes)
-            {
-                blocos_excluir.AddRange(this.Getblocos_tirantes());
-            }
-            if (MapearCorrentes)
-            {
-                blocos_excluir.AddRange(this.Getblocos_correntes());
-            }
+            blocos_excluir.AddRange(this.Getblocos_tercas());
+            blocos_excluir.AddRange(this.Getblocos_tirantes());
+            blocos_excluir.AddRange(this.Getblocos_correntes());
+
+
             acDoc.Apagar(blocos_excluir.Select(x => x as Entity).ToList());
             return blocos_excluir;
         }
@@ -448,13 +411,13 @@ namespace DLM.cad
 
         public List<Entity> GetObjetosNaoMapeados(bool ignorar_multilines = true)
         {
-            List<Entity> blocos = new List<Entity>();
+            var blocos = new List<Entity>();
             blocos.AddRange(this.Selecoes);
             blocos = blocos.FindAll(x=> Selecoes.Filter<BlockReference>().FindAll(w => w.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
-            blocos = blocos.FindAll(x => this.GetBlocos_Eixos().Find(y => y.Block.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetAtributosEixos().Find(y => y.Block.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetLinhas_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetBlocosSecundariasIndicacao().Find(y => y.ObjectId == x.ObjectId) == null);
-            blocos = blocos.FindAll(x => this.GetBlocos_Nivel().Select(y => y.Block).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => this.GetAtributosNivel().Select(y => y.Block).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
             if(!ignorar_multilines)
             {
                 blocos = blocos.FindAll(x => this.GetMLPurlins().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
@@ -464,6 +427,19 @@ namespace DLM.cad
 
 
             return blocos;
+        }
+
+        public List<CADMline> GetMLPurlins()
+        {
+            return this.GetMultiLines().FindAll(x => x.Tipo == Tipo_Multiline.Purlin).SelectMany(x => x.Mlines).ToList();
+        }
+        public List<CADMline> GetMLCorrentes()
+        {
+            return this.GetMultiLines().FindAll(x => x.Tipo == Tipo_Multiline.Corrente).SelectMany(x => x.Mlines).ToList();
+        }
+        public List<CADMline> GetMLTirantes()
+        {
+            return this.GetMultiLines().FindAll(x => x.Tipo == Tipo_Multiline.Tirante).SelectMany(x => x.Mlines).ToList();
         }
 
         public List<BlockReference> Getblocos_tercas()
@@ -479,94 +455,11 @@ namespace DLM.cad
             return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "CORRENTE_INDICACAO");
         }
 
-        private List<CADMline> _correntes { get; set; } = null;
-        public List<CADMline> GetMLCorrentes( bool reset = false)
-        {
-            if (_correntes == null | reset)
-            {
-                _correntes = new List<CADMline>();
-                var lista = this.GetMultilines().GetVerticais(this.CorrenteCompMin);
 
 
-                var estilos = new List<MlineStyle>();
-                foreach (var s in this.CorrenteMLStyles)
-                {
-                    var st = Multiline.GetMlStyle(s);
-                    if (st != null)
-                        estilos.Add(st);
-                }
-                foreach (var l in lista)
-                {
-                    if (estilos.Find(x => x.ObjectId == l.Style) != null)
-                    {
-                        _correntes.Add(new CADMline(l, Tipo_Multiline.Corrente));
-                    }
-                }
-            }
-            
-            return _correntes.OrderBy(x => x.MinX).ToList(); 
-        }
+       
 
-        private List<CADMline> _tirantes { get; set; } = null;
-        public List<CADMline> GetMLTirantes( bool reset = false)
-        {
-           if(_tirantes==null | reset)
-            {
-                _tirantes = new List<CADMline>();
-                var lista = this.GetMultilines();
-
-                
-
-
-
-                List<MlineStyle> estilos = new List<MlineStyle>();
-                foreach (var s in this.TirantesMLStyles)
-                {
-                    var st = Multiline.GetMlStyle(s);
-                    if (st != null)
-                        estilos.Add(st);
-                }
-
-                foreach (var l in lista)
-                {
-                    if (estilos.Find(x => x.ObjectId == l.Style) != null)
-                    {
-                        _tirantes.Add(new CADMline(l, Tipo_Multiline.Tirante));
-                    }
-                }
-            }
-            return _tirantes;
-        }
-
-        private List<CADMline> _purlins { get; set; }
-        public List<CADMline> GetMLPurlins(bool update = false)
-        {
-            if(_purlins==null | update)
-            {
-                _purlins = new List<CADMline>();
-                var lista = this.GetMultilines().GetHorizontais(this.PurlinCompMin);
-          
-
-
-                var estilos = new List<MlineStyle>();
-                foreach (var s in this.TercasMLStyles)
-                {
-                    var st = Multiline.GetMlStyle(s);
-                   
-                    if(st!=null)
-                        estilos.Add(st);
-                }
-
-                foreach (var l in lista)
-                {
-                    if (estilos.Find(x => x.ObjectId == l.Style) != null)
-                    {
-                        _purlins.Add(new CADMline(l, Tipo_Multiline.Purlin));
-                    }
-                }
-            }
-            return _purlins;
-        }
+        
 
         private GradeEixos _grade { get; set; }
         public GradeEixos GetGrade(bool update = false)
@@ -577,20 +470,19 @@ namespace DLM.cad
                 _grade = new GradeEixos();
 
 
-                var blocos = GetBlocos_Eixos();
+                var blocos = GetAtributosEixos(true);
 
 
-
+                var horiz = GetLinhas_Horizontais().FindAll(x=> x.Comprimento >= this.LayerEixosCompMin);
+                var vertz = GetLinhas_Verticais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin);
                 /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
-                List<CADLine> HORIS1 = GetLinhas_Horizontais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
-                List<CADLine> VERTS1 = GetLinhas_Verticais().FindAll(x => x.Comprimento>=this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
+                var HORIS1 = horiz.FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos));
+                var VERTS1 = vertz.FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos));
 
-                List<CADLine> HORIS = HORIS1.GroupBy(x=>x.MinY).Select(x=>x.First()).ToList().OrderBy(x=>x.MinY).ToList();
-                List<CADLine> VERTS = VERTS1.GroupBy(x => x.MinX).Select(x => x.First()).ToList().OrderBy(x => x.MinX).ToList();
+                var HORIS = HORIS1.GroupBy(x=>x.Min.Y).Select(x=>x.First()).ToList().OrderBy(x=>x.Min.Y).ToList();
+                var VERTS = VERTS1.GroupBy(x => x.Min.X).Select(x => x.First()).ToList().OrderBy(x => x.Min.X).ToList();
 
                 /*organiza por comprimento e pega as linhas maiores*/
-                //HORIS1 = HORIS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
-                //VERTS1 = VERTS1.GroupBy(x => x.Length).OrderByDescending(x => x.Key).Select(x => x.First()).ToList();
 
 
                 if (HORIS.Count > 1)
@@ -601,7 +493,7 @@ namespace DLM.cad
                         double dist = 0;
                         if (_grade.GetEixosHorizontais().Count > 0)
                         {
-                            dist = Math.Round(Math.Abs(HORIS[(int)i].StartPoint.Y - _grade.GetEixosHorizontais().Last().Linha.StartPoint.Y));
+                            dist = Math.Round(Math.Abs(HORIS[(int)i].P1.Y - _grade.GetEixosHorizontais().Last().Linha.P1.Y));
                         }
 
   
@@ -633,14 +525,14 @@ namespace DLM.cad
                         double dist = 0;
                         if (_grade.GetEixosVerticais().Count > 0)
                         {
-                            dist = Math.Round(Math.Abs(VERTS[i].StartPoint.X - _grade.GetEixosVerticais().Last().Linha.StartPoint.X));
+                            dist = Math.Round(Math.Abs(VERTS[i].P1.X - _grade.GetEixosVerticais().Last().Linha.P1.X));
                         }
 
 
 
                         if(dist >= DistanciaMinimaEixos | _grade.GetEixosVerticais().Count == 0)
                         {
-                            List<BlockAttributes> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
+                            var blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
 
 
                             if (blks.Count >= 1)
@@ -673,7 +565,7 @@ namespace DLM.cad
                 {
                     foreach(var s in GetCADLines())
                     {
-                        AddMensagem($"\nLinha: {s.StartPoint.ToString()} Comprimento: {s.Comprimento} Angulo: {s.Angulo}");
+                        AddMensagem($"\nLinha: {s.P1.ToString()} Comprimento: {s.Comprimento} Angulo: {s.Angulo}");
                     }
                     var _horizon = GetLinhas_Horizontais();
 
@@ -693,27 +585,27 @@ namespace DLM.cad
 
 
 
-                        var verts = _verts.FindAll(x =>x.MinX>lhs.MinX+1 && x.MaxX<lhs.MaxX-1);
+                        var verts = _verts.FindAll(x =>x.Min.X>lhs.Min.X+1 && x.Max.X<lhs.Max.X-1);
                         var passa = new List<CADLine>();
 
                         foreach (var v in verts)
                         {
                            
-                            var max_y = v.StartPoint.Y > v.EndPoint.Y ? v.StartPoint.Y : v.EndPoint.Y;
-                            var min_y = v.StartPoint.Y < v.EndPoint.Y ? v.StartPoint.Y : v.EndPoint.Y;
-                            if (max_y >= lhs.StartPoint.Y && min_y <= lhs.StartPoint.Y)
+                            var max_y = v.P1.Y > v.P2.Y ? v.P1.Y : v.P2.Y;
+                            var min_y = v.P1.Y < v.P2.Y ? v.P1.Y : v.P2.Y;
+                            if (max_y >= lhs.P1.Y && min_y <= lhs.P1.Y)
                             {
                                 passa.Add(v);
                             }
                         }
                         AddMensagem($"Linhas verticais que passam: {passa.Count}");
 
-                        double comprimento = Math.Round(Math.Abs(lhs.StartPoint.X - lhs.EndPoint.X));
-                        var furos = passa.Select(x => x.StartPoint.X - lhs.MinX).ToList().OrderBy(x=>x).ToList();
+                        double comprimento = Math.Round(Math.Abs(lhs.P1.X - lhs.P2.X));
+                        var furos = passa.Select(x => x.P1.X - lhs.Min.X).ToList().OrderBy(x=>x).ToList();
                         furos = furos.Distinct().ToList();
                         textos.Add($"@Linha {c}");
                         textos.Add($"Comprimento: {comprimento}");
-                        textos.Add($"Origem:{lhs.StartPoint.ToString()}");
+                        textos.Add($"Origem:{lhs.P1.ToString()}");
 
                         textos.Add($"Coordenadas:{furos.Count}");
                         textos.Add("$Inicio");
@@ -721,7 +613,7 @@ namespace DLM.cad
                         textos.Add("$Fim");
 
 
-                        Ut.AddLeader(-45, lhs.StartPoint,this.GetEscala(), $"Linha:{c}", 15 * .8);
+                        Ut.AddLeader(-45, lhs.P1,this.GetEscala(), $"Linha:{c}", 15 * .8);
                         c++;
                     }
                  
@@ -1046,49 +938,33 @@ namespace DLM.cad
                             }
                         }
 
-                        if (MapearTirantes)
+                        var tirantes = this.Getblocos_tirantes().Select(x => GetTirante(x));
+                        var pcsTirantes = JuntarTirantesIguais(tirantes, acTrans);
+                        if (tabela)
                         {
-                            var tirantes = this.Getblocos_tirantes().Select(x => GetTirante(x));
-                            var pcs = JuntarTirantesIguais(tirantes, acTrans);
-                            if (tabela)
-                            {
-                                p = Tabelas.InserirTabela(pcs, new P3d(p.X + (119.81 * GetEscala()), p.Y));
-                            }
-                            mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
+                            p = Tabelas.InserirTabela(pcsTirantes, new P3d(p.X + (119.81 * GetEscala()), p.Y));
                         }
+                        mm.RM_Macros.AddRange(pcsTirantes.Select(x => new Conexoes.RME_Macro(x)));
 
-                        
 
-                        if (MapearCorrentes)
+                        var correntes = this.Getblocos_correntes().Select(x => GetCorrente(x));
+                        List<DLM.macros.Corrente> pcsCorrentes = JuntarCorrentesIguais(correntes, acTrans);
+                        if (tabela)
                         {
-                            var correntes = this.Getblocos_correntes().Select(x => GetCorrente(x));
-                            List<DLM.macros.Corrente> pcs = JuntarCorrentesIguais(correntes, acTrans);
-                            if (tabela)
-                            {
-                                p = Tabelas.InserirTabela(pcs, new P3d(p.X + (86.77 * GetEscala()), p.Y));
-                            }
-                            mm.RM_Macros.AddRange(pcs.Select(x => new Conexoes.RME_Macro(x)));
+                            p = Tabelas.InserirTabela(pcsCorrentes, new P3d(p.X + (86.77 * GetEscala()), p.Y));
                         }
+                        mm.RM_Macros.AddRange(pcsCorrentes.Select(x => new Conexoes.RME_Macro(x)));
 
 
-                        if(Mapear_Pecas_Montagem)
+                        if (Mapear_Pecas_Montagem)
                         {
                             var pcs = this.GetBlocos_IndicacaoPecas();
-
-                            foreach(var pcc in pcs)
-                            {
-                                
-                              
-
-                            }
-
 
                             if(pcs.Count>0)
                             {
                                p = Tabelas.Pecas(pcs, true, new P3d(p.X + (86.77 * GetEscala()), p.Y));
                             }
                         }
-
 
                         mm.RM_Macros.AddRange(ss.Select(x => new Conexoes.RME_Macro(x)));
                         if (exportar)

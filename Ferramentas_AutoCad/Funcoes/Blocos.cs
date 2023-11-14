@@ -748,12 +748,9 @@ namespace DLM.cad
 
         public static List<Point2d> GetInterSeccao(BlockReference obj, Entity obj2)
         {
-            List<Point2d> ptss = new List<Point2d>();
+            var ptss = new List<Point2d>();
 
-
-
-
-            DBObjectCollection acDBObjColl = new DBObjectCollection();
+            var acDBObjColl = new DBObjectCollection();
             obj.Explode(acDBObjColl);
 
             foreach (Entity acEnt in acDBObjColl)
@@ -778,59 +775,21 @@ namespace DLM.cad
             return ptss;
         }
 
-        public static List<BlockAttributes> GetBlocosProximos(List<BlockAttributes> blocos, Point3d pt1, Point3d pt2, double tolerancia = 1)
-        {
-            return GetBlocosProximos(blocos, new P3d(pt1.X, pt1.Y), new P3d(pt2.X, pt2.Y), tolerancia);
-        }
+
 
 
 
 
         public static List<BlockAttributes> GetBlocosProximos(List<BlockAttributes> blocos, P3d pt1, P3d pt2, double tolerancia = 1)
         {
-            List<BlockAttributes> blks = new List<BlockAttributes>();
-
-
-            Line p = new Line();
-            p.StartPoint = new Point3d(pt1.X, pt1.Y, 0);
-            p.EndPoint = new Point3d(pt2.X, pt2.Y, 0);
-
-            //foreach(var b in blocos)
-            //{
-            //    var pts = GetInterSeccao(b, p);
-
-            //    foreach (var pt in pts)
-            //    {
-            //        var dist1 = Math.Abs(pt.GetDistanceTo(pt1));
-            //        var dist2 = Math.Abs(pt.GetDistanceTo(pt1));
-
-            //        if (dist1 <= tolerancia | dist2 <= tolerancia)
-            //        {
-            //            blks.Add(b);
-            //            break;
-            //        }
-            //    }
-            //}
-            //if(blks.Count>0)
-            //{
-            //return blks;
-            //}
-
-
-
-
+            var blks = new List<BlockAttributes>();
 
             using (var acTrans = acCurDb.acTrans())
             {
                 foreach (var blk in blocos)
                 {
-
                     var d1 = Math.Round(Math.Abs(blk.Block.Position.DistanceTo(pt1.GetPoint3dCad())));
                     var d2 = Math.Round(Math.Abs(blk.Block.Position.DistanceTo(pt2.GetPoint3dCad())));
-
-
-
-
 
                     if (d1 <= tolerancia | d2 <= tolerancia)
                     {
@@ -841,7 +800,7 @@ namespace DLM.cad
 
                     var pts = blk.GetPontos(acTrans);
 
-                    List<double> dists = new List<double>();
+                    var dists = new List<double>();
                     dists.AddRange(pts.Select(x => Math.Round(pt1.Distancia(x.P3d()))).Distinct().ToList());
                     dists.AddRange(pts.Select(x => Math.Round(pt2.Distancia(x.P3d()))).Distinct().ToList());
 

@@ -107,6 +107,12 @@ namespace DLM.cad.Menus
 
         private void mapeia(object sender, RoutedEventArgs e)
         {
+            if(Core.GetCADPurlin().GetMultiLines().FindAll(x=>x.Tipo == vars.cad.Tipo_Multiline.Definir).Count>0)
+            {
+                Conexoes.Utilz.Alerta($"Há multilines sem definição. Configure-as antes de continuar.");
+                return;
+            }
+
 
             if(Core.GetCADPurlin().GetCorrentePadrao()==null)
             {
@@ -140,33 +146,6 @@ namespace DLM.cad.Menus
             }
 
 
-
-
-            if (correntes_multilines.Items.Count == 0 && (bool)mapeia_correntes.IsChecked)
-            {
-                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de [corrente] nos estilos mapeáveis.");
-                return;
-            }
-
-            if (tirantes_multilines.Items.Count == 0 && (bool)mapeia_tirantes.IsChecked)
-            {
-                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de [tirante] nos estilos mapeáveis.");
-                return;
-            }
-
-            if (tercas_multilines.Items.Count == 0 && (bool)mapeia_tercas.IsChecked)
-            {
-                Conexoes.Utilz.Alerta("Não foi encontrada nenhuma multiline de [purlin] nos estilos mapeáveis.");
-                return;
-            }
-            if (Core.GetCADPurlin().MapeiaFurosManuaisLayer == "" && (bool)mapeia_furos.IsChecked)
-            {
-                Conexoes.Utilz.Alerta("Não é possivel mapear os furos manuais sem definir uma layer padrão");
-                return;
-            }
-            Core.GetCADPurlin().MapearCorrentes = (bool)this.mapeia_correntes.IsChecked;
-            Core.GetCADPurlin().MapearTercas = (bool)this.mapeia_tercas.IsChecked;
-            Core.GetCADPurlin().MapearTirantes = (bool)this.mapeia_tirantes.IsChecked;
             this.Visibility = Visibility.Collapsed;
 
             this.Close();

@@ -6,31 +6,10 @@ using DLM.vars;
 using DLM.vars.cad;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Media;
 
 namespace DLM.cad
 {
-    public class MlClass
-    {
-        public override string ToString()
-        {
-            return $"{this.Nome} [{this.Mlines.Count}x]";
-        }
-        public string Nome { get; set; } = "";
-        public Tipo_Multiline Tipo { get; set; } = Tipo_Multiline.Desconhecido;
-        [Browsable(false)]
-        public List<CADMline> Mlines { get; set; } = new List<CADMline>();
-        public MlClass(string nome, List<CADMline> mlines)
-        {
-            this.Nome = nome;
-            this.Mlines = mlines;
-        }
-        public MlClass()
-        {
-
-        }
-    }
     public class CADMline
     {
         private MlineStyle _mlstyle { get; set; }
@@ -56,7 +35,7 @@ namespace DLM.cad
             return ptss;
         }
 
-        public Tipo_Multiline Tipo { get; private set; } = Tipo_Multiline.Desconsiderar;
+        public Tipo_Multiline Tipo { get; private set; } = Tipo_Multiline.Ignorar;
         public double Largura { get; private set; } = 0;
         public bool Mapeado { get; set; } = false;
         public override string ToString()

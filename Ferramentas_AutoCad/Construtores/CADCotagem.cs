@@ -551,8 +551,8 @@ namespace DLM.cad
             List<P3d> pp = new List<P3d>();
             foreach (var s in Getlinhas_perfil())
             {
-                pp.Add(s.StartPoint);
-                pp.Add(s.EndPoint);
+                pp.Add(s.P1);
+                pp.Add(s.P2);
             }
 
             return pp;
@@ -562,8 +562,8 @@ namespace DLM.cad
             List<P3d> pp = new List<P3d>();
             foreach (var s in Getlinhas_projecao())
             {
-                pp.Add(s.StartPoint);
-                pp.Add(s.EndPoint);
+                pp.Add(s.P1);
+                pp.Add(s.P2);
             }
 
 
