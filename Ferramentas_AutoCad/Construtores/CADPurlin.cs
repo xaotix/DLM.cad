@@ -489,30 +489,27 @@ namespace DLM.cad
                 {
                     for (int i = 0; i < HORIS.Count; i++)
                     {
-                        var L = HORIS[i];
+                        var linha = HORIS[i];
                         double dist = 0;
                         if (_grade.GetEixosHorizontais().Count > 0)
                         {
                             dist = Math.Round(Math.Abs(HORIS[(int)i].P1.Y - _grade.GetEixosHorizontais().Last().Linha.P1.Y));
                         }
 
-  
-
                         if(dist>=DistanciaMinimaEixos | _grade.GetEixosHorizontais().Count ==0)
                         {
-                            List<BlockAttributes> blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
+                            var blks = Blocos.GetAtributosProximos(blocos, linha.Min, linha.Max, this.Eixos_Tolerancia);
 
 
                             if (blks.Count >= 1)
                             {
-                                _grade.AddEixo(Sentido.Horizontal, dist, blks[0], L);
+                                _grade.AddEixo(Sentido.Horizontal, dist, blks[0], linha);
                             }
                             else
                             {
+                                _grade.AddEixo(Sentido.Horizontal, dist, null, linha);
                             }
                         }
-
-
                     }
                 }
 
@@ -521,32 +518,26 @@ namespace DLM.cad
                 {
                     for (int i = 0; i < VERTS.Count; i++)
                     {
-                        var L = VERTS[i];
+                        var linha = VERTS[i];
                         double dist = 0;
                         if (_grade.GetEixosVerticais().Count > 0)
                         {
                             dist = Math.Round(Math.Abs(VERTS[i].P1.X - _grade.GetEixosVerticais().Last().Linha.P1.X));
                         }
 
-
-
                         if(dist >= DistanciaMinimaEixos | _grade.GetEixosVerticais().Count == 0)
                         {
-                            var blks = Blocos.GetBlocosProximos(blocos, L.Min, L.Max, this.Eixos_Tolerancia);
-
+                            var blks = Blocos.GetAtributosProximos(blocos, linha.Min, linha.Max, this.Eixos_Tolerancia);
 
                             if (blks.Count >= 1)
                             {
-                                _grade.AddEixo(Sentido.Vertical, dist, blks[0], L);
+                                _grade.AddEixo(Sentido.Vertical, dist, blks[0], linha);
                             }
                             else
                             {
-                                //retorno.Add(Sentido.Vertical, dist,null, L);
+                                _grade.AddEixo(Sentido.Vertical, dist,null, linha);
                             }
                         }
-
-
-
                     }
                 }
             }

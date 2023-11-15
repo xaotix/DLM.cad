@@ -798,7 +798,9 @@ namespace DLM.cad
             {
                 var blks = Selecoes.Filter<BlockReference>();
                 var lbksnms = blks.GroupBy(x => Blocos.GetNome(x).ToUpper()).ToList();
-                _Atributos_Eixos = lbksnms.FindAll(x=> x.Key.Contains(this.BlocoEixos)).SelectMany(x => x.ToList()).Select(x=>x.GetAttributes()).ToList();
+                var eixos = lbksnms.FindAll(x => x.Key.Contains(this.BlocoEixos)).ToList().SelectMany(x => x.ToList()).ToList();
+
+                _Atributos_Eixos = eixos.Select(x=>x.GetAttributes()).ToList();
             }
 
             return _Atributos_Eixos;
@@ -811,13 +813,13 @@ namespace DLM.cad
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
             List<PCQuantificar> pcs = new List<PCQuantificar>();
-            var blocos = Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).GroupBy(x => x.Name);
+            var blocos = Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper().StartsW(Cfg.Init.CAD_PC_Quantificar)).GroupBy(x => x.Name);
 
 
             foreach (var s in blocos)
             {
                 PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => x.GetAttributes()).ToList());
-                if (npc.Nome.StartsWith(Cfg.Init.CAD_PC_Quantificar))
+                if (npc.Nome.StartsW(Cfg.Init.CAD_PC_Quantificar))
                 {
                     var blcs = npc.Agrupar(new List<string> { Cfg.Init.CAD_ATT_Codigo, Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);
                     foreach (var bl in blcs)

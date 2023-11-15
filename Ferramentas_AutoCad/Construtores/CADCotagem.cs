@@ -346,7 +346,7 @@ namespace DLM.cad
             lista.AddRange(GetContorno());
             //lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new Coordenada(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
             double prof = Profundidade_Esquerda;
-            if ((Base_Esquerda | (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsWith("C"))
+            if ((Base_Esquerda | (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsW("C"))
             {
                 //remove todas as coordenadas se tem placa base, deixando apenas os que tem xmax
                 //isso vai funcionar bem em chapas retas, no entando em chapas inclinadas vai ficar uma bosta
@@ -355,7 +355,7 @@ namespace DLM.cad
 
                 lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Linha)).ToList());
             }
-            else if (Furos_Vista_Corte_Cotar_Esquerda | !Tipo_Desenho.StartsWith("C"))
+            else if (Furos_Vista_Corte_Cotar_Esquerda | !Tipo_Desenho.StartsW("C"))
             {
                 lista.AddRange(Getpts_furos_vista().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
             }
@@ -371,7 +371,7 @@ namespace DLM.cad
             //forçando usar o maximo em X encontrado na lista ao invés do max X global
             double minX = lista.Min(x => x.X);
 
-            if (!Tipo_Desenho.StartsWith("C"))
+            if (!Tipo_Desenho.StartsW("C"))
             {
                 lista = lista.FindAll(x => x.X <= prof + this.MinX).ToList();
             }
@@ -401,7 +401,7 @@ namespace DLM.cad
             List<P3dCAD> lista = new List<P3dCAD>();
             lista.AddRange(GetContorno());
             double prof = Profundidade_Direita;
-            if ((Base_Direita | (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsWith("C"))
+            if ((Base_Direita | (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsW("C"))
             {
                 //remove todas as coordenadas se tem placa base, deixando apenas os que tem xmax
                 //isso vai funcionar bem em chapas retas, no entando em chapas inclinadas vai ficar uma bosta
@@ -410,7 +410,7 @@ namespace DLM.cad
 
                 lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
             }
-            else if (Furos_Vista_Corte_Cotar_direita | !Tipo_Desenho.StartsWith("C"))
+            else if (Furos_Vista_Corte_Cotar_direita | !Tipo_Desenho.StartsW("C"))
             {
                 lista.AddRange(Getpts_furos_vista().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
             }
@@ -426,7 +426,7 @@ namespace DLM.cad
             //forçando usar o maximo em X encontrado na lista ao invés do max X global
             double maxX = lista.Max(x => x.X);
 
-            if (!Tipo_Desenho.StartsWith("C"))
+            if (!Tipo_Desenho.StartsW("C"))
             {
                 lista = lista.FindAll(x => x.X >= maxX - prof);
 
@@ -475,7 +475,7 @@ namespace DLM.cad
 
                 var uniao = retorno.Select(x => x.Origem).ToList().GetPath().GetPathsD().Union(Clipper2Lib.FillRule.Positive).GetFaces();
 
-                if (Tipo_Desenho.StartsWith("C") && projecoes.Count > 0)
+                if (Tipo_Desenho.StartsW("C") && projecoes.Count > 0)
                 {
                     var conv = GetContornoConvexo(projecoes.P3dCAD()).ToList();
                     retorno.AddRange(conv);
@@ -938,11 +938,11 @@ namespace DLM.cad
         {
             var opt = Ut.PedirString("Selecione o tipo de configuração", new List<string> { "Contorno", "Dimensoes" });
 
-            if (opt.StartsWith("C"))
+            if (opt.StartsW("C"))
             {
                 ConfigurarContorno();
             }
-            else if (opt.StartsWith("D"))
+            else if (opt.StartsW("D"))
             {
                 ConfigurarDesenho();
             }
@@ -1545,7 +1545,7 @@ namespace DLM.cad
             }
 
             //cotas acumuladas
-            if (Acumuladas_Cima && !Tipo_Desenho.StartsWith("C"))
+            if (Acumuladas_Cima && !Tipo_Desenho.StartsW("C"))
             {
                 AddCotasAcumuladas(pp, y, origem);
             }
@@ -1558,7 +1558,7 @@ namespace DLM.cad
                 AddCotasHorizontais(pp, y, false);
             }
 
-            if (Acumuladas_Baixo && !Tipo_Desenho.StartsWith("C"))
+            if (Acumuladas_Baixo && !Tipo_Desenho.StartsW("C"))
             {
                 AddCotasAcumuladas(pp, y, origem, false);
             }
@@ -1566,7 +1566,7 @@ namespace DLM.cad
             //cotas dos cantos
             AddCotasVerticaisCantos();
 
-            if (Linha_Projecao && !Tipo_Desenho.StartsWith("C"))
+            if (Linha_Projecao && !Tipo_Desenho.StartsW("C"))
             {
                 foreach (var s in this.GetCoordenadasFurosProjecao())
                 {
@@ -1574,7 +1574,7 @@ namespace DLM.cad
                 }
             }
 
-            if (Indicar_Diametro && !Tipo_Desenho.StartsWith("C"))
+            if (Indicar_Diametro && !Tipo_Desenho.StartsW("C"))
             {
                 foreach (var s in this.GetFurosPorDiam())
                 {
@@ -1613,7 +1613,7 @@ namespace DLM.cad
                 else
                 {
                     var pp = Ut.PedirString("Deseja mudar as opções e continuar?", new List<string> { "Sim", "Não" });
-                    if (pp.StartsWith("S"))
+                    if (pp.StartsW("S"))
                     {
                         //Opcoes();
                         goto retentar;

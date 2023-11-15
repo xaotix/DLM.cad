@@ -780,7 +780,7 @@ namespace DLM.cad
 
 
 
-        public static List<BlockAttributes> GetBlocosProximos(List<BlockAttributes> blocos, P3d pt1, P3d pt2, double tolerancia = 1)
+        public static List<BlockAttributes> GetAtributosProximos(List<BlockAttributes> blocos, P3d pt1, P3d pt2, double tolerancia = 1)
         {
             var blks = new List<BlockAttributes>();
 
@@ -798,12 +798,12 @@ namespace DLM.cad
                     }
 
 
-                    var pts = blk.GetPontos(acTrans);
+                    var pts = blk.GetPontos(acTrans).Select(x=>x.P3d()).ToList().Round(0);
 
                     var dists = new List<double>();
-                    dists.AddRange(pts.Select(x => Math.Round(pt1.Distancia(x.P3d()))).Distinct().ToList());
-                    dists.AddRange(pts.Select(x => Math.Round(pt2.Distancia(x.P3d()))).Distinct().ToList());
-
+                    dists.AddRange(pts.Select(x => pt1.Distancia(x)));
+                    dists.AddRange(pts.Select(x => pt2.Distancia(x)));
+                    dists = dists.Distinct().ToList().OrderBy(x => x).ToList();
                     if (dists.Count > 0)
                     {
                         var min = dists.Min();
@@ -812,6 +812,10 @@ namespace DLM.cad
                         if (min <= tolerancia)
                         {
                             blks.Add(blk);
+
+                        }
+                        else
+                        {
 
                         }
                     }

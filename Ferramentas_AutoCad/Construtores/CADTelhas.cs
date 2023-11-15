@@ -745,9 +745,7 @@ namespace DLM.cad
             }
             if (pc != null)
             {
-                pc = new RMA(pc);
-                pc.Quantidade = qtd;
-               
+                pc = pc.Clonar(qtd);
             }
             else
             {

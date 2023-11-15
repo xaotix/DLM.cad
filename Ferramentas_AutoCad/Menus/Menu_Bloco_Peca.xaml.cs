@@ -368,7 +368,7 @@ namespace DLM.cad.Menus
 
             if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && rma_sel != null)
             {
-                var mm = new Conexoes.RMA(rma_sel, qtd);
+                var mm = rma_sel.Clonar(qtd);
                 id = mm.id_db;
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && rme_sel != null)
