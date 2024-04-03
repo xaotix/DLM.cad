@@ -177,7 +177,7 @@ namespace DLM.cad
                     desc = desc.Replace(this.Nome, "");
                 }
                 this.Descricao = desc.Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").Replace("*", "").TrimStart();
-                this.Descricao = this.Descricao.CortarString(25, false);
+                this.Descricao = this.Descricao.Esquerda(25, false);
             }
 
 

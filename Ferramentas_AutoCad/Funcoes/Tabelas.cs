@@ -700,7 +700,7 @@ namespace DLM.cad
                             var hp = new db.Linha();
                             hp.Add(Cfg.Init.CAD_ATT_Marca, Pos.Nome_Posicao);
                             hp.Add(Cfg.Init.CAD_ATT_Quantidade, (Pos.Quantidade * Marca.Quantidade).Round(2));
-                            hp.Add(Cfg.Init.CAD_ATT_Descricao, $"{Pos.Perfil} x {Pos.Comprimento.Round(0)}".CortarString(34, false));
+                            hp.Add(Cfg.Init.CAD_ATT_Descricao, $"{Pos.Perfil} x {Pos.Comprimento.Round(0)}".Esquerda(34, false));
                             hp.Add(Cfg.Init.CAD_ATT_Material, Pos.Material);
                             hp.Add(Cfg.Init.CAD_ATT_Cod_SAP, Pos.SAP);
                             hp.Add(Cfg.Init.CAD_ATT_Peso_Unit, p_pes_uni.String(Cfg.Init.TEC_DECIMAIS_PESO_TABELA));
