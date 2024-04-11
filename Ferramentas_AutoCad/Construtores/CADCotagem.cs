@@ -1278,13 +1278,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    DLM.log.Log(ex);
-                    AddBarra();
-                    AddMensagem("\n Erro");
-                    AddBarra();
-                    AddMensagem("\n" + ex.Message);
-                    AddMensagem("\n" + ex.StackTrace);
-                    AddBarra();
+                    ex.Alerta();
                 }
 
             }
@@ -1306,14 +1300,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    DLM.log.Log(ex);
-                    AddBarra();
-                    AddMensagem("\n Erro");
-                    AddBarra();
-                    AddMensagem("\n" + ex.Message);
-                    AddMensagem("\n" + ex.StackTrace);
-                    AddBarra();
-
+                    ex.Alerta();
                 }
                 AddBarra();
             }
