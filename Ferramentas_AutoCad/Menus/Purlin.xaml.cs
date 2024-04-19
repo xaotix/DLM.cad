@@ -68,11 +68,10 @@ namespace DLM.cad.Menus
 
         private void transpasse_Click(object sender, RoutedEventArgs e)
         {
-            bool confirmado = false;
-            double valor = Core.GetCADPurlin().TranspassePadrao.Prompt(out confirmado);
-            if(confirmado)
+            var valor = Core.GetCADPurlin().TranspassePadrao.Prompt();
+            if(valor!=null)
             {
-                Core.GetCADPurlin().TranspassePadrao = valor;
+                Core.GetCADPurlin().TranspassePadrao = valor.Value;
                 this.transpasse.Content = valor;
             }
 
@@ -80,8 +79,8 @@ namespace DLM.cad.Menus
 
         private void furo_offset_apoio_Click(object sender, RoutedEventArgs e)
         {
-            int valor = Core.GetCADPurlin().OffsetApoio.Prompt();
-            Core.GetCADPurlin().OffsetApoio = valor;
+            var valor = Core.GetCADPurlin().OffsetApoio.Prompt();
+            Core.GetCADPurlin().OffsetApoio = valor.Value;
             this.furo_offset_apoio.Content = valor;
         }
 

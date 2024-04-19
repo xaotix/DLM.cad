@@ -315,11 +315,10 @@ namespace DLM.cad
         {
             var sd = sender as System.Windows.Controls.Button;
             var pp = sd.Tag as ObjetoPurlin;
-            bool confirmado = false;
-            double ntranspasse = pp.TRD.Prompt(out confirmado, 0);
-            if (confirmado)
+            var ntranspasse = pp.TRD.Prompt("Digite o Transpasse Direito",0);
+            if (ntranspasse!=null)
             {
-                pp.TRD = ntranspasse;
+                pp.TRD = ntranspasse.Value;
                 var purlin_prox = pp.PurlinDireita;
                 if (purlin_prox != null)
                 {
@@ -332,11 +331,10 @@ namespace DLM.cad
         {
             var sd = sender as System.Windows.Controls.Button;
             var pp = sd.Tag as ObjetoPurlin;
-            bool confirmado = false;
-            double ntranspasse = pp.TRE.Prompt(out confirmado, 0);
-            if (confirmado)
+            var ntranspasse = pp.TRE.Prompt("Digite o Transpasse Esquerdo", 0);
+            if (ntranspasse!=null)
             {
-                pp.TRE = ntranspasse;
+                pp.TRE = ntranspasse.Value;
                 var purlin_prox = pp.PurlinEsquerda;
                 if (purlin_prox != null)
                 {

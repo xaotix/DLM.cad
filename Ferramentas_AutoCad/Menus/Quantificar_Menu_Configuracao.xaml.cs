@@ -112,11 +112,10 @@ namespace DLM.cad.Menus
 
             if (sel.Tipo == Tipo_Objeto.Texto | sel.GetAtributos().Count == 0 | sel.Nome_Bloco == Cfg.Init.CAD_Bloco_3D_Montagem_Tecnometal)
             {
-                bool status = false;
-                var qtd = sel.Quantidade.Prompt(out status);
-                if (status)
+                var valor = sel.Quantidade.Prompt();
+                if (valor!=null)
                 {
-                    sel.Quantidade = qtd;
+                    sel.Quantidade = valor.Value;
                     Update();
                 }
                 return;
@@ -333,10 +332,10 @@ namespace DLM.cad.Menus
             if (selecoes.Count > 0)
             {
                 var nova = selecoes[0].Quantidade.Prompt();
-                if (nova <= 0) { return; }
+                if (nova == null) { return; }
                 foreach (var s in selecoes)
                 {
-                    s.Quantidade = nova;
+                    s.Quantidade = nova.Value;
                 }
                 Update();
             }

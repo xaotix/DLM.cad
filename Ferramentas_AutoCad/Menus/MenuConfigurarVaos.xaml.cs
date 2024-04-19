@@ -55,14 +55,13 @@ namespace DLM.cad.Menus
                 var sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    bool status = false;
-                    var novovao = sel.TRE.Prompt(out status);
+                    var valor = sel.TRE.Prompt();
 
-                    if (status)
+                    if (valor!=null)
                     {
-                        sel.TRE = novovao;
+                        sel.TRE = valor.Value;
 
-                        sel.PurlinEsquerda.TRD = novovao;
+                        sel.PurlinEsquerda.TRD = valor.Value;
                         Update();
                     }
                     return;
@@ -85,13 +84,12 @@ namespace DLM.cad.Menus
                 var sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    bool status = false;
-                    var novovao = sel.TRD.Prompt(out status);
+                    var valor = sel.TRD.Prompt();
 
-                    if (status)
+                    if (valor!=null)
                     {
-                        sel.TRD = novovao;
-                        sel.PurlinDireita.TRE = novovao;
+                        sel.TRD = valor.Value;
+                        sel.PurlinDireita.TRE = valor.Value;
                         Update();
                     }
                     return;
@@ -230,13 +228,12 @@ namespace DLM.cad.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    bool status = false;
-                    double purlin = 0.Prompt(out status);
-                    if (status)
+                    var valor = 0.Prompt();
+                    if (valor != null)
                     {
                         foreach (var p in sel.GetPurlins())
                         {
-                            p.FBD_Comp = purlin;
+                            p.FBD_Comp = valor.Value;
 
                         }
                         Update();
@@ -248,11 +245,10 @@ namespace DLM.cad.Menus
                 ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    bool status = false;
-                    double purlin = 0.Prompt(out status);
-                    if (status)
+                    var valor = 0.Prompt();
+                    if (valor != null)
                     {
-                        sel.FBD_Comp = purlin;
+                        sel.FBD_Comp = valor.Value;
                         Update();
                     }
                 }
@@ -268,13 +264,12 @@ namespace DLM.cad.Menus
                 VaoObra sel = ((FrameworkElement)sender).DataContext as VaoObra;
                 if (sel != null)
                 {
-                    bool status = false;
-                    double purlin = 0.Prompt(out status);
-                    if (status)
+                    var valor = 0.Prompt();
+                    if (valor!=null)
                     {
                         foreach (var p in sel.GetPurlins())
                         {
-                            p.FBE_Comp = purlin;
+                            p.FBE_Comp = valor.Value;
 
                         }
                         Update();
@@ -286,11 +281,10 @@ namespace DLM.cad.Menus
                 ObjetoPurlin sel = ((FrameworkElement)sender).DataContext as ObjetoPurlin;
                 if (sel != null)
                 {
-                    bool status = false;
-                    double purlin = 0.Prompt(out status);
-                    if (status)
+                    var valor = 0.Prompt();
+                    if (valor!=null)
                     {
-                        sel.FBE_Comp = purlin;
+                        sel.FBE_Comp = valor.Value;
                         Update();
                     }
                 }

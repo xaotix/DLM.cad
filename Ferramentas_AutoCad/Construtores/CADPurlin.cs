@@ -1247,7 +1247,7 @@ namespace DLM.cad
 
             var valor = this.TranspassePadrao.Prompt();
 
-           
+            if (valor == null) { return; }
 
             using (var acTrans = acCurDb.acTransST())
             {
@@ -1259,12 +1259,12 @@ namespace DLM.cad
                     {
                         if(trs == "Esquerda" | trs == "Ambos")
                         {
-                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Esq, valor.String(0));
+                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Esq, valor.Value.String(0));
                         }
 
                         if (trs == "Direita" | trs == "Ambos")
                         {
-                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Dir, valor.String(0));
+                            Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Dir, valor.Value.String(0));
                         }
                     }
                     acTrans.Commit();

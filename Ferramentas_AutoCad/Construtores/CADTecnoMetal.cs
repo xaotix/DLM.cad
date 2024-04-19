@@ -1593,8 +1593,8 @@ namespace DLM.cad
                             var esp = PromptChapa(Tipo_Chapa.Tudo);
                             if (esp != null)
                             {
-                                int qtd = PromptQtd(out status);
-                                if (status)
+                                var qtd = 1.Prompt();
+                                if (qtd!=null)
                                 {
                                     var ficha = PromptFicha();
                                     if (ficha != null)
@@ -1608,11 +1608,11 @@ namespace DLM.cad
                                             var face = coords_normalizadas.GetFace();
                                             var sub = this.GetSubEtapa();
 
-                                            Blocos.MarcaChapa(p_marca, coords_normalizadas, esp.Espessura, qtd, marca, material, ficha, this.GetEscala());
+                                            Blocos.MarcaChapa(p_marca, coords_normalizadas, esp.Espessura, qtd.Value, marca, material, ficha, this.GetEscala());
                                             var nCAM = new cam.Cam($"{this.PastaCAM}{marca}.{Cfg.Init.EXT_CAM}", face, esp.Espessura);
                                             nCAM.Cabecalho.Tratamento = ficha;
                                             nCAM.Cabecalho.Material = material;
-                                            nCAM.Cabecalho.Quantidade = qtd;
+                                            nCAM.Cabecalho.Quantidade = qtd.Value;
 
                                             nCAM.Cabecalho.Cliente = sub.GetObra().Cliente;
                                             nCAM.Cabecalho.Etapa = sub.NomeEtapa;
@@ -1644,10 +1644,7 @@ namespace DLM.cad
             }
         }
 
-        private static int PromptQtd(out bool status)
-        {
-            return 1.Prompt(out status, "Digite a quantidade");
-        }
+
 
         public void PromptGeometria(out double comprimento, out double largura, out double area, out double perimetro)
         {
@@ -1696,7 +1693,7 @@ namespace DLM.cad
         }
         public string PromptFicha()
         {
-            return Cfg.Init.RM_SEM_PINTURA.Prompt("Digite a ficha de pintura", "FICHA", 20);
+            return Cfg.Init.RM_SEM_PINTURA.Prompt("Digite a ficha de pintura",20,false,true, "FICHA");
         }
         public string PromptMarca(string prefix = "ARR-")
         {
@@ -1705,7 +1702,7 @@ namespace DLM.cad
             var marcas = this.GetMarcas(ref erros);
             var nnn = marcas.FindAll(x => x.Nome.StartsWith(prefix)).Count + 1;
         retentar:
-            var m = prefix + nnn.String(2).Prompt("Digite o nome da Marca", "NOME_MARCA", 25).ToUpper().Replace(" ", "");
+            var m = prefix + nnn.String(2).Prompt("Digite o nome da Marca", 25, false, true, "NOME_MARCA").ToUpper().Replace(" ", "");
 
             if (m.Length == 0)
             {
@@ -2115,11 +2112,13 @@ namespace DLM.cad
             denovo:
                 if (quantidade <= 0)
                 {
-                    quantidade = peca.MULTIPLO.Prompt(out status);
-                    if (!status)
+                    var valor = peca.MULTIPLO.Prompt();
+
+                    if (valor==null)
                     {
                         return;
                     }
+                    quantidade = valor.Value;
                     if (quantidade <= 0 | !peca.MultiploOk(quantidade))
                     {
                         if (Conexoes.Utilz.Pergunta($"Valor setado [{quantidade} é inválido. Precisa ser maior que zero e múltiplo de {peca.MULTIPLO}\nTentar novamente?"))
@@ -2154,7 +2153,7 @@ namespace DLM.cad
                 Blocos.MarcaElemUnitario(origem, peca, quantidade, marca, escala, posicao, mercadoria);
             }
         }
-        public void InserirElementoM2(double escala = 0, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
+        public void InserirElementoM2(double escala = 0, string marca = "", string posicao = "", string material = null, string ficha = null, int? valor = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
         {
             if (escala == 0)
             {
@@ -2193,12 +2192,12 @@ namespace DLM.cad
                 if (material != null)
                 {
 
-                    if (quantidade == 0)
+                    if (valor == 0)
                     {
-                        quantidade = (1).Prompt();
+                        valor = (1).Prompt();
                     }
 
-                    if (quantidade > 0)
+                    if (valor > 0)
                     {
                         if (perfil == null)
                         {
@@ -2227,7 +2226,7 @@ namespace DLM.cad
 
                             if (!status)
                             {
-                                Blocos.MarcaElemM2(ponto, perfil, marca, quantidade, comprimento, largura, area, perimetro, ficha, material, escala, posicao, mercadoria);
+                                Blocos.MarcaElemM2(ponto, perfil, marca, valor.Value, comprimento, largura, area, perimetro, ficha, material, escala, posicao, mercadoria);
                             }
                         }
                     }
@@ -2235,7 +2234,7 @@ namespace DLM.cad
             }
 
         }
-        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int quantidade = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
+        public void InserirPerfil(double escala, string marca = "", string posicao = "", string material = null, string ficha = null, int? valor = 0, DLM.cam.Perfil perfil = null, string mercadoria = null)
         {
             this.SetEscala(escala);
             if (marca == "")
@@ -2266,15 +2265,15 @@ namespace DLM.cad
                     }
                     if (material != null)
                     {
-                        if (quantidade == 0)
+                        if (valor == 0)
                         {
-                            quantidade = (1).Prompt();
+                            valor = (1).Prompt();
                         }
 
 
 
 
-                        if (quantidade > 0)
+                        if (valor > 0)
                         {
                             if (perfil == null)
                             {
@@ -2304,7 +2303,7 @@ namespace DLM.cad
 
                                 if (!status)
                                 {
-                                    Blocos.MarcaPerfil(ponto, marca, comprimento, perfil, quantidade, material, ficha, 0, 0, escala, posicao, mercadoria);
+                                    Blocos.MarcaPerfil(ponto, marca, comprimento, perfil, valor.Value, material, ficha, 0, 0, escala, posicao, mercadoria);
                                 }
                             }
                         }
@@ -2341,9 +2340,8 @@ namespace DLM.cad
             string nome = this.PromptMarca("P01");
             if (nome != null && nome != "")
             {
-                bool status = false;
-                double quantidade = (1.0).Prompt(out status);
-                if (status)
+                var quantidade = (1.0).Prompt();
+                if (quantidade!=null)
                 {
                     string ficha = this.PromptFicha();
                     if (ficha != null)
@@ -2351,7 +2349,7 @@ namespace DLM.cad
                         string mercadoria = this.PromptMercadoria();
                         if (mercadoria != null && mercadoria != "")
                         {
-                            Blocos.MarcaComposta(origem, nome, quantidade, ficha, mercadoria, escala);
+                            Blocos.MarcaComposta(origem, nome, quantidade.Value, ficha, mercadoria, escala);
                             return this.GetMarcas(ref erros).FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaComposta).Find(x => x.Nome == nome);
                         }
                     }
