@@ -1285,7 +1285,7 @@ namespace DLM.cad
             {
                 return;
             }
-            double valor = 0;
+            double? valor = 0;
             if(tip == "Offset")
             {
                 valor = this.OffsetApoio.Prompt();
@@ -1321,16 +1321,16 @@ namespace DLM.cad
                         {
                             if (trs == "Ambos")
                             {
-                                Atributos.Set(s, acTrans, "AD", valor.String(0));
+                                Atributos.Set(s, acTrans, "AD", valor.Value.String(0));
                                 Atributos.Set(s, acTrans, "AE", "0");
                             }
                             else if (trs == "Esquerda")
                             {
-                                Atributos.Set(s, acTrans, "AE", valor.String(0));
+                                Atributos.Set(s, acTrans, "AE", valor.Value.String(0));
                             }
                             else if (trs == "Direita")
                             {
-                                Atributos.Set(s, acTrans, "AD", valor.String(0));
+                                Atributos.Set(s, acTrans, "AD", valor.Value.String(0));
                             }
                         }
                     }
