@@ -221,7 +221,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME)
             {
-                var familia = DBases.GetFamiliasLite(Cfg.Init.CAD_ATT_RME).ListaSelecionar();
+                var familia =  RM.GetTipos().Find(x=>x.DESTINO == Cfg.Init.CAD_ATT_RME);
                 if (familia == null) { return; }
                 var sel = familia.GetPecas().ListaSelecionar();
 
@@ -232,7 +232,7 @@ namespace DLM.cad.Menus
             }
             else if (tipo_selecionado == Cfg.Init.CAD_ATT_RMU)
             {
-                var familia = DBases.GetFamiliasLite(Cfg.Init.CAD_ATT_RMU).ListaSelecionar();
+                var familia = RM.GetTipos().Find(x => x.DESTINO == Cfg.Init.CAD_ATT_RMU);
                 if (familia == null) { return; }
                 var sel = familia.GetPecas().ListaSelecionar();
 

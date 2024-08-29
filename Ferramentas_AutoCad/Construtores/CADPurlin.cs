@@ -168,16 +168,16 @@ namespace DLM.cad
         [DisplayName("Mapear")]
         public bool Mapear_Pecas_Montagem { get; set; } = true;
 
-        private Conexoes.RMLite _fb_padrao { get; set; }
-        private Conexoes.RMLite _purlin_padrao { get; set; }
-        private Conexoes.RMLite _purlin_padrao_suporte { get; set; }
-        private Conexoes.RMLite _corrente_padrao { get; set; }
-        private Conexoes.RMLite _corrente_padrao_suporte { get; set; }
-        private Conexoes.RMLite _tirante_padrao { get; set; }
-        private Conexoes.RMLite _tirante_padrao_suporte { get; set; }
+        private RMLite _fb_padrao { get; set; }
+        private RMLite _purlin_padrao { get; set; }
+        private RMLite _purlin_padrao_suporte { get; set; }
+        private RMLite _corrente_padrao { get; set; }
+        private RMLite _corrente_padrao_suporte { get; set; }
+        private RMLite _tirante_padrao { get; set; }
+        private RMLite _tirante_padrao_suporte { get; set; }
         #endregion
 
-        public Conexoes.RMLite GetPurlinPadrao()
+        public RMLite GetPurlinPadrao()
         {
             if (_purlin_padrao == null)
             {
@@ -186,7 +186,7 @@ namespace DLM.cad
             return _purlin_padrao;
         }
 
-        public Conexoes.RMLite GetPurlinSuportePadrao()
+        public RMLite GetPurlinSuportePadrao()
         {
             if (_purlin_padrao_suporte == null)
             {
@@ -194,7 +194,7 @@ namespace DLM.cad
             }
             return _purlin_padrao_suporte;
         }
-        public Conexoes.RMLite GetFlangeBracePadrao()
+        public RMLite GetFlangeBracePadrao()
         {
             if (_fb_padrao == null)
             {
@@ -202,7 +202,7 @@ namespace DLM.cad
             }
             return _fb_padrao;
         }
-        public Conexoes.RMLite GetCorrentePadrao()
+        public RMLite GetCorrentePadrao()
         {
             if (_corrente_padrao == null)
             {
@@ -211,7 +211,7 @@ namespace DLM.cad
             return _corrente_padrao;
         }
 
-        public Conexoes.RMLite GetCorrentePadraoSuporte()
+        public RMLite GetCorrentePadraoSuporte()
         {
             if (_corrente_padrao_suporte == null)
             {
@@ -219,7 +219,7 @@ namespace DLM.cad
             }
             return _corrente_padrao_suporte;
         }
-        public Conexoes.RMLite GetTirantePadrao()
+        public RMLite GetTirantePadrao()
         {
             if (_tirante_padrao == null)
             {
@@ -227,7 +227,7 @@ namespace DLM.cad
             }
             return _tirante_padrao;
         }
-        public Conexoes.RMLite GetTirantePadraoSuporte()
+        public RMLite GetTirantePadraoSuporte()
         {
             if (_tirante_padrao_suporte == null)
             {
@@ -658,7 +658,7 @@ namespace DLM.cad
 
         public void AddBlocoPurlin(string letra, int id_purlin, double VAO, double TRE, double TRD, P3d origembloco, List<double> Correntes_Esq, List<double> Furos_Manuais_Esq)
         {
-            Conexoes.RMLite pc = Ut.GetPURLINS().Get(id_purlin);
+            RMLite pc = Ut.GetPURLINS().Get(id_purlin);
             //AddMensagem("Origem: " + centro + "\n");
             var ht = new db.Linha();    
 

@@ -45,7 +45,7 @@ namespace DLM.cad
                     var pc = Core.GetCADPurlin().GetFlangeBracePadrao();
                     if(pc!=null)
                     {
-                        Conexoes.RMLite cc = pc.Get(value);
+                        var cc = pc.Clonar(value);
 
                         FBE = cc.CODIGOFIM;
                     }
@@ -78,7 +78,7 @@ namespace DLM.cad
                     var pc = Core.GetCADPurlin().GetFlangeBracePadrao();
                     if (pc != null)
                     {
-                        Conexoes.RMLite cc = pc.Get(value);
+                        RMLite cc = pc.Clonar(value);
                         FBD = cc.CODIGOFIM;
                     }
                     else

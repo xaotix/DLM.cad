@@ -219,7 +219,7 @@ namespace DLM.cad
 
         private System.Windows.Controls.Button _botao { get; set; }
         private System.Windows.Shapes.Line _linha { get; set; }
-        private Conexoes.RMLite _pecaRME { get; set; }
+        private RMLite _pecaRME { get; set; }
 
 
         public List<UIElement> GetCanvas()
@@ -272,7 +272,7 @@ namespace DLM.cad
         }
 
 
-        public Conexoes.RMLite GetPeca()
+        public RMLite GetPeca()
         {
             if(_pecaRME==null)
             {
@@ -280,7 +280,7 @@ namespace DLM.cad
             }
             if(this.Comprimento!= _pecaRME.COMP)
             {
-                _pecaRME = _pecaRME.Get(this.Comprimento);
+                _pecaRME = _pecaRME.Clonar(this.Comprimento);
             }
             return _pecaRME;
         }
@@ -410,7 +410,7 @@ namespace DLM.cad
 
 
 
-        public void SetPeca(Conexoes.RMLite rm)
+        public void SetPeca(RMLite rm)
         {
             if(rm==null)
             {
