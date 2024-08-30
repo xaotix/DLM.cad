@@ -550,9 +550,7 @@ namespace DLM.cad
         [CommandMethod(nameof(GerarDBF))]
         public static void GerarDBF()
         {
-
-
-            List<Report> erros = new List<Report>();
+            var erros = new List<Report>();
 
             if (!GetTecnoMetal().Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
             {
@@ -567,6 +565,57 @@ namespace DLM.cad
             var etapa = GetTecnoMetal().GetSubEtapa();
 
             Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
+        }
+
+        [CommandMethod(nameof(ImportarDBFExcel))]
+        public static void ImportarDBFExcel()
+        {
+            var erros = new List<Report>();
+
+            if (!GetTecnoMetal().Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
+            {
+                erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                    $"\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico));
+
+                erros.Show();
+                return;
+            }
+
+            var arquivo = Conexoes.Utilz.Abrir_String("xlsx");
+            if(arquivo!=null)
+            {
+                var etapa = GetTecnoMetal().GetSubEtapa();
+
+                var lista_pecas  = Conexoes.Utilz.Excel.GetPrimeiraAba(arquivo);
+                if(lista_pecas !=null)
+                {
+                Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
+                }
+            }
+        }
+
+        [CommandMethod(nameof(ExportarDBFExcel))]
+        public static void ExportarDBFExcel()
+        {
+            var erros = new List<Report>();
+
+            if (!GetTecnoMetal().Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
+            {
+                erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
+                    $"\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico));
+
+                erros.Show();
+                return;
+            }
+
+            var destino = "xlsx".SalvarArquivo();
+            if (destino != null)
+            {
+                var lista_pecas = GetTecnoMetal().GetPecasPranchas(ref erros);
+                var etapa = GetTecnoMetal().GetSubEtapa();
+                lista_pecas.Nome = "DBF";
+                lista_pecas.GerarExcel(destino, true, true);
+            }
         }
 
 
@@ -1024,7 +1073,7 @@ namespace DLM.cad
 
             var g_eixos_g = cad.GetLinhas_Eixos().FindAll(x => x.Sentido == Sentido.Vertical).OrderBy(x => x.Min.X).ToList();
 
-            var g_correntes = cmlines.FindAll(x=>x.Tipo == Tipo_Multiline.Corrente).SelectMany(x=>x.Mlines).ToList();
+            var g_correntes = cmlines.FindAll(x => x.Tipo == Tipo_Multiline.Corrente).SelectMany(x => x.Mlines).ToList();
             var g_purlins = cmlines.FindAll(x => x.Tipo == Tipo_Multiline.Purlin).SelectMany(x => x.Mlines).ToList();
             var g_tirantes = cmlines.FindAll(x => x.Tipo == Tipo_Multiline.Tirante).SelectMany(x => x.Mlines).ToList();
             var g_vigas = cmlines.FindAll(x => x.Tipo == Tipo_Multiline.Viga_Apoio).SelectMany(x => x.Mlines).ToList();
@@ -1118,7 +1167,7 @@ namespace DLM.cad
                         var tirantes = g_tirantes.FindAll(x => x.MinX >= X1 && x.MaxX <= X2).ToList();
 
 
-               
+
 
 
 
@@ -1157,7 +1206,7 @@ namespace DLM.cad
                         {
                             var cor = npurlin.GetCor(p.Posicao).GetCor().Color.GetColor();
 
-                            var p1 = new P3d(p.X +X01, Y);
+                            var p1 = new P3d(p.X + X01, Y);
                             cad.AddLinha(p1.MoverY(of1), p1.MoverY(-of1), "CONTINUOUS", cor);
 
                             cad.AddMtext(p1.MoverY(-of1), p.Posicao.ToString(), 90, dim1);
