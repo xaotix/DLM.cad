@@ -44,6 +44,7 @@ namespace DLM.cad
         {
             if (_w == null)
             {
+                Cfg.Init.JanelaWaitMultiThread = false; //Desabilita o wait multi thread, pois o AutoCAD não suporta isso.
                 _w = Conexoes.Utilz.Wait(100, "");
             }
             return _w;
