@@ -1014,6 +1014,7 @@ namespace DLM.cad
             {
                 Cfg.Init.CAD_VerificarVersao();
             }
+            Cfg.Init.JanelaWaitMultiThread = false;
             SetUCSParaWorld();
             GetLayers();
             Multiline.GetMLStyles();

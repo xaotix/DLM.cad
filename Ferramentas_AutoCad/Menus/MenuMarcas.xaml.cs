@@ -142,7 +142,7 @@ namespace DLM.cad
 
         private void selecionar_perfil(object sender, RoutedEventArgs e)
         {
-
+            Cfg.Init.JanelaWaitMultiThread = false;
             perfil.Content = "...";
             this.Visibility = Visibility.Collapsed;
             switch (this.tipo)

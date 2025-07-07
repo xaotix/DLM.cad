@@ -44,7 +44,7 @@ namespace DLM.cad
         {
             if (_w == null)
             {
-                Cfg.Init.JanelaWaitMultiThread = false; //Desabilita o wait multi thread, pois o AutoCAD não suporta isso.
+                Cfg.Init.JanelaWaitMultiThread = false;
                 _w = Conexoes.Utilz.Wait(100, "");
             }
             return _w;
@@ -583,14 +583,14 @@ namespace DLM.cad
             }
 
             var arquivo = Conexoes.Utilz.Abrir_String("xlsx");
-            if(arquivo!=null)
+            if (arquivo != null)
             {
                 var etapa = GetTecnoMetal().GetSubEtapa();
 
-                var lista_pecas  = Conexoes.Utilz.Excel.GetPrimeiraAba(arquivo);
-                if(lista_pecas !=null)
+                var lista_pecas = Conexoes.Utilz.Excel.GetPrimeiraAba(arquivo);
+                if (lista_pecas != null)
                 {
-                Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
+                    Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
                 }
             }
         }
@@ -735,7 +735,8 @@ namespace DLM.cad
                 var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
                 if (arquivos.Count > 0)
                 {
-                    var w = Conexoes.Utilz.Wait(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                    var w = Core.Getw();
+                    w.SetProgresso(1, arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
                     foreach (var arq in arquivos)
                     {
                         var nome_fim = $@"{arq.Pasta}\{arq.Nome}.dxf";
@@ -801,7 +802,8 @@ namespace DLM.cad
                     if (arquivos.Count > 0)
                     {
                         List<Report> erros = new List<Report>();
-                        var w = Conexoes.Utilz.Wait(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                        var w = Core.Getw();
+                        w.SetProgresso(1, arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
                         List<string> arquivos_dwg = new List<string>();
                         foreach (var arq in arquivos)
                         {
