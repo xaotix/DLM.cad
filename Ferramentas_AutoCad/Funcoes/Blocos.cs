@@ -871,7 +871,7 @@ namespace DLM.cad
             var atributos = bloco.GetAttributes();
 
             var ht = new db.Linha();
-            foreach (var celula in atributos.Celulas)
+            foreach (var celula in atributos)
             {
                 ht.Add(celula.Coluna, celula.Valor);
             }

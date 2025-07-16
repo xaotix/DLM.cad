@@ -20,8 +20,8 @@ namespace DLM.cad
             var retorno = new BlockAttributes(this.Block, false);
 
             retorno.Descricao = this.Descricao;
-            retorno.Celulas.Clear();
-            foreach (var celula in this.Celulas)
+            retorno.Clear();
+            foreach (var celula in this)
             {
                 retorno.Add(celula.Coluna, celula.Valor);
             }
