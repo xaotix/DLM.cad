@@ -1531,7 +1531,7 @@ namespace DLM.cad
         {
 
             var chapas = new List<Conexoes.Bobina>();
-            chapas.AddRange(DBases.GetBobinasDummy());
+            chapas.AddRange(DBases.GetChapas());
             if (tipo == Tipo_Chapa.Fina)
             {
                 chapas = chapas.FindAll(x => x.Chapa_Fina);
