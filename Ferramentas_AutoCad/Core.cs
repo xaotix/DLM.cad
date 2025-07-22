@@ -230,8 +230,12 @@ namespace DLM.cad
             GetCADPurlin().RenomeiaBlocos();
         }
 
+        [CommandMethod(nameof(criarpolyline))]
+        public static void criarpolyline()
+        {
+           GetCADBase().CriarPoliLyneSelecao();
 
-
+        }
 
 
 
@@ -652,13 +656,8 @@ namespace DLM.cad
         [CommandMethod(nameof(CriarmarcasdeExcel))]
         public static void CriarmarcasdeExcel()
         {
-
-
-
-
-            CriarMarcas mm = new CriarMarcas();
+            var mm = new CriarMarcas();
             mm.Show();
-
         }
         [CommandMethod(nameof(CriarMarcasdeCAM))]
         public static void CriarMarcasdeCAM()

@@ -3,6 +3,7 @@ using Conexoes;
 using DLM.vars;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DLM.cad
 {
@@ -51,13 +52,14 @@ namespace DLM.cad
                 }
                
             }
+            
             else
             {
                 var tolerancia = this["TOLE"].Double();
 
                 double diametro = this.Block.Name.Replace("M", "").Replace(Cfg.Init.CAD_ATT_N, "").Double();
                 this.Diametro = diametro;
-                if (tolerancia !=0)
+                if (tolerancia != 0)
                 {
                     this.Diametro = this.Diametro + tolerancia;
                 }

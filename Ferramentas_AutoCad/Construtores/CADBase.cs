@@ -159,7 +159,8 @@ namespace DLM.cad
         }
         public List<BlockReference> GetBlocos_Furos_Vista()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x =>
+            var blocos = Selecoes.Filter<BlockReference>();
+            return blocos.FindAll(x =>
                  x.Name.ToUpper() == "M8"
                 | x.Name.ToUpper() == "M10"
                 | x.Name.ToUpper() == "M12"
@@ -277,10 +278,7 @@ namespace DLM.cad
             get
             {
                 string destino = this.Pasta;
-                if (this.E_Tecnometal(false))
-                {
-                    destino = destino.GetSubPasta(Cfg.Init.EXT_CAM);
-                }
+                destino = destino.GetSubPasta(Cfg.Init.EXT_CAM);
 
                 return destino;
             }
@@ -322,7 +320,11 @@ namespace DLM.cad
         #endregion
 
         #region Desenho
-        public void AddPolyLine(List<P3d> pontos, double largura, double largura_fim, System.Drawing.Color cor)
+        public void AddPolyLine(List<P3d> pontos, bool fechar = true)
+        {
+            AddPolyLine(pontos, 0, 0, System.Drawing.Color.White, fechar);
+        }
+        public void AddPolyLine(List<P3d> pontos, double largura, double largura_fim, System.Drawing.Color cor, bool fechar = true)
         {
             AddBarra();
             AddMensagem("\nAdicionando Polyline");
@@ -369,7 +371,7 @@ namespace DLM.cad
                     p.Color = Autodesk.AutoCAD.Colors.Color.FromColor(cor);
                     // Add the new object to Model space and the transaction
                     acBlkTblRec.AppendEntity(p);
-                    acTrans.AddNewlyCreatedDBObject(p, true);
+                    acTrans.AddNewlyCreatedDBObject(p, fechar);
 
                     // Commit the changes and dispose of the transaction
                     acTrans.Commit();
@@ -491,7 +493,7 @@ namespace DLM.cad
                 objText.Rotation = angulo.GrausParaRadianos();
                 objText.TextStyleId = acCurDb.Textstyle;
 
-                if(cor!=null)
+                if (cor != null)
                 {
                     objText.Color = Autodesk.AutoCAD.Colors.Color.FromColor(cor.Value);
                 }
@@ -503,7 +505,7 @@ namespace DLM.cad
 
                 acBlkTblRec.AppendEntity(objText);
                 acTrans.AddNewlyCreatedDBObject(objText, true);
-                
+
 
                 acTrans.Commit();
             }
@@ -690,11 +692,22 @@ namespace DLM.cad
         {
             if (_Polies == null)
             {
-                _Polies = Selecoes.FindAll(x => x is Polyline).Select(x => x as Polyline).OrderByDescending(x => x.Length).ToList().Select(x => new PolyInfo(x)).ToList();
+                _Polies = this.Selecoes.Filter<Polyline>().OrderByDescending(x => x.Length).ToList().Select(x => new PolyInfo(x)).ToList();
             }
             return _Polies;
         }
 
+        public void CriarPoliLyneSelecao()
+        {
+            this.SelecionarObjetos(CAD_TYPE.LINE, CAD_TYPE.POLYLINE);
+            var lines = this.Selecoes.Filter<Line>().ToList();
+            var polis = this.Selecoes.Filter<Polyline>().ToList();
+
+
+
+            var ordenar = lines.GetLinhasConectadas();
+            ordenar.CriarPolyLine();
+        }
 
 
 
@@ -704,17 +717,51 @@ namespace DLM.cad
             {
                 _Furos = new List<Furo>();
 
-                var furos = this.GetFurosVista();
-                var furos_pl = Selecoes.Filter<Circle>();
+                var furos_blocos = this.GetFurosVista();
+                var furos_circles = Selecoes.Filter<Circle>();
+                var furos_hatches = Selecoes.Filter<Hatch>();
                 var polis = this.GetPolies().FindAll(x => x.Polyline.Closed);
                 var furos_polis = polis.FindAll(x => x.Arcos.Count == 2);
 
-                foreach (var furo in furos.FindAll(x => x.Block.Name != "MA"))
+                var furos_hatch_bloco = Selecoes.Filter<BlockReference>();
+                //hachuras tekla em escala
+                foreach(var blk in furos_hatch_bloco)
+                {
+
+
+                    var entH = blk.GetEntities().Filter<Hatch>();
+                    if (entH.Count > 0)
+                    {
+                        var fr = entH.First().GetFuro();
+                        if(fr != null)
+                        {
+                            _Furos.Add(fr);
+                        }
+                    }
+                    else
+                    {
+                        var furo = blk.GetFuro();
+                        if(furo!=null)
+                        {
+                            _Furos.Add(furo);
+                        }
+                    }
+                }
+
+                foreach (var furo in furos_blocos.FindAll(x => x.Block.Name != "MA"))
                 {
                     var p3d = furo.Block.Position.P3d();
                     _Furos.Add(new cam.Furo(p3d.X, p3d.Y, furo.Diametro, furo.Oblongo));
                 }
-                foreach (var furo in furos_pl)
+                foreach (var hatch in furos_hatches)
+                {
+                    var furo = hatch.GetFuro();
+                    if (furo != null)
+                    {
+                        _Furos.Add(furo);
+                    }
+                }
+                foreach (var furo in furos_circles)
                 {
                     var p0 = furo.Center.P3d();
                     _Furos.Add(new cam.Furo(p0.X, p0.Y, furo.Diameter));
@@ -734,13 +781,16 @@ namespace DLM.cad
                     _Furos.Add(new cam.Furo(p0.X, p0.Y, diam, dist, angulo));
                 }
             }
+
+            //remove furos sobrepostos
+            _Furos = _Furos.GroupBy(x => x.Origem.ToString2D()).Select(x => x.First()).ToList();
             return _Furos;
         }
 
         private List<MlClass> _multiLines { get; set; }
         public List<MlClass> GetMultiLines()
         {
-            if(_multiLines==null)
+            if (_multiLines == null)
             {
                 _multiLines = new List<MlClass>();
 
@@ -800,7 +850,7 @@ namespace DLM.cad
                 var lbksnms = blks.GroupBy(x => Blocos.GetNome(x).ToUpper()).ToList();
                 var eixos = lbksnms.FindAll(x => x.Key.Contains(this.BlocoEixos)).ToList().SelectMany(x => x.ToList()).ToList();
 
-                _Atributos_Eixos = eixos.Select(x=>x.GetAttributes()).ToList();
+                _Atributos_Eixos = eixos.Select(x => x.GetAttributes()).ToList();
             }
 
             return _Atributos_Eixos;

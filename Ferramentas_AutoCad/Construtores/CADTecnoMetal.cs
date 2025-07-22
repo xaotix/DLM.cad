@@ -914,10 +914,10 @@ namespace DLM.cad
 
         public List<MarcaTecnoMetal> GetMarcas(ref List<Report> erros)
         {
-            if (!this.E_Tecnometal())
-            {
-                return new List<MarcaTecnoMetal>();
-            }
+            //if (!this.E_Tecnometal())
+            //{
+            //    return new List<MarcaTecnoMetal>();
+            //}
             var pcs = GetBlocosMarcas(acCurDb, ref erros, acDoc.Name);
             var tbl = Conexoes.Utilz.DBF.ConverterParaDBF(pcs, ref erros);
             return tbl.GetMarcas(ref erros);
@@ -1039,7 +1039,7 @@ namespace DLM.cad
             {
                 foreach (var erro in erros)
                 {
-                    AddMensagem($"\n{ erro.ToString()}");
+                    AddMensagem($"\n{erro.ToString()}");
                 }
             }
 
@@ -1138,7 +1138,7 @@ namespace DLM.cad
 
         public void PreencheSelo(bool limpar = false)
         {
-            if (!E_Tecnometal()) { return; }
+            //if (!E_Tecnometal()) { return; }
             acDoc.IrLayout();
             Ut.ZoomExtend();
 
@@ -1438,7 +1438,7 @@ namespace DLM.cad
                                 erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Critico));
                             }
                         }
-                       
+
                     }
                     acTrans.Commit();
 
@@ -1492,7 +1492,7 @@ namespace DLM.cad
                             erros.Add(new Report("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Critico));
                         }
                     }
-                    
+
                 }
 
                 acTrans.Commit();
@@ -1530,7 +1530,7 @@ namespace DLM.cad
         public Conexoes.Bobina PromptChapa(Tipo_Chapa tipo)
         {
 
-            var chapas = new List<Conexoes.Bobina>();
+            var chapas = new List<Conexoes.BobinaDummy>();
             chapas.AddRange(DBases.GetChapas());
             if (tipo == Tipo_Chapa.Fina)
             {
@@ -1563,12 +1563,28 @@ namespace DLM.cad
 
         public void CAM_de_Polilinha()
         {
-            if (!this.E_Tecnometal())
-            {
-                return;
-            }
-            var sel = SelecionarObjetos(CAD_TYPE.POLYLINE, CAD_TYPE.LWPOLYLINE, CAD_TYPE.INSERT, CAD_TYPE.CIRCLE);
+            //if (!this.E_Tecnometal())
+            //{
+            //    return;
+            //}
+            var sel = SelecionarObjetos(CAD_TYPE.POLYLINE, CAD_TYPE.LINE, CAD_TYPE.LWPOLYLINE, CAD_TYPE.INSERT, CAD_TYPE.CIRCLE, CAD_TYPE.HATCH);
             var polylines = this.GetPolies().FindAll(x => x.SomenteLinhas);
+            if (polylines.Count == 0)
+            {
+                var linhas_grp = this.GetLines().GroupBy(x => x.EntityColor).ToList().FindAll(x => x.ToList().GroupBy(y => y.Angle).Count() > 1);
+                foreach (var lista_linha in linhas_grp)
+                {
+                    var lins = lista_linha.ToList().GetLinhasConectadas();
+                    if (lins.Count > 2)
+                    {
+                        var pol = lins.CriarPolyLine();
+
+                        polylines.Add(new PolyInfo(pol));
+                        break;
+                    }
+                }
+
+            }
             if (polylines.Count > 0)
             {
                 var poly = polylines[0];
@@ -1579,7 +1595,7 @@ namespace DLM.cad
 
                 if (poly.Comprimento > 0 && poly.Largura > 0)
                 {
-                    var marca = PromptMarca("P01");
+                    var marca = this.Nome.Prompt("Digite o nome da peça");
                     if (marca != null)
                     {
                         string material = null;
@@ -1588,13 +1604,18 @@ namespace DLM.cad
                         {
                             material = selm.Nome;
                         }
+
+                        var furos = this.GetFurosSelecao();
+
+                        furos.CriarCirculosDosFuros();
+
                         if (material != null)
                         {
                             var esp = PromptChapa(Tipo_Chapa.Tudo);
                             if (esp != null)
                             {
-                                var qtd = 1.Prompt();
-                                if (qtd!=null)
+                                var qtd = 1.Prompt("Digite a quantidade.");
+                                if (qtd != null)
                                 {
                                     var ficha = PromptFicha();
                                     if (ficha != null)
@@ -1614,14 +1635,22 @@ namespace DLM.cad
                                             nCAM.Cabecalho.Material = material;
                                             nCAM.Cabecalho.Quantidade = qtd.Value;
 
-                                            nCAM.Cabecalho.Cliente = sub.GetObra().Cliente;
                                             nCAM.Cabecalho.Etapa = sub.NomeEtapa;
-                                            nCAM.Cabecalho.Lugar = sub.GetObra().Lugar;
 
-                                            foreach (var furo in this.GetFurosSelecao())
+                                            if (sub.GetObra() != null)
+                                            {
+                                                nCAM.Cabecalho.Cliente = sub.GetObra().Cliente;
+                                                nCAM.Cabecalho.Lugar = sub.GetObra().Lugar;
+                                            }
+
+
+                                            foreach (var furo in furos)
                                             {
                                                 var fn = furo.Mover(X0.Inverter());
-                                                nCAM.Formato.AddFuroLIV1(fn);
+                                                if (fn.Origem.X > 0 && fn.Origem.X <= nCAM.Comprimento && fn.Origem.Y < 0 && fn.Origem.Y >= -nCAM.Perfil.Largura)
+                                                {
+                                                    nCAM.Formato.AddFuroLIV1(fn);
+                                                }
                                             }
 
 
@@ -1693,18 +1722,23 @@ namespace DLM.cad
         }
         public string PromptFicha()
         {
-            return Cfg.Init.RM_SEM_PINTURA.Prompt("Digite a ficha de pintura",20,false,true, "FICHA");
+            return Cfg.Init.RM_SEM_PINTURA.Prompt("Digite a ficha de pintura", 20, false, true, "FICHA");
         }
-        public string PromptMarca(string prefix = "ARR-")
+        public string PromptMarca(string prefix = "ARR-", string nome = null)
         {
 
-            List<Report> erros = new List<Report>();
+            var erros = new List<Report>();
             var marcas = this.GetMarcas(ref erros);
-            var nnn = marcas.FindAll(x => x.Nome.StartsWith(prefix)).Count + 1;
+            var nnn = (marcas.FindAll(x => x.Nome.StartsWith(prefix)).Count + 1).String(2);
+            if (nome != null)
+            {
+                nnn = nome;
+            }
+            nnn = $"{prefix}{nnn}";
         retentar:
-            var m = prefix + nnn.String(2).Prompt("Digite o nome da Marca", 25, false, true, "NOME_MARCA").ToUpper().Replace(" ", "");
+            var nome_marca = nnn.Prompt("Digite o nome da Marca", 25, false, true, "NOME_MARCA").ToUpper().Replace(" ", "");
 
-            if (m.Length == 0)
+            if (nome_marca.Length == 0)
             {
                 if (Conexoes.Utilz.Pergunta("Nome não pode ser em branco. \nTentar Novamente?"))
                 {
@@ -1715,10 +1749,10 @@ namespace DLM.cad
                     return "";
                 }
             }
-            var iguais = marcas.FindAll(x => x.Nome == m);
+            var iguais = marcas.FindAll(x => x.Nome == nome_marca);
             if (iguais.Count > 0)
             {
-                if (Conexoes.Utilz.Pergunta($"[{m}] Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?"))
+                if (Conexoes.Utilz.Pergunta($"[{nome_marca}] Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?"))
                 {
                     goto retentar;
                 }
@@ -1727,9 +1761,9 @@ namespace DLM.cad
                     return "";
                 }
             }
-            if (m.CaracteresEspeciais())
+            if (nome_marca.CaracteresEspeciais())
             {
-                if (Conexoes.Utilz.Pergunta($"[{m}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?"))
+                if (Conexoes.Utilz.Pergunta($"[{nome_marca}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?"))
                 {
                     goto retentar;
                 }
@@ -1738,7 +1772,7 @@ namespace DLM.cad
                     return "";
                 }
             }
-            return m;
+            return nome_marca;
         }
 
 
@@ -1864,14 +1898,8 @@ namespace DLM.cad
                         if (Conexoes.Utilz.Pergunta("Gerar CAM?"))
                         {
                             string destino = this.Pasta;
-                            if (this.E_Tecnometal(false))
-                            {
-                                destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
-                            }
-                            else
-                            {
-                                return;
-                            }
+                            destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
+
                             if (Directory.Exists(destino))
                             {
                                 var Perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
@@ -1908,14 +1936,8 @@ namespace DLM.cad
         public void GerarCamsChapasRetas()
         {
             string destino = this.Pasta;
-            if (this.E_Tecnometal(false))
-            {
-                destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
-            }
-            else
-            {
-                return;
-            }
+            destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
+
             var erros = new List<Report>();
             var marcas = this.GetMarcas(ref erros);
 
@@ -1961,7 +1983,7 @@ namespace DLM.cad
 
         public void InserirChapa(double escala = 0, string marca = "", string posicao = "", string material = null, int quantidade = 0, string ficha = null, Conexoes.Bobina espessura = null, string mercadoria = null, Conexoes.Bobina bobina = null)
         {
-            if(escala==0)
+            if (escala == 0)
             {
                 escala = this.GetEscala();
             }
@@ -2056,14 +2078,8 @@ namespace DLM.cad
                             if (chapa_dobrada.GerarCam == vars.Opcao.Sim)
                             {
                                 string destino = this.Pasta;
-                                if (this.E_Tecnometal(false))
-                                {
-                                    destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
-                                }
-                                else
-                                {
-                                    return;
-                                }
+                                destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
+
                                 if (Directory.Exists(destino))
                                 {
                                     var Perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
@@ -2114,7 +2130,7 @@ namespace DLM.cad
                 {
                     var valor = peca.MULTIPLO.Prompt();
 
-                    if (valor==null)
+                    if (valor == null)
                     {
                         return;
                     }
@@ -2341,7 +2357,7 @@ namespace DLM.cad
             if (nome != null && nome != "")
             {
                 var quantidade = (1.0).Prompt();
-                if (quantidade!=null)
+                if (quantidade != null)
                 {
                     string ficha = this.PromptFicha();
                     if (ficha != null)
