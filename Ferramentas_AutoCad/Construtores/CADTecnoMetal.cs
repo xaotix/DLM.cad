@@ -1595,7 +1595,7 @@ namespace DLM.cad
 
                 if (poly.Comprimento > 0 && poly.Largura > 0)
                 {
-                    var marca = this.Nome.Prompt("Digite o nome da peça");
+                    var marca = this.Nome.Prompt("Digite o nome da peça",25);
                     if (marca != null)
                     {
                         string material = null;
@@ -1643,7 +1643,6 @@ namespace DLM.cad
                                                 nCAM.Cabecalho.Lugar = sub.GetObra().Lugar;
                                             }
 
-
                                             foreach (var furo in furos)
                                             {
                                                 var fn = furo.Mover(X0.Inverter());
@@ -1652,17 +1651,11 @@ namespace DLM.cad
                                                     nCAM.Formato.AddFuroLIV1(fn);
                                                 }
                                             }
-
-
                                             nCAM.Gerar().Abrir();
                                         }
                                     }
-
                                 }
-
                             }
-
-
                         }
                     }
                 }

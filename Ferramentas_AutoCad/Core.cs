@@ -21,6 +21,7 @@ using DLM.vars;
 using Conexoes;
 using DLM.desenho;
 using DLM.vars.cad;
+using System.Runtime.CompilerServices;
 
 [assembly: CommandClass(typeof(DLM.cad.Core))]
 
@@ -628,6 +629,11 @@ namespace DLM.cad
         public static void CAMPolyLine()
         {
             GetTecnoMetal().CAM_de_Polilinha();
+        }
+        [CommandMethod(nameof(CAMComposicao))]
+        public static void CAMComposicao()
+        {
+            Conexoes.Utilz.CamComposicao(GetCADBase().PastaCAM);
         }
 
 
