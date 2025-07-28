@@ -1827,7 +1827,7 @@ namespace DLM.cad
                 if (bobina == null)
                 {
 
-                    bobina = DBases.GetBobinaDummy(Cfg.Init.Material_RMU);
+                    bobina = DBases.GetEspessura(0,Cfg.Init.Material_RMU);
                     var espessura = PromptChapa(Tipo_Chapa.Fina);
                     if (espessura == null)
                     {
@@ -2008,7 +2008,7 @@ namespace DLM.cad
                     bool chapa_fina = espessura.Chapa_Fina;
                     if (bobina == null)
                     {
-                        bobina = DBases.GetBobinaDummy(Cfg.Init.Material_Estrutura);
+                        bobina = DBases.GetEspessura(0, Cfg.Init.Material_Estrutura);
 
                         if (chapa_fina)
                         {

@@ -152,7 +152,7 @@ namespace DLM.cad
                     db_chapa = Core.GetTecnoMetal().PromptChapa(Tipo_Chapa.Grossa);
                     if (db_chapa != null)
                     {
-                        db_bobina = DBases.GetBobinaDummy(Cfg.Init.Material_Estrutura, db_chapa.Espessura).Clonar();
+                        db_bobina = DBases.GetEspessura(db_chapa.Espessura, Cfg.Init.Material_Estrutura).Clonar();
                         perfil.Content = db_chapa.ToString();
                         db_bobina.Espessura = db_chapa.Espessura;
                         db_bobina.Material = this.bt_material.Content.ToString();
