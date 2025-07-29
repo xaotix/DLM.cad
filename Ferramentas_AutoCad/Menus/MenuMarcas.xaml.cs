@@ -191,14 +191,11 @@ namespace DLM.cad
                     }
                     break;
                 case Tipo_Bloco.Arremate:
-                    db_chapa = Core.GetTecnoMetal().PromptChapa(Tipo_Chapa.Fina);
-                    if (db_chapa != null)
-                    {
-                        db_bobina = Core.GetTecnoMetal().PromptBobina(db_chapa);
-                    }
+                    db_bobina = Core.GetTecnoMetal().PromptBobina();
 
                     if (db_bobina != null)
                     {
+                        db_chapa = db_bobina.Clonar();
                         perfil.Content = db_bobina.ToString();
                     }
                     break;
