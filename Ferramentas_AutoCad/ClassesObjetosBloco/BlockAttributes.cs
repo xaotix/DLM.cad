@@ -68,7 +68,7 @@ namespace DLM.cad
 
         public BlockAttributes(List<db.Celula> atributos)
         {
-            this.Celulas.AddRange(atributos);
+            this.AddRange(atributos);
         }
 
         public BlockAttributes(BlockReference bloco, bool carregar = true)
@@ -81,7 +81,7 @@ namespace DLM.cad
                 var bl = bloco.GetAttributes();
 
                 this.Celulas = new List<db.Celula>();
-                this.Celulas.AddRange(bl.Celulas);
+                this.AddRange(bl.Celulas);
             }
         }
 

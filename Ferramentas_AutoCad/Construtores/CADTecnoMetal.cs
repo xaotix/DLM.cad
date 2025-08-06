@@ -1328,7 +1328,7 @@ namespace DLM.cad
                         {
                             acTmpDb.ReadDwgFile(arquivo, FileOpenMode.OpenForReadAndAllShare, false, null);
                             var marcas_prancha = GetBlocosMarcas(acTmpDb, ref erros, arquivo);
-                            marcas.Linhas.AddRange(marcas_prancha);
+                            marcas.AddRange(marcas_prancha);
                             acTmpDb.CloseInput(true);
                         }
                     }
