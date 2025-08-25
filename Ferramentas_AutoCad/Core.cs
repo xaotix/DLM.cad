@@ -592,7 +592,7 @@ namespace DLM.cad
             {
                 var etapa = GetTecnoMetal().GetSubEtapa();
 
-                var lista_pecas = Conexoes.Utilz.Excel.GetPrimeiraAba(arquivo);
+                var lista_pecas = Conexoes.Utilz.Excel.GetTabela(arquivo);
                 if (lista_pecas != null)
                 {
                     Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
