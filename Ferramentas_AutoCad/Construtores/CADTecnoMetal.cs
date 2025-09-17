@@ -1640,7 +1640,7 @@ namespace DLM.cad
                                             if (sub.GetObra() != null)
                                             {
                                                 nCAM.Cabecalho.Cliente = sub.GetObra().Cliente;
-                                                nCAM.Cabecalho.Lugar = sub.GetObra().Lugar;
+                                                nCAM.Cabecalho.Local = sub.GetObra().Lugar;
                                             }
 
                                             foreach (var furo in furos)
@@ -2075,11 +2075,11 @@ namespace DLM.cad
 
                                 if (Directory.Exists(destino))
                                 {
-                                    var Perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
+                                    var perfil = DLM.cam.Perfil.Chapa(chapa_dobrada.Largura, chapa_dobrada.Espessura);
 
                                     string arquivo = $"{destino}{chapa_dobrada.Marca}.{Cfg.Init.EXT_CAM}";
 
-                                    DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, Perfil, chapa_dobrada.Comprimento);
+                                    DLM.cam.Cam pcam = new DLM.cam.Cam(arquivo, perfil, chapa_dobrada.Comprimento);
 
                                     pcam.Cabecalho.Tratamento = chapa_dobrada.Ficha;
                                     pcam.Cabecalho.Quantidade = chapa_dobrada.Quantidade;
