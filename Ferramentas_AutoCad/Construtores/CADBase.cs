@@ -64,7 +64,7 @@ namespace DLM.cad
         }
         public bool E_Tecnometal3D(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith($@".{Cfg.Init.EXT_Pedido}"))
+            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsW($@".{Cfg.Init.EXT_Pedido}"))
             {
                 if (mensagem)
                 {
@@ -80,7 +80,7 @@ namespace DLM.cad
         }
         public bool E_Tecnometal(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsWith($".{Cfg.Init.EXT_Etapa}"))
+            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsW($".{Cfg.Init.EXT_Etapa}"))
             {
                 if (mensagem)
                 {
@@ -130,7 +130,7 @@ namespace DLM.cad
         {
             var arqs = this.Pasta.GetArquivos("*.dwg");
 
-            var selecao = arqs.FindAll(x => x.Nome.Contains(Cfg.Init.DWG_FAB_FILTRO) && x.Nome.Length > 8);
+            var selecao = arqs.FindAll(x => x.Nome.Contem(Cfg.Init.DWG_FAB_FILTRO) && x.Nome.Length > 8);
             var ultimas_revs = selecao.GroupBy(x => x.Nome.Substring(0, x.Nome.Length - 3)).Select(x => x.ToList().OrderByDescending(y => y.Nome)).Select(x => x.First()).ToList();
             selecao = ultimas_revs;
 
@@ -663,7 +663,7 @@ namespace DLM.cad
         #region mapeamento de objetos a serem usados
         public List<CADLine> GetLinhas_Eixos()
         {
-            return GetCADLines().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contains(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
+            return GetCADLines().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contem(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
         }
         #endregion
 
@@ -724,7 +724,7 @@ namespace DLM.cad
 
                 var furos_hatch_bloco = Selecoes.Filter<BlockReference>();
                 //hachuras tekla em escala
-                foreach(var blk in furos_hatch_bloco)
+                foreach (var blk in furos_hatch_bloco)
                 {
 
 
@@ -732,7 +732,7 @@ namespace DLM.cad
                     if (entH.Count > 0)
                     {
                         var fr = entH.First().GetFuro();
-                        if(fr != null)
+                        if (fr != null)
                         {
                             _Furos.Add(fr);
                         }
@@ -740,7 +740,7 @@ namespace DLM.cad
                     else
                     {
                         var furo = blk.GetFuro();
-                        if(furo!=null)
+                        if (furo != null)
                         {
                             _Furos.Add(furo);
                         }
@@ -847,7 +847,7 @@ namespace DLM.cad
             {
                 var blks = Selecoes.Filter<BlockReference>();
                 var lbksnms = blks.GroupBy(x => Blocos.GetNome(x).ToUpper()).ToList();
-                var eixos = lbksnms.FindAll(x => x.Key.Contains(this.BlocoEixos)).ToList().SelectMany(x => x.ToList()).ToList();
+                var eixos = lbksnms.FindAll(x => x.Key.Contem(this.BlocoEixos)).ToList().SelectMany(x => x.ToList()).ToList();
 
                 _Atributos_Eixos = eixos.Select(x => x.GetAttributes()).ToList();
             }
@@ -857,7 +857,7 @@ namespace DLM.cad
         public List<BlockAttributes> GetAtributosNivel()
         {
             /*pega blocos dinâmicos*/
-            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contains("NIVEL") | Blocos.GetNome(x).ToUpper().Contains("NÍVEL")).Select(x => x.GetAttributes()).ToList();
+            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contem("NIVEL", "NÍVEL")).Select(x => x.GetAttributes()).ToList();
         }
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {

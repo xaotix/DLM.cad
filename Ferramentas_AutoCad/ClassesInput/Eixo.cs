@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using Conexoes;
 using DLM.desenho;
 using DLM.vars;
 using System;
@@ -115,7 +116,7 @@ namespace DLM.cad
             if (bloco != null)
             {
 
-                var nomes = this.Bloco.Celulas.FindAll(x => x.ColunaUpper.Contains("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
+                var nomes = this.Bloco.Celulas.FindAll(x => x.ColunaUpper.Contem("EIXO")).Select(x => x.Valor).Distinct().ToList().FindAll(x => x.Replace(" ", "") != "").ToList();
 
                 if (nomes.Count > 0)
                 {

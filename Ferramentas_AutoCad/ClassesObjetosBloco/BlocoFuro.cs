@@ -24,7 +24,7 @@ namespace DLM.cad
             this.Diametro = 0;
             this.Oblongo = 0;
 
-            if (Block.Name.ToUpper().Contains("HOLE") | Block.Name.ToUpper().Contains("MA"))
+            if (Block.Name.ToUpper().Contem("HOLE") | Block.Name.ToUpper().Contem("MA"))
             {
 
 

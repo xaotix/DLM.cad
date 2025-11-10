@@ -100,7 +100,7 @@ namespace DLM.cad
             }
             else
             {
-                if (nome.Contains(@"\"))
+                if (nome.Contem(@"\"))
                 {
                     nome = nome.getNome();
                 }
@@ -705,7 +705,7 @@ namespace DLM.cad
         public static void CamToMarcaSimples(DLM.cam.ReadCAM cam, P3d origem, double escala)
         {
 
-            if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contains("_"))
+            if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contem("_"))
             {
                 var perfil = DBases.GetdbPerfil().GetPerfilTecnoMetal(cam.Descricao);
                 if (perfil != null)

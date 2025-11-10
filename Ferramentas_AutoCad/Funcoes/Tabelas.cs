@@ -579,7 +579,7 @@ namespace DLM.cad
                     {
                         var hp = new db.Linha();
                         hp.Add(Cfg.Init.CAD_ATT_Marca, p.Nome);
-                        if (p.Nome_Bloco.StartsWith(Cfg.Init.CAD_PC_Quantificar) && !p.Nome_Bloco.Contains(Cfg.Init.CAD_ATT_Texto))
+                        if (p.Nome_Bloco.StartsW(Cfg.Init.CAD_PC_Quantificar) && !p.Nome_Bloco.Contem(Cfg.Init.CAD_ATT_Texto))
                         {
                             P3d pcentro = new P3d(p1.X + (escala * 6.9894), p1.Y + (escala * -3.2152));
                             var bl = new db.Linha();

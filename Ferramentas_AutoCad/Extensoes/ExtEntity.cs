@@ -27,8 +27,8 @@ namespace DLM.cad
 
 
                 if (
-                    layer.Name.ToUpper() == "DEFPOINT" | 
-                    layer.Name.ToUpper() == "DEFPOINTS" | 
+                    layer.Name.ToUpper() == "DEFPOINT" |
+                    layer.Name.ToUpper() == "DEFPOINTS" |
                     layer.Name.ToUpper() == "MV"
                     )
                 {
@@ -63,7 +63,7 @@ namespace DLM.cad
                         color = layer.Color;
                     }
                     if (
-                        linetype.Name.ToUpper() == "BYLAYER" | 
+                        linetype.Name.ToUpper() == "BYLAYER" |
                         linetype.Name.ToUpper() == "BYBLOCK"
                         )
                     {
@@ -72,12 +72,9 @@ namespace DLM.cad
 
                     var lname = linetype.Name.ToUpper();
 
-                    if (
-                        lname.Contains("CONTINUOUS") | 
-                        lname.Contains("HIDDEN") | 
-                        lname.Contains("DASHED"))
+                    if (lname.Contem("CONTINUOUS", "HIDDEN", "DASHED"))
                     {
-                        var nlname = (lname.Contains("HIDDEN") | lname.Contains("DASHED")) ? "PROJECAO" : "CONTORNO";
+                        var nlname = (lname.Contem("HIDDEN", "DASHED")) ? "PROJECAO" : "CONTORNO";
                         if (color.Is(System.Drawing.Color.Yellow))
                         {
                             item.Layer = $"{nlname}1";
@@ -118,12 +115,12 @@ namespace DLM.cad
                         {
                         }
                     }
-                    else if (linetype.Name.ToUpper().Contains("HIDDEN"))
+                    else if (linetype.Name.ToUpper().Contem("HIDDEN"))
                     {
                         item.Layer = "PROJECAO";
                         item.Color = bylayer;
                     }
-                    else if (linetype.Name.ToUpper().Contains("DASHDOT"))
+                    else if (linetype.Name.ToUpper().Contem("DASHDOT"))
                     {
                         item.Layer = "EIXOS";
                         item.Color = bylayer;

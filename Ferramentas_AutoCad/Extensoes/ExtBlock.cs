@@ -77,7 +77,7 @@ namespace DLM.cad
                         }
                         else
                         {
-                            if (nome.ToUpper().Contains(s.ToUpper()))
+                            if (nome.ToUpper().Contem(s.ToUpper()))
                             {
                                 marcas.Add(bloco);
                                 break;

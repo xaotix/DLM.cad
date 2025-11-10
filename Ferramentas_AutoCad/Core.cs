@@ -558,7 +558,7 @@ namespace DLM.cad
         {
             var erros = new List<Report>();
 
-            if (!GetTecnoMetal().Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
+            if (!GetTecnoMetal().Pasta.ToUpper().EndsW($@".{Cfg.Init.EXT_Etapa}\"))
             {
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico));
@@ -578,7 +578,7 @@ namespace DLM.cad
         {
             var erros = new List<Report>();
 
-            if (!GetTecnoMetal().Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
+            if (!GetTecnoMetal().Pasta.ToUpper().EndsW($@".{Cfg.Init.EXT_Etapa}\"))
             {
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico));
@@ -605,7 +605,7 @@ namespace DLM.cad
         {
             var erros = new List<Report>();
 
-            if (!GetTecnoMetal().Pasta.ToUpper().EndsWith($@".{Cfg.Init.EXT_Etapa}\"))
+            if (!GetTecnoMetal().Pasta.ToUpper().EndsW($@".{Cfg.Init.EXT_Etapa}\"))
             {
                 erros.Add(new Report("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)" +
                     $"\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico));

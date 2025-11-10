@@ -157,7 +157,7 @@ namespace DLM.cad
         public string CorrenteSuporte { get; set; } = "F156";
         [Category("Purlin")]
         [DisplayName("Fixador")]
-        public List<string> PurlinSuportes { get; set; } = new List<string> { "PG1", "PC3","PC5","PC9", "PG3"};
+        public List<string> PurlinSuportes { get; set; } = new List<string> { "PG1", "PC3", "PC5", "PC9", "PG3" };
 
 
 
@@ -413,12 +413,12 @@ namespace DLM.cad
         {
             var blocos = new List<Entity>();
             blocos.AddRange(this.Selecoes);
-            blocos = blocos.FindAll(x=> Selecoes.Filter<BlockReference>().FindAll(w => w.Name.ToUpper().StartsWith(Cfg.Init.CAD_PC_Quantificar)).Find(y=>y.ObjectId == x.ObjectId)==null);
+            blocos = blocos.FindAll(x => Selecoes.Filter<BlockReference>().FindAll(w => w.Name.ToUpper().StartsW(Cfg.Init.CAD_PC_Quantificar)).Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetAtributosEixos().Find(y => y.Block.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetLinhas_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetBlocosSecundariasIndicacao().Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetAtributosNivel().Select(y => y.Block).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
-            if(!ignorar_multilines)
+            if (!ignorar_multilines)
             {
                 blocos = blocos.FindAll(x => this.GetMLPurlins().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
                 blocos = blocos.FindAll(x => this.GetMLCorrentes().Select(y => y.Mline).ToList().Find(y => y.ObjectId == x.ObjectId) == null);
@@ -457,15 +457,15 @@ namespace DLM.cad
 
 
 
-       
 
-        
+
+
 
         private GradeEixos _grade { get; set; }
         public GradeEixos GetGrade(bool update = false)
         {
 
-            if(_grade==null | update)
+            if (_grade == null | update)
             {
                 _grade = new GradeEixos();
 
@@ -473,13 +473,13 @@ namespace DLM.cad
                 var blocos = GetAtributosEixos(true);
 
 
-                var horiz = GetLinhas_Horizontais().FindAll(x=> x.Comprimento >= this.LayerEixosCompMin);
+                var horiz = GetLinhas_Horizontais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin);
                 var vertz = GetLinhas_Verticais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin);
                 /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
-                var HORIS1 = horiz.FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos));
-                var VERTS1 = vertz.FindAll(x => x.Layer.ToUpper().Contains(this.LayerEixos));
+                var HORIS1 = horiz.FindAll(x => x.Layer.ToUpper().Contem(this.LayerEixos));
+                var VERTS1 = vertz.FindAll(x => x.Layer.ToUpper().Contem(this.LayerEixos));
 
-                var HORIS = HORIS1.GroupBy(x=>x.Min.Y).Select(x=>x.First()).ToList().OrderBy(x=>x.Min.Y).ToList();
+                var HORIS = HORIS1.GroupBy(x => x.Min.Y).Select(x => x.First()).ToList().OrderBy(x => x.Min.Y).ToList();
                 var VERTS = VERTS1.GroupBy(x => x.Min.X).Select(x => x.First()).ToList().OrderBy(x => x.Min.X).ToList();
 
                 /*organiza por comprimento e pega as linhas maiores*/
@@ -496,7 +496,7 @@ namespace DLM.cad
                             dist = Math.Round(Math.Abs(HORIS[(int)i].P1.Y - _grade.GetEixosHorizontais().Last().Linha.P1.Y));
                         }
 
-                        if(dist>=DistanciaMinimaEixos | _grade.GetEixosHorizontais().Count ==0)
+                        if (dist >= DistanciaMinimaEixos | _grade.GetEixosHorizontais().Count == 0)
                         {
                             var blks = Blocos.GetAtributosProximos(blocos, linha.Min, linha.Max, this.Eixos_Tolerancia);
 
@@ -525,7 +525,7 @@ namespace DLM.cad
                             dist = Math.Round(Math.Abs(VERTS[i].P1.X - _grade.GetEixosVerticais().Last().Linha.P1.X));
                         }
 
-                        if(dist >= DistanciaMinimaEixos | _grade.GetEixosVerticais().Count == 0)
+                        if (dist >= DistanciaMinimaEixos | _grade.GetEixosVerticais().Count == 0)
                         {
                             var blks = Blocos.GetAtributosProximos(blocos, linha.Min, linha.Max, this.Eixos_Tolerancia);
 
@@ -535,7 +535,7 @@ namespace DLM.cad
                             }
                             else
                             {
-                                _grade.AddEixo(Sentido.Vertical, dist,null, linha);
+                                _grade.AddEixo(Sentido.Vertical, dist, null, linha);
                             }
                         }
                     }
@@ -554,7 +554,7 @@ namespace DLM.cad
                 var sel = SelecionarObjetos();
                 if (sel.Status == PromptStatus.OK)
                 {
-                    foreach(var s in GetCADLines())
+                    foreach (var s in GetCADLines())
                     {
                         AddMensagem($"\nLinha: {s.P1.ToString()} Comprimento: {s.Comprimento} Angulo: {s.Angulo}");
                     }
@@ -562,7 +562,7 @@ namespace DLM.cad
 
                     var _verts = GetLinhas_Verticais();
 
-                    
+
 
                     AddMensagem($"\nLinhas verticais: {_verts.Count}");
                     AddMensagem($"\nLinhas horizontais: {_horizon.Count}");
@@ -576,12 +576,12 @@ namespace DLM.cad
 
 
 
-                        var verts = _verts.FindAll(x =>x.Min.X>lhs.Min.X+1 && x.Max.X<lhs.Max.X-1);
+                        var verts = _verts.FindAll(x => x.Min.X > lhs.Min.X + 1 && x.Max.X < lhs.Max.X - 1);
                         var passa = new List<CADLine>();
 
                         foreach (var v in verts)
                         {
-                           
+
                             var max_y = v.P1.Y > v.P2.Y ? v.P1.Y : v.P2.Y;
                             var min_y = v.P1.Y < v.P2.Y ? v.P1.Y : v.P2.Y;
                             if (max_y >= lhs.P1.Y && min_y <= lhs.P1.Y)
@@ -592,7 +592,7 @@ namespace DLM.cad
                         AddMensagem($"Linhas verticais que passam: {passa.Count}");
 
                         double comprimento = Math.Round(Math.Abs(lhs.P1.X - lhs.P2.X));
-                        var furos = passa.Select(x => x.P1.X - lhs.Min.X).ToList().OrderBy(x=>x).ToList();
+                        var furos = passa.Select(x => x.P1.X - lhs.Min.X).ToList().OrderBy(x => x).ToList();
                         furos = furos.Distinct().ToList();
                         textos.Add($"@Linha {c}");
                         textos.Add($"Comprimento: {comprimento}");
@@ -604,17 +604,17 @@ namespace DLM.cad
                         textos.Add("$Fim");
 
 
-                        Ut.AddLeader(-45, lhs.P1,this.GetEscala(), $"Linha:{c}", 15 * .8);
+                        Ut.AddLeader(-45, lhs.P1, this.GetEscala(), $"Linha:{c}", 15 * .8);
                         c++;
                     }
-                 
+
                     var arquivo = $"{acDoc.Name.getPasta()}{acDoc.Name.getNome()}_boneco.txt";
-                   if(textos.Count>0)
+                    if (textos.Count > 0)
                     {
                         Conexoes.Utilz.Arquivo.Gravar(arquivo, textos);
                         arquivo.Abrir();
                     }
-                   else
+                    else
                     {
                         AddMensagem("\nNada encontrado.");
                     }
@@ -632,7 +632,7 @@ namespace DLM.cad
 
             ht.Add(Cfg.Init.CAD_ATT_N, p.Sequencia);
             ht.Add("CRD", string.Join(";", p.Correntes_Direita));
-            ht.Add("CRE", string.Join(";",p.Correntes_Esquerda));
+            ht.Add("CRE", string.Join(";", p.Correntes_Esquerda));
             ht.Add("AD", this.OffsetApoio);
             ht.Add("AE", this.OffsetApoio);
             ht.Add("FBD", "");
@@ -648,7 +648,7 @@ namespace DLM.cad
             ht.Add("ID_DB", "");
             ht.Add("PINTURA", p.Pintura);
             ht.Add("ID_PECA", p.id_peca);
-            ht.Add(Cfg.Init.CAD_ATT_Tipo, p.Perfil.Contains("C")?"C":"Z");
+            ht.Add(Cfg.Init.CAD_ATT_Tipo, p.Perfil.Contem("C") ? "C" : "Z");
             ht.Add("SECAO", p.Secao);
             ht.Add(Cfg.Init.CAD_ATT_Espessura, p.Espessura);
 
@@ -660,7 +660,7 @@ namespace DLM.cad
         {
             RMLite pc = Ut.GetPURLINS().Get(id_purlin);
             //AddMensagem("Origem: " + centro + "\n");
-            var ht = new db.Linha();    
+            var ht = new db.Linha();
 
             ht.Add(Cfg.Init.CAD_ATT_N, letra);
             ht.Add("CRD", "");
@@ -692,7 +692,7 @@ namespace DLM.cad
                 Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_Incicacao_Tercas, origembloco, this.GetEscala(), 0, ht);
             }
         }
-        public void AddBlocoTirante(string letra,  P3d origembloco, double Comp, double offset1 = -72, double offset2 = -72,string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
+        public void AddBlocoTirante(string letra, P3d origembloco, double Comp, double offset1 = -72, double offset2 = -72, string TIP = "03TR", string sfta = "STF-01", string sftb = "STF-01")
         {
             //AddMensagem("Origem: " + centro + "\n");
             var ht = new db.Linha();
@@ -747,12 +747,12 @@ namespace DLM.cad
                 {
 
                     var selecao = this.Getblocos_tercas().Select(x => GetPurlin(x)).ToList();
-                    if(selecao.Count>0)
+                    if (selecao.Count > 0)
                     {
                         var purlins = Conexoes.Utilz.Editar(selecao);
-                        if("Salvar edições?".Pergunta())
+                        if ("Salvar edições?".Pergunta())
                         {
-                            foreach(var purlin in purlins)
+                            foreach (var purlin in purlins)
                             {
                                 var ll = purlin.Objeto as BlockReference;
                                 Atributos.Set(ll, acTrans, GetHashtable(purlin));
@@ -768,12 +768,12 @@ namespace DLM.cad
         {
             bool cancelado = false;
             var pt1 = Ut.PedirPonto("Selecione o ponto de origem", out cancelado);
-            if(cancelado)
+            if (cancelado)
             {
                 return;
             }
-            var pt2 = Ut.PedirPonto("Selecione o ponto final",pt1, out cancelado);
-            if(cancelado)
+            var pt2 = Ut.PedirPonto("Selecione o ponto final", pt1, out cancelado);
+            if (cancelado)
             {
                 return;
             }
@@ -784,15 +784,15 @@ namespace DLM.cad
             }
 
             this.SetTerca(perfil.id_codigo);
-   
+
 
             double comprimento = Math.Round(Math.Abs(pt1.X - pt2.X));
 
-           
 
-            if(comprimento> this.PurlinCompMin)
+
+            if (comprimento > this.PurlinCompMin)
             {
-                AddBlocoPurlin("",this.id_purlin, comprimento, 0, 0, pt1.Centro(pt2), new List<double>(), new List<double>());
+                AddBlocoPurlin("", this.id_purlin, comprimento, 0, 0, pt1.Centro(pt2), new List<double>(), new List<double>());
             }
             else
             {
@@ -800,7 +800,7 @@ namespace DLM.cad
                 return;
             }
 
-            
+
         }
 
         public void Editar(bool editar = false)
@@ -814,17 +814,17 @@ namespace DLM.cad
                 {
                     if (this.Getblocos_tercas().Count > 0)
                     {
-                        Conexoes.Utilz.Editar(GetPurlin(this.Getblocos_tercas()[0]),editar);
+                        Conexoes.Utilz.Editar(GetPurlin(this.Getblocos_tercas()[0]), editar);
 
 
                     }
-                  
+
                 }
             }
         }
         public void GerarCroquis()
         {
-           if(SelecionarObjetos(Tipo_Selecao.Blocos).Status!= PromptStatus.OK)
+            if (SelecionarObjetos(Tipo_Selecao.Blocos).Status != PromptStatus.OK)
             {
                 return;
             }
@@ -832,9 +832,9 @@ namespace DLM.cad
             double dist = 2500;
 
             var origem = Ut.PedirPonto("Selecione a origem", out cancelado);
-            var grupos = this.Getblocos_tercas().GroupBy(x => Math.Round(x.Position.X)).OrderBy(x=>x.Key).ToList();
+            var grupos = this.Getblocos_tercas().GroupBy(x => Math.Round(x.Position.X)).OrderBy(x => x.Key).ToList();
             bool baixo = false;
-            if(cancelado)
+            if (cancelado)
             {
                 return;
             }
@@ -862,18 +862,18 @@ namespace DLM.cad
             double fonte = 30;
             List<Entity> linhas = new List<Entity>();
             Line pp = new Line();
-            pp.StartPoint = new Point3d(- purlin.Esquerda.Comprimento,0,0);
+            pp.StartPoint = new Point3d(-purlin.Esquerda.Comprimento, 0, 0);
             pp.EndPoint = new Point3d(purlin.Vao + purlin.Direita.Comprimento, 0, 0);
             pp.Color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Yellow);
             linhas.Add(pp);
             double off_y = 100;
-                var xx = - purlin.Esquerda.Comprimento;
+            var xx = -purlin.Esquerda.Comprimento;
             foreach (var s in purlin.GetFurosVista(false))
             {
                 Line fr = new Line();
 
 
-                fr.StartPoint = new Point3d(xx + s.X, - off_y, 0);
+                fr.StartPoint = new Point3d(xx + s.X, -off_y, 0);
                 fr.EndPoint = new Point3d(xx + s.X, off_y, 0);
                 fr.Color = Autodesk.AutoCAD.Colors.Color.FromColor(purlin.GetCor(s.Posicao).ToColor());
 
@@ -889,7 +889,7 @@ namespace DLM.cad
             }
             DBText nome = new DBText();
             nome.TextString = $"{purlin.IndicacaoMontagem} / {purlin.Nome}";
-            nome.Position = new Point3d(pp.StartPoint.X + (purlin.Vao/2), pp.StartPoint.Y + 125, 0);
+            nome.Position = new Point3d(pp.StartPoint.X + (purlin.Vao / 2), pp.StartPoint.Y + 125, 0);
             nome.Height = fonte;
             linhas.Add(nome);
 
@@ -905,7 +905,7 @@ namespace DLM.cad
                 {
                     destino = Cfg.Init.EXT_RM.SalvarArquivo();
                 }
-                if (destino ==null && exportar)
+                if (destino == null && exportar)
                 {
                     return;
                 }
@@ -951,9 +951,9 @@ namespace DLM.cad
                         {
                             var pcs = this.GetBlocos_IndicacaoPecas();
 
-                            if(pcs.Count>0)
+                            if (pcs.Count > 0)
                             {
-                               p = Tabelas.Pecas(pcs, true, new P3d(p.X + (86.77 * GetEscala()), p.Y));
+                                p = Tabelas.Pecas(pcs, true, new P3d(p.X + (86.77 * GetEscala()), p.Y));
                             }
                         }
 
@@ -979,7 +979,7 @@ namespace DLM.cad
             int c = 1;
             var ss = new List<Conexoes.Macros.Purlin>();
             purlins = purlins.OrderBy(x => x.ToString()).ToList();
-            foreach(var p in purlins)
+            foreach (var p in purlins)
             {
                 p.IndicacaoMontagem = "";
             }
@@ -989,7 +989,7 @@ namespace DLM.cad
                 var nova = pps[0].Clonar();
                 nova.Quantidade = pps.Count();
                 nova.Sequencia = c.ToString();
-                foreach (var s in pps.Select(x=>x.Objeto as BlockReference))
+                foreach (var s in pps.Select(x => x.Objeto as BlockReference))
                 {
                     Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.String(3));
                 }
@@ -1014,8 +1014,8 @@ namespace DLM.cad
                 nova.Offset_2 = 0;
                 nova.CompUser = comp.ArredondarMultiplo(this.TirantesTolerancia);
                 nova.Sequencia = c.String(2);
-               
-                foreach (var s in pps.FindAll(x=> x.Bloco is BlockReference).Select(x => x.Bloco as BlockReference))
+
+                foreach (var s in pps.FindAll(x => x.Bloco is BlockReference).Select(x => x.Bloco as BlockReference))
                 {
                     Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.String(2));
                 }
@@ -1030,18 +1030,18 @@ namespace DLM.cad
             int c = 0;
             List<DLM.macros.Corrente> ss = new List<DLM.macros.Corrente>();
             tirantes = tirantes.OrderBy(x => x.ToString()).ToList();
-            foreach (var tirante in tirantes.GroupBy(x => x.ToString()).OrderByDescending(X=>X.Count()))
+            foreach (var tirante in tirantes.GroupBy(x => x.ToString()).OrderByDescending(X => X.Count()))
             {
-                
+
                 var pps = tirante.ToList();
                 var nova = pps[0].Clonar();
                 nova.RME_Macro = pps[0].RME_Macro;
                 nova.Quantidade = pps.Count();
                 var comp = nova.CompCorrente;
 
-                nova.Sequencia = c.getLetra(); 
+                nova.Sequencia = c.getLetra();
 
-                foreach (var s in pps.FindAll(x=>x.Bloco is BlockReference).Select(x => x.Bloco as BlockReference))
+                foreach (var s in pps.FindAll(x => x.Bloco is BlockReference).Select(x => x.Bloco as BlockReference))
                 {
                     Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_N, c.getLetra());
                 }
@@ -1135,7 +1135,7 @@ namespace DLM.cad
 
 
             //FLANGE BRACES
-            if(FBE.Length>0)
+            if (FBE.Length > 0)
             {
                 foreach (var s in FBE.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
@@ -1144,7 +1144,7 @@ namespace DLM.cad
                 }
             }
 
-            if(FBD.Length>0)
+            if (FBD.Length > 0)
             {
                 foreach (var s in FD.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
@@ -1155,7 +1155,7 @@ namespace DLM.cad
 
 
 
-            if (AE>0)
+            if (AE > 0)
             {
                 p.Esquerda.Tipo_Furo_Apoio = Tipo_Furo_Purlin.Espelhado;
                 p.Esquerda.Furo_Apoio_Offset = AE;
@@ -1177,7 +1177,7 @@ namespace DLM.cad
             var linha = bloco.GetAttributes();
             var SFTA = linha["SFTA"].Valor;
             var SFTB = linha["SFTB"].Valor;
-            var TIP =  linha["TIP"].Valor;
+            var TIP = linha["TIP"].Valor;
             var OFF1 = linha["OFF1"].Double();
             var OFF2 = linha["OFF2"].Double();
             var COMP = linha[Cfg.Init.CAD_ATT_Comprimento].Double();
@@ -1196,10 +1196,10 @@ namespace DLM.cad
         {
             var atributos = bloco.GetAttributes();
 
-            var TIP =   atributos["TIP"].Valor;
-            var DESC =  atributos[Cfg.Init.CAD_ATT_Descricao].Double();
-            var COMP =  atributos[Cfg.Init.CAD_ATT_Comprimento].Double();
-            var FIX =   atributos["FIX"].Valor;
+            var TIP = atributos["TIP"].Valor;
+            var DESC = atributos[Cfg.Init.CAD_ATT_Descricao].Double();
+            var COMP = atributos[Cfg.Init.CAD_ATT_Comprimento].Double();
+            var FIX = atributos["FIX"].Valor;
 
             var p = new DLM.macros.Corrente();
             p.Vao = COMP;
@@ -1207,7 +1207,7 @@ namespace DLM.cad
             p.Bloco = bloco;
             p.SetFixacao(FIX);
             var diagonal = Ut.GetCORRENTES().Get(TIP);
-            if(diagonal!=null)
+            if (diagonal != null)
             {
                 p.SetDiagonal(diagonal);
             }
@@ -1257,7 +1257,7 @@ namespace DLM.cad
 
                     foreach (var s in this.Getblocos_tercas())
                     {
-                        if(trs == "Esquerda" | trs == "Ambos")
+                        if (trs == "Esquerda" | trs == "Ambos")
                         {
                             Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Esq, valor.Value.String(0));
                         }
@@ -1286,7 +1286,7 @@ namespace DLM.cad
                 return;
             }
             double? valor = 0;
-            if(tip == "Offset")
+            if (tip == "Offset")
             {
                 valor = this.OffsetApoio.Prompt();
             }
@@ -1301,18 +1301,18 @@ namespace DLM.cad
 
                     foreach (var s in this.Getblocos_tercas())
                     {
-                        if (tip == "Centralizado" )
+                        if (tip == "Centralizado")
                         {
-                            if(trs == "Ambos")
+                            if (trs == "Ambos")
                             {
                                 Atributos.Set(s, acTrans, "AD", "0");
                                 Atributos.Set(s, acTrans, "AE", "0");
                             }
-                            else if(trs == "Esquerda")
+                            else if (trs == "Esquerda")
                             {
                                 Atributos.Set(s, acTrans, "AE", "0");
                             }
-                            else if(trs =="Direita")
+                            else if (trs == "Direita")
                             {
                                 Atributos.Set(s, acTrans, "AD", "0");
                             }
@@ -1386,7 +1386,7 @@ namespace DLM.cad
                         ht.Add("ID_PECA", perfil.id_codigo);
                         ht.Add(Cfg.Init.CAD_ATT_Espessura, perfil.ESP.String(2));
                         ht.Add("SECAO", perfil.SECAO.String(0));
-                        ht.Add(Cfg.Init.CAD_ATT_Tipo, perfil.GRUPO.Contains("C") ? "C" : "Z");
+                        ht.Add(Cfg.Init.CAD_ATT_Tipo, perfil.GRUPO.Contem("C") ? "C" : "Z");
 
                         Atributos.Set(s, acTrans, ht);
                     }

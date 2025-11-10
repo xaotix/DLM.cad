@@ -42,7 +42,7 @@ namespace DLM.cad
             var erros = new List<Report>();
 
             var pos = Getposicoes(ref erros, true);
-            var pos_soldados_desmembrados = pos.FindAll(x => !x.Nome_Posicao.Contains("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
+            var pos_soldados_desmembrados = pos.FindAll(x => !x.Nome_Posicao.Contem("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
             var montar_desmembrado = pos.FindAll(x =>
             x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma |
@@ -271,7 +271,7 @@ namespace DLM.cad
                                 return;
                             }
                             string nome = "";
-                            if (extensao.ToUpper().EndsWith("DXF"))
+                            if (extensao.ToUpper().EndsW("DXF"))
                             {
                                 nome = "Model";
                             }
@@ -341,11 +341,11 @@ namespace DLM.cad
                     for (int i = 0; i < txt.Count; i++)
                     {
                         string setup = $@"PDF-A3-PAISAGEM|{arquivo_dwg}";
-                        if (txt[i].Contains("Setup="))
+                        if (txt[i].Contem("Setup="))
                         {
                             string pagesetup = $@"{config_layout}|{arquivo_dwg}";
                             var opt = txt[i - 1];
-                            if (opt.ToUpper().Contains("MODEL"))
+                            if (opt.ToUpper().Contem("MODEL"))
                             {
                                 pagesetup = $@"{config_model}|{arquivo_dwg}";
                             }
@@ -429,7 +429,7 @@ namespace DLM.cad
 
 
                     /*procura por marcas já definidas com o nome do perfil*/
-                    igual = perfis_mapeaveis.Find(x => nome.StartsWith(x.Perfil.Replace("@", "")));
+                    igual = perfis_mapeaveis.Find(x => nome.StartsW(x.Perfil.Replace("@", "")));
 
                     if (igual != null)
                     {
@@ -652,7 +652,7 @@ namespace DLM.cad
                     {
                         List<PCQuantificar> blocos_montagem_tecnometal = new List<PCQuantificar>();
                         foreach (var s in Selecoes.Filter<BlockReference>().FindAll(x => !
-                         x.Name.Contains("*"))
+                         x.Name.Contem("*"))
                         .GroupBy(x => x.Name.ToUpper()
                         .Replace("SUPORTE_", "")
                         .Replace("SUPORTE ", "")
@@ -661,7 +661,7 @@ namespace DLM.cad
                             var att = s.First().GetAttributes();
 
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => x.GetAttributes()).ToList());
-                            if (npc.Nome.StartsWith(Cfg.Init.CAD_PC_Quantificar))
+                            if (npc.Nome.StartsW(Cfg.Init.CAD_PC_Quantificar))
                             {
                                 var blcs = npc.Agrupar(new List<string> { "CODIGO", Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);
                                 foreach (var bl in blcs)
@@ -760,7 +760,7 @@ namespace DLM.cad
                             List<string> ignorar = Cfg.Init.Ignorar();
                             foreach (var ign in ignorar)
                             {
-                                if (s.Key.Contains(ign))
+                                if (s.Key.Contem(ign))
                                 {
                                     nao_adicionar = true;
                                     break;
@@ -790,23 +790,23 @@ namespace DLM.cad
                         x =>
                         x.Nome != "DETALHE" &&
                         x.Nome != "PEÇA" &&
-                        !x.Nome.Contains(".") &&
-                        !x.Nome.Contains("@") &&
-                        !x.Nome.Contains("$") &&
-                        !x.Nome.Contains("+") &&
-                        !x.Nome.Contains("?") &&
-                        !x.Nome.Contains("%") &&
-                        !x.Nome.Contains("*") &&
-                        !x.Nome.StartsWith("_") &&
-                        !x.Nome.Contains("3D_INFO") &&
-                        !x.Nome.Contains("SELO") &&
-                        !x.Nome.Contains("CORTE") &&
-                        !x.Nome.Contains("EIXO") &&
-                        !x.Nome.Contains("REVISÃO") &&
-                        !x.Nome.Contains("NOTA") &&
-                        !x.Nome.Contains("SOLUÇÃO") &&
-                        !x.Nome.Contains("FACHADA") &&
-                        !x.Nome.Contains("#")
+                        !x.Nome.Contem(".") &&
+                        !x.Nome.Contem("@") &&
+                        !x.Nome.Contem("$") &&
+                        !x.Nome.Contem("+") &&
+                        !x.Nome.Contem("?") &&
+                        !x.Nome.Contem("%") &&
+                        !x.Nome.Contem("*") &&
+                        !x.Nome.StartsW("_") &&
+                        !x.Nome.Contem("3D_INFO") &&
+                        !x.Nome.Contem("SELO") &&
+                        !x.Nome.Contem("CORTE") &&
+                        !x.Nome.Contem("EIXO") &&
+                        !x.Nome.Contem("REVISÃO") &&
+                        !x.Nome.Contem("NOTA") &&
+                        !x.Nome.Contem("SOLUÇÃO") &&
+                        !x.Nome.Contem("FACHADA") &&
+                        !x.Nome.Contem("#")
                         );
 
 
@@ -1198,7 +1198,7 @@ namespace DLM.cad
                         }
                         else
                         {
-                            ht.Add("TIPO_DE_PROJETO", this.Nome.Contains(Cfg.Init.DWG_FAB_FILTRO) ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
+                            ht.Add("TIPO_DE_PROJETO", this.Nome.Contem(Cfg.Init.DWG_FAB_FILTRO) ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
                             ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
                             ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
                             ht.Add("OBRA", this.GetObra().Descricao.ToUpper());
@@ -1716,7 +1716,7 @@ namespace DLM.cad
 
             var erros = new List<Report>();
             var marcas = this.GetMarcas(ref erros);
-            var nnn = (marcas.FindAll(x => x.Nome.StartsWith(prefix)).Count + 1).String(2);
+            var nnn = (marcas.FindAll(x => x.Nome.StartsW(prefix)).Count + 1).String(2);
             if (nome != null)
             {
                 nnn = nome;

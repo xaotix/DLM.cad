@@ -249,7 +249,7 @@ namespace DLM.cad
                 return;
             }
 
-            if (tipo != Tipo_Bloco.Elemento_Unitario && NomeFim.Contains("_"))
+            if (tipo != Tipo_Bloco.Elemento_Unitario && NomeFim.Contem("_"))
             {
                 $"Nome inválido.".Alerta();
                 return;
@@ -261,7 +261,7 @@ namespace DLM.cad
                 return;
             }
 
-            if (tipo == Tipo_Bloco.Elemento_Unitario && !NomeFim.EndsWith("_A"))
+            if (tipo == Tipo_Bloco.Elemento_Unitario && !NomeFim.EndsW("_A"))
             {
                 $"Nome inválido: {NomeFim} para elemento unitário deve sempre terminar com '_A'".Alerta();
                 return;
@@ -269,7 +269,7 @@ namespace DLM.cad
 
 
 
-            if (NomeFim.CaracteresEspeciais() | NomeFim.Contains(" "))
+            if (NomeFim.CaracteresEspeciais() | NomeFim.Contem(" "))
             {
                 $"Nome inválido: {NomeFim} - Nome não pode conter caracteres especiais ou espaços.".Alerta();
                 return;
