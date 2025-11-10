@@ -349,7 +349,7 @@ namespace DLM.cad
 
 
 
-            Conexoes.Utilz.JanelaTexto(msg, "Propriedades");
+            msg.JanelaTexto("Propriedades");
         }
 
 
@@ -448,7 +448,7 @@ namespace DLM.cad
             var blks = cad.Selecoes.Filter<BlockReference>();
             if (blks.Count == 0)
             {
-                if (Conexoes.Utilz.Pergunta("Nada Selecionado. Selecionar tudo?"))
+                if ("Nada Selecionado. Selecionar tudo?".Pergunta())
                 {
                     cad.SelecionarTudo();
                     blks = cad.Selecoes.Filter<BlockReference>();
@@ -463,7 +463,7 @@ namespace DLM.cad
             var err = cad.AtualizarPesoChapa(blks);
             if (err.Count == 0)
             {
-                if (Conexoes.Utilz.Pergunta("Pesos Atualizados! Deseja gerar/atualizar a tabela?}"))
+                if ("Pesos Atualizados! Deseja gerar/atualizar a tabela?}".Pergunta())
                 {
                     cad.InserirTabelaAuto();
                 }
@@ -484,7 +484,7 @@ namespace DLM.cad
             var blks = cad.Selecoes.Filter<BlockReference>();
             if (blks.Count == 0)
             {
-                if (Conexoes.Utilz.Pergunta("Nada Selecionado. Selecionar tudo?"))
+                if ("Nada Selecionado. Selecionar tudo?".Pergunta())
                 {
                     cad.SelecionarTudo();
                     blks = cad.Selecoes.Filter<BlockReference>();
@@ -500,13 +500,13 @@ namespace DLM.cad
             {
                 return;
             }
-            if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja trocar o material dos itens selecionados para {novo_Perfil}"))
+            if ($"Tem certeza que deseja trocar o material dos itens selecionados para {novo_Perfil}".Pergunta())
             {
                 var err = cad.TrocarPerfilElementoMetroQuadrado(blks, novo_Perfil);
 
                 if (err.FindAll(x => x.Tipo == TipoReport.Critico).Count == 0)
                 {
-                    if (Conexoes.Utilz.Pergunta("Materiais atualizados! Deseja gerar/atualizar a tabela?"))
+                    if ("Materiais atualizados! Deseja gerar/atualizar a tabela?".Pergunta())
                     {
                         cad.InserirTabelaAuto();
                     }
@@ -542,7 +542,7 @@ namespace DLM.cad
         [CommandMethod(nameof(RodarMacros), CommandFlags.Session | CommandFlags.Modal)]
         public static void RodarMacros()
         {
-            Conexoes.Utilz.Alerta("Descontinuado por muitos problemas de compatibilidade.");
+            "Descontinuado por muitos problemas de compatibilidade.".Alerta();
             //CADTecnoMetal pp = new CADTecnoMetal();
             //pp.RodarMacros();
         }

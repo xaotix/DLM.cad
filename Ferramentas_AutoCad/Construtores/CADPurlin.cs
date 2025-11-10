@@ -287,7 +287,7 @@ namespace DLM.cad
 
                     if (eixos.GetEixosVerticais().Count < 2)
                     {
-                        Conexoes.Utilz.Alerta("Não foi encontrado pelo menos 2 eixos verticais.", "Abortado.");
+                        "Não foi encontrado pelo menos 2 eixos verticais.".Alerta();
                         return;
                     }
 
@@ -308,7 +308,7 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex);
+                    ex.Alerta();
                 }
 
 
@@ -321,7 +321,7 @@ namespace DLM.cad
 
             if (eixos.GetEixosVerticais().Count < 2)
             {
-                Conexoes.Utilz.Alerta("Não foi encontrado nenhum eixo vertical.", "Abortado.");
+                "Não foi encontrado nenhum eixo vertical.".Alerta();
                 return false;
             }
 
@@ -750,7 +750,7 @@ namespace DLM.cad
                     if(selecao.Count>0)
                     {
                         var purlins = Conexoes.Utilz.Editar(selecao);
-                        if(Conexoes.Utilz.Pergunta("Salvar edições?"))
+                        if("Salvar edições?".Pergunta())
                         {
                             foreach(var purlin in purlins)
                             {
@@ -796,7 +796,7 @@ namespace DLM.cad
             }
             else
             {
-                Conexoes.Utilz.Alerta("Comprimento [" + comprimento + "] inferior ao mínimo possível [" + this.PurlinCompMin + "]");
+                $"Comprimento [{comprimento}] inferior ao mínimo possível [{this.PurlinCompMin}]".Alerta();
                 return;
             }
 
@@ -970,7 +970,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
 
         }

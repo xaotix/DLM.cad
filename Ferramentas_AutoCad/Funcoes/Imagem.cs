@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Conexoes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +40,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
                 return null;
             }
         }

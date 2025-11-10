@@ -151,10 +151,10 @@ namespace DLM.cad
 
                 if (ml != null)
                 {
-                    if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja trocar a Multiline [{estilo_subst}] da seleção por [{estilo}]?"))
+                    if ($"Tem certeza que deseja trocar a Multiline [{estilo_subst}] da seleção por [{estilo}]?".Pergunta())
                     {
                         var mls = multiline.FindAll(x => x.Style == st.ObjectId);
-                        List<Entity> apagar = new List<Entity>();
+                        var apagar = new List<Entity>();
                         foreach (var p in mls)
                         {
 
@@ -197,14 +197,14 @@ namespace DLM.cad
                         }
                         else
                         {
-                            Conexoes.Utilz.Alerta($"Abortado\n Foi tentado copiar o arquivo {arquivo} para \n{destino} e não foi possível. \nContacte suporte.");
+                            $"Abortado\n Foi tentado copiar o arquivo {arquivo} para \n{destino} e não foi possível. \nContacte suporte.".Alerta();
                             return false;
                         }
 
                     }
                     catch (System.Exception ex)
                     {
-                        Conexoes.Utilz.Alerta(ex, $"Erro tentando carregar a MLStyle {estilo} \n do arquivo {arquivo}");
+                        ex.Alerta($"Erro tentando carregar a MLStyle {estilo} \n do arquivo {arquivo}");
                         return false;
                     }
                 }
@@ -247,15 +247,14 @@ namespace DLM.cad
                 }
                 else
                 {
-                    Conexoes.Utilz.Alerta($"Não foi possível carregar o arquivo de MLStyle: {estilo}");
+                    $"Não foi possível carregar o arquivo de MLStyle: {estilo}".Alerta();
                     return false;
                 }
 
             }
             catch (System.Exception ex)
             {
-
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
                 return false;
             }
 

@@ -68,8 +68,7 @@ namespace DLM.cad
             {
                 if (mensagem)
                 {
-                    Conexoes.Utilz.Alerta($"Não é possível rodar esse comando fora de pastas de pedidos (.{Cfg.Init.EXT_Pedido})" +
-                   $"\nPasta atual: {this.Pasta}");
+                    $"Não é possível rodar esse comando fora de pastas de pedidos (.{Cfg.Init.EXT_Pedido})\nPasta atual: {this.Pasta}".Alerta();
                 }
 
                 return false;
@@ -1019,7 +1018,7 @@ namespace DLM.cad
                         }
                         catch (System.Exception ex)
                         {
-                            Conexoes.Utilz.Alerta(ex);
+                            ex.Alerta();
                         }
                     }
                 }
@@ -1049,7 +1048,7 @@ namespace DLM.cad
                     if (novo_nome != null && novo_nome.Length > 0)
                     {
                         novo_nome = novo_nome.Replace(" ", "_").ToUpper();
-                        if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja renomear o bloco \n[{nome.Key}] para [{novo_nome}]"))
+                        if ($"Tem certeza que deseja renomear o bloco \n[{nome.Key}] para [{novo_nome}]".Pergunta())
                         {
                             Blocos.Renomear(nome.Key, novo_nome);
                         }

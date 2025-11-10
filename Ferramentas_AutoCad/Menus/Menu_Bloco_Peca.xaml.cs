@@ -205,7 +205,7 @@ namespace DLM.cad.Menus
             }
             catch (Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
         }
 
@@ -269,19 +269,19 @@ namespace DLM.cad.Menus
             double escala = this.txt_escala.Text.Double();
             if (escala <= 0)
             {
-                Conexoes.Utilz.Alerta("Escala digitada inválida");
+                "Escala digitada inválida".Alerta();
                 return;
             }
 
             if (this.txt_codigo.Text.Length == 0)
             {
-                Conexoes.Utilz.Alerta($"Campo código não pode ser em branco.");
+                $"Campo código não pode ser em branco.".Alerta();
                 return;
             }
 
             if (qtd <= 0)
             {
-                Conexoes.Utilz.Alerta($"Quantidade digitada [{qtd}] inválida.");
+                $"Quantidade digitada [{qtd}] inválida.".Alerta();
                 return;
             }
 
@@ -345,12 +345,12 @@ namespace DLM.cad.Menus
 
             if (arredon < 0 && gerar_ctvs)
             {
-                Conexoes.Utilz.Alerta("Valor de arredondamento inválido..");
+                "Valor de arredondamento inválido..".Alerta();
                 return;
             }
             if (this.lista_perfis_ctv.Items.Count == 0 && gerar_ctvs)
             {
-                Conexoes.Utilz.Alerta("Arquivo de configuração de perfis mapeáveis não foi carregado. Contacte suporte.");
+                "Arquivo de configuração de perfis mapeáveis não foi carregado. Contacte suporte.".Alerta();
                 return;
             }
 

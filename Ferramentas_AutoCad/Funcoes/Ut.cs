@@ -69,7 +69,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
             return pp0;
         }
@@ -140,7 +140,7 @@ namespace DLM.cad
                                 }
                                 catch (System.Exception ex)
                                 {
-                                    Conexoes.Utilz.Alerta(ex);
+                                    ex.Alerta();
                                 }
 
 
@@ -210,7 +210,7 @@ namespace DLM.cad
                                 }
                                 catch (System.Exception ex)
                                 {
-                                    Conexoes.Utilz.Alerta(ex);
+                                    ex.Alerta();
                                 }
 
                             }
@@ -222,7 +222,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
 
             return retorno;
@@ -347,7 +347,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex);
+                    ex.Alerta();
                 }
 
             }
@@ -371,7 +371,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex);
+                    ex.Alerta();
                 }
 
             }
@@ -1330,10 +1330,10 @@ namespace DLM.cad
                         // Erase the unreferenced layer
                         acSymTblRec.Erase(true);
                     }
-                    catch (Autodesk.AutoCAD.Runtime.Exception Ex)
+                    catch (Autodesk.AutoCAD.Runtime.Exception ex)
                     {
                         // Layer could not be deleted
-                        Conexoes.Utilz.Alerta(Ex);
+                        ex.Alerta();
                     }
                 }
 

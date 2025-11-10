@@ -22,14 +22,11 @@ namespace DLM.cad
         public CriarMarcas()
         {
             InitializeComponent();
-
-
-
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            P3d p0 = new P3d();
+            var p0 = new P3d();
             double escala = 10;
             double offset = 67;
 
@@ -67,7 +64,7 @@ namespace DLM.cad
                     }
                     if (pf.Descricao != "")
                     {
-                        Blocos.MarcaPerfil(p0, marca, comprimento, pf,1, Cfg.Init.Material_Estrutura, Cfg.Init.RM_SEM_PINTURA);
+                        Blocos.MarcaPerfil(p0, marca, comprimento, pf, 1, Cfg.Init.Material_Estrutura, Cfg.Init.RM_SEM_PINTURA);
 
                         if (c == 5)
                         {
@@ -89,16 +86,16 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex);
+                    ex.Alerta();
                 }
                 c++;
 
             }
 
-            Conexoes.Utilz.Alerta("Finalizado.","", System.Windows.MessageBoxImage.Information);
+            "Finalizado.".Alerta();
         }
 
-        
+
 
         private void CriarCAMs_Load(object sender, EventArgs e)
         {

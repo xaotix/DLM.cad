@@ -134,7 +134,7 @@ namespace DLM.cad
                 }
                 if (s.Count == 0)
                 {
-                    Conexoes.Utilz.Alerta($"Bloco não encontrado:{nome}", "Operação abortada");
+                    $"Bloco não encontrado: [{nome}]".Alerta();
                     return;
                 }
                 else
@@ -146,7 +146,7 @@ namespace DLM.cad
 
             if (!File.Exists(Endereco))
             {
-                Conexoes.Utilz.Alerta($"Bloco não encontrado\n! {Endereco}");
+                $"Bloco não encontrado\n! {Endereco}".Alerta();
                 return;
             }
 
@@ -314,7 +314,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex, $"Algo de errado aconteceu ao tentar inserir o bloco {Endereco}");
+                ex.Alerta($"Algo de errado aconteceu ao tentar inserir o bloco {Endereco}");
                 return;
             }
             FLayer.Desligar(new List<string> { "Defpoints" }, false);
@@ -346,7 +346,7 @@ namespace DLM.cad
                     }
                     else
                     {
-                        Conexoes.Utilz.Alerta($"Já Existe um bloco com o nome {nome}.");
+                        $"Já Existe um bloco com o nome {nome}.".Alerta();
                     }
 
                 }
@@ -426,7 +426,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
 
         }
@@ -481,7 +481,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
 
             }
         }
@@ -549,7 +549,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    Conexoes.Utilz.Alerta("Não implementado.");
+                    "Não implementado.".Alerta();
                     return;
                 }
 
@@ -564,7 +564,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
 
             }
 
@@ -605,7 +605,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
 
         }
@@ -653,7 +653,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
 
         }
@@ -698,7 +698,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
 
         }
@@ -712,7 +712,7 @@ namespace DLM.cad
                 {
                     if (perfil.Descricao == "")
                     {
-                        Conexoes.Utilz.Alerta("Perfil não cadastrado: " + cam.Descricao + "\nTipo: " + cam.Perfil.Tipo + "\nCadastre o perfil no tecnometal e tente novamente.");
+                        $"Perfil não cadastrado: {cam.Descricao}\nTipo: {cam.Perfil.Tipo}\nCadastre o perfil no tecnometal e tente novamente.".Alerta();
                     }
                     else
                     {
@@ -728,7 +728,7 @@ namespace DLM.cad
             }
             else
             {
-                Conexoes.Utilz.Alerta("Tipo de CAM inválido ou não suportado:\n" + cam.Nome + "\n" + cam.Perfil.Tipo);
+                $"Tipo de CAM inválido ou não suportado:\n{cam}\n{cam.Perfil.Tipo}".Alerta();
             }
         }
 

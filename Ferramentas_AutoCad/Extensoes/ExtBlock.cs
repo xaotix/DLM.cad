@@ -88,7 +88,7 @@ namespace DLM.cad
                 catch (System.Exception ex)
                 {
                     c++;
-                    mensagem_erro.Add(Conexoes.Utilz.GetTexto(ex));
+                    mensagem_erro.Add(ex.GetTexto());
                     //Conexoes.Utilz.Alerta(ex, $"Erro ao tentar ler um bloco.");
                 }
                 

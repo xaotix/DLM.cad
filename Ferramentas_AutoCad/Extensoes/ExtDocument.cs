@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Runtime;
+using Conexoes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
         }
         private static bool estaRodando { get; set; } = false;

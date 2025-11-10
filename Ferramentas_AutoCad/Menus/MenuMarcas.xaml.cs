@@ -117,7 +117,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
 
 
@@ -178,7 +178,7 @@ namespace DLM.cad
                         else
                         {
 
-                            Conexoes.Utilz.Alerta("O cadastro da chapa é inválido.\nEstá faltando o código de matéria prima ou o peso está zerado.");
+                            "O cadastro da chapa é inválido.\nEstá faltando o código de matéria prima ou o peso está zerado.".Alerta();
                             db_perfil_m2 = null;
                         }
                     }
@@ -211,7 +211,7 @@ namespace DLM.cad
             double escala = txt_escala.Text.Double();
             if (escala < 1)
             {
-                Conexoes.Utilz.Alerta("Valor escala inválido.");
+                "Valor escala inválido.".Alerta();
                 return;
             }
             var erros = new List<Report>();
@@ -223,7 +223,7 @@ namespace DLM.cad
             {
                 if (this.marca_selecionada == null)
                 {
-                    Conexoes.Utilz.Alerta("Selecione uma marca na lista ou crie uma marca nova para poder criar essa posição.");
+                    "Selecione uma marca na lista ou crie uma marca nova para poder criar essa posição.".Alerta();
                     return;
                 }
             }
@@ -231,39 +231,39 @@ namespace DLM.cad
             {
                 if (combo_mercadoria.Content.ToString() == "")
                 {
-                    Conexoes.Utilz.Alerta($"Selecione uma mercadoria.");
+                    $"Selecione uma mercadoria.".Alerta();
                     return;
                 }
             }
 
             if (qtd_double <= 0)
             {
-                Conexoes.Utilz.Alerta($"{qtd_double} quantidade inválida.");
+                $"{qtd_double} quantidade inválida.".Alerta();
                 return;
             }
 
 
             if (NomeFim.Replace(" ", "").Replace("_", "").Length == 0)
             {
-                Conexoes.Utilz.Alerta($"Nome inválido.");
+                $"Nome inválido.".Alerta();
                 return;
             }
 
             if (tipo != Tipo_Bloco.Elemento_Unitario && NomeFim.Contains("_"))
             {
-                Conexoes.Utilz.Alerta($"Nome inválido.");
+                $"Nome inválido.".Alerta();
                 return;
             }
 
             if (this.Posicoes.FindAll(x => x.Nome.ToUpper() == NomeFim.ToUpper()).Count > 0)
             {
-                Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} Já existe uma posição com o mesmo nome.");
+                $"Nome inválido: {NomeFim} Já existe uma posição com o mesmo nome.".Alerta();
                 return;
             }
 
             if (tipo == Tipo_Bloco.Elemento_Unitario && !NomeFim.EndsWith("_A"))
             {
-                Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} para elemento unitário deve sempre terminar com '_A'");
+                $"Nome inválido: {NomeFim} para elemento unitário deve sempre terminar com '_A'".Alerta();
                 return;
             }
 
@@ -271,7 +271,7 @@ namespace DLM.cad
 
             if (NomeFim.CaracteresEspeciais() | NomeFim.Contains(" "))
             {
-                Conexoes.Utilz.Alerta($"Nome inválido: {NomeFim} - Nome não pode conter caracteres especiais ou espaços.");
+                $"Nome inválido: {NomeFim} - Nome não pode conter caracteres especiais ou espaços.".Alerta();
                 return;
             }
 
@@ -281,7 +281,7 @@ namespace DLM.cad
             {
                 if (this.marca_selecionada == null)
                 {
-                    Conexoes.Utilz.Alerta($"{NomeFim} - Já existe uma marca / posição com o mesmo nome no desenho.");
+                    $"{NomeFim} - Já existe uma marca / posição com o mesmo nome no desenho.".Alerta();
                     return;
                 }
             }
@@ -290,7 +290,7 @@ namespace DLM.cad
             {
                 if (!qtd_double.E_Multiplo(1))
                 {
-                    Conexoes.Utilz.Alerta($"Quantidade inválida: {qtd_double}. Quantidades com números quebrados somente para elemento unitário.");
+                    $"Quantidade inválida: {qtd_double}. Quantidades com números quebrados somente para elemento unitário.".Alerta();
                     return;
                 }
             }
@@ -300,40 +300,40 @@ namespace DLM.cad
                 case Tipo_Bloco.Chapa:
                     if (MenuMarcas.db_chapa == null)
                     {
-                        Conexoes.Utilz.Alerta("Selecione uma espessura.");
+                        "Selecione uma espessura.".Alerta();
                         return;
                     }
                     break;
                 case Tipo_Bloco.Perfil:
                     if (MenuMarcas.db_perfil == null)
                     {
-                        Conexoes.Utilz.Alerta("Selecione um perfil.");
+                        "Selecione um perfil.".Alerta();
                         return;
                     }
                     break;
                 case Tipo_Bloco.Elemento_M2:
                     if (MenuMarcas.db_perfil_m2 == null)
                     {
-                        Conexoes.Utilz.Alerta("Selecione um perfil m2.");
+                        "Selecione um perfil m2.".Alerta();
                         return;
                     }
                     break;
                 case Tipo_Bloco.Elemento_Unitario:
                     if (MenuMarcas.db_unitario == null)
                     {
-                        Conexoes.Utilz.Alerta("Selecione um item.");
+                        "Selecione um item.".Alerta();
                         return;
                     }
                     break;
                 case Tipo_Bloco.Arremate:
                     if (MenuMarcas.db_bobina == null)
                     {
-                        Conexoes.Utilz.Alerta("Selecione uma bobina.");
+                        "Selecione uma bobina.".Alerta();
                         return;
                     }
                     break;
                 case Tipo_Bloco._:
-                    Conexoes.Utilz.Alerta("Seleção inválida.");
+                    "Seleção inválida.".Alerta();
                     return;
             }
 
@@ -898,7 +898,7 @@ namespace DLM.cad
         {
             this.Visibility = Visibility.Collapsed;
             this.Close();
-            Core.GetCADPurlin().Exportar(Conexoes.Utilz.Pergunta("Gerar Tabela?"), Conexoes.Utilz.Pergunta("Exportar arquivo .RM?"));
+            Core.GetCADPurlin().Exportar("Gerar Tabela?".Pergunta(), "Exportar arquivo .RM?".Pergunta());
         }
 
         private void gerar_croquis(object sender, RoutedEventArgs e)

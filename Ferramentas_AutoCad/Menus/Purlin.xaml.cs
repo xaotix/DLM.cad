@@ -108,39 +108,39 @@ namespace DLM.cad.Menus
         {
             if(Core.GetCADPurlin().GetMultiLines().FindAll(x=>x.Tipo == vars.cad.Tipo_Multiline.Definir).Count>0)
             {
-                Conexoes.Utilz.Alerta($"Há multilines sem definição. Configure-as antes de continuar.");
+                $"Há multilines sem definição. Configure-as antes de continuar.".Alerta();
                 return;
             }
 
 
             if(Core.GetCADPurlin().GetCorrentePadrao()==null)
             {
-                Conexoes.Utilz.Alerta($"Não foi encontrada a corrente padrão setada: id {Core.GetCADPurlin().id_corrente}");
+                $"Não foi encontrada a corrente padrão setada: id {Core.GetCADPurlin().id_corrente}".Alerta();
                 return;
             }
             if (Core.GetCADPurlin().GetTirantePadrao() == null)
             {
-                Conexoes.Utilz.Alerta($"Não foi encontrado o tirante padrão setado: id {Core.GetCADPurlin().id_tirante}");
+                $"Não foi encontrado o tirante padrão setado: id {Core.GetCADPurlin().id_tirante}".Alerta();
                 return;
             }
             if (Core.GetCADPurlin().GetPurlinPadrao() == null)
             {
-                Conexoes.Utilz.Alerta($"Não foi encontrado a purlin padrão setada: id {Core.GetCADPurlin().id_purlin}");
+                $"Não foi encontrado a purlin padrão setada: id {Core.GetCADPurlin().id_purlin}".Alerta();
                 return;
             }
             if (Ut.GetCORRENTES().GetPecas().Count==0)
             {
-                Conexoes.Utilz.Alerta($"Não foi encontrada nenhuma corrente da família {Core.GetCADPurlin().RM_Familia_Corrente}");
+                $"Não foi encontrada nenhuma corrente da família {Core.GetCADPurlin().RM_Familia_Corrente}".Alerta();
                 return;
             }
             if (Ut.GetTIRANTES().GetPecas().Count == 0)
             {
-                Conexoes.Utilz.Alerta($"Não foi encontrada nenhum tirante da família {Core.GetCADPurlin().RM_Familia_Tirante}");
+                $"Não foi encontrada nenhum tirante da família {Core.GetCADPurlin().RM_Familia_Tirante}".Alerta();
                 return;
             }
             if (Ut.GetPURLINS().GetPecas().Count == 0)
             {
-                Conexoes.Utilz.Alerta($"Não foi encontrada nenhuma purlin da família {Core.GetCADPurlin().RM_Familia_Purlin}");
+                $"Não foi encontrada nenhuma purlin da família {Core.GetCADPurlin().RM_Familia_Purlin}".Alerta();
                 return;
             }
 

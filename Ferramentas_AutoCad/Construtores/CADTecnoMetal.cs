@@ -150,19 +150,13 @@ namespace DLM.cad
             }
             else
             {
-                Conexoes.Utilz.Alerta("Nenhum perfil soldado encontrado no desenho.");
+                $"Nenhum perfil soldado encontrado no desenho.".Alerta();
             }
-
-
-
-
-
-
             return retorno;
         }
         public void GerarPDF(List<Conexoes.Arquivo> arqs = null, bool gerar_dxf = false)
         {
-            List<Conexoes.Arquivo> arquivos = new List<Conexoes.Arquivo>();
+           var arquivos = new List<Conexoes.Arquivo>();
             int pranchas_por_page_setup = 50;
             string config_layout = "PDF-A3-PAISAGEM";
             string config_model = "PDF_A3_PAISAGEM";
@@ -170,7 +164,7 @@ namespace DLM.cad
 
             if (!File.Exists(arquivo_dwg))
             {
-                Conexoes.Utilz.Alerta($"Abortado.\nArquivo de pagesetup não encontrado: {arquivo_dwg}");
+                $"Abortado.\nArquivo de pagesetup não encontrado: {arquivo_dwg}".Alerta();
                 return;
             }
 
@@ -216,7 +210,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
                 return;
             }
 
@@ -315,7 +309,7 @@ namespace DLM.cad
                         }
                         catch (System.Exception ex)
                         {
-                            Conexoes.Utilz.Alerta(ex, $"Erro ao tentar ler o arquivo {arquivo}");
+                            ex.Alerta($"Erro ao tentar ler o arquivo {arquivo}");
                         }
 
 
@@ -364,7 +358,7 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-                    Conexoes.Utilz.Alerta(ex);
+                    ex.Alerta();
                 }
                 c++;
             }
@@ -390,7 +384,7 @@ namespace DLM.cad
 
 
             Core.Getw().Close();
-            Conexoes.Utilz.Alerta("Plotagem finalizada!", "Finalizado", System.Windows.MessageBoxImage.Information);
+            "Plotagem finalizada!".Alerta();
 
 
         }
@@ -414,7 +408,7 @@ namespace DLM.cad
             List<PCQuantificar> pecas = this.Quantificar(false, false, false, false, true);
             if (pecas.Count == 0)
             {
-                Conexoes.Utilz.Alerta($"Nenhuma peça mapeável encontrada na seleção.");
+                $"Nenhuma peça mapeável encontrada na seleção.".Alerta();
                 return seq;
             }
             List<PCQuantificar> tirantes = new List<PCQuantificar>();
@@ -471,7 +465,7 @@ namespace DLM.cad
             {
                 if (perfis_mapeaveis.Count == 0)
                 {
-                    Conexoes.Utilz.Alerta($"Não foi possível carregar o arquivo de configuração de contraventos. Contacte suporte. \n{Cfg.Init.CAD_Arquivo_CTV}");
+                    $"Não foi possível carregar o arquivo de configuração de contraventos. Contacte suporte. \n{Cfg.Init.CAD_Arquivo_CTV}".Alerta();
 
                     return seq;
                 }
@@ -623,7 +617,7 @@ namespace DLM.cad
                 Core.Getw().Close();
             }
 
-            if (Conexoes.Utilz.Pergunta("Mapeamento finalizado! Deseja inserir a tabela?"))
+            if ("Mapeamento finalizado! Deseja inserir a tabela?".Pergunta())
             {
                 InserirTabelaQuantificacao(final_tabela);
             }
@@ -859,7 +853,7 @@ namespace DLM.cad
                     var pt = Ut.PedirPonto("Selecione a origem", out cancelado);
                     if (!cancelado)
                     {
-                        var separar = Conexoes.Utilz.Pergunta("Separar as peças e gerar tabelas por família?");
+                        var separar = "Separar as peças e gerar tabelas por família?".Pergunta();
                         Tabelas.Pecas(pcs, separar, pt, 0);
                     }
                 }
@@ -897,7 +891,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
             }
         }
         public void GerarDBF3D()
@@ -1335,7 +1329,7 @@ namespace DLM.cad
                     catch (Exception ex)
                     {
                         Core.Getw().Close();
-                        Conexoes.Utilz.Alerta(ex);
+                        ex.Alerta();
                         return new db.Tabela();
                     }
 
@@ -1345,7 +1339,7 @@ namespace DLM.cad
             catch (System.Exception ex)
             {
                 Core.Getw().Close();
-                Conexoes.Utilz.Alerta(ex);
+                ex.Alerta();
                 return new db.Tabela();
             }
             Core.Getw().Close();
@@ -1686,7 +1680,7 @@ namespace DLM.cad
                     var pl = pols[0];
                     if (!pl.Closed)
                     {
-                        Conexoes.Utilz.Alerta("Polyline inválida. Somente polylines fechadas representando o contorno da chapa.");
+                        "Polyline inválida. Somente polylines fechadas representando o contorno da chapa.".Alerta();
                         return;
                     }
 
@@ -1733,7 +1727,7 @@ namespace DLM.cad
 
             if (nome_marca.Length == 0)
             {
-                if (Conexoes.Utilz.Pergunta("Nome não pode ser em branco. \nTentar Novamente?"))
+                if ("Nome não pode ser em branco. \nTentar Novamente?".Pergunta())
                 {
                     goto retentar;
                 }
@@ -1745,7 +1739,7 @@ namespace DLM.cad
             var iguais = marcas.FindAll(x => x.Nome == nome_marca);
             if (iguais.Count > 0)
             {
-                if (Conexoes.Utilz.Pergunta($"[{nome_marca}] Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?"))
+                if ($"[{nome_marca}] Já existe uma marca com o mesmo nome. É necessário trocar. \nTentar Novamente?".Pergunta())
                 {
                     goto retentar;
                 }
@@ -1756,7 +1750,7 @@ namespace DLM.cad
             }
             if (nome_marca.CaracteresEspeciais())
             {
-                if (Conexoes.Utilz.Pergunta($"[{nome_marca}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?"))
+                if ($"[{nome_marca}] Nome não pode conter caracteres especiais. É necessário trocar. \nTentar Novamente?".Pergunta())
                 {
                     goto retentar;
                 }
@@ -1795,7 +1789,7 @@ namespace DLM.cad
 
                 if (pl.Closed)
                 {
-                    Conexoes.Utilz.Alerta("Polyline inválida. Somente polylines abertas representando o corte da chapa.");
+                    "Polyline inválida. Somente polylines abertas representando o corte da chapa.".Alerta();
                     return;
                 }
 
@@ -1888,7 +1882,7 @@ namespace DLM.cad
                             Blocos.MarcaChapa(origem, chapa_dobrada, Tipo_Bloco.Chapa, escala, posicao);
                         }
 
-                        if (Conexoes.Utilz.Pergunta("Gerar CAM?"))
+                        if ("Gerar CAM?".Pergunta())
                         {
                             string destino = this.Pasta;
                             destino = destino.getUpdir().GetSubPasta(Cfg.Init.EXT_CAM);
@@ -1943,7 +1937,7 @@ namespace DLM.cad
                 var selecoes = marcas_chapas.ListaSelecionarVarios(true);
                 if (Directory.Exists(destino) && selecoes.Count > 0)
                 {
-                    if (Conexoes.Utilz.Pergunta($"Tem certeza que deseja gerar os CAMs das Chapas selecionadas?\nAtenção: Serão gerados CAMs retos, sem furações e sem recortes."))
+                    if ($"Tem certeza que deseja gerar os CAMs das Chapas selecionadas?\nAtenção: Serão gerados CAMs retos, sem furações e sem recortes.".Pergunta())
                     {
                         foreach (var chapa_dobrada in selecoes)
                         {
@@ -2130,7 +2124,7 @@ namespace DLM.cad
                     quantidade = valor.Value;
                     if (quantidade <= 0 | !peca.MultiploOk(quantidade))
                     {
-                        if (Conexoes.Utilz.Pergunta($"Valor setado [{quantidade} é inválido. Precisa ser maior que zero e múltiplo de {peca.MULTIPLO}\nTentar novamente?"))
+                        if ($"Valor setado [{quantidade} é inválido. Precisa ser maior que zero e múltiplo de {peca.MULTIPLO}\nTentar novamente?".Pergunta())
                         {
                             goto denovo;
                         }
