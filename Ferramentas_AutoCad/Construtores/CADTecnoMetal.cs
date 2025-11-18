@@ -49,7 +49,7 @@ namespace DLM.cad
             x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_S |
             x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_I
             );
-            var marcas_desmembrados = montar_desmembrado.GroupBy(x => x.Nome_Posicao.Substring(0, x.Nome_Posicao.Length - 2));
+            var marcas_desmembrados = montar_desmembrado.GroupBy(x => x.Nome_Posicao.Substring(0, x.Nome_Posicao.LenghtStr() - 2));
 
 
             foreach (var m in marcas_desmembrados)
@@ -749,7 +749,7 @@ namespace DLM.cad
                         .Replace("\r", " ")
                         .Replace("\t", " ")
                         .Replace("\n", " ")
-                        .Split(' ')[0]).ToList().FindAll(x => x.Key.Length > 0);
+                        .Split(' ')[0]).ToList().FindAll(x => x.Key.LenghtStr() > 0);
 
                         foreach (var s in txt00)
                         {
@@ -777,7 +777,7 @@ namespace DLM.cad
                             pecas.Add(npc);
 
                         }
-                        var txtss = Selecoes.Filter<DBText>().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")).ToList().FindAll(x => x.Key.Length > 0);
+                        var txtss = Selecoes.Filter<DBText>().GroupBy(x => x.TextString.Replace("*", "").Replace("\r", " ").Replace("\t", " ").Replace("\n", " ").TrimStart().TrimEnd().Split(' ')[0].Replace("(", " ").Replace(")", " ")).ToList().FindAll(x => x.Key.LenghtStr() > 0);
                         foreach (var s in txtss)
                         {
                             PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Texto, s.Key, s.First().TextString, "", s.ToList().Select(x => new BlockAttributes(new List<db.Celula> { new db.Celula("VALOR", x.TextString) })).ToList());
@@ -1167,7 +1167,7 @@ namespace DLM.cad
                     List<BlockReference> selo = blocos.Filter(new List<string> { "SELO" }, out errosb, false);
 
 
-                    if (errosb.Length > 0)
+                    if (errosb.LenghtStr() > 0)
                     {
                         erros.Add(new Report("Erro ao tentar ler os blocos", errosb, TipoReport.Critico));
                     }
@@ -1361,7 +1361,7 @@ namespace DLM.cad
                 List<BlockReference> ms = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalMarcas(), out errosm);
                 List<BlockReference> pos = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalPosicoes(), out errosp);
 
-                if (errosm.Length > 0 | errosp.Length > 0)
+                if (errosm.LenghtStr() > 0 | errosp.LenghtStr() > 0)
                 {
                     erros.Add(new Report($"{nome}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", nome, TipoReport.Critico));
                 }
@@ -1725,7 +1725,7 @@ namespace DLM.cad
         retentar:
             var nome_marca = nnn.Prompt("Digite o nome da Marca", 25, false, true, "NOME_MARCA").ToUpper().Replace(" ", "");
 
-            if (nome_marca.Length == 0)
+            if (nome_marca.LenghtStr() == 0)
             {
                 if ("Nome não pode ser em branco. \nTentar Novamente?".Pergunta())
                 {

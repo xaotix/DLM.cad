@@ -1094,7 +1094,7 @@ namespace DLM.cad
             p.Origem = new P3d(bloco.Position.X, bloco.Position.Y, 0);
 
             //CORRENTES RÍGIDAS
-            if (CRE.Length > 0)
+            if (CRE.LenghtStr() > 0)
             {
                 foreach (var s in CRE.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
@@ -1102,7 +1102,7 @@ namespace DLM.cad
                         p.Correntes_Esquerda.Add(s);
                 }
             }
-            if (CRD.Length > 0)
+            if (CRD.LenghtStr() > 0)
             {
                 foreach (var s in CRD.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
@@ -1113,7 +1113,7 @@ namespace DLM.cad
             p.Tipo_Corrente = Tipo_Corrente_Purlin.Manual;
 
             //FURO MANUAL
-            if (FE.Length > 0)
+            if (FE.LenghtStr() > 0)
             {
                 foreach (var s in FE.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
@@ -1121,7 +1121,7 @@ namespace DLM.cad
                         p.Esquerda.Furos_Manuais.Add(s);
                 }
             }
-            if (FD.Length > 0)
+            if (FD.LenghtStr() > 0)
             {
                 foreach (var s in FD.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
@@ -1135,7 +1135,7 @@ namespace DLM.cad
 
 
             //FLANGE BRACES
-            if (FBE.Length > 0)
+            if (FBE.LenghtStr() > 0)
             {
                 foreach (var s in FBE.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {
@@ -1144,7 +1144,7 @@ namespace DLM.cad
                 }
             }
 
-            if (FBD.Length > 0)
+            if (FBD.LenghtStr() > 0)
             {
                 foreach (var s in FD.Split(';').Select(x => x.Double()).OrderBy(x => x).ToList().Distinct().ToList())
                 {

@@ -273,7 +273,7 @@ namespace DLM.cad.Menus
                 return;
             }
 
-            if (this.txt_codigo.Text.Length == 0)
+            if (this.txt_codigo.Text.LenghtStr() == 0)
             {
                 $"Campo código não pode ser em branco.".Alerta();
                 return;

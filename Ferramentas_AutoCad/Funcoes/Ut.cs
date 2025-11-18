@@ -100,7 +100,7 @@ namespace DLM.cad
                         acTrans.AddNewlyCreatedDBObject(acLdr, true);
 
                         // Attach the annotation after the leader object is added
-                        if (texto.Length > 0)
+                        if (texto.LenghtStr() > 0)
                         {
                             using (MText acMText = new MText())
                             {

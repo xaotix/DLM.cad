@@ -170,9 +170,9 @@ namespace DLM.cad
             this.Tipo = Tipo;
             this.Nome = nom;
             this.Nome_Bloco = nome_bloco;
-            if(desc.Length>0)
+            if(desc.LenghtStr() > 0)
             {
-                if(this.Nome.Length>0)
+                if(this.Nome.LenghtStr() > 0)
                 {
                     desc = desc.Replace(this.Nome, "");
                 }
@@ -198,7 +198,7 @@ namespace DLM.cad
                     double qtd_pc = 1;
                     string strn = att.ToUpper();
 
-                    if (this.Nome.Length>0)
+                    if (this.Nome.LenghtStr() > 0)
                     {
                         strn = att.ToUpper().Replace(this.Nome.ToUpper(), "");
                     }

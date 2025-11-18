@@ -171,7 +171,7 @@ namespace DLM.cad
 
                     if (db_perfil_m2 != null)
                     {
-                        if (db_perfil_m2.SAP.Int() > 0 && db_perfil_m2.SAP.Length > 6 && db_perfil_m2.Peso > 0)
+                        if (db_perfil_m2.SAP.Int() > 0 && db_perfil_m2.SAP.LenghtStr() > 6 && db_perfil_m2.Peso > 0)
                         {
                             perfil.Content = db_perfil_m2.ToString();
                         }
@@ -243,7 +243,7 @@ namespace DLM.cad
             }
 
 
-            if (NomeFim.Replace(" ", "").Replace("_", "").Length == 0)
+            if (NomeFim.Replace(" ", "").Replace("_", "").LenghtStr() == 0)
             {
                 $"Nome inválido.".Alerta();
                 return;

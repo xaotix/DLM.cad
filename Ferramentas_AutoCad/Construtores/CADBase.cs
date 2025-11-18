@@ -130,8 +130,8 @@ namespace DLM.cad
         {
             var arqs = this.Pasta.GetArquivos("*.dwg");
 
-            var selecao = arqs.FindAll(x => x.Nome.Contem(Cfg.Init.DWG_FAB_FILTRO) && x.Nome.Length > 8);
-            var ultimas_revs = selecao.GroupBy(x => x.Nome.Substring(0, x.Nome.Length - 3)).Select(x => x.ToList().OrderByDescending(y => y.Nome)).Select(x => x.First()).ToList();
+            var selecao = arqs.FindAll(x => x.Nome.Contem(Cfg.Init.DWG_FAB_FILTRO) && x.Nome.LenghtStr() > 8);
+            var ultimas_revs = selecao.GroupBy(x => x.Nome.Substring(0, x.Nome.LenghtStr() - 3)).Select(x => x.ToList().OrderByDescending(y => y.Nome)).Select(x => x.First()).ToList();
             selecao = ultimas_revs;
 
             var resto = arqs.FindAll(x => selecao.Find(y => y.Nome == x.Nome) == null);
@@ -1045,7 +1045,7 @@ namespace DLM.cad
                 foreach (var nome in nomes)
                 {
                     var novo_nome = nome.Key.Prompt($"Digite o novo nome para o bloco \n[{nome.Key}]");
-                    if (novo_nome != null && novo_nome.Length > 0)
+                    if (novo_nome != null && novo_nome.LenghtStr() > 0)
                     {
                         novo_nome = novo_nome.Replace(" ", "_").ToUpper();
                         if ($"Tem certeza que deseja renomear o bloco \n[{nome.Key}] para [{novo_nome}]".Pergunta())
