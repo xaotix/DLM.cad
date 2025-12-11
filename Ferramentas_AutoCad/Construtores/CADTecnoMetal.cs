@@ -125,8 +125,9 @@ namespace DLM.cad
                     {
                         foreach (var filete in filetes)
                         {
+                            var frst = filete.First();
                             string nome = Cfg.Init.CAD_BL_Solda_1;
-                            if (filete.First().Filete_Duplo)
+                            if (frst.Filete_Duplo)
                             {
                                 nome = Cfg.Init.CAD_BL_Solda_2;
                             }
@@ -137,7 +138,13 @@ namespace DLM.cad
                             {
                                 var ht = new db.Linha();
                                 ht.Add("MBPERFIL", pc);
-                                ht.Add("MBFILETE", filete.First().Filete_Minimo);
+                                ///06/11/2019
+                                ///removido representação filete duplo do texto
+                                /// 2x3 => mantém apenas 3
+                                ///Para evitar dúvidas de fábrica, visto que
+                                ///o bloco já indica o filete em ambos os lados
+                                //ht.Add("MBFILETE", frst.Filete_Duplo?$"2x{frst.Filete_Minimo}": frst.Filete_Minimo.String(0));
+                                ht.Add("MBFILETE", frst.Filete_Minimo);
                                 Blocos.Inserir(acDoc, nome, origem, 1, 0, ht);
 
                                 origem = origem.Mover(-largura, 0, 0);
