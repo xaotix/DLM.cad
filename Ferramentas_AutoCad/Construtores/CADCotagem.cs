@@ -1046,7 +1046,7 @@ namespace DLM.cad
         {
             if (coords.Count < 2)
             {
-                AddMensagem("Cotagem Horizontal abortada - Lista contém apenas " + coords.Count + " coordenadas");
+                AddMensagem("Cotagem Horizontal abortada - dg_lista contém apenas " + coords.Count + " coordenadas");
                 return;
             }
             Sequencia = 0;

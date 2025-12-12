@@ -116,7 +116,7 @@ namespace DLM.cad
             Assembly asm = Assembly.GetExecutingAssembly();
             List<string> comandos = Ut.listarcomandos(asm, false).ToList().OrderBy(x => x).ToList();
 
-            Ut.AddMensagem("=== Lista de comandos ===\n");
+            Ut.AddMensagem("=== dg_lista de comandos ===\n");
             foreach (var s in comandos)
             {
                 Ut.AddMensagem($"---> {s.ToUpper()}\n");
