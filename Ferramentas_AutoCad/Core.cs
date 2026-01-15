@@ -741,7 +741,7 @@ namespace DLM.cad
                 if (arquivos.Count > 0)
                 {
                     var w = Core.Getw();
-                    w.New(1, arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                    w.New(arquivos.Count, 1, $"Aguarde... Convertendo [{arquivos.Count}] itens");
                     foreach (var arq in arquivos)
                     {
                         var nome_fim = $@"{arq.Pasta}\{arq.Nome}.dxf";
@@ -808,7 +808,7 @@ namespace DLM.cad
                     {
                         var erros = new List<Report>();
                         var w = Core.Getw();
-                        w.New(1, arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                        w.New(arquivos.Count, 1,  $"Aguarde... Convertendo [{arquivos.Count}] itens");
                         List<string> arquivos_dwg = new List<string>();
                         foreach (var arq in arquivos)
                         {
