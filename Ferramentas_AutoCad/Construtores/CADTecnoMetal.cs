@@ -251,7 +251,7 @@ namespace DLM.cad
 
 
             List<string> arquivos_dsd = new List<string>();
-            Core.Getw().SetProgresso(1, arquivos.Count, $"Gerando PDF (Pacote) {c}/{pacotes.Count}");
+            Core.Getw().New(1, arquivos.Count, $"Gerando PDF (Pacote) {c}/{pacotes.Count}");
             foreach (var pacote in pacotes)
             {
                 string arquivo_dsd = pasta_dsd + $@"\Plotagem_{c}.dsd";
@@ -370,7 +370,7 @@ namespace DLM.cad
                 c++;
             }
 
-            Core.Getw().SetProgresso(1, arquivos_dsd.Count, "Gerando PDFs...");
+            Core.Getw().New(1, arquivos_dsd.Count, "Gerando PDFs...");
             foreach (var arquivo_dsd in arquivos_dsd)
             {
                 PlotConfig plotConfig = Autodesk.AutoCAD.PlottingServices.PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
@@ -480,7 +480,7 @@ namespace DLM.cad
                 var tipos = tirantes.GroupBy(x => x.Perfil).ToList().OrderBy(x => x.Key).ToList();
                 //List<Autodesk.AutoCAD.DatabaseServices.BlockReference> excluir = new List<Autodesk.AutoCAD.DatabaseServices.BlockReference>();
 
-                Core.Getw().SetProgresso(1, tipos.Count);
+                Core.Getw().New(1, tipos.Count);
 
                 List<BlockAttributes> final = new List<BlockAttributes>();
                 List<BlockAttributes> desagrupado = new List<BlockAttributes>();
@@ -597,7 +597,7 @@ namespace DLM.cad
             if (outros.Count > 0 && mapear_pecas)
             {
                 var tot = outros.Sum(x => x.Blocos.Count);
-                Core.Getw().SetProgresso(1, tot, $"Inserindo {tot} blocos de outras peças");
+                Core.Getw().New(1, tot, $"Inserindo {tot} blocos de outras peças");
                 foreach (var pc in outros)
                 {
                     pc.Numero = seq.String(2);
@@ -964,7 +964,7 @@ namespace DLM.cad
             if (cams.Count > 0)
             {
                 var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
-                Core.Getw().SetProgresso(1, dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
+                Core.Getw().New(1, dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
 
                 foreach (var arq in dxfs)
                 {
@@ -1317,7 +1317,7 @@ namespace DLM.cad
                     return new db.Tabela();
                 }
 
-                Core.Getw().SetProgresso(1, arquivos.Count(), "Carregando...");
+                Core.Getw().New(1, arquivos.Count(), "Carregando...");
                 foreach (FileInfo file in arquivos)
                 {
                     Core.Getw().somaProgresso($"Mapeando peças: {file.Name}");
