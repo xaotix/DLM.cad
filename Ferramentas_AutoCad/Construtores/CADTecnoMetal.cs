@@ -163,7 +163,7 @@ namespace DLM.cad
         }
         public void GerarPDF(List<Conexoes.Arquivo> arqs = null, bool gerar_dxf = false)
         {
-           var arquivos = new List<Conexoes.Arquivo>();
+            var arquivos = new List<Conexoes.Arquivo>();
             int pranchas_por_page_setup = 50;
             string config_layout = "PDF-A3-PAISAGEM";
             string config_model = "PDF_A3_PAISAGEM";
@@ -250,8 +250,8 @@ namespace DLM.cad
             int c = 1;
 
 
-            List<string> arquivos_dsd = new List<string>();
-            Core.Getw().New(arquivos.Count, 1,  $"Gerando PDF (Pacote) {c}/{pacotes.Count}");
+            var arquivos_dsd = new List<string>();
+            var w = ProgressoCad.Start(arquivos.Count, $"Gerando PDF (Pacote) {c}/{pacotes.Count}");
             foreach (var pacote in pacotes)
             {
                 string arquivo_dsd = pasta_dsd + $@"\Plotagem_{c}.dsd";
@@ -274,7 +274,7 @@ namespace DLM.cad
                             var pdf = destino + @"\" + arquivo.Nome + ".PDF";
                             if (!pdf.Delete())
                             {
-                                Core.Getw().Close();
+                                w.Close();
                                 return;
                             }
                             string nome = "";
@@ -320,7 +320,7 @@ namespace DLM.cad
                         }
 
 
-                        Core.Getw().somaProgresso();
+                        w.somaProgresso();
                     }
 
 
@@ -370,7 +370,7 @@ namespace DLM.cad
                 c++;
             }
 
-            Core.Getw().New(arquivos_dsd.Count, 1, "Gerando PDFs...");
+            w = ProgressoCad.Start(arquivos_dsd.Count, "Gerando PDFs...");
             foreach (var arquivo_dsd in arquivos_dsd)
             {
                 PlotConfig plotConfig = Autodesk.AutoCAD.PlottingServices.PlotConfigManager.SetCurrentConfig("DWG To PDF.pc3");
@@ -386,11 +386,11 @@ namespace DLM.cad
                 dsdData.DestinationName = destino + @"\arquivo.pdf";
                 publisher.PublishExecute(dsdData, plotConfig);
 
-                Core.Getw().somaProgresso();
+                w.somaProgresso();
             }
 
 
-            Core.Getw().Close();
+            w.Close();
             "Plotagem finalizada!".Alerta();
 
 
@@ -480,13 +480,13 @@ namespace DLM.cad
                 var tipos = tirantes.GroupBy(x => x.Perfil).ToList().OrderBy(x => x.Key).ToList();
                 //List<Autodesk.AutoCAD.DatabaseServices.BlockReference> excluir = new List<Autodesk.AutoCAD.DatabaseServices.BlockReference>();
 
-                Core.Getw().New(tipos.Count,1, "Mapeando peças...");
+                var w = ProgressoCad.Start(tipos.Count, "Mapeando peças...");
 
-                List<BlockAttributes> final = new List<BlockAttributes>();
-                List<BlockAttributes> desagrupado = new List<BlockAttributes>();
+                var final = new List<BlockAttributes>();
+                var desagrupado = new List<BlockAttributes>();
                 foreach (var tipo_por_perfil in tipos)
                 {
-                    Core.Getw().somaProgresso();
+                    w.somaProgresso();
                     string perfil = tipo_por_perfil.Key;
                     var igual = perfis_mapeaveis.Find(x => x.Perfil.ToUpper().Replace(" ", "") == perfil.ToUpper().Replace(" ", ""));
                     var comps = tipo_por_perfil.ToList().GroupBy(x => x.Comprimento.ArredondarMultiplo(arredon)).ToList().OrderBy(x => x.Key).ToList();
@@ -590,21 +590,21 @@ namespace DLM.cad
 
 
 
-                Core.Getw().Close();
+                w.Close();
 
             }
 
             if (outros.Count > 0 && mapear_pecas)
             {
                 var tot = outros.Sum(x => x.Blocos.Count);
-                Core.Getw().New(tot, 1, $"Inserindo {tot} blocos de outras peças");
+                var w = ProgressoCad.Start(tot, $"Inserindo {tot} blocos de outras peças");
                 foreach (var pc in outros)
                 {
                     pc.Numero = seq.String(2);
                     seq++;
                     foreach (var s in pc.Blocos)
                     {
-                        Core.Getw().somaProgresso();
+                        w.somaProgresso();
 
                         var ht = new db.Linha();
                         ht.Add(Cfg.Init.CAD_ATT_N, pc.Numero);
@@ -621,7 +621,7 @@ namespace DLM.cad
                     }
 
                 }
-                Core.Getw().Close();
+                w.Close();
             }
 
             if ("Mapeamento finalizado! Deseja inserir a tabela?".Pergunta())
@@ -964,14 +964,14 @@ namespace DLM.cad
             if (cams.Count > 0)
             {
                 var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
-                Core.Getw().New(dxfs.Count, 1, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
+                var w = ProgressoCad.Start(dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
 
                 foreach (var arq in dxfs)
                 {
                     arq.Delete();
-                    Core.Getw().somaProgresso();
+                    w.somaProgresso();
                 }
-                Core.Getw().Close();
+                w.Close();
 
 
                 Conexoes.Utilz.TecnoPlotGerarDXF(cams.Select(x => new Conexoes.Arquivo(x.Arquivo)).ToList());
@@ -1294,7 +1294,7 @@ namespace DLM.cad
             db.Tabela marcas = new db.Tabela();
             try
             {
-                List<FileInfo> arquivos = new List<FileInfo>();
+                var arquivos = new List<FileInfo>();
                 if (pranchas == null)
                 {
                     pranchas = this.SelecionarDWGs();
@@ -1317,11 +1317,10 @@ namespace DLM.cad
                     return new db.Tabela();
                 }
 
-                Core.Getw().New(arquivos.Count(), 1, "Carregando...");
+                var w = ProgressoCad.Start(arquivos.Count(), "Mapeando peças dos dwgs...");
                 foreach (FileInfo file in arquivos)
                 {
-                    Core.Getw().somaProgresso($"Mapeando peças: {file.Name}");
-
+                    w.somaProgresso($"Mapeando peças: {file.Name}");
                     string arquivo = file.FullName;
                     try
                     {
@@ -1335,21 +1334,19 @@ namespace DLM.cad
                     }
                     catch (Exception ex)
                     {
-                        Core.Getw().Close();
+                        w.Close();
                         ex.Alerta();
                         return new db.Tabela();
                     }
 
                 }
-
+                w.Close();
             }
             catch (System.Exception ex)
             {
-                Core.Getw().Close();
                 ex.Alerta();
                 return new db.Tabela();
             }
-            Core.Getw().Close();
 
             return Conexoes.Utilz.DBF.ConverterParaDBF(marcas, ref erros);
         }
@@ -1596,7 +1593,7 @@ namespace DLM.cad
 
                 if (poly.Comprimento > 0 && poly.Largura > 0)
                 {
-                    var marca = this.Nome.Prompt("Digite o nome da peça",25);
+                    var marca = this.Nome.Prompt("Digite o nome da peça", 25);
                     if (marca != null)
                     {
                         string material = null;
@@ -1828,7 +1825,7 @@ namespace DLM.cad
                 if (bobina == null)
                 {
 
-                    bobina = DBases.GetEspessura(0,Cfg.Init.Material_RMU);
+                    bobina = DBases.GetEspessura(0, Cfg.Init.Material_RMU);
                     var espessura = PromptChapa(Tipo_Chapa.Fina);
                     if (espessura == null)
                     {

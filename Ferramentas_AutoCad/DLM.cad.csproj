@@ -178,6 +178,7 @@
     <Compile Include="ClassesObjetosBloco\LinhaBlocoFuro.cs" />
     <Compile Include="ClassesBase\PCQuantificar.cs" />
     <Compile Include="ClassesBase\Outline.cs" />
+    <Compile Include="ProgressoCad.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Construtores\CADPurlin.cs" />
     <Compile Include="Funcoes\Tabelas.cs" />

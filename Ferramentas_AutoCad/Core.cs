@@ -41,15 +41,15 @@ namespace DLM.cad
 
         public static CADMonitoramento monitoramento { get; set; }
 
-        public static Conexoes.ControleWait Getw()
-        {
-            if (_w == null)
-            {
-                Cfg.Init.JanelaWaitMultiThread = false;
-                _w = Conexoes.Utilz.Wait(100, "");
-            }
-            return _w;
-        }
+        //public static Conexoes.ControleWait Getw()
+        //{
+        //    if (_w == null)
+        //    {
+        //        Cfg.Init.JanelaWaitMultiThread = false;
+        //        _w = Conexoes.Utilz.Wait(100, "");
+        //    }
+        //    return _w;
+        //}
 
         public static MenuMarcas GetMenuMarcas()
         {
@@ -733,15 +733,14 @@ namespace DLM.cad
         [CommandMethod(nameof(ConverterDXF))]
         public static void ConverterDXF()
         {
-            List<Report> erros = new List<Report>();
+            var erros = new List<Report>();
             var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
             if (pasta.Exists())
             {
                 var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
                 if (arquivos.Count > 0)
                 {
-                    var w = Core.Getw();
-                    w.New(arquivos.Count, 1, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                    var w = ProgressoCad.Start(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
                     foreach (var arq in arquivos)
                     {
                         var nome_fim = $@"{arq.Pasta}\{arq.Nome}.dxf";
@@ -807,9 +806,8 @@ namespace DLM.cad
                     if (arquivos.Count > 0)
                     {
                         var erros = new List<Report>();
-                        var w = Core.Getw();
-                        w.New(arquivos.Count, 1,  $"Aguarde... Convertendo [{arquivos.Count}] itens");
-                        List<string> arquivos_dwg = new List<string>();
+                        var w = ProgressoCad.Start(arquivos.Count, $"Aguarde... Convertendo [{arquivos.Count}] itens");
+                        var arquivos_dwg = new List<string>();
                         foreach (var arq in arquivos)
                         {
                             var nome_fim = $@"{destino}\{arq.Nome}.dwg";
