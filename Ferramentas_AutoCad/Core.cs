@@ -734,7 +734,7 @@ namespace DLM.cad
         public static void ConverterDXF()
         {
             var erros = new List<Report>();
-            var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
+            var pasta = "".SelecionarPasta();
             if (pasta.Exists())
             {
                 var arquivos = pasta.GetArquivos("*.DWG").ListaSelecionarVarios();
@@ -796,10 +796,10 @@ namespace DLM.cad
         [CommandMethod(nameof(ConverterDWG))]
         public static void ConverterDWG()
         {
-            var pasta = Conexoes.Utilz.Selecao.SelecionarPasta();
+            var pasta = "".SelecionarPasta();
             if (pasta.Exists())
             {
-                var destino = Conexoes.Utilz.Selecao.SelecionarPasta("Selecione o destino", pasta);
+                var destino = pasta.SelecionarPasta("Selecione o Destino");
                 if (destino.Exists())
                 {
                     var arquivos = pasta.GetArquivos("*.DXF").ListaSelecionarVarios();
