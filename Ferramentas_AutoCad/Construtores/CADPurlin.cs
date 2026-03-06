@@ -145,8 +145,7 @@ namespace DLM.cad
 
         [Category("Purlin")]
         [DisplayName("Ficha de Pintura")]
-        [ReadOnly(true)]
-        [Browsable(false)]
+        [ReadOnly(true), Browsable(false)]
         public string FichaDePintura { get; set; } = Cfg.Init.RM_SEM_PINTURA;
         [Category("Purlin")]
         [DisplayName("Layer Fr. Manuais")]

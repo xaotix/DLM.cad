@@ -10,10 +10,10 @@ namespace DLM.cad
         private static List<MlClass> _mlClasses { get; set; }
         public static List<MlClass> GetSetup()
         {
-            if(_mlClasses==null)
+            if (_mlClasses == null)
             {
                 _mlClasses = new List<MlClass>();
-                _mlClasses.Add(new MlClass("10MM",Tipo_Multiline.Tirante));
+                _mlClasses.Add(new MlClass("10MM", Tipo_Multiline.Tirante));
 
                 _mlClasses.Add(new MlClass("C50", Tipo_Multiline.Corrente));
                 _mlClasses.Add(new MlClass("DIAG50X3", Tipo_Multiline.Corrente));
@@ -50,8 +50,7 @@ namespace DLM.cad
         }
         public string Nome { get; set; } = "";
         public Tipo_Multiline Tipo { get; set; } = Tipo_Multiline.Definir;
-        [Browsable(false)]
-        [XmlIgnore]
+        [Browsable(false), XmlIgnore]
         public List<CADMline> Mlines { get; set; } = new List<CADMline>();
         public MlClass(string nome, List<CADMline> mlines)
         {
