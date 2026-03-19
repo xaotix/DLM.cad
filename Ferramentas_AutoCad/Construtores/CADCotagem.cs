@@ -37,13 +37,13 @@ namespace DLM.cad
         public List<BlockReference> GetBlocos_Marcas_Posicoes()
         {
             return Selecoes.Filter<BlockReference>().FindAll(x =>
-                 Cfg.Init.GetBlocosTecnoMetalMarcas().Find(y => y.ToUpper() == x.Name.ToUpper()) != null |
-                 Cfg.Init.GetBlocosTecnoMetalPosicoes().Find(y => y.ToUpper() == x.Name.ToUpper()) != null
+                 Cfg.Init.GetBlocosTecnoMetalMarcas().Find(y => y.Upper() == x.Name.Upper()) != null |
+                 Cfg.Init.GetBlocosTecnoMetalPosicoes().Find(y => y.Upper() == x.Name.Upper()) != null
                                     );
         }
         public List<BlockReference> GetFuros_corte()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "MS");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.Upper() == "MS");
         }
         #endregion
         public void GetVars(CADCotagem c)
@@ -1423,7 +1423,7 @@ namespace DLM.cad
                 {
                     TextStyleTableRecord symbol = (TextStyleTableRecord)acTrans.GetObject(id, OpenMode.ForRead);
 
-                    if (symbol.Name.ToUpper() == nome)
+                    if (symbol.Name.Upper() == nome)
                     {
                         ret = symbol;
                     }

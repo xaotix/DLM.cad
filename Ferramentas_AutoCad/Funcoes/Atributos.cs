@@ -58,7 +58,7 @@ namespace DLM.cad
                     if (atributos.Contem(attRef.Tag))
                     {
                         attRef.UpgradeOpen();
-                        var celula = atributos[attRef.Tag.ToUpper()];
+                        var celula = atributos[attRef.Tag.Upper()];
                         var valor = celula.ToString();
                         attRef.TextString = valor;
                     }

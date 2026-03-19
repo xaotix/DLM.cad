@@ -64,7 +64,7 @@ namespace DLM.cad
         }
         public bool E_Tecnometal3D(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsW($@".{Cfg.Init.EXT_Pedido}"))
+            if (!this.Pasta.Upper().Replace(@"\", "").EndsW($@".{Cfg.Init.EXT_Pedido}"))
             {
                 if (mensagem)
                 {
@@ -80,7 +80,7 @@ namespace DLM.cad
         }
         public bool E_Tecnometal(bool mensagem = true)
         {
-            if (!this.Pasta.ToUpper().Replace(@"\", "").EndsW($".{Cfg.Init.EXT_Etapa}"))
+            if (!this.Pasta.Upper().Replace(@"\", "").EndsW($".{Cfg.Init.EXT_Etapa}"))
             {
                 if (mensagem)
                 {
@@ -160,35 +160,35 @@ namespace DLM.cad
         {
             var blocos = Selecoes.Filter<BlockReference>();
             return blocos.FindAll(x =>
-                 x.Name.ToUpper() == "M8"
-                | x.Name.ToUpper() == "M10"
-                | x.Name.ToUpper() == "M12"
-                | x.Name.ToUpper() == "M14"
-                | x.Name.ToUpper() == "M14_"
-                | x.Name.ToUpper() == "M16"
-                | x.Name.ToUpper() == "M18"
-                | x.Name.ToUpper() == "M20"
-                | x.Name.ToUpper() == "M22"
-                | x.Name.ToUpper() == "M24"
-                | x.Name.ToUpper() == "M27"
-                | x.Name.ToUpper() == "M30"
-                | x.Name.ToUpper() == "M33"
-                | x.Name.ToUpper() == "M36"
-                | x.Name.ToUpper() == "M39"
-                | x.Name.ToUpper() == "M42"
-                | x.Name.ToUpper() == "M45"
-                | x.Name.ToUpper() == "M48"
-                | x.Name.ToUpper() == "M52"
-                | x.Name.ToUpper() == "M56"
-                | x.Name.ToUpper() == "M60"
-                | x.Name.ToUpper() == "M64"
-                | x.Name.ToUpper() == "M68"
-                | x.Name.ToUpper() == "M72"
-                | x.Name.ToUpper() == "M76"
-                | x.Name.ToUpper() == "M80"
+                 x.Name.Upper() == "M8"
+                | x.Name.Upper() == "M10"
+                | x.Name.Upper() == "M12"
+                | x.Name.Upper() == "M14"
+                | x.Name.Upper() == "M14_"
+                | x.Name.Upper() == "M16"
+                | x.Name.Upper() == "M18"
+                | x.Name.Upper() == "M20"
+                | x.Name.Upper() == "M22"
+                | x.Name.Upper() == "M24"
+                | x.Name.Upper() == "M27"
+                | x.Name.Upper() == "M30"
+                | x.Name.Upper() == "M33"
+                | x.Name.Upper() == "M36"
+                | x.Name.Upper() == "M39"
+                | x.Name.Upper() == "M42"
+                | x.Name.Upper() == "M45"
+                | x.Name.Upper() == "M48"
+                | x.Name.Upper() == "M52"
+                | x.Name.Upper() == "M56"
+                | x.Name.Upper() == "M60"
+                | x.Name.Upper() == "M64"
+                | x.Name.Upper() == "M68"
+                | x.Name.Upper() == "M72"
+                | x.Name.Upper() == "M76"
+                | x.Name.Upper() == "M80"
 
-                | x.Name.ToUpper() == "3D_INFOHOLE1"
-                | x.Name.ToUpper() == "MA"
+                | x.Name.Upper() == "3D_INFOHOLE1"
+                | x.Name.Upper() == "MA"
                 );
         }
         public List<Entity> GetEntitiesdeBlocos()
@@ -262,7 +262,7 @@ namespace DLM.cad
         {
             get
             {
-                var pasta = acDoc.Name.getPasta().ToUpper();
+                var pasta = acDoc.Name.getPasta().Upper();
 
                 if (!Directory.Exists(pasta))
                 {
@@ -289,7 +289,7 @@ namespace DLM.cad
         {
             get
             {
-                return acDoc.Name.getNome().ToUpper().Replace(".DWG", "");
+                return acDoc.Name.getNome().Upper().Replace(".DWG", "");
             }
         }
 
@@ -663,7 +663,7 @@ namespace DLM.cad
         #region mapeamento de objetos a serem usados
         public List<CADLine> GetLinhas_Eixos()
         {
-            return GetCADLines().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.ToUpper().Contem(this.LayerEixos) && (x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.ToUpper() == Cfg.Init.CAD_LineType_ByLayer));
+            return GetCADLines().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.Upper().Contem(this.LayerEixos) && (x.Linetype.Upper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.Upper() == Cfg.Init.CAD_LineType_ByLayer));
         }
         #endregion
 
@@ -846,7 +846,7 @@ namespace DLM.cad
             if (_Atributos_Eixos == null | update)
             {
                 var blks = Selecoes.Filter<BlockReference>();
-                var lbksnms = blks.GroupBy(x => Blocos.GetNome(x).ToUpper()).ToList();
+                var lbksnms = blks.GroupBy(x => Blocos.GetNome(x).Upper()).ToList();
                 var eixos = lbksnms.FindAll(x => x.Key.Contem(this.BlocoEixos)).ToList().SelectMany(x => x.ToList()).ToList();
 
                 _Atributos_Eixos = eixos.Select(x => x.GetAttributes()).ToList();
@@ -857,17 +857,17 @@ namespace DLM.cad
         public List<BlockAttributes> GetAtributosNivel()
         {
             /*pega blocos dinâmicos*/
-            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).ToUpper().Contem("NIVEL", "NÍVEL")).Select(x => x.GetAttributes()).ToList();
+            return Selecoes.Filter<BlockReference>().FindAll(x => Blocos.GetNome(x).Upper().Contem("NIVEL", "NÍVEL")).Select(x => x.GetAttributes()).ToList();
         }
         public List<PCQuantificar> GetBlocos_IndicacaoPecas()
         {
             List<PCQuantificar> pcs = new List<PCQuantificar>();
-            var blocos = Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper().StartsW(Cfg.Init.CAD_PC_Quantificar)).GroupBy(x => x.Name);
+            var blocos = Selecoes.Filter<BlockReference>().FindAll(x => x.Name.Upper().StartsW(Cfg.Init.CAD_PC_Quantificar)).GroupBy(x => x.Name);
 
 
             foreach (var s in blocos)
             {
-                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => x.GetAttributes()).ToList());
+                PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.Upper(), "", s.Key.Upper(), s.ToList().Select(x => x.GetAttributes()).ToList());
                 if (npc.Nome.StartsW(Cfg.Init.CAD_PC_Quantificar))
                 {
                     var blcs = npc.Agrupar(new List<string> { Cfg.Init.CAD_ATT_Codigo, Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);
@@ -1047,7 +1047,7 @@ namespace DLM.cad
                     var novo_nome = nome.Key.Prompt($"Digite o novo nome para o bloco \n[{nome.Key}]");
                     if (novo_nome != null && novo_nome.LenghtStr() > 0)
                     {
-                        novo_nome = novo_nome.Replace(" ", "_").ToUpper();
+                        novo_nome = novo_nome.Replace(" ", "_").Upper();
                         if ($"Tem certeza que deseja renomear o bloco \n[{nome.Key}] para [{novo_nome}]".Pergunta())
                         {
                             Blocos.Renomear(nome.Key, novo_nome);
@@ -1059,7 +1059,7 @@ namespace DLM.cad
 
         public CADBase()
         {
-            if (Cfg.Init.GetUser().MA.ToUpper() != "MA1516")
+            if (Cfg.Init.GetUser().MA.Upper() != "MA1516")
             {
                 Cfg.Init.CAD_VerificarVersao();
             }

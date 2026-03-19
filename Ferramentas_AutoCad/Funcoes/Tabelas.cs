@@ -570,7 +570,7 @@ namespace DLM.cad
                     x0 = p1.X;
                     y0 = p1.Y;
                     var ht = new db.Linha();
-                    ht.Add("TITULO", "LISTA " + pacote[0].Familia.ToUpper());
+                    ht.Add("TITULO", "LISTA " + pacote[0].Familia.Upper());
                     Blocos.Inserir(acDoc, Cfg.Init.CAD_BLK_TAB_Pecas_Titulo, p1, escala, 0, ht);
                     p1 = new P3d(p1.X, p1.Y - (escala * Cfg.Init.CAD_TABLE_HEADER_SCALE));
                     int seq = 1;

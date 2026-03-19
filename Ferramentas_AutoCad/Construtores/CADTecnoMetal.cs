@@ -278,7 +278,7 @@ namespace DLM.cad
                                 return;
                             }
                             string nome = "";
-                            if (extensao.ToUpper().EndsW("DXF"))
+                            if (extensao.Upper().EndsW("DXF"))
                             {
                                 nome = "Model";
                             }
@@ -352,7 +352,7 @@ namespace DLM.cad
                         {
                             string pagesetup = $@"{config_layout}|{arquivo_dwg}";
                             var opt = txt[i - 1];
-                            if (opt.ToUpper().Contem("MODEL"))
+                            if (opt.Upper().Contem("MODEL"))
                             {
                                 pagesetup = $@"{config_model}|{arquivo_dwg}";
                             }
@@ -424,9 +424,9 @@ namespace DLM.cad
             {
                 foreach (var pc in pecas)
                 {
-                    var nome = pc.Nome.ToUpper().Replace(" ", "");
-                    var perfil = pc.Perfil.ToUpper().Replace(" ", "");
-                    var igual = perfis_mapeaveis.Find(x => x.Perfil.ToUpper().Replace(" ", "") == perfil);
+                    var nome = pc.Nome.Upper().Replace(" ", "");
+                    var perfil = pc.Perfil.Upper().Replace(" ", "");
+                    var igual = perfis_mapeaveis.Find(x => x.Perfil.Upper().Replace(" ", "") == perfil);
 
                     if (igual != null)
                     {
@@ -488,7 +488,7 @@ namespace DLM.cad
                 {
                     w.somaProgresso();
                     string perfil = tipo_por_perfil.Key;
-                    var igual = perfis_mapeaveis.Find(x => x.Perfil.ToUpper().Replace(" ", "") == perfil.ToUpper().Replace(" ", ""));
+                    var igual = perfis_mapeaveis.Find(x => x.Perfil.Upper().Replace(" ", "") == perfil.Upper().Replace(" ", ""));
                     var comps = tipo_por_perfil.ToList().GroupBy(x => x.Comprimento.ArredondarMultiplo(arredon)).ToList().OrderBy(x => x.Key).ToList();
                     foreach (var comp in comps)
                     {
@@ -660,14 +660,14 @@ namespace DLM.cad
                         List<PCQuantificar> blocos_montagem_tecnometal = new List<PCQuantificar>();
                         foreach (var s in Selecoes.Filter<BlockReference>().FindAll(x => !
                          x.Name.Contem("*"))
-                        .GroupBy(x => x.Name.ToUpper()
+                        .GroupBy(x => x.Name.Upper()
                         .Replace("SUPORTE_", "")
                         .Replace("SUPORTE ", "")
                         ))
                         {
                             var att = s.First().GetAttributes();
 
-                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.ToUpper(), "", s.Key.ToUpper(), s.ToList().Select(x => x.GetAttributes()).ToList());
+                            PCQuantificar npc = new PCQuantificar(Tipo_Objeto.Bloco, s.Key.Upper(), "", s.Key.Upper(), s.ToList().Select(x => x.GetAttributes()).ToList());
                             if (npc.Nome.StartsW(Cfg.Init.CAD_PC_Quantificar))
                             {
                                 var blcs = npc.Agrupar(new List<string> { "CODIGO", Cfg.Init.CAD_ATT_N }, npc.Nome_Bloco);
@@ -1072,7 +1072,7 @@ namespace DLM.cad
                     else if (ent is Line)
                     {
                         var s = ent as Line;
-                        if (s.Color.ColorNameForDisplay.ToUpper() == "RED" && (Angulo.E_Horizontal(s.Angle) | Angulo.E_Vertical(s.Angle)))
+                        if (s.Color.ColorNameForDisplay.Upper() == "RED" && (Angulo.E_Horizontal(s.Angle) | Angulo.E_Vertical(s.Angle)))
                         {
                             linhas.Add(s);
                             apagar.Add(s);
@@ -1086,9 +1086,9 @@ namespace DLM.cad
                     {
                         var s = ent as DBText;
                         if (
-                            s.TextStyleName.ToUpper() == "TB1" |
-                            s.TextStyleName.ToUpper() == "TB2" |
-                            s.TextStyleName.ToUpper() == "TB3"
+                            s.TextStyleName.Upper() == "TB1" |
+                            s.TextStyleName.Upper() == "TB2" |
+                            s.TextStyleName.Upper() == "TB3"
                             )
                         {
                             textos.Add(s);
@@ -1206,22 +1206,22 @@ namespace DLM.cad
                         else
                         {
                             ht.Add("TIPO_DE_PROJETO", this.Nome.Contem(Cfg.Init.DWG_FAB_FILTRO) ? "PROJETO DE FABRICAÇÃO" : "PROJETO DE MONTAGEM");
-                            ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
-                            ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.ToUpper()))}");
-                            ht.Add("OBRA", this.GetObra().Descricao.ToUpper());
-                            ht.Add("PREDIO", this.GetSubEtapa().Predio.ToUpper());
-                            ht.Add("CLIENTE", this.GetObra().Cliente.ToUpper());
-                            ht.Add("LOCAL", this.GetObra().Lugar.ToUpper());
-                            ht.Add("PEDIDO", this.GetPedido().NomePedido.ToUpper());
-                            ht.Add("ETAPA", this.GetSubEtapa().NomeEtapa.ToUpper());
+                            ht.Add("TITULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.Upper()))}");
+                            ht.Add("TÍTULO_DA_PRANCHA", $"DETALHAMENTO {string.Join(", ", marcas.Select(x => x.Nome.Upper()))}");
+                            ht.Add("OBRA", this.GetObra().Descricao.Upper());
+                            ht.Add("PREDIO", this.GetSubEtapa().Predio.Upper());
+                            ht.Add("CLIENTE", this.GetObra().Cliente.Upper());
+                            ht.Add("LOCAL", this.GetObra().Lugar.Upper());
+                            ht.Add("PEDIDO", this.GetPedido().NomePedido.Upper());
+                            ht.Add("ETAPA", this.GetSubEtapa().NomeEtapa.Upper());
                             ht.Add("ESCALA", "1/" + Math.Round(this.GetEscala(), 1));
                             ht.Add("UNIDADE", "MILÍMETROS");
-                            ht.Add("COORDENAÇÃO", this.GetSubEtapa().Coordenador.ToUpper());
-                            ht.Add("COORDENACAO", this.GetSubEtapa().Coordenador.ToUpper());
-                            ht.Add("PROJETO", this.GetSubEtapa().Projetista.ToUpper());
-                            ht.Add("DESENHO", Cfg.Init.GetUser().Nome.ToUpper());
-                            ht.Add("RESPONSAVEL_TECNICO", this.GetSubEtapa().Calculista.ToUpper());
-                            ht.Add("CREA", this.GetSubEtapa().CalculistaCREA.ToUpper());
+                            ht.Add("COORDENAÇÃO", this.GetSubEtapa().Coordenador.Upper());
+                            ht.Add("COORDENACAO", this.GetSubEtapa().Coordenador.Upper());
+                            ht.Add("PROJETO", this.GetSubEtapa().Projetista.Upper());
+                            ht.Add("DESENHO", Cfg.Init.GetUser().Nome.Upper());
+                            ht.Add("RESPONSAVEL_TECNICO", this.GetSubEtapa().Calculista.Upper());
+                            ht.Add("CREA", this.GetSubEtapa().CalculistaCREA.Upper());
                         }
 
                         Atributos.Set(s, acTrans, ht);
@@ -1272,7 +1272,7 @@ namespace DLM.cad
                 atributos[T_DBF1.FLG_DWG.ToString()].Valor = nome;
                 atributos[T_DBF1.FLG_REC.ToString()].Valor = atributos[T_DBF1.POS_PEZ.ToString()].Valor == "" ? Cfg.Init.CAD_ATT_REC_MARCA : Cfg.Init.CAD_ATT_REC_POSICAO;
                 atributos[T_DBF1.DAT_DIS.ToString()].Valor = ultima_edicao;
-                atributos[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
+                atributos[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.Upper();
 
                 return atributos;
             }
@@ -1280,7 +1280,7 @@ namespace DLM.cad
             {
                 DLM.log.Log(ex);
                 BlockAttributes att = new BlockAttributes(bloco, false);
-                att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.ToUpper();
+                att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.Upper();
                 att[T_DBF1.FLG_DWG.ToString()].Valor = nome;
                 att[Cfg.Init.CAD_ATT_ERRO].Valor = ex.Message;
                 att[Cfg.Init.CAD_ATT_ARQ].Valor = arquivo;
@@ -1727,7 +1727,7 @@ namespace DLM.cad
             }
             nnn = $"{prefix}{nnn}";
         retentar:
-            var nome_marca = nnn.Prompt("Digite o nome da Marca", 25, false, true, "NOME_MARCA").ToUpper().Replace(" ", "");
+            var nome_marca = nnn.Prompt("Digite o nome da Marca", 25, false, true, "NOME_MARCA").Upper().Replace(" ", "");
 
             if (nome_marca.LenghtStr() == 0)
             {

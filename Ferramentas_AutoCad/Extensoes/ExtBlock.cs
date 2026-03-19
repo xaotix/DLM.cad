@@ -64,12 +64,12 @@ namespace DLM.cad
             {
                 try
                 {
-                    var nome = bloco.Name.ToUpper();
+                    var nome = bloco.Name.Upper();
                     foreach (var s in nomes)
                     {
                         if (exato)
                         {
-                            if (nome.ToUpper() == s.ToUpper())
+                            if (nome.Upper() == s.Upper())
                             {
                                 marcas.Add(bloco);
                                 break;
@@ -77,7 +77,7 @@ namespace DLM.cad
                         }
                         else
                         {
-                            if (nome.ToUpper().Contem(s.ToUpper()))
+                            if (nome.Upper().Contem(s.Upper()))
                             {
                                 marcas.Add(bloco);
                                 break;

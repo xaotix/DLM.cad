@@ -200,7 +200,7 @@ namespace DLM.cad
                                             atref.Position = attRef.Position.TransformBy(bref.BlockTransform);
                                             if (atributos.Contem(attRef.Tag))
                                             {
-                                                atref.TextString = atributos[attRef.Tag.ToUpper()].ToString();
+                                                atref.TextString = atributos[attRef.Tag.Upper()].ToString();
                                             }
                                         }
                                         bref.AttributeCollection.AppendAttribute(atref);
@@ -285,7 +285,7 @@ namespace DLM.cad
 
                                                 if (atributos.Contem(attRef.Tag))
                                                 {
-                                                    attRef.TextString = atributos[attRef.Tag.ToUpper()].ToString();
+                                                    attRef.TextString = atributos[attRef.Tag.Upper()].ToString();
                                                 }
 
                                                 atcoll.AppendAttribute(attRef);
@@ -843,7 +843,7 @@ namespace DLM.cad
 
                         if (nome != "")
                         {
-                            if (s.Name.Replace(" ", "").ToUpper() == nome.ToUpper().Replace(" ", ""))
+                            if (s.Name.Replace(" ", "").Upper() == nome.Upper().Replace(" ", ""))
                             {
                                 blocos.Add(s);
                             }

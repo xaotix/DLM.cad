@@ -34,7 +34,7 @@ namespace DLM.cad
             var s = GetMLStyles();
             if (_mlstyles != null)
             {
-                var retorno = _mlstyles.Find(x => x.Name.ToUpper() == nome.ToUpper());
+                var retorno = _mlstyles.Find(x => x.Name.Upper() == nome.Upper());
                 return retorno;
             }
             return null;
@@ -177,7 +177,7 @@ namespace DLM.cad
 
         public static bool DesenharMLine(string estilo, string arquivo, List<Point3d> pontos)
         {
-            var mlst = GetMLineStyles().Find(x => x.Name.ToUpper() == estilo.ToUpper());
+            var mlst = GetMLineStyles().Find(x => x.Name.Upper() == estilo.Upper());
             if (mlst == null)
             {
                 if (arquivo != null)
@@ -208,7 +208,7 @@ namespace DLM.cad
                         return false;
                     }
                 }
-                mlst = GetMLineStyles().Find(x => x.Name.ToUpper() == estilo.ToUpper());
+                mlst = GetMLineStyles().Find(x => x.Name.Upper() == estilo.Upper());
 
             }
 

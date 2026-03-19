@@ -20,7 +20,7 @@ namespace DLM.cad
         public static BitmapImage GetImagePreview(string arquivo)
         {
 
-            var arq = imgs.ToList().Find(x => x.Key == arquivo.ToUpper());
+            var arq = imgs.ToList().Find(x => x.Key == arquivo.Upper());
             if (arq.Value!=null)
             {
                 return arq.Value;
@@ -33,7 +33,7 @@ namespace DLM.cad
                     acTmpDb.ReadDwgFile(arquivo, FileOpenMode.OpenForReadAndAllShare, false, null);
                     var imagem = acTmpDb.ThumbnailBitmap;
                     var s = Conexoes.Utilz.BitmapParaImageSource(imagem);
-                    imgs.Add(arquivo.ToUpper(), s);
+                    imgs.Add(arquivo.Upper(), s);
                     acTmpDb.CloseInput(true);
                     return s;
                 }

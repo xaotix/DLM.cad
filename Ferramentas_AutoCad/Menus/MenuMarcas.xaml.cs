@@ -255,7 +255,7 @@ namespace DLM.cad
                 return;
             }
 
-            if (this.Posicoes.FindAll(x => x.Nome.ToUpper() == NomeFim.ToUpper()).Count > 0)
+            if (this.Posicoes.FindAll(x => x.Nome.Upper() == NomeFim.Upper()).Count > 0)
             {
                 $"Nome inválido: {NomeFim} Já existe uma posição com o mesmo nome.".Alerta();
                 return;

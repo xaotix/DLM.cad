@@ -196,11 +196,11 @@ namespace DLM.cad
                 foreach (var att in atts)
                 {
                     double qtd_pc = 1;
-                    string strn = att.ToUpper();
+                    string strn = att.Upper();
 
                     if (this.Nome.LenghtStr() > 0)
                     {
-                        strn = att.ToUpper().Replace(this.Nome.ToUpper(), "");
+                        strn = att.Upper().Replace(this.Nome.Upper(), "");
                     }
 
                      var  str2 = strn

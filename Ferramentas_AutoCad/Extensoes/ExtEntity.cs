@@ -27,9 +27,9 @@ namespace DLM.cad
 
 
                 if (
-                    layer.Name.ToUpper() == "DEFPOINT" |
-                    layer.Name.ToUpper() == "DEFPOINTS" |
-                    layer.Name.ToUpper() == "MV"
+                    layer.Name.Upper() == "DEFPOINT" |
+                    layer.Name.Upper() == "DEFPOINTS" |
+                    layer.Name.Upper() == "MV"
                     )
                 {
                     return;
@@ -58,19 +58,19 @@ namespace DLM.cad
                 }
                 else
                 {
-                    if (color.ColorNameForDisplay.ToUpper() == "BYLAYER")
+                    if (color.ColorNameForDisplay.Upper() == "BYLAYER")
                     {
                         color = layer.Color;
                     }
                     if (
-                        linetype.Name.ToUpper() == "BYLAYER" |
-                        linetype.Name.ToUpper() == "BYBLOCK"
+                        linetype.Name.Upper() == "BYLAYER" |
+                        linetype.Name.Upper() == "BYBLOCK"
                         )
                     {
                         linetype = layer.GetLineType(acTrans);
                     }
 
-                    var lname = linetype.Name.ToUpper();
+                    var lname = linetype.Name.Upper();
 
                     if (lname.Contem("CONTINUOUS", "HIDDEN", "DASHED"))
                     {
@@ -115,12 +115,12 @@ namespace DLM.cad
                         {
                         }
                     }
-                    else if (linetype.Name.ToUpper().Contem("HIDDEN"))
+                    else if (linetype.Name.Upper().Contem("HIDDEN"))
                     {
                         item.Layer = "PROJECAO";
                         item.Color = bylayer;
                     }
-                    else if (linetype.Name.ToUpper().Contem("DASHDOT"))
+                    else if (linetype.Name.Upper().Contem("DASHDOT"))
                     {
                         item.Layer = "EIXOS";
                         item.Color = bylayer;

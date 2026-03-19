@@ -68,7 +68,7 @@ namespace DLM.cad
         public static void Set(string layer, bool on = true, bool criar_senao_existe = false)
         {
             var layers = Listar();
-            if (layers.Find(x => x.ToUpper() == layer) == null && criar_senao_existe)
+            if (layers.Find(x => x.Upper() == layer) == null && criar_senao_existe)
             {
                 Criar(layer, System.Drawing.Color.White);
             }

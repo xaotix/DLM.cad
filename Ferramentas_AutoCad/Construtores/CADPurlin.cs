@@ -412,7 +412,7 @@ namespace DLM.cad
         {
             var blocos = new List<Entity>();
             blocos.AddRange(this.Selecoes);
-            blocos = blocos.FindAll(x => Selecoes.Filter<BlockReference>().FindAll(w => w.Name.ToUpper().StartsW(Cfg.Init.CAD_PC_Quantificar)).Find(y => y.ObjectId == x.ObjectId) == null);
+            blocos = blocos.FindAll(x => Selecoes.Filter<BlockReference>().FindAll(w => w.Name.Upper().StartsW(Cfg.Init.CAD_PC_Quantificar)).Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetAtributosEixos().Find(y => y.Block.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetLinhas_Eixos().Find(y => y.ObjectId == x.ObjectId) == null);
             blocos = blocos.FindAll(x => this.GetBlocosSecundariasIndicacao().Find(y => y.ObjectId == x.ObjectId) == null);
@@ -443,15 +443,15 @@ namespace DLM.cad
 
         public List<BlockReference> Getblocos_tercas()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "TERCA_INDICACAO");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.Upper() == "TERCA_INDICACAO");
         }
         public List<BlockReference> Getblocos_tirantes()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "TIRANTE_INDICACAO");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.Upper() == "TIRANTE_INDICACAO");
         }
         public List<BlockReference> Getblocos_correntes()
         {
-            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.ToUpper() == "CORRENTE_INDICACAO");
+            return Selecoes.Filter<BlockReference>().FindAll(x => x.Name.Upper() == "CORRENTE_INDICACAO");
         }
 
 
@@ -475,8 +475,8 @@ namespace DLM.cad
                 var horiz = GetLinhas_Horizontais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin);
                 var vertz = GetLinhas_Verticais().FindAll(x => x.Comprimento >= this.LayerEixosCompMin);
                 /*considera apenas linhas que estão em layers de eixo e que sejam Dashdot*/
-                var HORIS1 = horiz.FindAll(x => x.Layer.ToUpper().Contem(this.LayerEixos));
-                var VERTS1 = vertz.FindAll(x => x.Layer.ToUpper().Contem(this.LayerEixos));
+                var HORIS1 = horiz.FindAll(x => x.Layer.Upper().Contem(this.LayerEixos));
+                var VERTS1 = vertz.FindAll(x => x.Layer.Upper().Contem(this.LayerEixos));
 
                 var HORIS = HORIS1.GroupBy(x => x.Min.Y).Select(x => x.First()).ToList().OrderBy(x => x.Min.Y).ToList();
                 var VERTS = VERTS1.GroupBy(x => x.Min.X).Select(x => x.First()).ToList().OrderBy(x => x.Min.X).ToList();
@@ -720,7 +720,7 @@ namespace DLM.cad
         }
         public List<Entity> LinhasFuros()
         {
-            return this.Selecoes.FindAll(x => x.Layer.ToUpper().Replace(" ", "") == this.MapeiaFurosManuaisLayer.ToUpper().Replace(" ", "") && (x is Line | x is Polyline));
+            return this.Selecoes.FindAll(x => x.Layer.Upper().Replace(" ", "") == this.MapeiaFurosManuaisLayer.Upper().Replace(" ", "") && (x is Line | x is Polyline));
         }
         public void ExcluirBlocosMarcas()
         {
@@ -1067,8 +1067,8 @@ namespace DLM.cad
             var TRD = linha[Cfg.Init.CAD_ATT_Transp_Dir].Double();
             var AD = linha["AD"].Double();
             var AE = linha["AE"].Double();
-            var REB = linha["REB"].Valor.ToUpper() == "SIM";
-            var SBR = linha["SBR"].Valor.ToUpper() == "SIM";
+            var REB = linha["REB"].Valor.Upper() == "SIM";
+            var SBR = linha["SBR"].Valor.Upper() == "SIM";
 
             var NOME = linha["NOME"].Valor;
             var FE = linha["FE"].Valor;

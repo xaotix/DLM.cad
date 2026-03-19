@@ -146,7 +146,7 @@ namespace DLM.cad
         {
             using (var docLock = acDoc.LockDocument())
             {
-                var lista = acDoc.GetLayouts().Select(x => x.LayoutName).ToList().FindAll(x => x.ToUpper() != "MODEL");
+                var lista = acDoc.GetLayouts().Select(x => x.LayoutName).ToList().FindAll(x => x.Upper() != "MODEL");
                 if (lista.Count > 0)
                 {
                     LayoutManager.Current.CurrentLayout = lista[0];
