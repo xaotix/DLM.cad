@@ -80,8 +80,8 @@ namespace DLM.cad
             {
                 var bl = bloco.GetAttributes();
 
-                this.Celulas = new List<db.Celula>();
-                this.AddRange(bl.Celulas);
+                this.Clear();
+                this.AddRange(bl);
             }
         }
 
