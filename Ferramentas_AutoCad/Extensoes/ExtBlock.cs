@@ -146,7 +146,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
                 return null;
             }
 
@@ -176,7 +176,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
             }
 
             retorno.AddRange(retorno.Filter<BlockReference>().SelectMany(x => x.GetEntities()));

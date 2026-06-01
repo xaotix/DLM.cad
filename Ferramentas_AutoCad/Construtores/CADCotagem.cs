@@ -1278,7 +1278,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    ex.Alerta();
+                    ex.Show();
                 }
 
             }
@@ -1300,7 +1300,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    ex.Alerta();
+                    ex.Show();
                 }
                 AddBarra();
             }
@@ -1612,7 +1612,7 @@ namespace DLM.cad
             catch (System.Exception ex)
             {
 
-                ex.Alerta();
+                ex.Show();
             }
 
         }

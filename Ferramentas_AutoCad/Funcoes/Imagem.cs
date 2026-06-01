@@ -40,7 +40,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
                 return null;
             }
         }

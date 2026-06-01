@@ -40,7 +40,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
             }
         }
         private static bool estaRodando { get; set; } = false;

@@ -217,7 +217,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
                 return;
             }
 
@@ -365,7 +365,7 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-                    ex.Alerta();
+                    ex.Show();
                 }
                 c++;
             }
@@ -898,7 +898,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
             }
         }
         public void GerarDBF3D()
@@ -1335,7 +1335,7 @@ namespace DLM.cad
                     catch (Exception ex)
                     {
                         w.Close();
-                        ex.Alerta();
+                        ex.Show();
                         return new db.Tabela();
                     }
 
@@ -1344,7 +1344,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
                 return new db.Tabela();
             }
 

@@ -205,7 +205,7 @@ namespace DLM.cad.Menus
             }
             catch (Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
             }
         }
 

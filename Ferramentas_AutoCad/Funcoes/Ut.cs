@@ -69,7 +69,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
             }
             return pp0;
         }
@@ -140,7 +140,7 @@ namespace DLM.cad
                                 }
                                 catch (System.Exception ex)
                                 {
-                                    ex.Alerta();
+                                    ex.Show();
                                 }
 
 
@@ -210,7 +210,7 @@ namespace DLM.cad
                                 }
                                 catch (System.Exception ex)
                                 {
-                                    ex.Alerta();
+                                    ex.Show();
                                 }
 
                             }
@@ -222,7 +222,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                ex.Alerta();
+                ex.Show();
             }
 
             return retorno;
@@ -347,7 +347,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    ex.Alerta();
+                    ex.Show();
                 }
 
             }
@@ -371,7 +371,7 @@ namespace DLM.cad
                 }
                 catch (System.Exception ex)
                 {
-                    ex.Alerta();
+                    ex.Show();
                 }
 
             }
@@ -1333,7 +1333,7 @@ namespace DLM.cad
                     catch (Autodesk.AutoCAD.Runtime.Exception ex)
                     {
                         // Layer could not be deleted
-                        ex.Alerta();
+                        ex.Show();
                     }
                 }
 
