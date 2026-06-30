@@ -346,7 +346,7 @@ namespace DLM.cad
             lista.AddRange(GetContorno());
             //lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new Coordenada(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
             double prof = Profundidade_Esquerda;
-            if ((Base_Esquerda | (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsW("C"))
+            if ((Base_Esquerda || (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsW("C"))
             {
                 //remove todas as coordenadas se tem placa base, deixando apenas os que tem xmax
                 //isso vai funcionar bem em chapas retas, no entando em chapas inclinadas vai ficar uma bosta
@@ -355,7 +355,7 @@ namespace DLM.cad
 
                 lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Linha)).ToList());
             }
-            else if (Furos_Vista_Corte_Cotar_Esquerda | !Tipo_Desenho.StartsW("C"))
+            else if (Furos_Vista_Corte_Cotar_Esquerda || !Tipo_Desenho.StartsW("C"))
             {
                 lista.AddRange(Getpts_furos_vista().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
             }
@@ -401,7 +401,7 @@ namespace DLM.cad
             List<P3dCAD> lista = new List<P3dCAD>();
             lista.AddRange(GetContorno());
             double prof = Profundidade_Direita;
-            if ((Base_Direita | (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsW("C"))
+            if ((Base_Direita || (Base_Direita && Base_Esquerda)) && !Tipo_Desenho.StartsW("C"))
             {
                 //remove todas as coordenadas se tem placa base, deixando apenas os que tem xmax
                 //isso vai funcionar bem em chapas retas, no entando em chapas inclinadas vai ficar uma bosta
@@ -410,7 +410,7 @@ namespace DLM.cad
 
                 lista.AddRange(Getpts_furos_corte_horizontais().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Corte)).ToList());
             }
-            else if (Furos_Vista_Corte_Cotar_direita | !Tipo_Desenho.StartsW("C"))
+            else if (Furos_Vista_Corte_Cotar_direita || !Tipo_Desenho.StartsW("C"))
             {
                 lista.AddRange(Getpts_furos_vista().Select(x => new P3dCAD(x, 0, Tipo_Coordenada.Furo_Vista)).ToList());
             }
@@ -513,7 +513,7 @@ namespace DLM.cad
                 x.Rotation.RadianosParaGraus() >= -8
                 &&
                 x.Rotation.RadianosParaGraus() <= 8
-                ) | (
+                ) || (
                 x.Rotation.RadianosParaGraus() >= 172
                 &&
                 x.Rotation.RadianosParaGraus() <= 188
@@ -821,7 +821,11 @@ namespace DLM.cad
             var ys = furos.Select(x => Math.Round(x.Position.Y)).Distinct().ToList().OrderBy(x => x).ToList();
             for (int i = 0; i < ys.Count; i++)
             {
-                coordenadas.Add(new LinhaBlocoFuro(furos.FindAll(x => Math.Round(x.Position.Y) == ys[i] | Math.Round(x.Position.Y) + 1 == ys[i] | Math.Round(x.Position.Y) - 1 == ys[i]).ToList(), ys[i]));
+                coordenadas.Add(new LinhaBlocoFuro(furos.FindAll(x => 
+                   Math.Round(x.Position.Y) == ys[i] 
+                || Math.Round(x.Position.Y) + 1 == ys[i] 
+                || Math.Round(x.Position.Y) - 1 == ys[i]).ToList(), ys[i]
+                ));
             }
 
             return coordenadas;
@@ -1321,7 +1325,7 @@ namespace DLM.cad
 
             bool dimtix = false;
 
-            if (Sequencia == 0 | Sequencia == Max_Sequencia)
+            if (Sequencia == 0 || Sequencia == Max_Sequencia)
             {
                 dimtix = false;
             }
@@ -1365,7 +1369,11 @@ namespace DLM.cad
             }
 
             bool dimtix = false;
-            if (Sequencia == 0 | Sequencia == Max_Sequencia | movida)
+            if (
+                   Sequencia == 0 
+                || Sequencia == Max_Sequencia 
+                || movida
+                )
             {
                 dimtix = false;
             }
@@ -1481,7 +1489,7 @@ namespace DLM.cad
             //limpa as cotas atuais
             acDoc.Apagar(Selecoes.GetDimmensions().FindAll(x => !(x is Leader) && !(x is MLeader) && !(x is DBText) && !(x is MText)));
 
-            if (GetCADLines().Count == 0 | selecao.Status != PromptStatus.OK)
+            if (GetCADLines().Count == 0 || selecao.Status != PromptStatus.OK)
             {
                 AddMensagem("\nNenhuma linha encontrada na seleção.\nÉ necessário selecionar uma peça de TecnoMetal.\nExploda a seleção antes de tentar cotar.");
                 return "";

@@ -66,7 +66,7 @@ namespace DLM.cad
         }
         public static List<MlineStyle> GetMLStyles(bool update = false)
         {
-            if (_mlstyles == null | update)
+            if (_mlstyles == null || update)
             {
                 _mlstyles = new List<MlineStyle>();
                 using (var acTrans = acCurDb.acTrans())
@@ -323,7 +323,7 @@ namespace DLM.cad
                         angulo = angulo - 180;
                     }
 
-                    if ((angulo >= 175 | angulo <= 5) && comp >= comp_min)
+                    if ((angulo >= 175 || angulo <= 5) && comp >= comp_min)
                     {
                         retorno.Add(s);
                     }

@@ -154,23 +154,22 @@ namespace DLM.cad
         public static bool IsDimmension(this Entity x)
         {
             return x is AlignedDimension
-                                | x is ArcDimension
-                                | x is Dimension
-                                | x is DiametricDimension
-                                | x is LineAngularDimension2
-                                | x is Point3AngularDimension
-                                | x is OrdinateDimension
-                                | x is RadialDimension
-                                | x is Leader
-                                | x is MLeader
-                                | x is MText
-                                | x is DBText
+                                || x is ArcDimension
+                                || x is Dimension
+                                || x is DiametricDimension
+                                || x is LineAngularDimension2
+                                || x is Point3AngularDimension
+                                || x is OrdinateDimension
+                                || x is RadialDimension
+                                || x is Leader
+                                || x is MLeader
+                                || x is MText
+                                || x is DBText
                                 ;
         }
         public static bool IsText(this Entity x)
         {
-            return x is DBText
-                                | x is MText;
+            return x is DBText || x is MText;
         }
         public static List<Entity> GetDimmensions(this List<Entity> List)
         {

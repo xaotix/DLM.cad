@@ -102,7 +102,7 @@ namespace DLM.cad
             {
                 this.Sentido = Sentido.Vertical;
             }
-            else if ((this.Angulo >= -1 && this.Angulo <= 1) | (this.Angulo >= 179 && this.Angulo <= 181))
+            else if ((this.Angulo >= -1 && this.Angulo <= 1) || (this.Angulo >= 179 && this.Angulo <= 181))
             {
                 this.Sentido = Sentido.Horizontal;
             }

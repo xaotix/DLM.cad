@@ -511,10 +511,10 @@ namespace DLM.cad
                 {
                     if (
                                         (p1.X <= de.X && p2.X >= ate.X) //se passa
-                                     | (p1.X >= de.X && p2.X <= ate.X) //se os dois lados estão dentro
+                                     || (p1.X >= de.X && p2.X <= ate.X) //se os dois lados estão dentro
 
-                                     | (p1.X >= de.X && p2.X >= ate.X && p1.X < ate.X) //se a esquerda está dentro
-                                     | (p1.X <= de.X && p2.X <= ate.X && p2.X > de.X) //se a direita está dentro
+                                     || (p1.X >= de.X && p2.X >= ate.X && p1.X < ate.X) //se a esquerda está dentro
+                                     || (p1.X <= de.X && p2.X <= ate.X && p2.X > de.X) //se a direita está dentro
                                         )
                     {
                         retorno.Add(s);
@@ -590,7 +590,7 @@ namespace DLM.cad
                 }
                 double comp = Math.Abs(s.StartPoint.X - s.EndPoint.X);
 
-                if ((angulo >= 175 | angulo <= 5) && comp >= comp_min)
+                if ((angulo >= 175 || angulo <= 5) && comp >= comp_min)
                 {
                     retorno.Add(s);
                 }
@@ -608,7 +608,7 @@ namespace DLM.cad
                     angulo = angulo - 180;
                 }
 
-                if ((angulo >= 175 | angulo <= 5))
+                if ((angulo >= 175 || angulo <= 5))
                 {
                     retorno.Add(s);
                 }
@@ -626,7 +626,7 @@ namespace DLM.cad
                     angulo = angulo - 180;
                 }
                 double comp = Math.Abs(s.StartPoint.Y - s.EndPoint.Y);
-                if ((angulo >= 80 | angulo <= 100) && comp >= comp_min)
+                if ((angulo >= 80 || angulo <= 100) && comp >= comp_min)
                 {
                     retorno.Add(s);
                 }
@@ -645,7 +645,7 @@ namespace DLM.cad
                     angulo = angulo - 180;
                 }
                 double comp = Math.Abs(s.XLine1Point.Y - s.XLine2Point.Y);
-                if ((angulo >= 80 | angulo <= 100) && comp >= comp_min)
+                if ((angulo >= 80 || angulo <= 100) && comp >= comp_min)
                 {
                     retorno.Add(s);
                 }
@@ -675,11 +675,11 @@ namespace DLM.cad
         }
         public static List<Polyline> GetPolylinesProximas(List<Polyline> blocos, P3d ponto, double tolerancia)
         {
-            return blocos.FindAll(x => new P3dCAD(x.StartPoint).Distancia(ponto) <= tolerancia | new P3dCAD(x.EndPoint).Distancia(ponto) <= tolerancia);
+            return blocos.FindAll(x => new P3dCAD(x.StartPoint).Distancia(ponto) <= tolerancia || new P3dCAD(x.EndPoint).Distancia(ponto) <= tolerancia);
         }
         public static List<RotatedDimension> GetCotasProximas(List<RotatedDimension> blocos, P3d ponto, double tolerancia)
         {
-            return blocos.FindAll(x => new P3dCAD(x.XLine1Point).Distancia(ponto) <= tolerancia | new P3dCAD(x.XLine2Point).Distancia(ponto) <= tolerancia);
+            return blocos.FindAll(x => new P3dCAD(x.XLine1Point).Distancia(ponto) <= tolerancia || new P3dCAD(x.XLine2Point).Distancia(ponto) <= tolerancia);
         }
         public static Xline GetXlineMaisProxima(Entity objeto, List<Xline> xlines, double tolerancia)
         {
@@ -794,7 +794,7 @@ namespace DLM.cad
                     double angulo = Angulo.Get(p);
                     var norm = Angulo.Normalizar(angulo);
                     double dist1 = 0, dist2 = 0;
-                    if (norm == 0 | norm == 180)
+                    if (norm == 0 || norm == 180)
                     {
                         dist1 = min.DistanciaX(p.BasePoint);
                         dist2 = max.DistanciaX(p.BasePoint);
@@ -806,7 +806,7 @@ namespace DLM.cad
                     double ds1 = min.Distancia(pmin);
                     double ds2 = max.Distancia(pmax);
 
-                    if (ds1 <= tolerancia | ds2 <= tolerancia)
+                    if (ds1 <= tolerancia || ds2 <= tolerancia)
                     {
                         retorno.Add(p);
                     }
@@ -869,7 +869,7 @@ namespace DLM.cad
                 }
                 double comp = Math.Abs(s.XLine1Point.X - s.XLine2Point.X);
 
-                if ((angulo >= 175 | angulo <= 5) && comp >= comp_min)
+                if ((angulo >= 175 || angulo <= 5) && comp >= comp_min)
                 {
                     retorno.Add(s);
                 }
@@ -909,7 +909,7 @@ namespace DLM.cad
                 }
                 double comp = Math.Abs(s.StartPoint.X - s.EndPoint.X);
 
-                if ((angulo >= 175 | angulo <= 5) && comp >= comp_min)
+                if ((angulo >= 175 || angulo <= 5) && comp >= comp_min)
                 {
                     retorno.Add(s);
                 }

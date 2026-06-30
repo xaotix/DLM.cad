@@ -464,7 +464,7 @@ namespace DLM.cad
         public GradeEixos GetGrade(bool update = false)
         {
 
-            if (_grade == null | update)
+            if (_grade == null || update)
             {
                 _grade = new GradeEixos();
 
@@ -495,7 +495,7 @@ namespace DLM.cad
                             dist = Math.Round(Math.Abs(HORIS[(int)i].P1.Y - _grade.GetEixosHorizontais().Last().Linha.P1.Y));
                         }
 
-                        if (dist >= DistanciaMinimaEixos | _grade.GetEixosHorizontais().Count == 0)
+                        if (dist >= DistanciaMinimaEixos || _grade.GetEixosHorizontais().Count == 0)
                         {
                             var blks = Blocos.GetAtributosProximos(blocos, linha.Min, linha.Max, this.Eixos_Tolerancia);
 
@@ -524,7 +524,7 @@ namespace DLM.cad
                             dist = Math.Round(Math.Abs(VERTS[i].P1.X - _grade.GetEixosVerticais().Last().Linha.P1.X));
                         }
 
-                        if (dist >= DistanciaMinimaEixos | _grade.GetEixosVerticais().Count == 0)
+                        if (dist >= DistanciaMinimaEixos || _grade.GetEixosVerticais().Count == 0)
                         {
                             var blks = Blocos.GetAtributosProximos(blocos, linha.Min, linha.Max, this.Eixos_Tolerancia);
 
@@ -722,7 +722,7 @@ namespace DLM.cad
         }
         public List<Entity> LinhasFuros()
         {
-            return this.Selecoes.FindAll(x => x.Layer.Upper().Replace(" ", "") == this.MapeiaFurosManuaisLayer.Upper().Replace(" ", "") && (x is Line | x is Polyline));
+            return this.Selecoes.FindAll(x => x.Layer.Upper().Replace(" ", "") == this.MapeiaFurosManuaisLayer.Upper().Replace(" ", "") && (x is Line || x is Polyline));
         }
         public void ExcluirBlocosMarcas()
         {
@@ -1258,12 +1258,12 @@ namespace DLM.cad
 
                     foreach (var s in this.Getblocos_tercas())
                     {
-                        if (trs == "Esquerda" | trs == "Ambos")
+                        if (trs == "Esquerda" || trs == "Ambos")
                         {
                             Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Esq, valor.Value.String(0));
                         }
 
-                        if (trs == "Direita" | trs == "Ambos")
+                        if (trs == "Direita" || trs == "Ambos")
                         {
                             Atributos.Set(s, acTrans, Cfg.Init.CAD_ATT_Transp_Dir, valor.Value.String(0));
                         }

@@ -705,7 +705,11 @@ namespace DLM.cad
         public static void CamToMarcaSimples(DLM.cam.ReadCAM cam, P3d origem, double escala)
         {
 
-            if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado | cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contem("_"))
+            if (
+                   cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado 
+                || cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado 
+                || cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contem("_")
+                )
             {
                 var perfil = DBases.GetdbPerfil().GetPerfilTecnoMetal(cam.Descricao);
                 if (perfil != null)
@@ -791,7 +795,7 @@ namespace DLM.cad
                     var d1 = Math.Round(Math.Abs(blk.Block.Position.DistanceTo(pt1.GetPoint3dCad())));
                     var d2 = Math.Round(Math.Abs(blk.Block.Position.DistanceTo(pt2.GetPoint3dCad())));
 
-                    if (d1 <= tolerancia | d2 <= tolerancia)
+                    if (d1 <= tolerancia || d2 <= tolerancia)
                     {
                         blks.Add(blk);
                         continue;

@@ -161,34 +161,34 @@ namespace DLM.cad
             var blocos = Selecoes.Filter<BlockReference>();
             return blocos.FindAll(x =>
                  x.Name.Upper() == "M8"
-                | x.Name.Upper() == "M10"
-                | x.Name.Upper() == "M12"
-                | x.Name.Upper() == "M14"
-                | x.Name.Upper() == "M14_"
-                | x.Name.Upper() == "M16"
-                | x.Name.Upper() == "M18"
-                | x.Name.Upper() == "M20"
-                | x.Name.Upper() == "M22"
-                | x.Name.Upper() == "M24"
-                | x.Name.Upper() == "M27"
-                | x.Name.Upper() == "M30"
-                | x.Name.Upper() == "M33"
-                | x.Name.Upper() == "M36"
-                | x.Name.Upper() == "M39"
-                | x.Name.Upper() == "M42"
-                | x.Name.Upper() == "M45"
-                | x.Name.Upper() == "M48"
-                | x.Name.Upper() == "M52"
-                | x.Name.Upper() == "M56"
-                | x.Name.Upper() == "M60"
-                | x.Name.Upper() == "M64"
-                | x.Name.Upper() == "M68"
-                | x.Name.Upper() == "M72"
-                | x.Name.Upper() == "M76"
-                | x.Name.Upper() == "M80"
+                || x.Name.Upper() == "M10"
+                || x.Name.Upper() == "M12"
+                || x.Name.Upper() == "M14"
+                || x.Name.Upper() == "M14_"
+                || x.Name.Upper() == "M16"
+                || x.Name.Upper() == "M18"
+                || x.Name.Upper() == "M20"
+                || x.Name.Upper() == "M22"
+                || x.Name.Upper() == "M24"
+                || x.Name.Upper() == "M27"
+                || x.Name.Upper() == "M30"
+                || x.Name.Upper() == "M33"
+                || x.Name.Upper() == "M36"
+                || x.Name.Upper() == "M39"
+                || x.Name.Upper() == "M42"
+                || x.Name.Upper() == "M45"
+                || x.Name.Upper() == "M48"
+                || x.Name.Upper() == "M52"
+                || x.Name.Upper() == "M56"
+                || x.Name.Upper() == "M60"
+                || x.Name.Upper() == "M64"
+                || x.Name.Upper() == "M68"
+                || x.Name.Upper() == "M72"
+                || x.Name.Upper() == "M76"
+                || x.Name.Upper() == "M80"
 
-                | x.Name.Upper() == "3D_INFOHOLE1"
-                | x.Name.Upper() == "MA"
+                || x.Name.Upper() == "3D_INFOHOLE1"
+                || x.Name.Upper() == "MA"
                 );
         }
         public List<Entity> GetEntitiesdeBlocos()
@@ -663,7 +663,7 @@ namespace DLM.cad
         #region mapeamento de objetos a serem usados
         public List<CADLine> GetLinhas_Eixos()
         {
-            return GetCADLines().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.Upper().Contem(this.LayerEixos) && (x.Linetype.Upper() == Cfg.Init.CAD_LineType_Eixos | x.Linetype.Upper() == Cfg.Init.CAD_LineType_ByLayer));
+            return GetCADLines().FindAll(x => x.Comprimento >= this.LayerEixosCompMin && x.Layer.Upper().Contem(this.LayerEixos) && (x.Linetype.Upper() == Cfg.Init.CAD_LineType_Eixos || x.Linetype.Upper() == Cfg.Init.CAD_LineType_ByLayer));
         }
         #endregion
 
@@ -843,7 +843,7 @@ namespace DLM.cad
         public List<BlockAttributes> GetAtributosEixos(bool update = false)
         {
             /*pega blocos dinâmicos*/
-            if (_Atributos_Eixos == null | update)
+            if (_Atributos_Eixos == null || update)
             {
                 var blks = Selecoes.Filter<BlockReference>();
                 var lbksnms = blks.GroupBy(x => Blocos.GetNome(x).Upper()).ToList();

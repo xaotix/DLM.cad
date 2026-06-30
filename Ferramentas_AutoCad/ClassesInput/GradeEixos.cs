@@ -59,7 +59,8 @@ namespace DLM.cad
         }
         public List<VaoObra> GetVaosVerticais(bool update = false)
         {
-            if (_vaos_verticais == null | update)
+            if (_vaos_verticais == null || update)
+            if (_vaos_verticais == null || update)
             {
                 _vaos_verticais = new List<VaoObra>();
                 var verticais = GetEixosVerticais();

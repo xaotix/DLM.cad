@@ -57,12 +57,12 @@ namespace DLM.cad
 
         public List<Entity> Getcotaslinhadevida()
         {
-            return Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerLinhaDeVidaCotas | x.Layer == LayerLinhaDeVida);
+            return Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerLinhaDeVidaCotas || x.Layer == LayerLinhaDeVida);
         }
 
         public List<Entity> GetCotasPassarelas()
         {
-            return Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerLinhaDeVida);
+            return Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerPassarela || x.Layer == LayerLinhaDeVida);
         }
 
         public List<Polyline> Getcabos()
@@ -81,7 +81,7 @@ namespace DLM.cad
             list_apagar.AddRange(this.Getsflis());
             list_apagar.AddRange(this.Getcabos());
             list_apagar.AddRange(this.GetblocostextoLinhaDeVida().FindAll(x => x.Layer == LayerLinhaDeVida));
-            list_apagar.AddRange(Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerLinhaDeVida | x.Layer == LayerLinhaDeVidaCotas));
+            list_apagar.AddRange(Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerLinhaDeVida || x.Layer == LayerLinhaDeVidaCotas));
 
 
             acDoc.Apagar(list_apagar);
@@ -92,7 +92,10 @@ namespace DLM.cad
             SelecionarObjetos();
             List<Entity> list_apagar = new List<Entity>();
             list_apagar.AddRange(this.Getpassarelas());
-            list_apagar.AddRange(Selecoes.GetDimmensions().FindAll(x => x.Layer == LayerPassarela | x.Layer == LayerPassarelaCotas));
+            list_apagar.AddRange(Selecoes.GetDimmensions().FindAll(x => 
+               x.Layer == LayerPassarela 
+            || x.Layer == LayerPassarelaCotas
+            ));
 
 
             acDoc.Apagar(list_apagar);
@@ -189,12 +192,12 @@ namespace DLM.cad
                             ang = 360 - ang;
                         }
 
-                        if(ang == 0 | ang == 180)
+                        if(ang == 0 || ang == 180)
                         {
                             pp1 = new P3d(pp1.X, pos.Y, 0);
                             pp2 = new P3d(pp2.X, pos.Y, 0);
                         }
-                        else if(ang == 90 | ang == 270)
+                        else if(ang == 90 || ang == 270)
                         {
                             pp1 = new P3d(pos.X, pp1.Y, 0);
                             pp2 = new P3d(pos.X, pp2.Y, 0);
@@ -303,7 +306,7 @@ namespace DLM.cad
                                 p1 = p1.Mover(angulo, this.LarguraTelha / 2);
                                 angulo = p1.GetAngulo(p2);
                                 var tmpang = Angulo.Normalizar(angulo);
-                                if (tmpang == 90 | tmpang == 270)
+                                if (tmpang == 90 || tmpang == 270)
                                 {
                                     p1 = p1.Mover(tmpang, vert / 2);
                                 }
@@ -327,7 +330,7 @@ namespace DLM.cad
                                     var tt = new db.Linha();
                                     tt.Add(Cfg.Init.CAD_ATT_Cod_SAP, this.Codigo_Passarela);
                                     Blocos.Inserir(acDoc, Cfg.Init.CAD_Peca_PASSARELA, p1, 1, 0, tt);
-                                    if (angulo == 90 | angulo == 270)
+                                    if (angulo == 90 || angulo == 270)
                                     {
                                         mov = vert;
                                     }
@@ -359,7 +362,7 @@ namespace DLM.cad
                                     var d2 = p1.Mover(angulo, -mov / 2);
                                     var ce = d1.Centro(d2);
                                     var dist = Math.Round(d1.Distancia(d2));
-                                    if (angulo == 90 | angulo == 270)
+                                    if (angulo == 90 || angulo == 270)
                                     {
                                         AddCotaVertical(d1, d2, dist + " (" + qtd + "x)", ce.Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
                                     }
@@ -458,7 +461,7 @@ namespace DLM.cad
 
                                 int qtd_telhas = (comp / this.LarguraTelha).Int();
                                 //se é horizontal, alinha com a telha.
-                                if (angulo == 0 | angulo == 180)
+                                if (angulo == 0 || angulo == 180)
                                 {
                                     var compf = (this.LarguraTelha * qtd_telhas) - (this.LarguraTelha);
                                     p2 = p1.Mover(angulo, compf);
@@ -486,7 +489,7 @@ namespace DLM.cad
                                         if (i == qtd_sflh - 1)
                                         {
                                             var sobra = comp - comps.Sum();
-                                            if (angulo == 0 | angulo == 180)
+                                            if (angulo == 0 || angulo == 180)
                                             {
                                                 sobra = sobra - (this.LarguraTelha / 2);
                                             }
@@ -534,7 +537,7 @@ namespace DLM.cad
                                     
                                     for (int i = 0; i < cotas.Count - 1; i++)
                                     {
-                                        if (angulo == 0 | angulo == 180)
+                                        if (angulo == 0 || angulo == 180)
                                         {
                                             AddCotaHorizontal(cotas[i], cotas[i + 1], "", cotas[i].Centro(cotas[i + 1]).Mover(angulo - 90, GetEscala() * 10), false, 0, false, false);
                                         }
@@ -546,7 +549,7 @@ namespace DLM.cad
                                     }
                                     if (cotas.Count > 1)
                                     {
-                                        if (angulo == 0 | angulo == 180)
+                                        if (angulo == 0 || angulo == 180)
                                         {
                                             AddCotaHorizontal(cotas.OrderBy(x => x.X).First(), cotas.OrderBy(x => x.X).Last(), "", cotas.OrderBy(x => x.X).First().Centro(cotas.OrderBy(x => x.X).Last()).Mover(angulo - 90, GetEscala() * MultiplicadorEscala), false, 0, false, false);
                                         }
@@ -641,7 +644,7 @@ namespace DLM.cad
             var ht = new db.Linha();
             ht.Add(Cfg.Init.CAD_ATT_Texto, nome);
             ht.Add(Cfg.Init.CAD_ATT_Cod_SAP, sap);
-            if(angulo==90 | angulo == 270)
+            if(angulo==90 || angulo == 270)
             {
                 //move pro lado quando é vertical
                 p1 = pp0.Mover(angulo + 90, (GetEscala() * 16)/2);
@@ -661,7 +664,7 @@ namespace DLM.cad
             {
                 angulo = Angulo.Normalizar(angulo);
                 comp = 0;
-                if (angulo == 0 | angulo == 180)
+                if (angulo == 0 || angulo == 180)
                 {
                     comp = p1.DistanciaX(p2);
                 }

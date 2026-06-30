@@ -422,7 +422,7 @@ namespace DLM.cad
             // 
             // transpasse_padrao
             // 
-            this.transpasse_padrao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.transpasse_padrao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top || System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.transpasse_padrao.Location = new System.Drawing.Point(142, 35);
             this.transpasse_padrao.Maximum = new decimal(new int[] {

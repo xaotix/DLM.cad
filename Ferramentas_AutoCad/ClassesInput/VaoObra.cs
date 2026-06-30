@@ -122,7 +122,7 @@ namespace DLM.cad
 
 
                     //desloca a origem do bloco
-                    if (TRE < 0 | TRD < 0)
+                    if (TRE < 0 || TRD < 0)
                     {
                         //desloca para a direita
                         var pe = new P3d(Esquerda.MinX, Esquerda.MinY, Esquerda.Z);

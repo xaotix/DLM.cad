@@ -51,11 +51,14 @@ namespace DLM.cad
             this.Min.Y = P1.Y < P2.Y ? P1.Y : P2.Y;
 
             var ang = this.Angulo.Normalizar(360);
-            if (ang == 0 | ang == 180 | ang == 360)
+            if (   ang == 0 
+                || ang == 180 
+                || ang == 360
+                )
             {
                 this.Sentido = Sentido.Horizontal;
             }
-            else if (ang == 90 | ang == 270)
+            else if (ang == 90 || ang == 270)
             {
                 this.Sentido = Sentido.Vertical;
             }

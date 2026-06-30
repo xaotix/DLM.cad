@@ -655,7 +655,7 @@ namespace DLM.cad
 
                 if (configurar)
                 {
-                    if (opt.Blocos | opt.Pecas_TecnoMetal)
+                    if (opt.Blocos || opt.Pecas_TecnoMetal)
                     {
                         List<PCQuantificar> blocos_montagem_tecnometal = new List<PCQuantificar>();
                         foreach (var s in Selecoes.Filter<BlockReference>().FindAll(x => !
@@ -1072,7 +1072,7 @@ namespace DLM.cad
                     else if (ent is Line)
                     {
                         var s = ent as Line;
-                        if (s.Color.ColorNameForDisplay.Upper() == "RED" && (Angulo.E_Horizontal(s.Angle) | Angulo.E_Vertical(s.Angle)))
+                        if (s.Color.ColorNameForDisplay.Upper() == "RED" && (Angulo.E_Horizontal(s.Angle) || Angulo.E_Vertical(s.Angle)))
                         {
                             linhas.Add(s);
                             apagar.Add(s);
@@ -1365,7 +1365,7 @@ namespace DLM.cad
                 List<BlockReference> ms = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalMarcas(), out errosm);
                 List<BlockReference> pos = blocos.Filter(Cfg.Init.GetBlocosTecnoMetalPosicoes(), out errosp);
 
-                if (errosm.LenghtStr() > 0 | errosp.LenghtStr() > 0)
+                if (errosm.LenghtStr() > 0 || errosp.LenghtStr() > 0)
                 {
                     erros.Add(new Report($"{nome}", $"\nPrancha com problemas de blocos.\n{errosm}\n{errosp}\n\n", nome, TipoReport.Critico));
                 }
@@ -1416,7 +1416,7 @@ namespace DLM.cad
                         var bkm = GetBlocoTecnoMetal(blk, acDoc.Name, true, acCurDb);
                         var bloco = new MarcaTecnoMetal(bkm);
 
-                        if ((bloco.Tipo_Marca != Tipo_Marca.MarcaComposta) && (bloco.Tipo_Bloco == Tipo_Bloco.Arremate | bloco.Tipo_Bloco == Tipo_Bloco.Chapa | bloco.Tipo_Bloco == Tipo_Bloco.Elemento_M2))
+                        if ((bloco.Tipo_Marca != Tipo_Marca.MarcaComposta) && (bloco.Tipo_Bloco == Tipo_Bloco.Arremate || bloco.Tipo_Bloco == Tipo_Bloco.Chapa || bloco.Tipo_Bloco == Tipo_Bloco.Elemento_M2))
                         {
                             var peso = bloco.CalcularPesoLinear();
                             var sup = bloco.CalcularSuperficieLinear();
@@ -1779,7 +1779,7 @@ namespace DLM.cad
             {
                 marca = PromptMarca("ARR-");
             }
-            if (marca == null | marca == "") { return; }
+            if (marca == null || marca == "") { return; }
 
 
             SelecionarObjetos(Tipo_Selecao.Polyline);
@@ -1934,7 +1934,9 @@ namespace DLM.cad
 
 
 
-            var marcas_chapas = marcas.FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaSimples | x.Tipo_Marca == Tipo_Marca.Posicao).FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Chapa | x.Tipo_Bloco == Tipo_Bloco.Arremate);
+            var marcas_chapas = marcas
+                .FindAll(x => x.Tipo_Marca == Tipo_Marca.MarcaSimples || x.Tipo_Marca == Tipo_Marca.Posicao)
+                .FindAll(x => x.Tipo_Bloco == Tipo_Bloco.Chapa || x.Tipo_Bloco == Tipo_Bloco.Arremate);
 
             if (marcas_chapas.Count > 0)
             {
@@ -1984,7 +1986,7 @@ namespace DLM.cad
             {
                 marca = PromptMarca("CH-");
             }
-            if (marca == null | marca == "") { return; }
+            if (marca == null || marca == "") { return; }
 
 
             double comprimento = 0;
@@ -2106,7 +2108,7 @@ namespace DLM.cad
             {
                 marca = PromptMarca("PC-");
             }
-            if (marca == null | marca == "") { return; }
+            if (marca == null || marca == "") { return; }
 
             if (peca == null)
             {
@@ -2126,7 +2128,7 @@ namespace DLM.cad
                         return;
                     }
                     quantidade = valor.Value;
-                    if (quantidade <= 0 | !peca.MultiploOk(quantidade))
+                    if (quantidade <= 0 || !peca.MultiploOk(quantidade))
                     {
                         if ($"Valor setado [{quantidade} é inválido. Precisa ser maior que zero e múltiplo de {peca.MULTIPLO}\nTentar novamente?".Pergunta())
                         {
@@ -2248,7 +2250,7 @@ namespace DLM.cad
             {
                 marca = PromptMarca("PF-");
             }
-            if (marca == null | marca == "") { return; }
+            if (marca == null || marca == "") { return; }
 
             using (var acTrans = acCurDb.acTrans())
             {
