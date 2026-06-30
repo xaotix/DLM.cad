@@ -269,7 +269,7 @@ namespace DLM.cad
 
 
 
-            if (NomeFim.CaracteresEspeciais() | NomeFim.Contem(" "))
+            if (NomeFim.CaracteresEspeciais() || NomeFim.Contem(" "))
             {
                 $"Nome inválido: {NomeFim} - Nome não pode conter caracteres especiais ou espaços.".Alerta();
                 return;
@@ -277,7 +277,7 @@ namespace DLM.cad
 
 
 
-            if (ms.FindAll(x => x.Nome == NomeFim).Count > 0 | pos.FindAll(x => x.Nome_Posicao == NomeFim).Count > 0)
+            if (ms.FindAll(x => x.Nome == NomeFim).Count > 0 || pos.FindAll(x => x.Nome_Posicao == NomeFim).Count > 0)
             {
                 if (this.marca_selecionada == null)
                 {

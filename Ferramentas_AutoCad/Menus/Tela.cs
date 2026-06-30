@@ -27,7 +27,7 @@ namespace DLM.cad
 
         private void getvars(CADCotagem mm)
         {
-            if (mm.Tipo_Desenho.StartsW("V") | mm.Tipo_Desenho == "")
+            if (mm.Tipo_Desenho.StartsW("V") || mm.Tipo_Desenho == "")
             {
                 this.tipo_desenho_vista.Checked = true;
                 this.tipo_desenho_corte.Checked = false;

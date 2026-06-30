@@ -454,10 +454,10 @@ namespace DLM.cad
                 {
                     if (
                        (p1.X <= nde.X && p2.X >= nate.X) //se passa
-                    | (p1.X >= nde.X && p2.X <= nate.X) //se os dois lados estão dentro
+                    || (p1.X >= nde.X && p2.X <= nate.X) //se os dois lados estão dentro
 
-                    | (p1.X >= nde.X && p2.X >= nate.X && p1.X < nate.X) //se a esquerda está dentro
-                    | (p1.X <= nde.X && p2.X <= nate.X && p2.X > nde.X) //se a direita está dentro
+                    || (p1.X >= nde.X && p2.X >= nate.X && p1.X < nate.X) //se a esquerda está dentro
+                    || (p1.X <= nde.X && p2.X <= nate.X && p2.X > nde.X) //se a direita está dentro
                                         )
                     {
                         retorno.Add(corrente);

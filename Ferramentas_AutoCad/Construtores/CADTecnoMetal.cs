@@ -2173,7 +2173,7 @@ namespace DLM.cad
             {
                 marca = PromptMarca("PC-");
             }
-            if (marca == null | marca == "") { return; }
+            if (marca == null || marca == "") { return; }
 
 
 

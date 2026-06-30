@@ -16,11 +16,11 @@ namespace DLM.cad
 
         public static bool E_Horizontal(double Radianos)
         {
-            if (Radianos == 0 | Radianos == 180)
+            if (Radianos == 0 || Radianos == 180)
             {
                 return true;
             }
-            else if (Radianos.RadianosParaGraus() == 0 | Radianos.RadianosParaGraus() == 180)
+            else if (Radianos.RadianosParaGraus() == 0 || Radianos.RadianosParaGraus() == 180)
             {
                 return true;
             }
@@ -28,11 +28,11 @@ namespace DLM.cad
         }
         public static bool E_Vertical(double Angulo)
         {
-            if (Angulo == 90 | Angulo == 270)
+            if (Angulo == 90 || Angulo == 270)
             {
                 return true;
             }
-            else if (Angulo.RadianosParaGraus() == 90 | Angulo.RadianosParaGraus() == 270)
+            else if (Angulo.RadianosParaGraus() == 90 || Angulo.RadianosParaGraus() == 270)
             {
                 return true;
             }
