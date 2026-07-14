@@ -958,12 +958,12 @@ namespace DLM.cad
             if (cams == null)
             {
                 cams = new List<cam.ReadCAM>();
-                cams.AddRange(this.GetSubEtapa().GetPacote().GetCAMsNaoRM());
+                cams.AddRange(this.GetSubEtapa().GetPacotes().GetCAMsNaoRM());
             }
 
             if (cams.Count > 0)
             {
-                var dxfs = this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
+                var dxfs = this.GetSubEtapa().GetPacotes().GetDXFsPastaCAM();
                 var w = ProgressoCad.Start(dxfs.Count, $"Apagando dxfs... da pasta {this.GetSubEtapa().PastaCAM_Pedido}");
 
                 foreach (var arq in dxfs)
@@ -977,7 +977,7 @@ namespace DLM.cad
                 Conexoes.Utilz.TecnoPlotGerarDXF(cams.Select(x => new Conexoes.Arquivo(x.Arquivo)).ToList());
 
             }
-            return this.GetSubEtapa().GetPacote().GetDXFsPastaCAM();
+            return this.GetSubEtapa().GetPacotes().GetDXFsPastaCAM();
         }
         public void InserirTabela(P3d pt = null)
         {
