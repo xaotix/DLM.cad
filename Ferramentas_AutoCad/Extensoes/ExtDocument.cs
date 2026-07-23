@@ -74,7 +74,7 @@ namespace DLM.cad
             }
             catch (System.Exception ex)
             {
-                DLM.log.Log(ex);
+                ex.Log();
                 return -1;
             }
 

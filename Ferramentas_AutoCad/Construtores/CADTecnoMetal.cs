@@ -1265,7 +1265,7 @@ namespace DLM.cad
                 }
                 catch (Exception ex)
                 {
-                    DLM.log.Log(ex);
+                    ex.Log();
                 }
 
                 atributos[T_DBF1.NUM_DIS.ToString()].Valor = nome;
@@ -1278,7 +1278,7 @@ namespace DLM.cad
             }
             catch (Exception ex)
             {
-                DLM.log.Log(ex);
+                ex.Log();
                 BlockAttributes att = new BlockAttributes(bloco, false);
                 att[Cfg.Init.CAD_ATT_BLK].Valor = bloco.Name.Upper();
                 att[T_DBF1.FLG_DWG.ToString()].Valor = nome;
