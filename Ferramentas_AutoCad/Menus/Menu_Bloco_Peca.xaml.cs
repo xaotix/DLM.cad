@@ -141,7 +141,7 @@ namespace DLM.cad.Menus
                 if (tipo_selecionado == Cfg.Init.CAD_ATT_RMA && this.rma_sel != null)
                 {
                     bt_peca_selecionar.Content = this.rma_sel.ToString();
-                    this.txt_codigo.Text = this.rma_sel.SAP;
+                    this.txt_codigo.Text = this.rma_sel.SAP.String();
                     this.txt_descricao.Text = this.rma_sel.DESCRICAO;
                 }
                 else if (tipo_selecionado == Cfg.Init.CAD_ATT_RME && this.rme_sel != null)

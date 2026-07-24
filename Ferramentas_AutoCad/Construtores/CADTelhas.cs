@@ -744,7 +744,7 @@ namespace DLM.cad
             {
                 pc = new RMA();
                 pc.DESCRICAO = codigo != "" ? "Código Não encontrado." : "Código em branco";
-                pc.SAP = codigo;
+                pc.SAP = codigo.LongNull();
             }
             if (pc != null)
             {
@@ -754,7 +754,7 @@ namespace DLM.cad
             {
                 pc = new RMA();
                 pc.DESCRICAO = codigo != "" ? "Código Não encontrado." : "Código em branco";
-                pc.SAP = codigo;
+                pc.SAP = codigo.LongNull();
                 pc.Quantidade = qtd;
             }
             AddMensagem("\n" + codigo + " - " + pc.DESCRICAO + " Qtd>" + qtd);
