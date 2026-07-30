@@ -72,7 +72,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    erros.Add(new Report("Não foi possível montar o perfil. não há mesas / almas suficientes", m.Key, TipoReport.Critico));
+                    erros.Add("Não foi possível montar o perfil. não há mesas / almas suficientes", m.Key, TipoReport.Critico);
                 }
             }
 
@@ -96,7 +96,7 @@ namespace DLM.cad
 
                 else if (pp.Familia == DLM.vars.CAM_FAMILIA._Desconhecido)
                 {
-                    erros.Add(new Report("Perfil não encontrado.", $"{pf.Key} {pp.Descricao}", TipoReport.Critico));
+                    erros.Add("Perfil não encontrado.", $"{pf.Key} {pp.Descricao}", TipoReport.Critico);
                 }
             }
 
@@ -1176,7 +1176,7 @@ namespace DLM.cad
 
                     if (errosb.LenghtStr() > 0)
                     {
-                        erros.Add(new Report("Erro ao tentar ler os blocos", errosb, TipoReport.Critico));
+                        erros.Add("Erro ao tentar ler os blocos", errosb, TipoReport.Critico);
                     }
 
                     foreach (var s in selo)
@@ -1313,7 +1313,7 @@ namespace DLM.cad
 
                 if (arquivos.Count == 0)
                 {
-                    erros.Add(new Report("Erro", "Operação abortada - Nada Selecionado."));
+                    erros.Add("Erro", "Operação abortada - Nada Selecionado.");
                     return new db.Tabela();
                 }
 
@@ -1433,7 +1433,7 @@ namespace DLM.cad
                             }
                             else
                             {
-                                erros.Add(new Report("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Critico));
+                                erros.Add("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Critico);
                             }
                         }
 
@@ -1454,7 +1454,7 @@ namespace DLM.cad
 
         public List<Report> TrocarPerfilElementoMetroQuadrado(List<BlockReference> blocos, DLM.cam.Perfil novo_Perfil)
         {
-            var erros = new List<Report>();
+            var Reports = new List<Report>();
 
             if (novo_Perfil == null) { return new List<Report>().Add("Perfil inválido"); }
             if (blocos.Count == 0) { return new List<Report>().Add("Nenhum bloco de TecnoMetal encontrado na seleção."); }
@@ -1483,11 +1483,11 @@ namespace DLM.cad
                             att.Add(T_DBF1.SPE_PRO.ToString(), bloco.Espessura);
 
                             DLM.cad.Atributos.Set(blk, acTrans, att);
-                            erros.Add(new Report($"Atualizado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}"));
+                            Reports.Add($"Atualizado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", TipoReport.Status);
                         }
                         else
                         {
-                            erros.Add(new Report("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Critico));
+                            Reports.Add("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Critico);
                         }
                     }
 
@@ -1496,11 +1496,11 @@ namespace DLM.cad
                 acTrans.Commit();
                 if (c == 0)
                 {
-                    erros.Add("Nenhuma posição do tipo Elemento m² encontrada.");
+                    Reports.Add("Nenhuma posição do tipo Elemento m² encontrada.");
                 }
             }
-            erros.Show();
-            return erros;
+            Reports.Show();
+            return Reports;
         }
 
 
