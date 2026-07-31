@@ -39,9 +39,9 @@ namespace DLM.cad
         public List<Conexoes.Filete> InserirSoldaComposicao()
         {
             var retorno = new List<Conexoes.Filete>();
-            var erros = new List<Report>();
+            var _reports = new List<Report>();
 
-            var pos = Getposicoes(ref erros, true);
+            var pos = Getposicoes(ref _reports, true);
             var pos_soldados_desmembrados = pos.FindAll(x => !x.Nome_Posicao.Contem("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
 
             var montar_desmembrado = pos.FindAll(x =>
@@ -72,7 +72,7 @@ namespace DLM.cad
                 }
                 else
                 {
-                    erros.Add("Não foi possível montar o perfil. não há mesas / almas suficientes", m.Key, TipoReport.Critico);
+                    _reports.Add("Não foi possível montar o perfil. não há mesas / almas suficientes", m.Key, TipoReport.Critico);
                 }
             }
 
@@ -96,7 +96,7 @@ namespace DLM.cad
 
                 else if (pp.Familia == DLM.vars.CAM_FAMILIA._Desconhecido)
                 {
-                    erros.Add("Perfil não encontrado.", $"{pf.Key} {pp.Descricao}", TipoReport.Critico);
+                    _reports.Add("Perfil não encontrado.", $"{pf.Key} {pp.Descricao}", TipoReport.Critico);
                 }
             }
 
@@ -104,7 +104,7 @@ namespace DLM.cad
 
 
 
-            erros.Show();
+            _reports.Show();
 
             if (retorno.Count > 0)
             {
@@ -1143,9 +1143,9 @@ namespace DLM.cad
             acDoc.IrLayout();
             Ut.ZoomExtend();
 
-            List<Report> erros = new List<Report>();
+            List<Report> _reports = new List<Report>();
 
-            var marcas = GetMarcas(ref erros);
+            var marcas = GetMarcas(ref _reports);
 
             var nomes_PECAS = marcas.Select(x => x.Nome).Distinct().ToList();
 
@@ -1170,13 +1170,13 @@ namespace DLM.cad
                         }
                     }
                     string errosb = "";
-                    List<BlockReference> tabela_tecno = blocos.Filter(new List<string> { "TECNOMETAL_TAB" }, out errosb, false);
-                    List<BlockReference> selo = blocos.Filter(new List<string> { "SELO" }, out errosb, false);
+                    var tabela_tecno = blocos.Filter(new List<string> { "TECNOMETAL_TAB" }, out errosb, false);
+                    var selo = blocos.Filter(new List<string> { "SELO" }, out errosb, false);
 
 
                     if (errosb.LenghtStr() > 0)
                     {
-                        erros.Add("Erro ao tentar ler os blocos", errosb, TipoReport.Critico);
+                        _reports.Add("Erro ao tentar ler os blocos", errosb, TipoReport.Critico);
                     }
 
                     foreach (var s in selo)
@@ -1401,14 +1401,14 @@ namespace DLM.cad
 
         public List<Report> AtualizarPesoChapa(List<BlockReference> blocos)
         {
-            List<Report> erros = new List<Report>();
+            List<Report> _reports = new List<Report>();
 
             // var pcs = GetMarcas(ref erros, blocos);
 
             using (var acTrans = acCurDb.acTransST())
             {
 
-                if (erros.Count == 0 && blocos.Count > 0)
+                if (_reports.Count == 0 && blocos.Count > 0)
                 {
                     var c = 0;
                     foreach (var blk in blocos)
@@ -1433,7 +1433,7 @@ namespace DLM.cad
                             }
                             else
                             {
-                                erros.Add("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Critico);
+                                _reports.Add("Bobina não encontrada", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.SAP}", DLM.vars.TipoReport.Critico);
                             }
                         }
 
@@ -1442,19 +1442,19 @@ namespace DLM.cad
 
                     if (c == 0)
                     {
-                        erros.Add("Nenhuma posição atualizada.");
+                        _reports.Add("Nenhuma posição atualizada.");
                     }
                 }
             }
-            erros.Show();
-            return erros;
+            _reports.Show();
+            return _reports;
         }
 
 
 
         public List<Report> TrocarPerfilElementoMetroQuadrado(List<BlockReference> blocos, DLM.cam.Perfil novo_Perfil)
         {
-            var Reports = new List<Report>();
+            var _reports = new List<Report>();
 
             if (novo_Perfil == null) { return new List<Report>().Add("Perfil inválido"); }
             if (blocos.Count == 0) { return new List<Report>().Add("Nenhum bloco de TecnoMetal encontrado na seleção."); }
@@ -1483,11 +1483,11 @@ namespace DLM.cad
                             att.Add(T_DBF1.SPE_PRO.ToString(), bloco.Espessura);
 
                             DLM.cad.Atributos.Set(blk, acTrans, att);
-                            Reports.Add($"Atualizado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", TipoReport.Status);
+                            _reports.Add($"Atualizado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", TipoReport.Status);
                         }
                         else
                         {
-                            Reports.Add("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Critico);
+                            _reports.Add("Cadastro não encontrado", $"Marca/Pos: {bloco.Nome} => {bloco.Material} => {bloco.Perfil} => {bloco.SAP}", DLM.vars.TipoReport.Critico);
                         }
                     }
 
@@ -1496,11 +1496,11 @@ namespace DLM.cad
                 acTrans.Commit();
                 if (c == 0)
                 {
-                    Reports.Add("Nenhuma posição do tipo Elemento m² encontrada.");
+                    _reports.Add("Nenhuma posição do tipo Elemento m² encontrada.");
                 }
             }
-            Reports.Show();
-            return Reports;
+            _reports.Show();
+            return _reports;
         }
 
 

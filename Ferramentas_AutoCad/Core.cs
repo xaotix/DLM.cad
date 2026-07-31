@@ -575,13 +575,13 @@ namespace DLM.cad
         [CommandMethod(nameof(ImportarDBFExcel))]
         public static void ImportarDBFExcel()
         {
-            var erros = new List<Report>();
+            var _reports = new List<Report>();
 
             if (!GetTecnoMetal().Pasta.Upper().EndsW($@".{Cfg.Init.EXT_Etapa}\"))
             {
-                erros.Add("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico);
+                _reports.Add("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC)\nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico);
 
-                erros.Show();
+                _reports.Show();
                 return;
             }
 
@@ -593,7 +593,7 @@ namespace DLM.cad
                 var lista_pecas = Conexoes.Utilz.Excel.GetTabela(arquivo);
                 if (lista_pecas != null)
                 {
-                    Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref erros);
+                    Conexoes.Utilz.DBF.Gerar(etapa, lista_pecas, ref _reports);
                 }
             }
         }
@@ -601,19 +601,19 @@ namespace DLM.cad
         [CommandMethod(nameof(ExportarDBFExcel))]
         public static void ExportarDBFExcel()
         {
-            var Reports = new List<Report>();
+            var _reports = new List<Report>();
 
             if (!GetTecnoMetal().Pasta.Upper().EndsW($@".{Cfg.Init.EXT_Etapa}\"))
             {
-                Reports.Add("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC) \nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico);
-                Reports.Show();
+                _reports.Add("Pasta Inválida", $"Não é possível rodar esse comando fora de pastas de etapas (.TEC) \nPasta atual: {GetTecnoMetal().Pasta}", DLM.vars.TipoReport.Critico);
+                _reports.Show();
                 return;
             }
 
             var destino = "xlsx".SalvarArquivo();
             if (destino != null)
             {
-                var lista_pecas = GetTecnoMetal().GetPecasPranchas(ref Reports);
+                var lista_pecas = GetTecnoMetal().GetPecasPranchas(ref _reports);
                 var etapa = GetTecnoMetal().GetSubEtapa();
                 lista_pecas.Nome = "DBF";
                 lista_pecas.GerarExcel(destino, true, true);
