@@ -706,9 +706,9 @@ namespace DLM.cad
         {
 
             if (
-                   cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado 
-                || cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado 
-                || cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contem("_")
+                   cam.Formato.Perfil.Familia == DLM.vars.CAM_FAMILIA.Dobrado ||
+                   cam.Formato.Perfil.Familia == DLM.vars.CAM_FAMILIA.Laminado ||
+                   cam.Formato.Perfil.Familia == DLM.vars.CAM_FAMILIA.Soldado && !cam.Nome.Contem("_")
                 )
             {
                 var perfil = DBases.GetdbPerfil().GetPerfilTecnoMetal(cam.Descricao);
@@ -716,7 +716,7 @@ namespace DLM.cad
                 {
                     if (perfil.Descricao == "")
                     {
-                        $"Perfil não cadastrado: {cam.Descricao}\nTipo: {cam.Perfil.Tipo}\nCadastre o perfil no tecnometal e tente novamente.".Alerta();
+                        $"Perfil não cadastrado: {cam.Descricao}\nTipo: {cam.Formato.Perfil.Tipo}\nCadastre o perfil no tecnometal e tente novamente.".Alerta();
                     }
                     else
                     {
@@ -726,13 +726,13 @@ namespace DLM.cad
 
 
             }
-            else if (cam.Perfil.Familia == DLM.vars.CAM_FAMILIA.Chapa)
+            else if (cam.Formato.Perfil.Familia == DLM.vars.CAM_FAMILIA.Chapa)
             {
                 MarcaChapa(origem, new ConfiguracaoChapa_Dobrada(cam), Tipo_Bloco.Chapa, escala);
             }
             else
             {
-                $"Tipo de CAM inválido ou não suportado:\n{cam}\n{cam.Perfil.Tipo}".Alerta();
+                $"Tipo de CAM inválido ou não suportado:\n{cam}\n{cam.Formato.Perfil.Tipo}".Alerta();
             }
         }
 
@@ -802,7 +802,7 @@ namespace DLM.cad
                     }
 
 
-                    var pts = blk.GetPontos(acTrans).Select(x=>x.P3d()).ToList().Round(0);
+                    var pts = blk.GetPontos(acTrans).Select(x => x.P3d()).ToList().Round(0);
 
                     var dists = new List<double>();
                     dists.AddRange(pts.Select(x => pt1.Distancia(x)));
