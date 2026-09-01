@@ -1316,7 +1316,6 @@ namespace DLM.cad
                     erros.Add("Erro", "Operação abortada - Nada Selecionado.");
                     return new db.Tabela();
                 }
-
                 var w = ProgressoCad.Start(arquivos.Count(), "Mapeando peças dos dwgs...");
                 foreach (FileInfo file in arquivos)
                 {
@@ -1335,8 +1334,9 @@ namespace DLM.cad
                     catch (Exception ex)
                     {
                         w.Close();
-                        ex.Show();
-                        return new db.Tabela();
+                        erros.Add("Abortado. Erro ao tentar ler o(s) arquivo(s). Considere rodar AUDIT e PURGE", file.FullName);
+                        erros.Add(file.FullName, ex.GetTexto());
+                        //return new db.Tabela();
                     }
 
                 }
@@ -1347,6 +1347,11 @@ namespace DLM.cad
                 ex.Show();
                 return new db.Tabela();
             }
+            if (erros.Count > 0)
+            {
+                marcas = new db.Tabela();
+            }
+
 
             return Conexoes.Utilz.DBF.ConverterParaDBF(marcas, ref erros);
         }

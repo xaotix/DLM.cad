@@ -1069,8 +1069,8 @@ namespace DLM.cad
             var TRD = linha[Cfg.Init.CAD_ATT_Transp_Dir].Double();
             var AD = linha["AD"].Double();
             var AE = linha["AE"].Double();
-            var REB = linha["REB"].Valor.Upper() == "SIM";
-            var SBR = linha["SBR"].Valor.Upper() == "SIM";
+            var REB = linha["REB"].Boolean();
+            var SBR = linha["SBR"].Boolean();
 
             var NOME = linha["NOME"].Valor;
             var FE = linha["FE"].Valor;
