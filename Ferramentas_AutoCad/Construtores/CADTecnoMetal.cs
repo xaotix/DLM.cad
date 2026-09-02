@@ -41,10 +41,19 @@ namespace DLM.cad
             var retorno = new List<Conexoes.Filete>();
             var _reports = new List<Report>();
 
-            var pos = Getposicoes(ref _reports, true);
-            var pos_soldados_desmembrados = pos.FindAll(x => !x.Nome_Posicao.Contem("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
+            var posicoes = Getposicoes(ref _reports, true);
 
-            var montar_desmembrado = pos.FindAll(x =>
+            foreach(var pos in posicoes.FindAll(x=>x.Tipo_Bloco != Tipo_Bloco.Chapa))
+            {
+                if (pos.GetPerfil().Familia == DLM.vars.CAM_FAMILIA._Desconhecido)
+                {
+                    _reports.Add($"Perfil não encontrado na DBF {Cfg.Init.TECNOMETAL_DBPROF_REDE}", $"{pos.Nome_Posicao} {pos.Perfil}", TipoReport.Critico);
+                }
+            }
+
+            var pos_soldados_desmembrados = posicoes.FindAll(x => !x.Nome_Posicao.Contem("_")).FindAll(y => y.GetPerfil().Familia == DLM.vars.CAM_FAMILIA.Soldado).ToList();
+
+            var montar_desmembrado = posicoes.FindAll(x =>
             x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Alma |
             x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_S |
             x.Nome_Posicao.GetTipoDesmembrado() == CAM_TIPO_DESMEMBRADO.Mesa_I
@@ -132,9 +141,9 @@ namespace DLM.cad
                                 nome = Cfg.Init.CAD_BL_Solda_2;
                             }
                             /*agrupa as posições de 1 em 1 para inserir o bloco*/
-                            var pcs = filete.ToList().Select(x => x.Nome_Pos).ToList().Quebrar(1).Select(x => string.Join(",", x)).ToList();
+                            var pecas = filete.ToList().Select(x => x.Nome_Pos).ToList().Quebrar(1).Select(x => string.Join(",", x)).ToList();
 
-                            foreach (var pc in pcs)
+                            foreach (var pc in pecas)
                             {
                                 var ht = new db.Linha();
                                 ht.Add("MBPERFIL", pc);
@@ -145,9 +154,11 @@ namespace DLM.cad
                                 ///o bloco já indica o filete em ambos os lados
                                 //ht.Add("MBFILETE", frst.Filete_Duplo?$"2x{frst.Filete_Minimo}": frst.Filete_Minimo.String(0));
                                 ht.Add("MBFILETE", frst.Filete_Minimo);
-                                Blocos.Inserir(acDoc, nome, origem, 1, 0, ht);
 
-                                origem = origem.Mover(-largura, 0, 0);
+                                
+                                Blocos.Inserir(acDoc, nome, origem, 1, 0, ht);
+                                origem = origem.MoverX(-largura);
+
                             }
 
                         }
